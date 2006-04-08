@@ -1,0 +1,15 @@
+vmiklos@vmobile:~/programs/linux/hello_module$ make
+make -C /lib/modules/2.6.12-fw1/build M=/home/vmiklos/programs/linux/hello_module modules
+make[1]: Entering directory `/usr/src/linux-2.6.12-fw1'
+  CC [M]  /home/vmiklos/programs/linux/hello_module/hello.o
+  Building modules, stage 2.
+  MODPOST
+  CC      /home/vmiklos/programs/linux/hello_module/hello.mod.o
+  LD [M]  /home/vmiklos/programs/linux/hello_module/hello.ko
+make[1]: Leaving directory `/usr/src/linux-2.6.12-fw1'
+vmiklos@vmobile:~/programs/linux/hello_module$ sudo /sbin/insmod ./hello.ko
+vmiklos@vmobile:~/programs/linux/hello_module$ dmesg|sed -n '$ p'
+hello world
+vmiklos@vmobile:~/programs/linux/hello_module$ sudo /sbin/rmmod hello
+vmiklos@vmobile:~/programs/linux/hello_module$ dmesg|sed -n '$ p'
+bye world

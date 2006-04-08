@@ -1,0 +1,3 @@
+LDFLAGS = -lGeoIP
+
+all: foo

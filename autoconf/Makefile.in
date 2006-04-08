@@ -1,0 +1,3 @@
+prefix = @prefix@
+INSTALL = @INSTALL@
+DARCS = @DARCS@

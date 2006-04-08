@@ -1,0 +1,30 @@
+dl_pure vs dl
+=============
+
+1) dl produces a progressbar, dl_pure doesn't.
+2) 'dl_pure http://foo.com/bar ./' will produce an error:
+'could not open file for writing: Is a directory'.
+'dl http://foo.com/bar ./' will produce a file named 'baz'.
+yes, 'baz' is hardcoded! ;-)
+
+up_pure vs up
+==============
+
+'up foo ftp://bar.org/incoming' will produce 'ftp://bar.org/incoming/foo'.
+'up_pure foo ftp://bar.org/incoming' will produce
+'ftp://bar.org/incoming/(nil)'.
+
+post_pure vs post
+=================
+
+there is no post_pure and there is post ;-P
+
+ah, for testing post, here is a simple php:
+<?php
+	if(isset($_POST['foo']))
+	{
+		$fp = fopen(sha1(mt_rand( 1, 1000000000 )), "w");
+		fwrite($fp, $_POST['foo']);
+		fclose($fp);
+	}
+?>
