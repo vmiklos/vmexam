@@ -383,7 +383,6 @@ int downloadfiles_forreal(list_t *servers, const char *localpath,
 							}
 						}
 						if(!FtpGet(output, fn, FTPLIB_IMAGE, control)) {
-							ERR(NL, "\nfailed downloading %s from %s: %s\n", fn, server->server, FtpLastResponse(control));
 							/* we leave the partially downloaded file in place so it can be resumed later */
 						} else {
 							filedone = 1;

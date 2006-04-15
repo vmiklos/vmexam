@@ -81,7 +81,6 @@ static int sync_synctree(list_t *syncs)
 		ret = downloadfiles_forreal(sync->servers, path, files, lastupdate, newmtime);
 		FREELIST(files);
 		if(ret > 0) {
-			ERR(NL, "failed to synchronize %s\n", sync->treename);
 			success--;
 		} else if(ret >= 0) {
 			oldrepos++;
