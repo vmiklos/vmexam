@@ -1,5 +1,5 @@
 <project default="compile">
 	<target name="compile">
-		<javac srcdir="." />
+		<javac srcdir="." compiler="gcj" />
 	</target>
 </project>
