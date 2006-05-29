@@ -1,3 +1,3 @@
 LDFLAGS += -lalpm $(shell curl-config --libs)
 CFLAGS += -Wall
-all: remove sync
+all: remove sync deps
