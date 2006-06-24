@@ -43,11 +43,11 @@ int gpg(char *keys, char *file)
 
 int main()
 {
-	if(gpg("/home/vmiklos/.gnupg/pubring.gpg", "rossz/pacman-3.3.2.tar.gz.asc"))
+	if(gpg("/home/vmiklos/.gnupg/pubring.gpg", "good/pacman-3.3.2.tar.gz.asc"))
 		printf("ok\n");
 	else
 		printf("failed\n");
-	if(gpg("/home/vmiklos/.gnupg/pubring.gpg", "jo/pacman-3.3.2.tar.gz.asc"))
+	if(gpg("/home/vmiklos/.gnupg/pubring.gpg", "bad/pacman-3.3.2.tar.gz.asc"))
 		printf("ok\n");
 	else
 		printf("failed\n");
