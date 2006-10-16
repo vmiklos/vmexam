@@ -5,8 +5,6 @@ what = "/usr/bin/pacman"
 alpm.initialize("/")
 db = alpm.db_register('local')
 
-lp = alpm.db_getpkgcache(db)
-
 i = alpm.db_getpkgcache(db)
 while i:
 	pkg = alpm.void_to_PM_PKG(alpm.list_getdata(i))
