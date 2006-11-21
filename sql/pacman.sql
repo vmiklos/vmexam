@@ -15,7 +15,7 @@ create table ct_local_depends
   package_id int(11) not null,
   depend_id int(11) not null,
   dtype tinyint(4) default null,
-  version tinyint(4) default null
+  version varchar(255) default null
 );
 
 create table ct_local_groups
@@ -45,7 +45,7 @@ create table ct_sync_depends
   package_id int(11) not null,
   depend_id int(11) not null,
   dtype tinyint(4) default null,
-  version tinyint(4) default null
+  version varchar(255) default null
 );
 
 create table ct_sync_groups
@@ -86,6 +86,7 @@ create table local_groups
 
 create table local_packages (
   id int(11) not null auto_increment,
+  pver varchar(255) not null,
   pdesc varchar(255) not null,
   url varchar(255) not null,
   license varchar(255) default null,
@@ -111,6 +112,7 @@ create table sync_groups
 create table sync_packages
 (
   id int(11) not null auto_increment,
+  pver varchar(255) not null,
   pdesc varchar(255) not null,
   arch varchar(255) not null,
   csize int(11) not null,
