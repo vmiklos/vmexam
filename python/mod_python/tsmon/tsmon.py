@@ -106,13 +106,16 @@ class NickChanges:
 		return rss.output()
 
 class TsMon:
-	def __init__(self, host, port, serverport, dumpfile, myurl, req):
+	def __init__(self, host, port, serverport, dumpfile, myurl):
+		self.host = host
+		self.myurl = myurl
 		try:
 			socket = open(dumpfile, "r")
 			changes = pickle.load(socket)
 			socket.close()
 		except IOError:
 			changes = NickChanges()
+		self.changes = changes
 
 		nicks = NickList(host, port, serverport)
 		joined, left = nicks.compare(changes.state)
@@ -128,10 +131,12 @@ class TsMon:
 		except IOError:
 			pass
 
-		return changes.torss(host, myurl, req)
+	def dorss(self, req):
+		return self.changes.torss(self.host, self.myurl, req)
 
 if __name__ == "tsmon":
 	def handler(req):
-		TsMon("awnet.hu", 51234, 8767,
+		mon = TsMon("awnet.hu", 51234, 8767,
 				"/home/vmiklos/public_html/tsmon/changes",
-				"http://frugalware.org/~vmiklos/tsmon", req)
+				"http://frugalware.org/~vmiklos/tsmon")
+		return mon.dorss(req)
