@@ -1,4 +1,4 @@
-from mod_python import apache
+from mod_python import apache, util
 
 class webgetopt:
 	"""
@@ -16,10 +16,9 @@ class webgetopt:
 		self.pathInfo = {}
 		self.pathInfoExtra = ""
 
-		try:
-			self.queryString = dict([i.split('=') for i in req.subprocess_env['QUERY_STRING'].split('&')])
-		except ValueError:
-			pass
+		form = util.FieldStorage(req)
+		for i in form.keys():
+			self.queryString[i] = form[i]
 		try:
 			list = req.subprocess_env['PATH_INFO'].strip('/').split('/')
 			try:
