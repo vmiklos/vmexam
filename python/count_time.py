@@ -40,7 +40,7 @@ total = 0
 for root, dirs, files in os.walk("."):
 	for file in files:
 		if re.sub(r'_[0-9]{8}.log', '', file) == sys.argv[1]:
-			total += countlog(file)
+			total += countlog(os.path.join(root, file))
 tv = time.gmtime(total)
 print "%d year(s), %d month(s), %d day(s), %d hour(s), %d minute(s) and %d second(s)" % (tv[0]-1970,
 		tv[1]-1, tv[2]-1, tv[3], tv[4], tv[5])
