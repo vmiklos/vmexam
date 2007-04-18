@@ -150,8 +150,8 @@ void PM_LIST_display(const char *title, PM_LIST *list)
 	printf("%s ", title);
 
 	if(list) {
-		for(lp = list, cols = len; lp; lp = alpm_list_next(lp)) {
-			int s = strlen(alpm_list_getdata(lp))+1;
+		for(lp = list, cols = len; lp; lp = pacman_list_next(lp)) {
+			int s = strlen(pacman_list_getdata(lp))+1;
 			if(s+cols >= maxcols) {
 				int i;
 				cols = len;
@@ -160,7 +160,7 @@ void PM_LIST_display(const char *title, PM_LIST *list)
 					printf(" ");
 				}
 			}
-			printf("%s ", (char *)alpm_list_getdata(lp));
+			printf("%s ", (char *)pacman_list_getdata(lp));
 			cols += s;
 		}
 		printf("\n");
@@ -182,8 +182,8 @@ list_t *PM_LIST_remove_dupes(PM_LIST *list)
 	PM_LIST *i;
 	list_t *newlist = NULL;
 
-	for(i = alpm_list_first(list); i; i = alpm_list_next(i)) {
-		char *data = alpm_list_getdata(i);
+	for(i = pacman_list_first(list); i; i = pacman_list_next(i)) {
+		char *data = pacman_list_getdata(i);
 		if(!list_is_strin(data, newlist)) {
 			newlist = list_add(newlist, strdup(data));
 		}

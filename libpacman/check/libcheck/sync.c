@@ -34,7 +34,7 @@
 #include <limits.h> /* PATH_MAX */
 #endif
 
-#include <alpm.h>
+#include <pacman.h>
 /* pacman */
 #include "util.h"
 #include "log.h"
@@ -57,8 +57,8 @@ static int sync_synctree(list_t *syncs)
 	list_t *i;
 	int success = 0, ret, oldrepos = 0;
 
-	alpm_get_option(PM_OPT_ROOT, (long *)&root);
-	alpm_get_option(PM_OPT_DBPATH, (long *)&dbpath);
+	pacman_get_option(PM_OPT_ROOT, (long *)&root);
+	pacman_get_option(PM_OPT_DBPATH, (long *)&dbpath);
 
 	for(i = syncs; i; i = i->next) {
 		list_t *files = NULL;
@@ -109,35 +109,35 @@ int pacman_sync(int mode)
 	/* open the database(s) */
 	for(i = pmc_syncs; i; i = i->next) {
 		sync_t *sync = i->data;
-		sync->db = alpm_db_register(sync->treename);
+		sync->db = pacman_db_register(sync->treename);
 		if(sync->db == NULL) {
-			ERR(NL, "%s\n", alpm_strerror(pm_errno));
+			ERR(NL, "%s\n", pacman_strerror(pm_errno));
 			return(-1);
 		}
 	}
 
 	if(!mode) {
 		/* grab a fresh package list */
-		alpm_logaction("synchronizing package lists");
+		pacman_logaction("synchronizing package lists");
 		return(sync_synctree(pmc_syncs));
 	}
 
 	/* Step 1: create a new transaction...
 	 */
-	if(alpm_trans_init(PM_TRANS_TYPE_SYNC, config->flags, cb_trans_evt, cb_trans_conv, cb_trans_progress) == -1) {
+	if(pacman_trans_init(PM_TRANS_TYPE_SYNC, config->flags, cb_trans_evt, cb_trans_conv, cb_trans_progress) == -1) {
 		return(-1);
 	}
 
-		alpm_logaction("starting full system upgrade");
-		if(alpm_trans_sysupgrade() == -1) {
-			ERR(NL, "%s\n", alpm_strerror(pm_errno));
-			alpm_trans_release();
+		pacman_logaction("starting full system upgrade");
+		if(pacman_trans_sysupgrade() == -1) {
+			ERR(NL, "%s\n", pacman_strerror(pm_errno));
+			pacman_trans_release();
 			return(-1);
 		}
 
-		data = alpm_trans_getinfo(PM_TRANS_PACKAGES);
-		retval = (alpm_list_count(data) > 0);
-		alpm_trans_release();
+		data = pacman_trans_getinfo(PM_TRANS_PACKAGES);
+		retval = (pacman_list_count(data) > 0);
+		pacman_trans_release();
 		return(retval);
 }
 

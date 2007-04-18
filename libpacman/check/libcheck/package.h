@@ -29,7 +29,7 @@ void dump_pkg_changelog(char *clfile, char *pkgname);
 
 int split_pkgname(char *target, char *name, char *version);
 
-#define FREEPKG(p) { alpm_pkg_free(p); p = NULL; }
+#define FREEPKG(p) { pacman_pkg_free(p); p = NULL; }
 
 #endif /* _PM_PACKAGE_H */
 

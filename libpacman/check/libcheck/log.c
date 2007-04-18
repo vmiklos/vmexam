@@ -25,7 +25,7 @@
 #include <ctype.h>
 #include <time.h>
 
-#include <alpm.h>
+#include <pacman.h>
 /* pacman */
 #include "log.h"
 #include "list.h"

@@ -24,7 +24,7 @@
 #include <string.h>
 #include <limits.h>
 
-#include <alpm.h>
+#include <pacman.h>
 /* pacman */
 #include "util.h"
 #include "log.h"
@@ -144,8 +144,8 @@ int parseconfig(char *file, config_t *config)
 					config->nopassiveftp = 1;
 					vprint("config: nopassiveftp\n");
 				} else if(!strcmp(key, "USESYSLOG")) {
-					if(alpm_set_option(PM_OPT_USESYSLOG, (long)1) == -1) {
-						ERR(NL, "failed to set option USESYSLOG (%s)\n", alpm_strerror(pm_errno));
+					if(pacman_set_option(PM_OPT_USESYSLOG, (long)1) == -1) {
+						ERR(NL, "failed to set option USESYSLOG (%s)\n", pacman_strerror(pm_errno));
 						return(1);
 					}
 					vprint("config: usesyslog\n");
@@ -168,16 +168,16 @@ int parseconfig(char *file, config_t *config)
 						char *q;
 						while((q = strchr(p, ' '))) {
 							*q = '\0';
-							if(alpm_set_option(PM_OPT_NOUPGRADE, (long)p) == -1) {
-								ERR(NL, "failed to set option NOUPGRADE (%s)\n", alpm_strerror(pm_errno));
+							if(pacman_set_option(PM_OPT_NOUPGRADE, (long)p) == -1) {
+								ERR(NL, "failed to set option NOUPGRADE (%s)\n", pacman_strerror(pm_errno));
 								return(1);
 							}
 							vprint("config: noupgrade: %s\n", p);
 							p = q;
 							p++;
 						}
-						if(alpm_set_option(PM_OPT_NOUPGRADE, (long)p) == -1) {
-							ERR(NL, "failed to set option NOUPGRADE (%s)\n", alpm_strerror(pm_errno));
+						if(pacman_set_option(PM_OPT_NOUPGRADE, (long)p) == -1) {
+							ERR(NL, "failed to set option NOUPGRADE (%s)\n", pacman_strerror(pm_errno));
 							return(1);
 						}
 						vprint("config: noupgrade: %s\n", p);
@@ -186,16 +186,16 @@ int parseconfig(char *file, config_t *config)
 						char *q;
 						while((q = strchr(p, ' '))) {
 							*q = '\0';
-							if(alpm_set_option(PM_OPT_NOEXTRACT, (long)p) == -1) {
-								ERR(NL, "failed to set option NOEXTRACT (%s)\n", alpm_strerror(pm_errno));
+							if(pacman_set_option(PM_OPT_NOEXTRACT, (long)p) == -1) {
+								ERR(NL, "failed to set option NOEXTRACT (%s)\n", pacman_strerror(pm_errno));
 								return(1);
 							}
 							vprint("config: noextract: %s\n", p);
 							p = q;
 							p++;
 						}
-						if(alpm_set_option(PM_OPT_NOEXTRACT, (long)p) == -1) {
-							ERR(NL, "failed to set option NOEXTRACT (%s)\n", alpm_strerror(pm_errno));
+						if(pacman_set_option(PM_OPT_NOEXTRACT, (long)p) == -1) {
+							ERR(NL, "failed to set option NOEXTRACT (%s)\n", pacman_strerror(pm_errno));
 							return(1);
 						}
 						vprint("config: noextract: %s\n", p);
@@ -204,16 +204,16 @@ int parseconfig(char *file, config_t *config)
 						char *q;
 						while((q = strchr(p, ' '))) {
 							*q = '\0';
-							if(alpm_set_option(PM_OPT_IGNOREPKG, (long)p) == -1) {
-								ERR(NL, "failed to set option IGNOREPKG (%s)\n", alpm_strerror(pm_errno));
+							if(pacman_set_option(PM_OPT_IGNOREPKG, (long)p) == -1) {
+								ERR(NL, "failed to set option IGNOREPKG (%s)\n", pacman_strerror(pm_errno));
 								return(1);
 							}
 							vprint("config: ignorepkg: %s\n", p);
 							p = q;
 							p++;
 						}
-						if(alpm_set_option(PM_OPT_IGNOREPKG, (long)p) == -1) {
-							ERR(NL, "failed to set option IGNOREPKG (%s)\n", alpm_strerror(pm_errno));
+						if(pacman_set_option(PM_OPT_IGNOREPKG, (long)p) == -1) {
+							ERR(NL, "failed to set option IGNOREPKG (%s)\n", pacman_strerror(pm_errno));
 							return(1);
 						}
 						vprint("config: ignorepkg: %s\n", p);
@@ -246,8 +246,8 @@ int parseconfig(char *file, config_t *config)
 						config->cachedir = strdup(ptr);
 						vprint("config: cachedir: %s\n", ptr);
 					} else if (!strcmp(key, "LOGFILE")) {
-						if(alpm_set_option(PM_OPT_LOGFILE, (long)ptr) == -1) {
-							ERR(NL, "failed to set option LOGFILE (%s)\n", alpm_strerror(pm_errno));
+						if(pacman_set_option(PM_OPT_LOGFILE, (long)ptr) == -1) {
+							ERR(NL, "failed to set option LOGFILE (%s)\n", pacman_strerror(pm_errno));
 							return(1);
 						}
 						vprint("config: log file: %s\n", ptr);
@@ -262,8 +262,8 @@ int parseconfig(char *file, config_t *config)
 					} else if (!strcmp(key, "UPGRADEDELAY")) {
 						/* The config value is in days, we use seconds */
 						vprint("config: UpgradeDelay: %i\n", (60*60*24) * atol(ptr));
-						if(alpm_set_option(PM_OPT_UPGRADEDELAY, (60*60*24) * atol(ptr)) == -1) {
-							ERR(NL, "failed to set option UPGRADEDELAY (%s)\n", alpm_strerror(pm_errno));
+						if(pacman_set_option(PM_OPT_UPGRADEDELAY, (60*60*24) * atol(ptr)) == -1) {
+							ERR(NL, "failed to set option UPGRADEDELAY (%s)\n", pacman_strerror(pm_errno));
 							return(1);
 						}
 						/* Warn when the delay is rather high (two months for now) */

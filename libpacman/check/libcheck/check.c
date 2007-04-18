@@ -37,7 +37,7 @@
 #include <mcheck.h> /* debug */
 #endif
 
-#include <alpm.h>
+#include <pacman.h>
 /* pacman */
 #include "list.h"
 #include "util.h"
@@ -71,8 +71,8 @@ void paccleanup(int signum)
 		fprintf(stderr, "\n");
 	}
 
-	/* free alpm library resources */
-	alpm_release();
+	/* free pacman library resources */
+	pacman_release();
 
 	/* free memory */
 	for(lp = pmc_syncs; lp; lp = lp->next) {
@@ -123,8 +123,8 @@ int paccheck(int mode)
 	}
 
 	/* initialize pm library */
-	if(alpm_initialize(config->root) == -1) {
-		ERR(NL, "failed to initilize alpm library (%s)\n", alpm_strerror(pm_errno));
+	if(pacman_initialize(config->root) == -1) {
+		ERR(NL, "failed to initilize pacman library (%s)\n", pacman_strerror(pm_errno));
 		paccleanup(1);
 	}
 
@@ -136,37 +136,37 @@ int paccheck(int mode)
 	}
 
 	/* set library parameters */
-	if(alpm_set_option(PM_OPT_LOGMASK, (long)config->debug) == -1) {
-		ERR(NL, "failed to set option LOGMASK (%s)\n", alpm_strerror(pm_errno));
+	if(pacman_set_option(PM_OPT_LOGMASK, (long)config->debug) == -1) {
+		ERR(NL, "failed to set option LOGMASK (%s)\n", pacman_strerror(pm_errno));
 		paccleanup(1);
 	}
-	if(alpm_set_option(PM_OPT_DBPATH, (long)config->dbpath) == -1) {
-		ERR(NL, "failed to set option DBPATH (%s)\n", alpm_strerror(pm_errno));
+	if(pacman_set_option(PM_OPT_DBPATH, (long)config->dbpath) == -1) {
+		ERR(NL, "failed to set option DBPATH (%s)\n", pacman_strerror(pm_errno));
 		paccleanup(1);
 	}
-	if(alpm_set_option(PM_OPT_CACHEDIR, (long)config->cachedir) == -1) {
-		ERR(NL, "failed to set option CACHEDIR (%s)\n", alpm_strerror(pm_errno));
+	if(pacman_set_option(PM_OPT_CACHEDIR, (long)config->cachedir) == -1) {
+		ERR(NL, "failed to set option CACHEDIR (%s)\n", pacman_strerror(pm_errno));
 		paccleanup(1);
 	}
 
 	for(lp = config->op_s_ignore; lp; lp = lp->next) {
-		if(alpm_set_option(PM_OPT_IGNOREPKG, (long)lp->data) == -1) {
-			ERR(NL, "failed to set option IGNOREPKG (%s)\n", alpm_strerror(pm_errno));
+		if(pacman_set_option(PM_OPT_IGNOREPKG, (long)lp->data) == -1) {
+			ERR(NL, "failed to set option IGNOREPKG (%s)\n", pacman_strerror(pm_errno));
 			paccleanup(1);
 		}
 	}
 	/* query dbpath */
-	alpm_get_option(PM_OPT_DBPATH, (long *)config->dbpath);
+	pacman_get_option(PM_OPT_DBPATH, (long *)config->dbpath);
 	
 	/* Opening local database */
-	db_local = alpm_db_register("local");
+	db_local = pacman_db_register("local");
 	if(db_local == NULL) {
-		ERR(NL, "could not register 'local' database (%s)\n", alpm_strerror(pm_errno));
+		ERR(NL, "could not register 'local' database (%s)\n", pacman_strerror(pm_errno));
 		paccleanup(1);
 	}
 
 	ret = pacman_sync(mode);
-	alpm_release();
+	pacman_release();
 	return(ret);
 }
 

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <alpm.h>
+#include <pacman.h>
 
 // callback to handle transaction events
 void event(unsigned char event, void *data1, void *data2)
@@ -9,7 +9,7 @@ void event(unsigned char event, void *data1, void *data2)
 	{
 		case PM_TRANS_EVT_REMOVE_START:
 			printf("removing %s... ",
-				(char *)alpm_pkg_getinfo(data1, PM_PKG_NAME));
+				(char *)pacman_pkg_getinfo(data1, PM_PKG_NAME));
 			fflush(stdout);
 			break;
 		case PM_TRANS_EVT_REMOVE_DONE:
@@ -20,8 +20,8 @@ void event(unsigned char event, void *data1, void *data2)
 
 void cleanup(int ret)
 {
-	alpm_trans_release();
-	alpm_release();
+	pacman_trans_release();
+	pacman_release();
 	exit(ret);
 }
 
@@ -36,63 +36,63 @@ int main(int argc, char **argv)
 		return(0);
 	}
 
-	if(alpm_initialize("/") == -1)
+	if(pacman_initialize("/") == -1)
 	{
 		fprintf(stderr, "failed to initilize alpm library (%s)\n",
-			alpm_strerror(pm_errno));
+			pacman_strerror(pm_errno));
 		return(1);
 	}
-	if(alpm_set_option(PM_OPT_DBPATH, (long)PM_DBPATH) == -1)
+	if(pacman_set_option(PM_OPT_DBPATH, (long)PM_DBPATH) == -1)
 	{
 		fprintf(stderr, "failed to set option DBPATH (%s)\n",
-			alpm_strerror(pm_errno));
+			pacman_strerror(pm_errno));
 		cleanup(1);
 	}
 
-	db_local = alpm_db_register("local");
+	db_local = pacman_db_register("local");
 	if(db_local == NULL)
 	{
 		fprintf(stderr, "could not register 'local' database (%s)\n",
-			alpm_strerror(pm_errno));
+			pacman_strerror(pm_errno));
 		return(1);
 	}
 
-	if(alpm_trans_init(PM_TRANS_TYPE_REMOVE, 0, event, NULL, NULL) == -1)
+	if(pacman_trans_init(PM_TRANS_TYPE_REMOVE, 0, event, NULL, NULL) == -1)
 	{
 		fprintf(stderr, "failed to init transaction (%s)\n",
-			alpm_strerror(pm_errno));
+			pacman_strerror(pm_errno));
 		cleanup(1);
 	}
-	if(alpm_trans_addtarget(argv[1]) == -1)
+	if(pacman_trans_addtarget(argv[1]) == -1)
 	{
 		fprintf(stderr, "failed to add target '%s' (%s)\n",
-			argv[1], alpm_strerror(pm_errno));
+			argv[1], pacman_strerror(pm_errno));
 		cleanup(1);
 	}
-	if(alpm_trans_prepare(&data) == -1)
+	if(pacman_trans_prepare(&data) == -1)
 	{
 		PM_LIST *lp;
 		fprintf(stderr, "failed to prepare transaction (%s)\n",
-			alpm_strerror(pm_errno));
+			pacman_strerror(pm_errno));
 		switch(pm_errno)
 		{
 			case PM_ERR_UNSATISFIED_DEPS:
-				for(lp = alpm_list_first(data); lp; lp = alpm_list_next(lp))
+				for(lp = pacman_list_first(data); lp; lp = pacman_list_next(lp))
 				{
-					PM_DEPMISS *miss = alpm_list_getdata(lp);
-					printf("\t%s: is required by %s\n", (char*)alpm_dep_getinfo(miss, PM_DEP_TARGET), (char*)alpm_dep_getinfo(miss, PM_DEP_NAME));
+					PM_DEPMISS *miss = pacman_list_getdata(lp);
+					printf("\t%s: is required by %s\n", (char*)pacman_dep_getinfo(miss, PM_DEP_TARGET), (char*)pacman_dep_getinfo(miss, PM_DEP_NAME));
 				}
-				alpm_list_free(data);
+				pacman_list_free(data);
 				break;
 			default:
 				break;
 		}
 		cleanup(1);
 	}
-	if(alpm_trans_commit(NULL) == -1)
+	if(pacman_trans_commit(NULL) == -1)
 	{
 		fprintf(stderr, "failed to commit transaction (%s)\n",
-			alpm_strerror(pm_errno));
+			pacman_strerror(pm_errno));
 		cleanup(1);
 	}
 	cleanup(0);

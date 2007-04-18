@@ -1,5 +1,5 @@
 CFLAGS += -D_GNU_SOURCE -Ilibftp -Ilibcheck
-LDFLAGS += -Llibcheck -lcheck -lalpm -Llibftp -lftp
+LDFLAGS += -Llibcheck -lcheck -lpacman -Llibftp -lftp
 
 main: libftp.a libcheck.a
 	$(CC) $(CFLAGS) -o main main.c $(LDFLAGS)

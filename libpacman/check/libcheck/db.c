@@ -31,7 +31,7 @@
 #include <unistd.h>
 #include <dirent.h>
 
-#include <alpm.h>
+#include <pacman.h>
 /* pacman */
 #include "util.h"
 #include "list.h"
@@ -54,9 +54,9 @@ int db_getlastupdate(PM_DB *db, char *ts)
 		return(-1);
 	}
 
-	alpm_get_option(PM_OPT_ROOT, (long *)&root);
-	alpm_get_option(PM_OPT_DBPATH, (long *)&dbpath);
-	treename = alpm_db_getinfo(db, PM_DB_TREENAME);
+	pacman_get_option(PM_OPT_ROOT, (long *)&root);
+	pacman_get_option(PM_OPT_DBPATH, (long *)&dbpath);
+	treename = pacman_db_getinfo(db, PM_DB_TREENAME);
 	snprintf(file, PATH_MAX, "%s%s/%s/.lastupdate", root, dbpath, treename);
 
 	/* get the last update time, if it's there */
@@ -88,9 +88,9 @@ int db_setlastupdate(PM_DB *db, char *ts)
 		return(-1);
 	}
 
-	alpm_get_option(PM_OPT_ROOT, (long *)&root);
-	alpm_get_option(PM_OPT_DBPATH, (long *)&dbpath);
-	treename = alpm_db_getinfo(db, PM_DB_TREENAME);
+	pacman_get_option(PM_OPT_ROOT, (long *)&root);
+	pacman_get_option(PM_OPT_DBPATH, (long *)&dbpath);
+	treename = pacman_db_getinfo(db, PM_DB_TREENAME);
 	snprintf(file, PATH_MAX, "%s%s/%s/.lastupdate", root, dbpath, treename);
 
 	if((fp = fopen(file, "w")) == NULL) {
@@ -123,14 +123,14 @@ int db_search(PM_DB *db, const char *treename, list_t *needles)
 		}
 		targ = strdup(i->data);
 
-		for(j = alpm_db_getpkgcache(db); j; j = alpm_list_next(j)) {
-			PM_PKG *pkg = alpm_list_getdata(j);
+		for(j = pacman_db_getpkgcache(db); j; j = pacman_list_next(j)) {
+			PM_PKG *pkg = pacman_list_getdata(j);
 			char *haystack;
 			char *pkgname, *pkgdesc;
 			int match = 0;
 
-			pkgname = alpm_pkg_getinfo(pkg, PM_PKG_NAME);
-			pkgdesc = alpm_pkg_getinfo(pkg, PM_PKG_DESC);
+			pkgname = pacman_pkg_getinfo(pkg, PM_PKG_NAME);
+			pkgdesc = pacman_pkg_getinfo(pkg, PM_PKG_DESC);
 
 			/* check name */
 			haystack = strdup(pkgname);
@@ -162,8 +162,8 @@ int db_search(PM_DB *db, const char *treename, list_t *needles)
 			if(!match) {
 				PM_LIST *m;
 
-				for(m = alpm_pkg_getinfo(pkg, PM_PKG_PROVIDES); m; m = alpm_list_next(m)) {
-					haystack = strdup(alpm_list_getdata(m));
+				for(m = pacman_pkg_getinfo(pkg, PM_PKG_PROVIDES); m; m = pacman_list_next(m)) {
+					haystack = strdup(pacman_list_getdata(m));
 					ret = reg_match(haystack, targ);
 					if(ret < 0) {
 						/* bad regexp */
@@ -177,7 +177,7 @@ int db_search(PM_DB *db, const char *treename, list_t *needles)
 			}
 
 			if(match) {
-				printf("%s/%s %s\n    ", treename, pkgname, (char *)alpm_pkg_getinfo(pkg, PM_PKG_VERSION));
+				printf("%s/%s %s\n    ", treename, pkgname, (char *)pacman_pkg_getinfo(pkg, PM_PKG_VERSION));
 				indentprint(pkgdesc, 4);
 				printf("\n");
 			}

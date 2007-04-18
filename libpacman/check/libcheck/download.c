@@ -29,7 +29,7 @@
 #include <sys/time.h>
 #include <ftplib.h>
 
-#include <alpm.h>
+#include <pacman.h>
 /* pacman */
 #include "util.h"
 #include "log.h"

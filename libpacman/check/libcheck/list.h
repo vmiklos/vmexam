@@ -21,7 +21,7 @@
 #ifndef _PM_LIST_H
 #define _PM_LIST_H
 
-#include <alpm.h>
+#include <pacman.h>
 
 /* Chained list struct */
 typedef struct __list_t {
