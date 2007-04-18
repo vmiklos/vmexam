@@ -1,0 +1,5 @@
+AddHandler mod_python .py
+PythonHandler cache
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !^/~vmiklos/cache/cache.py
+RewriteRule (.*) /~vmiklos/cache/cache.py/$1
