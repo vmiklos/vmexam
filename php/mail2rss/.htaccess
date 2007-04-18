@@ -1,0 +1,5 @@
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !^/~vmiklos/mail2rss/_darcs/
+RewriteCond %{REQUEST_URI} !^/~vmiklos/mail2rss/index.php
+RewriteCond %{REQUEST_URI} !^/~vmiklos/mail2rss/index.phps
+RewriteRule (.*) /~vmiklos/mail2rss/index.php/$1
