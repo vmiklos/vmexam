@@ -1,0 +1,4 @@
+#AddHandler mod_python .py
+#PythonHandler pyrssi
+Options +ExecCGI
+AddHandler cgi-script .py
