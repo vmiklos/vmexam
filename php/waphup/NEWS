@@ -1,0 +1,14 @@
+VERZIO          LEIRAS
+-----------------------------------------------------------------------------
+1.1.0         - bugfix: blogok kezelese
+              - comment support (Elbandi patche alapjan)
+              - pointer linkek a cikkek aljan
+1.0.0         - elvileg tud mindent amit a regi wap.hup.hu
+              - belso hivatkozasok kezelese: tehat ha az egyik cikkben egy
+                hupos cikk a link, akkor azt a normalis wapos feluleten
+                keresztul erheted el
+              - mivel a telefonok joval kevesbe turik a hibas szintaxist
+                mint a bongeszok, egy tidy szuron megy keresztul egy cikk
+                a megjelenites elott
+              - a kulso linkekre a Google wmlproxyjat hivja meg, így
+                tobbe-kevesbe a kulso hivatkozasok is elvezetoek

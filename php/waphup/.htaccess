@@ -1,0 +1,4 @@
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !^/~vmiklos/waphup/_darcs/
+RewriteCond %{REQUEST_URI} !^/~vmiklos/waphup/index.php
+RewriteRule (.*) /~vmiklos/waphup/index.php/$1
