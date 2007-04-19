@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# Copyright (c) 2006 Miklos Vajna
+# Copyright (c) 2006 Don Stewart - http://www.cse.unsw.edu.au/~dons
+# GPL version 2 or later (see http://www.gnu.org/copyleft/gpl.html)
+
+#
+# spam-graph
+#
+# graph the activity of a spam filter
+#
+# requires 'gnuplot'
+#
+
+set -e
+
+if [ $# -lt 3 ]; then
+	echo "usage: $0 infile.lst outfile.png desc"
+fi
+
+spam=$1
+output=$2
+desc=$3
+user=`whoami`
+data=`mktemp`
+
+# read the spamfile, extracting just the year/month/day numbers
+for i in `uniq $spam`; do echo "$i `grep -c $i $spam`"; done >$data
+
+daynum=`echo "($(date +%s -d $(tail -n 1 $spam))-$(date +%s -d $(head -n 1 $spam)))/86400"|bc`
+av=`echo "scale=2;$(wc -l $spam|sed 's/ .*//')/$daynum" |bc|sed 's/^\./0./'`
+
+# now plot
+echo -e 'set xdata time                       \n\
+set format x"%y%m%d"                          \n\
+set timefmt "%y%m%d"                          \n\
+set yrange [*:*]                              \n\
+set title "avarage number / day: '$av'        \n\
+unset key                                     \n\
+set ylabel "'$desc' for '$user' per day"      \n\
+set terminal png                              \n\
+set output "'$output'"                        \n\
+plot "'$data'" using 1:2 with impulses' |\
+gnuplot
+
+rm -f $data
