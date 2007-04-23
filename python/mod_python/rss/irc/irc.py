@@ -22,6 +22,31 @@ class Quote:
 			return 0
 		else:
 			return 1
+	def getlist():
+		ignores = []
+		quotes = []
+		sock = open(os.path.join(quotepath, ".htaccess"))
+		for i in sock.readlines():
+			if i.startswith("IndexIgnore"):
+				ignores.append(i.strip("IndexIgnore ").replace("*", ".*").strip())
+		sock.close
+
+		for root, dirs, files in os.walk(quotepath):
+			for file in files:
+				if not file.startswith("."):
+					ignore = False
+					for i in ignores:
+						if re.match(i, file):
+							ignore = True
+							break
+					if not ignore:
+						quotes.append(Quote(root, file))
+
+		quotes.sort(quotes[0].compare)
+		quotes = quotes[:10]
+		return quotes
+	getlist = staticmethod(getlist)
+
 
 class Rss:
 	def __init__(self, req, title, link, desc):
@@ -50,33 +75,8 @@ class Rss:
 		self.req.write("</channel>\n</rss>")
 		return apache.OK
 
-def getquotes():
-	ignores = []
-	quotes = []
-	sock = open(os.path.join(quotepath, ".htaccess"))
-	for i in sock.readlines():
-		if i.startswith("IndexIgnore"):
-			ignores.append(i.strip("IndexIgnore ").replace("*", ".*").strip())
-	sock.close
-
-	for root, dirs, files in os.walk(quotepath):
-		for file in files:
-			if not file.startswith("."):
-				ignore = False
-				for i in ignores:
-					if re.match(i, file):
-						ignore = True
-						break
-				if not ignore:
-					quotes.append(Quote(root, file))
-
-	quotes.sort(quotes[0].compare)
-	quotes = quotes[:10]
-	return quotes
-
 def handler(req):
-	quotes = getquotes()
 	rss = Rss(req, "~/vmiklos/rss/irc", quoteurl, "VMiklos' IRC Quotes RSS")
-	for i in getquotes():
+	for i in Quote.getlist():
 		rss.additem(i.title, "%s/%s" % (quoteurl, i.filename), escape(i.content), formatdate(i.time, True))
 	return rss.output()
