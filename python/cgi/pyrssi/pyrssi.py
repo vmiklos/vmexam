@@ -162,7 +162,7 @@ class Pyrssi:
 		<go method="post" href="pyrssi.py">
 		<postfield name="action" value="windowlist"/>
 		</go>
-		</anchor><br />"""
+		</anchor>"""
 	def __dumplogout(self):
 		print """
 		<anchor>[logout]
