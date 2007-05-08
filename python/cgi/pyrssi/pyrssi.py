@@ -8,7 +8,7 @@ last = None
 class Pyrssi:
 	def __init__(self):
 		self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-		self.sock.connect(("/tmp/irssi_socket"))
+		self.sock.connect("/home/vmiklos/.irssi/socket")
 
 	def send(self, what = "hm from irssi-cmd.py"):
 		try:
