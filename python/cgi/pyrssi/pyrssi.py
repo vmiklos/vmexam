@@ -80,7 +80,10 @@ class Pyrssi:
 
 	def __send(self, what):
 		if len(what):
-			ret = self.sock.send("command msg -%s %s %s" % (self.network, self.channel, what))
+			if what.startswith("/"):
+				ret = self.sock.send("command %s -%s %s" % (what, self.network, self.channel))
+			else:
+				ret = self.sock.send("command msg -%s %s %s" % (self.network, self.channel, what))
 			time.sleep(0.5)
 		return ret
 
