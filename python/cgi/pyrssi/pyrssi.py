@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import cgitb, cgi, re, socket, os, time, Cookie, sha, sys, urllib
+from distutils import sysconfig
 
 cgitb.enable()
 last = None
@@ -45,12 +46,23 @@ class Pyrssi:
 			self.__dumplogin()
 		elif "pyrssi_channel" not in self.cookie.keys():
 			self.__dumpwindowlist()
-			self.__dumplogout()
+			self.__sysinfo()
 		else:
 			self.__dumpform()
 			self.__dumplastlines()
-			self.__dumplogout()
+		self.__dumplogout()
 		self.__dumpfooter()
+
+	def __sysinfo(self):
+		print "Powered by: "
+		try:
+			os.stat("/etc/frugalware-release")
+			distro = "Frugalware"
+		except OSError:
+			distro = "Unknown"
+		print "Python v%s - running on %s %s %s" % (sysconfig.get_python_version(),
+				distro, os.uname()[0], os.uname()[2])
+		print "<br />"
 
 	def __handlecookies(self):
 		# see if we should set cookies
