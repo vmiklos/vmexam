@@ -157,13 +157,13 @@ class Pyrssi:
 		<postfield name="action" value="msg"/>
 		</go>
 		</anchor>"""
-	def __dumplogout(self):
 		print """
 		<anchor>[windowlist]
 		<go method="post" href="pyrssi.py">
 		<postfield name="action" value="windowlist"/>
 		</go>
 		</anchor><br />"""
+	def __dumplogout(self):
 		print """
 		<anchor>[logout]
 		<go method="post" href="pyrssi.py">
