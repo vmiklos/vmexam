@@ -8,7 +8,8 @@ last = None
 class Pyrssi:
 	def __init__(self):
 		self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-		self.sock.connect("/home/vmiklos/.irssi/socket")
+		self.sock_path = "/home/vmiklos/.irssi/socket"
+		self.sock.connect(self.sock_path)
 		self.year = 60*60*24*365
 
 	def send(self, what = "hm from irssi-cmd.py"):
@@ -20,6 +21,10 @@ class Pyrssi:
 			self.network = self.cookie['pyrssi_network'].value
 		else:
 			self.network = None
+		if 'pyrssi_refnum' in self.cookie.keys():
+			self.refnum = self.cookie['pyrssi_refnum'].value
+		else:
+			self.refnum = None
 		if 'pyrssi_channel' in self.cookie.keys():
 			self.channel = self.cookie['pyrssi_channel'].value
 		else:
@@ -68,9 +73,12 @@ class Pyrssi:
 			self.cookie['pyrssi_channel']['max-age'] = self.year
 			self.cookie['pyrssi_network'] = self.form['network'].value
 			self.cookie['pyrssi_network']['max-age'] = self.year
+			self.cookie['pyrssi_refnum'] = self.form['refnum'].value
+			self.cookie['pyrssi_refnum']['max-age'] = self.year
 			print self.cookie
 			self.channel = self.form['window'].value.lower()
 			self.network = self.form['network'].value
+			self.refnum = self.form['refnum'].value
 
 		if "action" in self.form.keys() and self.form['action'].value == "windowlist":
 			if 'pyrssi_channel' in self.cookie.keys():
@@ -79,11 +87,12 @@ class Pyrssi:
 				del self.cookie['pyrssi_channel']
 
 	def __send(self, what):
+		ret = 0
 		if len(what):
-			if what.startswith("/"):
-				ret = self.sock.send("command %s -%s %s" % (what, self.network, self.channel))
-			else:
-				ret = self.sock.send("command msg -%s %s %s" % (self.network, self.channel, what))
+			ret += self.sock.send("switch %s" % self.refnum)
+			self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+			self.sock.connect(self.sock_path)
+			ret += self.sock.send("send %s" % what)
 			time.sleep(0.5)
 		return ret
 
@@ -136,9 +145,10 @@ class Pyrssi:
 		</anchor>"""
 	def __dumpwindowlist(self):
 		for i in self.__recv("windowlist").split("\n"):
+			refnum = re.sub(r'(.*): .*', r'\1', i)
 			window = re.sub(r'.*: (.*) \(.*', r'\1', i)
 			network = re.sub(r'.* \((.*)\).*', r'\1', i)
-			print """<a href="pyrssi.py?action=windowselect&amp;window=%s&amp;network=%s">%s</a><br />""" % (urllib.pathname2url(window), network, cgi.escape(window))
+			print """<a href="pyrssi.py?action=windowselect&amp;refnum=%s&amp;window=%s&amp;network=%s">%s</a><br />""" % (refnum, urllib.pathname2url(window), network, cgi.escape(window))
 	def __dumpform(self):
 		print """<input type="text" name="msg" value="" /><br/>
 		<anchor>[send]
