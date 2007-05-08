@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import cgitb, cgi, re, socket, os, time, Cookie, sha, sys
+import cgitb, cgi, re, socket, os, time, Cookie, sha, sys, urllib
 
 cgitb.enable()
 last = None
@@ -9,6 +9,7 @@ class Pyrssi:
 	def __init__(self):
 		self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 		self.sock.connect("/home/vmiklos/.irssi/socket")
+		self.year = 60*60*24*365
 
 	def send(self, what = "hm from irssi-cmd.py"):
 		try:
@@ -37,6 +38,9 @@ class Pyrssi:
 		self.__dumpheader()
 		if "pyrssi_pass" not in self.cookie.keys():
 			self.__dumplogin()
+		elif "pyrssi_channel" not in self.cookie.keys():
+			self.__dumpwindowlist()
+			self.__dumplogout()
 		else:
 			self.__dumpform()
 			self.__dumplastlines()
@@ -49,32 +53,40 @@ class Pyrssi:
 			# foo for now
 			if sha.sha(self.form['pass'].value).hexdigest() != '502b57ea9f1d731a9a63cb16b6aeb3358a8973d1':
 				sys.exit(0)
-			year = 60*60*24*365
 			self.cookie = Cookie.SimpleCookie()
 			self.cookie['pyrssi_pass'] = self.form['pass'].value
-			self.cookie['pyrssi_pass']['max-age'] = year
-			self.cookie['pyrssi_network'] = self.form['network'].value
-			self.cookie['pyrssi_network']['max-age'] = year
-			self.cookie['pyrssi_channel'] = self.form['channel'].value
-			self.cookie['pyrssi_channel']['max-age'] = year
+			self.cookie['pyrssi_pass']['max-age'] = self.year
 			print self.cookie
-			if not self.network:
-				self.network = self.form['network'].value
-			if not self.channel:
-				self.channel = self.form['channel'].value
 
 		if "action" in self.form.keys() and self.form['action'].value == "logout":
 			self.cookie['pyrssi_pass']['max-age'] = 0
-			self.cookie['pyrssi_network']['max-age'] = 0
-			self.cookie['pyrssi_channel']['max-age'] = 0
 			print self.cookie
 			self.cookie = {}
+
+		if "action" in self.form.keys() and self.form['action'].value == "windowselect":
+			self.cookie['pyrssi_channel'] = self.form['window'].value.lower()
+			self.cookie['pyrssi_channel']['max-age'] = self.year
+			self.cookie['pyrssi_network'] = self.form['network'].value
+			self.cookie['pyrssi_network']['max-age'] = self.year
+			print self.cookie
+			self.channel = self.form['window'].value.lower()
+			self.network = self.form['network'].value
+
+		if "action" in self.form.keys() and self.form['action'].value == "windowlist":
+			if 'pyrssi_channel' in self.cookie.keys():
+				self.cookie['pyrssi_channel']['max-age'] = 0
+				print self.cookie
+				del self.cookie['pyrssi_channel']
 
 	def __send(self, what):
 		if len(what):
 			ret = self.sock.send("command msg -%s %s %s" % (self.network, self.channel, what))
 			time.sleep(0.5)
 		return ret
+
+	def __recv(self, what):
+		self.sock.send(what)
+		return self.sock.recv(4096)
 
 	def __getlastfile(self):
 		last = None
@@ -90,11 +102,12 @@ class Pyrssi:
 
 	def __getlastlines(self):
 		ret = []
-		sock = open(os.path.join(self.logpath, time.strftime("%Y"), self.last))
-		buf = sock.read()
-		for i in buf.split("\n")[-40:]:
-			if not re.match(r"^--- Log", i):
-				ret.append(i)
+		if self.last:
+			sock = open(os.path.join(self.logpath, time.strftime("%Y"), self.last))
+			buf = sock.read()
+			for i in buf.split("\n")[-40:]:
+				if not re.match(r"^--- Log", i):
+					ret.append(i)
 		return ret
 
 	def __dumpheader(self):
@@ -112,16 +125,17 @@ class Pyrssi:
 	def __dumplogin(self):
 		print """
 		password: <input type="password" name="pass" value="" /><br/>
-		network: <input type="text" name="network" value="" /><br/>
-		channel: <input type="text" name="channel" value="" /><br/>
 		<anchor>[login]
 		<go method="post" href="pyrssi.py">
 		<postfield name="pass" value="$(pass)"/>
-		<postfield name="network" value="$(network)"/>
-		<postfield name="channel" value="$(channel)"/>
 		<postfield name="action" value="login"/>
 		</go>
 		</anchor>"""
+	def __dumpwindowlist(self):
+		for i in self.__recv("windowlist").split("\n"):
+			window = re.sub(r'.*: (.*) \(.*', r'\1', i)
+			network = re.sub(r'.* \((.*)\).*', r'\1', i)
+			print """<a href="pyrssi.py?action=windowselect&amp;window=%s&amp;network=%s">%s</a><br />""" % (urllib.pathname2url(window), network, cgi.escape(window))
 	def __dumpform(self):
 		print """<input type="text" name="msg" value="" /><br/>
 		<anchor>[send]
@@ -132,11 +146,18 @@ class Pyrssi:
 		</anchor>"""
 	def __dumplogout(self):
 		print """
+		<anchor>[windowlist]
+		<go method="post" href="pyrssi.py">
+		<postfield name="action" value="windowlist"/>
+		</go>
+		</anchor><br />"""
+		print """
 		<anchor>[logout]
 		<go method="post" href="pyrssi.py">
 		<postfield name="action" value="logout"/>
 		</go>
-		</anchor><br />"""
+		</anchor>
+		<br />"""
 
 	def __dumpfooter(self):
 		print """</p>
