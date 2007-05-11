@@ -1,0 +1,39 @@
+body #main{
+	display: table;
+	width: 100%;
+}
+
+body #main > *{
+	display: table-cell;
+}
+
+.header {
+	background-color: #e2e5ff;
+	border: 1px solid #204bac;
+	padding: 7px;
+	width: 98%;
+}
+
+.sideboxpadding {
+	background-color: #e2e5ff;
+	border: 1px solid #204bac;
+	padding: 7px;
+	width: 33%;
+}
+
+.dummybox {
+	width: 6px;
+	height: 6px;
+}
+
+.boxheader {
+	color: #204bac;
+	font-size: 1.3em;
+	text-align: left;
+	background-color: transparent;
+}
+
+.boxcontent {
+	background-color: #fff;
+	color: #000;
+}
