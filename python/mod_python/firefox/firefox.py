@@ -32,7 +32,7 @@ def dumpfeed(url):
 	if url in feeds.keys():
 		feed = feeds[url]
 		# check if the feed is outdated
-		if (time.time() - feed.updated) > 300:
+		if (time.time() - feed.updated) > 1800:
 			feed = fetchfeed(url)
 	else:
 		feed = fetchfeed(url)
@@ -68,7 +68,7 @@ if __name__ == "firefox":
 		""")
 		req.write(dumpfeed("http://feeds.feedburner.com/HUP"))
 		req.write(dumpfeed("http://frugalware.org/~vmiklos/rss/irc/irc.py"))
-		req.write(dumpfeed("http://www.archlinux.org/feeds/news/"))
+		req.write(dumpfeed("http://rss.slashdot.org/Slashdot/slashdot"))
 		req.write("""
 		</div>
 		</body>
