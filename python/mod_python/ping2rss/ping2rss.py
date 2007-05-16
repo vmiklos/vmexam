@@ -11,7 +11,7 @@ from email.Utils import formatdate
 import pickle, telnetlib, time, os, sys
 
 def ping(host, timeout = 1):
-	cmd = "ping -c 1 -W %d %s >/dev/null" % (timeout, host)
+	cmd = "ping -c 5 -W %d %s >/dev/null" % (timeout, host)
 	return not os.system(cmd)
 
 class Rss:
