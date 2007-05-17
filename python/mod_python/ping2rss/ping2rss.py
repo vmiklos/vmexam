@@ -8,11 +8,18 @@ __license__ = "GPL"
 
 from mod_python import apache
 from email.Utils import formatdate
-import pickle, telnetlib, time, os, sys
+import pickle, telnetlib, time, os, sys, re
 
 def ping(host, timeout = 1):
-	cmd = "ping -c 5 -W %d %s >/dev/null" % (timeout, host)
-	return not os.system(cmd)
+	sock = os.popen("ping -c 5 -W %d %s" % (timeout, host))
+	for i in sock.readlines():
+		if re.match(".*packets transmitted", i):
+			percent = re.sub(r'.*received, (.*)% packet.*', r'\1', i.strip())
+			break
+	if int(percent) > 40:
+		return False
+	else:
+		return True
 
 class Rss:
 	def __init__(self, req, title, link, desc):
