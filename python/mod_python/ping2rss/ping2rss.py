@@ -136,7 +136,7 @@ class HostMon:
 def handler(req):
 	mon = HostMon({"factory":"factory.frugalware.org",
 		"helicon":"helicon.frugalware.org",
-		"bugs":"frgualware.hu",
+		"bugs":"frugalware.hu",
 		"wiki":"linuxforum.hu"},
 		"/home/vmiklos/public_html/ping2rss/changes",
 		"http://frugalware.org/~vmiklos/ping2rss")
