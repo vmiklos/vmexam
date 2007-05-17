@@ -37,7 +37,6 @@ def dumpfeed(url):
 	else:
 		feed = fetchfeed(url)
 	ret.append('<div id="right" class="sideboxpadding">')
-	#ret.append('<div class="boxheader"><a href="%s">%s</a><br /></div>' % (feed.feed.link, feed.feed.title.encode('ascii', 'xmlcharrefreplace')))
 	ret.append('<div class="boxheader">%s<br /></div>' % (feed.feed.title.encode('ascii', 'xmlcharrefreplace')))
 	ret.append('<div class="sidecontent">')
 	for i in feed.entries:
