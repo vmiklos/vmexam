@@ -48,8 +48,10 @@ def dumpfeed(url):
 
 if __name__ == "firefox":
 	def handler(req):
+		out = []
+
 		req.content_type = "text/html; charset=utf-8"
-		req.write("""
+		out.append("""
 		<html>
 		<head>
 		<link rel="stylesheet" type="text/css" href="firefox.css" />
@@ -59,19 +61,20 @@ if __name__ == "firefox":
 		<div class="header">
 		<a href="http://frugalware.org/">frugalware</a> |
 		<a href="http://openblog.hu/vmiklos">blog</a> |
-		<a href="http://bugs.frugalware.org/index.php?dev=vmiklos">my tasks</a> |
+		<a href="http://bugs.frugalware.org/?dev=vmiklos">my tasks</a> |
 		<a href="http://bugs.frugalware.org/?string=[SEC]">sec tasks</a>
 		</div>
 		<div class="dummybox"></div>
 		<div id="main">
 		""")
-		req.write(dumpfeed("http://feeds.feedburner.com/HUP"))
-		req.write(dumpfeed("http://frugalware.org/~vmiklos/rss/irc/irc.py"))
-		req.write(dumpfeed("http://rss.slashdot.org/Slashdot/slashdot"))
-		req.write("""
+		out.append(dumpfeed("http://feeds.feedburner.com/HUP"))
+		out.append(dumpfeed("http://frugalware.org/~vmiklos/rss/irc/irc.py"))
+		out.append(dumpfeed("http://rss.slashdot.org/Slashdot/slashdot"))
+		out.append("""
 		</div>
 		</body>
 		</html>
 		""")
+		req.write("".join(out))
 		dumpcache()
 		return apache.OK
