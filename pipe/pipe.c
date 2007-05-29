@@ -65,10 +65,15 @@ int main(int argc, char **argv)
 
 	fprintf(pin, "2+2\n");
 	fclose(pin);
-	fgets(buf, 255, pout);
+
+	while(!feof(pout))
+	{
+		fgets(buf, 255, pout);
+		printf("%s", buf);
+		buf[0] = '\0';
+	}
 	fclose(pout);
 
-	printf("res: '%s'\n", buf);
 	return(0);
 }
 
