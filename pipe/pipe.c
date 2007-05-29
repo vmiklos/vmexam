@@ -6,16 +6,14 @@
 
 // some ides from William C. Benton, http://www.cs.wisc.edu/~willb/537/pipe.c
 
-int main(int argc, char *argv[])
+int popen2(char **args, FILE **fpin, FILE **fpout)
 {
 	/* first, create the pipe, fds[0] is the read end of pipe, fds[1]
 	 * is the write end of pipe. 
 	 */
 	int pin[2], pout[2];
-	char buf[256];
 	char *ptr;
 	int i;
-	FILE *fp;
 	pipe(pin);
 	pipe(pout);
 
@@ -37,7 +35,6 @@ int main(int argc, char *argv[])
 		close(pout[1]);                /* don't need this after dup2 */
 		close(pout[0]);
 
-		char *const args[] = { "/usr/bin/bc", NULL };
 		execv(args[0], args);
 		_exit(EXIT_FAILURE);  /* on sucess, execv never returns */
 	}
@@ -47,20 +44,27 @@ int main(int argc, char *argv[])
 	 * why? what happens if the parent does not close them?). 
 	 */
 	close(pin[0]);
-	fp = fdopen(pin[1], "w");
-	fprintf(fp, "2+2\n");
-	fclose(fp);
 	close(pout[1]);
-	fp = fdopen(pout[0], "r");
-	fgets(buf, 255, fp);
-	fclose(fp);
-
-	/* wait for the two children we forked */
-	wait(NULL);
-
-	printf("res: '%s'\n", buf);
-
+	*fpin = fdopen(pin[1], "w");
+	*fpout = fdopen(pout[0], "r");
 	/* do you think it matters what order the children were forked? */
 
 	return 0;
 }
+
+int main(int argc, char **argv)
+{
+	FILE *pin, *pout;
+	char buf[256];
+	char *args[] = { "/usr/bin/bc", NULL };
+
+	popen2(args, &pin, &pout);
+
+	fprintf(pin, "2+2\n");
+	fclose(pin);
+	fgets(buf, 255, pout);
+	fclose(pout);
+
+	printf("res: '%s'\n", buf);
+}
+

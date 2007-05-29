@@ -1,4 +1,5 @@
 LDFLAGS = -larchive -lbz2 -lz
+CFLAGS = -g
 
 all: l e
 clean:
