@@ -30,21 +30,21 @@ int popen2(char **args, FILE **fpin, FILE **fpout)
 	}
 	if (pid == 0) {
 		/* we are "in" the child */
-		dup2(pin[0], STDIN_FILENO);   /* this process' stdin should
-						 be the read end of the pin
-						 pipe. dup2 closes original
-						 stdin */
+
+		/* this process' stdin should be the read end of the pin pipe.
+		 * dup2 closes original stdin */
+		dup2(pin[0], STDIN_FILENO);
 		close(pin[0]);
 		close(pin[1]);
-		dup2(pout[1], STDOUT_FILENO); /* this process' stdout should
-						 be the write end of the pout
-						 pipe. dup2 closes original
-						 stdout */
+		dup2(pout[1], STDOUT_FILENO);
+		/* this process' stdout should be the write end of the pout
+		 * pipe. dup2 closes original stdout */
 		close(pout[1]);
 		close(pout[0]);
 
 		execv(args[0], args);
-		return(-1); /* on sucess, execv never returns */
+		/* on sucess, execv never returns */
+		return(-1);
 	}
 
 	close(pin[0]);
