@@ -164,11 +164,21 @@ class Pyrssi:
 		</go>
 		</anchor>""" % errmsg
 	def __dumpwindowlist(self):
+		# how many channels do we want in a page?
+		cn = 10
+		page = 0
+		if "page" in self.form.keys():
+			page = int(self.form['page'].value)
 		for i in self.__recv("windowlist").split("\n"):
 			refnum = re.sub(r'(.*): .*', r'\1', i)
-			window = re.sub(r'.*: (.*) \(.*', r'\1', i)
-			network = re.sub(r'.* \((.*)\).*', r'\1', i)
-			print """<a href="pyrssi.py?action=windowselect&amp;refnum=%s&amp;window=%s&amp;network=%s">%s</a><br />""" % (refnum, urllib.pathname2url(window), network, cgi.escape(window))
+			if int(refnum) == (page*cn):
+				print """<a href="pyrssi.py?page=%d">[previous]</a><br />""" % (page-1)
+			elif int(refnum) > (page*cn) and int(refnum) < (page*cn+cn):
+				window = re.sub(r'.*: (.*) \(.*', r'\1', i)
+				network = re.sub(r'.* \((.*)\).*', r'\1', i)
+				print """<a href="pyrssi.py?action=windowselect&amp;refnum=%s&amp;window=%s&amp;network=%s">%s</a><br />""" % (refnum, urllib.pathname2url(window), network, cgi.escape(window))
+			elif int(refnum) == (page*cn+cn):
+				print """<a href="pyrssi.py?page=%d">[next]</a><br />""" % (page+1)
 	def __dumpform(self):
 		print """<input type="text" name="msg" value="" /><br/>
 		<anchor>[send]
