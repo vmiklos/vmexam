@@ -8,10 +8,8 @@ last = None
 
 class Pyrssi:
 	def __init__(self, sock_path, passwd):
-		self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 		self.sock_path = sock_path
 		self.passwd = passwd
-		self.sock.connect(self.sock_path)
 		self.year = 60*60*24*365
 
 	def send(self, what):
@@ -91,20 +89,23 @@ class Pyrssi:
 				print self.cookie
 				del self.cookie['pyrssi_channel']
 
+	def __connect(self):
+		self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+		self.sock.connect(self.sock_path)
+
 	def __send(self, what):
 		ret = 0
 		if len(what):
+			self.__connect()
 			ret += self.sock.send("switch %s" % self.refnum)
-			self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-			self.sock.connect(self.sock_path)
+			self.__connect()
 			ret += self.sock.send("send %s" % what)
 			time.sleep(0.5)
 		return ret
 
 	def __recv(self, what):
 		ret = []
-		self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-		self.sock.connect(self.sock_path)
+		self.__connect()
 		self.sock.send(what)
 		while True:
 			buf = self.sock.recv(4096)
