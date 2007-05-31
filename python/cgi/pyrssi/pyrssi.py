@@ -13,7 +13,7 @@ class Pyrssi:
 		self.sock.connect(self.sock_path)
 		self.year = 60*60*24*365
 
-	def send(self, what = "hm from irssi-cmd.py"):
+	def send(self, what):
 		try:
 			self.cookie = Cookie.SimpleCookie(os.environ["HTTP_COOKIE"])
 		except KeyError:
