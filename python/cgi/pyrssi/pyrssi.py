@@ -60,6 +60,9 @@ class Pyrssi:
 		# see if we should set cookies
 		if "action" in self.form.keys() and self.form['action'].value == "login":
 			if sha.sha(self.form['pass'].value).hexdigest() != self.passwd:
+				self.__dumpheader()
+				self.__dumplogin("wrong password!<br />")
+				self.__dumpfooter()
 				sys.exit(0)
 			self.cookie = Cookie.SimpleCookie()
 			self.cookie['pyrssi_pass'] = self.form['pass'].value
@@ -149,15 +152,16 @@ class Pyrssi:
 		<card id="XML" title="%s">
 		<p>""" % time.strftime("[%H:%M]")
 
-	def __dumplogin(self):
+	def __dumplogin(self, errmsg=""):
 		print """
+		%s
 		password: <input type="password" name="pass" value="" /><br/>
 		<anchor>[login]
 		<go method="post" href="pyrssi.py">
 		<postfield name="pass" value="$(pass)"/>
 		<postfield name="action" value="login"/>
 		</go>
-		</anchor>"""
+		</anchor>""" % errmsg
 	def __dumpwindowlist(self):
 		for i in self.__recv("windowlist").split("\n"):
 			refnum = re.sub(r'(.*): .*', r'\1', i)
