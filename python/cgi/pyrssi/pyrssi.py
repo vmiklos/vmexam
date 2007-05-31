@@ -54,14 +54,7 @@ class Pyrssi:
 		self.__dumpfooter()
 
 	def __sysinfo(self):
-		print "Powered by: "
-		try:
-			os.stat("/etc/frugalware-release")
-			distro = "Frugalware"
-		except OSError:
-			distro = "Unknown"
-		print "Python v%s - running on %s %s %s" % (sysconfig.get_python_version(),
-				distro, os.uname()[0], os.uname()[2])
+		print "Powered by Python %s (on %s/%s)" % (sysconfig.get_python_version(), sys.platform, os.name)
 		print "<br />"
 
 	def __handlecookies(self):
