@@ -32,7 +32,11 @@ class Pyrssi:
 		if isinstance(what, cgi.FieldStorage):
 			self.form = what
 			try:
-				self.__send(self.form['msg'].value)
+				data = []
+				if "msg_prefix" in self.form.keys():
+					data.append(self.form['msg_prefix'].value)
+				data.append(self.form['msg'].value)
+				self.__send("".join(data))
 			except KeyError:
 				pass
 		else:
