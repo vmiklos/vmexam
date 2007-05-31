@@ -7,9 +7,10 @@ cgitb.enable()
 last = None
 
 class Pyrssi:
-	def __init__(self):
+	def __init__(self, sock_path, passwd):
 		self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-		self.sock_path = "/home/vmiklos/.irssi/socket"
+		self.sock_path = sock_path
+		self.passwd = passwd
 		self.sock.connect(self.sock_path)
 		self.year = 60*60*24*365
 
@@ -60,8 +61,7 @@ class Pyrssi:
 	def __handlecookies(self):
 		# see if we should set cookies
 		if "action" in self.form.keys() and self.form['action'].value == "login":
-			# foo for now
-			if sha.sha(self.form['pass'].value).hexdigest() != '502b57ea9f1d731a9a63cb16b6aeb3358a8973d1':
+			if sha.sha(self.form['pass'].value).hexdigest() != self.passwd:
 				sys.exit(0)
 			self.cookie = Cookie.SimpleCookie()
 			self.cookie['pyrssi_pass'] = self.form['pass'].value
@@ -179,6 +179,7 @@ class Pyrssi:
 		for i in self.lastlines:
 			print cgi.escape(i),  '<br />'
 
-pyrssi = Pyrssi()
+# pass is foo for now
+pyrssi = Pyrssi('/home/vmiklos/.irssi/socket', '502b57ea9f1d731a9a63cb16b6aeb3358a8973d1')
 pyrssi.send(cgi.FieldStorage())
 pyrssi.receive()
