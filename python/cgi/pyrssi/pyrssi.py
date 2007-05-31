@@ -171,8 +171,23 @@ class Pyrssi:
 		# how many channels do we want in a page?
 		cn = 10
 		page = 0
+		jumponly = False
 		if "page" in self.form.keys():
 			page = int(self.form['page'].value)
+		if "jumponly" in self.form.keys():
+			jumponly = bool(self.form['jumponly'].value)
+		if jumponly:
+			print """<input type="text" name="msg" value="" /><br/>
+			<anchor>[go]
+			<go method="post" href="pyrssi.py">
+			<postfield name="msg_prefix" value="/g "/>
+			<postfield name="msg" value="$(msg)"/>
+			<postfield name="action" value="msg"/>
+			</go>
+			</anchor>
+			<br />"""
+			return
+		print """<a href="pyrssi.py?action=windowlist&amp;jumponly=True">[quick jump]</a><br />"""
 		for i in self.__recv("windowlist").split("\n"):
 			refnum = re.sub(r'(.*): .*', r'\1', i)
 			if int(refnum) == (page*cn):
