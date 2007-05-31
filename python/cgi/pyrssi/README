@@ -25,5 +25,11 @@ connect to the socket and will generate the wap pages.
 Don't forget to edit the bottom of pyrssi.py: the sha1sum of your password and
 the socket path!
 
+FAQ
+===
+
+Q: How frequent does it refresh?
+A: It does not. If you send an empty text then it will.
+
 Have fun,
 - VMiklos
