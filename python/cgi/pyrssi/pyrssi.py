@@ -49,7 +49,8 @@ class Pyrssi:
 		else:
 			self.__dumpform()
 			self.__dumplastlines()
-		self.__dumplogout()
+		if "pyrssi_pass" in self.cookie.keys():
+			self.__dumplogout()
 		self.__dumpfooter()
 
 	def __sysinfo(self):
