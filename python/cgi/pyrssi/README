@@ -21,3 +21,9 @@ How does it work?
 First you need (my improved version of) socket-interface.pl so that you'll have
 a socket in your ~/.irssi/socket. Then you need pyrssi.py, that cgi will
 connect to the socket and will generate the wap pages.
+
+Don't forget to edit the bottom of pyrssi.py: the sha1sum of your password and
+the socket path!
+
+Have fun,
+- VMiklos
