@@ -31,5 +31,9 @@ FAQ
 Q: How frequent does it refresh?
 A: It does not. If you send an empty text then it will.
 
+Q: My window list is looooong. Is it possible to switch between windows without
+   listing all of them?
+A: Yes, just use /g windownum or /g #channelname.
+
 Have fun,
 - VMiklos
