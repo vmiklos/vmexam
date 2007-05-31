@@ -110,6 +110,8 @@ class Pyrssi:
 
 	def __recv(self, what):
 		ret = []
+		self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+		self.sock.connect(self.sock_path)
 		self.sock.send(what)
 		while True:
 			buf = self.sock.recv(4096)
@@ -118,27 +120,10 @@ class Pyrssi:
 			ret.append(buf)
 		return "".join(ret)
 
-	def __getlastfile(self):
-		last = None
-		newest = 0
-		for root, dirs, files in os.walk(self.logpath):
-			for file in files:
-				if re.sub(r'_[0-9]{8}.log', '', file) == self.channel:
-					date = int(file[len(self.channel)+1:-4])
-					if date > newest:
-						newest = date
-						last = file
-		return last
-
 	def __getlastlines(self):
 		ret = []
-		if self.last:
-			sock = open(os.path.join(self.logpath, time.strftime("%Y"), self.last))
-			buf = sock.read()
-			for i in buf.split("\n")[-40:]:
-				if not re.match(r"^--- Log", i):
-					ret.append(i)
-		return ret
+		buf = self.__recv("get_lines %s" % self.refnum)
+		return buf.split("\n")[-25:]
 
 	def __dumpheader(self):
 		print "Content-Type: text/vnd.wap.wml"
@@ -196,8 +181,6 @@ class Pyrssi:
 		</wml>"""
 
 	def __dumplastlines(self):
-		self.logpath = os.path.join("/home/vmiklos/.irssi/logs", self.network)
-		self.last = self.__getlastfile()
 		self.lastlines = self.__getlastlines()
 		self.lastlines.reverse()
 		for i in self.lastlines:
