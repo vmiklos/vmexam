@@ -109,8 +109,14 @@ class Pyrssi:
 		return ret
 
 	def __recv(self, what):
+		ret = []
 		self.sock.send(what)
-		return self.sock.recv(4096)
+		while True:
+			buf = self.sock.recv(4096)
+			if not buf:
+				break
+			ret.append(buf)
+		return "".join(ret)
 
 	def __getlastfile(self):
 		last = None
