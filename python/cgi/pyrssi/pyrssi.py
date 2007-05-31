@@ -105,7 +105,7 @@ class Pyrssi:
 					refnum = re.sub(r'(.*): .*', r'\1', i)
 					window = re.sub(r'.*: (.*) \(.*', r'\1', i)
 					network = re.sub(r'.* \((.*)\).*', r'\1', i)
-					if refnum == what[3:] or window == what[3:]:
+					if refnum == what[3:] or window == what[3:].lower():
 						self.cookie['pyrssi_channel'] = window.lower()
 						self.cookie['pyrssi_channel']['max-age'] = self.year
 						self.cookie['pyrssi_network'] = network
