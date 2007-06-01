@@ -190,9 +190,9 @@ class Pyrssi:
 		print """<a href="pyrssi.py?action=windowlist&amp;jumponly=True">[quick jump]</a><br />"""
 		for i in self.__recv("windowlist").split("\n"):
 			refnum = re.sub(r'(.*): .*', r'\1', i)
-			if int(refnum) == (page*cn):
+			if int(refnum)+1 == (page*cn):
 				print """<a href="pyrssi.py?page=%d">[previous]</a><br />""" % (page-1)
-			elif int(refnum) > (page*cn) and int(refnum) < (page*cn+cn):
+			elif int(refnum) >= (page*cn) and int(refnum) < (page*cn+cn):
 				window = re.sub(r'.*: (.*) \(.*', r'\1', i)
 				network = re.sub(r'.* \((.*)\).*', r'\1', i)
 				print """<a href="pyrssi.py?action=windowselect&amp;refnum=%s&amp;window=%s&amp;network=%s">%s</a><br />""" % (refnum, urllib.pathname2url(window), network, cgi.escape(window))
