@@ -197,6 +197,8 @@ class Pyrssi:
 				if not len(window):
 					window = "(disconnected)"
 				network = re.sub(r'.* \((.*)\).*', r'\1', i)
+				if not len(network):
+					network = "notconnected"
 				print """<a href="pyrssi.py?action=windowselect&amp;refnum=%s&amp;window=%s&amp;network=%s">%s</a><br />""" % (refnum, urllib.pathname2url(window), network, cgi.escape(window))
 			elif int(refnum) == (page*cn+cn):
 				print """<a href="pyrssi.py?page=%d">[next]</a><br />""" % (page+1)
