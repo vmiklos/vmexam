@@ -167,6 +167,12 @@ class Pyrssi:
 		<postfield name="action" value="login"/>
 		</go>
 		</anchor>""" % errmsg
+
+	def __getwindowlist(self):
+		ret = self.__recv("windowlist").split("\n")
+		ret.insert(0, '1: (status) (notconnected)')
+		return ret
+
 	def __dumpwindowlist(self):
 		# how many channels do we want in a page?
 		cn = 10
@@ -188,7 +194,7 @@ class Pyrssi:
 			<br />"""
 			return
 		print """<a href="pyrssi.py?action=windowlist&amp;jumponly=True">[quick jump]</a><br />"""
-		for i in self.__recv("windowlist").split("\n"):
+		for i in self.__getwindowlist():
 			refnum = re.sub(r'(.*): .*', r'\1', i)
 			if int(refnum)+1 == (page*cn):
 				print """<a href="pyrssi.py?page=%d">[previous]</a><br />""" % (page-1)
