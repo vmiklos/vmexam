@@ -10,10 +10,17 @@ def rec(match):
 
 raw = []
 
-if sys.argv[1] == "hu":
-	url = "http://szotar.sztaki.hu/dict_search.php?S=W&L=HUN%3AENG%3AEngHunDict&W=" + sys.argv[2]
+if len(sys.argv) > 2:
+	lang = sys.argv[1]
+	word = sys.argv[2]
 else:
-	url = "http://szotar.sztaki.hu/dict_search.php?S=W&W=" + sys.argv[2]
+	lang = "en"
+	word = sys.argv[1]
+
+if lang == "hu":
+	url = "http://szotar.sztaki.hu/dict_search.php?S=W&L=HUN%3AENG%3AEngHunDict&W=" + word
+else:
+	url = "http://szotar.sztaki.hu/dict_search.php?S=W&W=" + word
 
 try:
 	socket = urllib.urlopen(url)
