@@ -33,7 +33,13 @@ if [ "$#" != 2 ]; then
 	exit 1
 fi
 
-myname=`basename $1`
+src=$1
+target=$2
+
+cd `dirname $target`
+target="`pwd`/`basename $target`"
+
+myname=`basename $src`
 
 myroot=`mktemp -d`
 
@@ -50,14 +56,15 @@ target = git:test
 
 [darcs:test]
 subdir = darcs
-repository = $1
+repository = $src
 
 [git:test]
 subdir = git
-repository = $2
+repository = $target
+encoding = latin2
 EOF
 
-rm -rf $2 darcs git $myname.*
+rm -rf $target darcs git $myname.*
 tailor --configfile config
 
 cd - >/dev/null
