@@ -70,6 +70,7 @@ if __name__ == "firefox":
 		out.append(dumpfeed("http://feeds.feedburner.com/HUP"))
 		out.append(dumpfeed("http://frugalware.org/~vmiklos/rss/irc/irc.py"))
 		out.append(dumpfeed("http://rss.slashdot.org/Slashdot/slashdot"))
+		out.append(dumpfeed("http://frugalware.org/~vmiklos/stuff/legalja/legalja.py"))
 		out.append("""
 		</div>
 		</body>
