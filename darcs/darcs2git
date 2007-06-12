@@ -23,9 +23,12 @@
 usage()
 {
 	echo "usage: $0 <source darcs repo> <target git repo>"
-	echo
-	echo "the previous contents of the target directory will be removed if"
-	echo "there is any!"
+}
+
+die()
+{
+	echo "$0: $@"
+	exit 1
 }
 
 if [ "$#" != 2 ]; then
@@ -36,10 +39,19 @@ fi
 src=$1
 target=$2
 
-cd `dirname $target`
-target="`pwd`/`basename $target`"
+[ -d "$src" ] || die "source dir does not exist!"
+
+cd $src
+src=`pwd`
 
 myname=`basename $src`
+
+cd - >/dev/null
+
+[ -d "$target" ] || die "target dir does not exist!"
+
+cd $target
+target=`pwd`
 
 myroot=`mktemp -d`
 
@@ -60,12 +72,12 @@ repository = $src
 
 [git:test]
 subdir = git
-repository = $target
+repository = $myname
 encoding = latin2
 EOF
 
-rm -rf $target darcs git $myname.*
 tailor --configfile config
 
-cd - >/dev/null
+cd $target
+git clone $myroot/git/$myname
 rm -rf $myroot
