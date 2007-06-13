@@ -155,6 +155,15 @@ def record(argv):
 		print """Usage: darcs-git record [OPTION]... [FILE or DIRECTORY]...
 Save changes in the unstaged index to the current branch as a commit.
 
+It differs one way from darcs record:
+  If you did "darcs-git add new_file" and modified existing_file, then you have
+  to either:
+  - use darcs-git record existing_file or
+  - using darcs-git record, new_file will be always added
+
+  There is no easy way to exclude such a new_file, so the best is not to add it
+  till you don't want to commit it.
+
 Options:
   -m PATCHNAME  --commit-name=PATCHNAME  name of commit
   -a            --all                    answer yes to all hunks
