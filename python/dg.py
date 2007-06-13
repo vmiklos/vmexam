@@ -222,7 +222,7 @@ Options:
 			sys.exit(0)
 		print "Invalid response, try again!"
 	if options.all:
-		os.system("git commit -a -m '%s' %s" % (msg, opts))
+		os.system("git commit -a -m '%s' %s %s" % (msg, opts, options.files))
 		sys.exit(0)
 	for i in status.hunks:
 		p = []
