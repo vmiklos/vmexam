@@ -152,6 +152,10 @@ h or ?: show this help"""
 def record():
 	status = scan_dir()
 	status.hunks = askhunks(status.hunks)
+	flist = []
+	for i in status.hunks:
+		if i.picked:
+			flist.append(re.sub(r".* a/([^ ]+) .*", r"\1", i.text.split("\n")[0]))
 	if status.hunks:
 		pass
 		msg = ask("What is the patch name?", str)
@@ -176,7 +180,7 @@ def record():
 		sock = os.popen("git apply --cached 2>/dev/null", "w")
 		sock.write("".join(p))
 		sock.close()
-	os.system("git commit -m '%s' %s" % (msg, opts))
+	os.system("git commit -m '%s' %s %s" % (msg, opts, " ".join(flist)))
 
 def main():
 	if len(sys.argv) == 1:
