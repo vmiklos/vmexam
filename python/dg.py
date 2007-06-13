@@ -190,6 +190,7 @@ Options:
 	for opt, arg in opts:
 		if opt in ("-m", "--commit-name"):
 			options.name = arg
+			optind += 1
 		elif opt in ("-a", "--all"):
 			options.all = True
 		elif opt in ("-h", "--help"):
@@ -367,6 +368,48 @@ Options:
 	if not ret:
 		print "No changes!"
 
+def changes(argv):
+	def usage(ret):
+		print """Usage: darcs changes [OPTION]... [FILE or DIRECTORY]...
+Gives a changelog-style summary of the branch history.
+
+Options:
+  -l         --last=NUMBER         select the last NUMBER patches
+  -s         --summary             summarize changes
+  -v         --verbose             give verbose output
+  -h         --help                shows brief description of command and its arguments"""
+		sys.exit(ret)
+
+	class Options:
+		def __init__(self):
+			self.last = ""
+			self.logopts = ""
+			self.help = False
+			self.files = ""
+	options = Options()
+
+	try:
+		opts, args = getopt.getopt(argv, "l:svh", ["last=", "summary", "verbose", "help"])
+	except getopt.GetoptError:
+		usage(1)
+	optind = 0
+	for opt, arg in opts:
+		if opt in ("-l", "--last"):
+			options.last = "-%s" % arg
+			optind += 1
+		elif opt in ("-s", "--summary"):
+			options.logopts = "--name-status"
+		elif opt in ("-v", "--verbose"):
+			options.logopts = "-p"
+		elif opt in ("-h", "--help"):
+			options.help = True
+		optind += 1
+	if optind < len(argv):
+		options.files = " ".join(argv[optind:])
+	if options.help:
+		usage(0)
+	return os.system("git log -M %s %s %s" % (options.last, options.logopts, options.files))
+
 def main(argv):
 	if len(sys.argv) == 1:
 		print "usage()"
@@ -377,6 +420,8 @@ def main(argv):
 			revert(argv[1:])
 		elif sys.argv[1][:4] == "what":
 			whatsnew(argv[1:])
+		elif sys.argv[1][:4] == "chan":
+			changes(argv[1:])
 		else:
 			os.system("git %s" % " ".join(argv))
 
