@@ -52,6 +52,13 @@ def get_diff(files = ""):
 	sock = os.popen("git diff HEAD %s" % files)
 	lines = sock.readlines()
 	sock.close()
+	if len(lines) and lines[0].startswith("[1m"):
+		print """It seems that you force using colors in your diffs
+which is not compatible with darcs-git. Please set that value
+to false or auto. Example:
+
+git-config diff.color auto"""
+		sys.exit(0)
 	return lines
 
 def scan_dir(files=""):
