@@ -140,6 +140,8 @@ q: cancel record
 h or ?: show this help"""
 				print "Invalid response, try again!"
 		if preans != None:
+			if preans == True:
+				commit = True
 			hunks[hunknum].picked = preans
 		hunknum += 1
 	if commit == False:
@@ -163,7 +165,7 @@ Options:
 	class Options:
 		def __init__(self):
 			self.name = None
-			self.all = False
+			self.all = None
 			self.help = False
 			self.files = ""
 	options = Options()
@@ -186,10 +188,7 @@ Options:
 	if options.help:
 		usage(0)
 	status = scan_dir(options.files)
-	if options.all:
-		status.hunks = askhunks(status.hunks, True)
-	else:
-		status.hunks = askhunks(status.hunks)
+	status.hunks = askhunks(status.hunks, options.all)
 	if status.hunks:
 		if options.name:
 			msg = options.name
