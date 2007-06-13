@@ -312,6 +312,11 @@ Options:
 		sock = os.popen("patch -p1 -R >/dev/null", "w")
 		sock.write("".join(p))
 		sock.close()
+	# we need git reset too if we revert deleted files
+	for i in status.hunks:
+		lines = i.text.split("\n")
+		if "+++ /dev/null" in lines:
+			os.system("git reset HEAD %s >/dev/null" % diff2filename(lines[0]))
 	revert_stale()
 	print "Finished reverting."
 
