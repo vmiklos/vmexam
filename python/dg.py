@@ -200,7 +200,9 @@ Options:
 	flist = []
 	for i in status.hunks:
 		if i.picked:
-			flist.append(re.sub(r".* a/([^ ]+) .*", r"\1", i.text.split("\n")[0]))
+			lines = i.text.split("\n")
+			if "+++ /dev/null" not in lines:
+				flist.append(re.sub(r".* a/([^ ]+) .*", r"\1", lines[0]))
 	while True:
 		ret = ask("Do you want to add a long comment? [ynq]")
 		if ret == "y":
@@ -219,7 +221,9 @@ Options:
 		sock = os.popen("git apply --cached 2>/dev/null", "w")
 		sock.write("".join(p))
 		sock.close()
-	os.system("git commit -m '%s' %s %s" % (msg, opts, " ".join(flist)))
+	for i in flist:
+		os.system("git add %s" % i)
+	os.system("git commit -m '%s' %s" % (msg, opts))
 
 def main(argv):
 	if len(sys.argv) == 1:
