@@ -6,6 +6,7 @@ class File:
 	def __init__(self):
 		self.header = None
 		self.hunks = []
+		self.new = False
 
 class FileHunk:
 	def __init__(self, hunk, picked=False):
@@ -75,6 +76,8 @@ def scan_dir(files=""):
 			header.append(i)
 		elif i.startswith("---"):
 			header.append(i)
+			if i == "--- /dev/null\n":
+				file.new = True
 		elif i.startswith("@@"):
 			if inheader:
 				inheader = False
@@ -151,15 +154,6 @@ def record(argv):
 		print """Usage: darcs-git record [OPTION]... [FILE or DIRECTORY]...
 Save changes in the unstaged index to the current branch as a commit.
 
-It differs one way from darcs record:
-  If you did "darcs-git add new_file" and modified existing_file, then you have
-  to either:
-  - use darcs-git record existing_file or
-  - using darcs-git record, new_file will be always added
-
-  There is no easy way to exclude such a new_file, so the best is not to add it
-  till you don't want to commit it.
-
 Options:
   -m PATCHNAME  --commit-name=PATCHNAME  name of commit
   -a            --all                    answer yes to all hunks
@@ -220,7 +214,20 @@ Options:
 		sock = os.popen("git apply --cached 2>/dev/null", "w")
 		sock.write("".join(p))
 		sock.close()
+	# a list for new files. we'll revert their addition, commit and add
+	# them again
+	newlist = []
+	for i in status.hunks:
+		if not i.picked:
+			lines = i.text.split("\n")
+			if "--- /dev/null" in lines:
+				newlist.append(re.sub(r".* a/([^ ]+) .*", r"\1", lines[0]))
+	for i in newlist:
+		os.system("git reset HEAD %s" % i)
 	os.system("git commit -m '%s' %s" % (msg, opts))
+	# readd the uncommitted new files
+	for i in newlist:
+		os.system("git add %s" % i)
 
 def main(argv):
 	if len(sys.argv) == 1:
