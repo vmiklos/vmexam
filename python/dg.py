@@ -158,6 +158,17 @@ def record():
 	else:
 		print "Ok, if you don't want to record anything, that's fine!"
 		sys.exit(0)
+	while True:
+		ret = ask("Do you want to add a long comment? [ynq]")
+		if ret == "y":
+			opts = "-e"
+			break
+		if ret == "n":
+			opts = ""
+			break
+		if ret == "q":
+			sys.exit(0)
+		print "Invalid response, try again!"
 	for i in status.hunks:
 		p = []
 		if i.picked == True:
@@ -165,7 +176,7 @@ def record():
 		sock = os.popen("git apply --cached 2>/dev/null", "w")
 		sock.write("".join(p))
 		sock.close()
-	os.system("git commit -m '%s' -e" % msg)
+	os.system("git commit -m '%s' %s" % (msg, opts))
 
 def main():
 	if len(sys.argv) == 1:
