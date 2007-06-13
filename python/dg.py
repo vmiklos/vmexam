@@ -228,7 +228,7 @@ def main(argv):
 		if sys.argv[1][:3] == "rec":
 			record(argv[1:])
 		else:
-			print "usage()"
+			os.system("git %s" % " ".join(argv))
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
