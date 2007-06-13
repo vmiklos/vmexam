@@ -3,10 +3,7 @@
 import sys, tty, termios, os, re, getopt
 
 class File:
-	def __init__(self, filename):
-		if not filename:
-			bug("filename can't be None!")
-		self.filename = filename
+	def __init__(self):
 		self.header = None
 		self.hunks = []
 
@@ -71,7 +68,7 @@ def scan_dir(files=""):
 				inhunk = False
 			if file:
 				ret.append(file)
-			file = File(re.sub(r".* a/([^ ]+) .*\n", r"\1", i))
+			file = File()
 			inheader = True
 			header.append(i)
 		elif i.startswith("+++"):
@@ -82,7 +79,6 @@ def scan_dir(files=""):
 			if inheader:
 				inheader = False
 				file.header = "".join(header)
-				filename = None
 				header = []
 			if inhunk:
 				file.hunks.append("".join(hunk))
@@ -206,12 +202,6 @@ Options:
 	else:
 		print "Ok, if you don't want to record anything, that's fine!"
 		sys.exit(0)
-	flist = []
-	for i in status.hunks:
-		if i.picked:
-			lines = i.text.split("\n")
-			if "+++ /dev/null" not in lines:
-				flist.append(re.sub(r".* a/([^ ]+) .*", r"\1", lines[0]))
 	while True:
 		ret = ask("Do you want to add a long comment? [ynq]")
 		if ret == "y":
@@ -230,8 +220,6 @@ Options:
 		sock = os.popen("git apply --cached 2>/dev/null", "w")
 		sock.write("".join(p))
 		sock.close()
-	for i in flist:
-		os.system("git add %s" % i)
 	os.system("git commit -m '%s' %s" % (msg, opts))
 
 def main(argv):
