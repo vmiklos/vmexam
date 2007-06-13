@@ -48,11 +48,15 @@ def bug(s=None):
 		print "bug in darcs-git!"
 	print "at %s:%d" % inspect.stack()[1][1:3]
 
-def scan_dir(files=""):
-	ret = []
+def get_diff(files = ""):
 	sock = os.popen("git diff HEAD %s" % files)
 	lines = sock.readlines()
 	sock.close()
+	return lines
+
+def scan_dir(files=""):
+	ret = []
+	lines = get_diff(files)
 
 	inheader = False
 	inhunk = False
@@ -101,7 +105,7 @@ def scan_dir(files=""):
 		ret.append(file)
 	return Files(ret)
 
-def askhunks(hunks, preans=None):
+def askhunks(hunks, preans=None, action="record"):
 	total = len(hunks)
 	hunknum = 0
 	commit = False
@@ -109,7 +113,7 @@ def askhunks(hunks, preans=None):
 		if preans == None:
 			while True:
 				sys.stdout.write(i.text)
-				ret = ask("Shall I record this change? (%d/%d)  [ynqad], or ? for help:" % (hunknum+1, total))
+				ret = ask("Shall I %s this change? (%d/%d)  [ynqad], or ? for help:" % (action, hunknum+1, total))
 				if ret == "y":
 					commit = True
 					hunks[hunknum].picked = True
@@ -128,15 +132,15 @@ def askhunks(hunks, preans=None):
 					sys.exit(0)
 					break
 				if ret == "?" or ret == "h":
-					print """How to use record...
-y: record this patch
-n: don't record it
+					print """How to use %(action)s...
+y: %(action)s this patch
+n: don't %(action)s it
 
-d: record selected patches, skipping all the remaining patches
-a: record all the remaining patches
-q: cancel record
+d: %(action)s selected patches, skipping all the remaining patches
+a: %(action)s all the remaining patches
+q: cancel %(action)s
 
-h or ?: show this help"""
+h or ?: show this help""" % { 'action': action }
 				print "Invalid response, try again!"
 		if preans != None:
 			if preans == True:
@@ -148,6 +152,8 @@ h or ?: show this help"""
 	else:
 		return hunks
 
+def diff2filename(diff):
+	return re.sub(r".* a/([^ ]+) .*", r"\1", diff)
 
 def record(argv):
 	def usage(ret):
@@ -221,7 +227,7 @@ Options:
 		if not i.picked:
 			lines = i.text.split("\n")
 			if "--- /dev/null" in lines:
-				newlist.append(re.sub(r".* a/([^ ]+) .*", r"\1", lines[0]))
+				newlist.append(diff2filename(lines[0]))
 	for i in newlist:
 		os.system("git reset HEAD %s" % i)
 	os.system("git commit -m '%s' %s" % (msg, opts))
@@ -229,12 +235,94 @@ Options:
 	for i in newlist:
 		os.system("git add %s" % i)
 
+def revert_stale():
+	"""revert changes when only the modification date is changed. returns
+	True if we did something"""
+	ret = False
+	lines = get_diff()
+	prevdiff = False
+	linenum = 0
+	for i in lines:
+		if i.startswith("diff "):
+			if prevdiff:
+				os.system("git checkout %s" % diff2filename(lines[linenum-1]))
+				ret = True
+			prevdiff = True
+		else:
+			prevdiff = False
+		linenum += 1
+	if prevdiff:
+		os.system("git checkout %s" % diff2filename(lines[linenum-1]))
+		ret = True
+	return ret
+
+def revert(argv):
+	def usage(ret):
+		print """Usage: darcs-git revert [OPTION]... [FILE or DIRECTORY]...
+Revert to the committed version (you may loose your work).
+
+Options:
+  -a            --all                    answer yes to all hunks
+  -h            --help                   shows brief description of command and its arguments"""
+		sys.exit(ret)
+
+	class Options:
+		def __init__(self):
+			self.all = None
+			self.help = False
+			self.files = ""
+	options = Options()
+
+	try:
+		opts, args = getopt.getopt(argv, "ah", ["all", "help"])
+	except getopt.GetoptError:
+		usage(1)
+	optind = 0
+	for opt, arg in opts:
+		if opt in ("-a", "--all"):
+			options.all = True
+		elif opt in ("-h", "--help"):
+			options.help = True
+		optind += 1
+	if optind < len(argv):
+		options.files = " ".join(argv[optind:])
+	if options.help:
+		usage(0)
+	# check if we have anything to revert
+	lines = get_diff(options.files)
+	if not len(lines):
+		print "There are no changes to revert!"
+		sys.exit(0)
+	if options.all:
+		os.system("git checkout -f")
+		print "Finished reverting."
+		sys.exit(0)
+	status = scan_dir(options.files)
+	status.hunks = askhunks(status.hunks, action="revert")
+	if not status.hunks:
+		if revert_stale():
+			print "Finished reverting."
+		else:
+			print "Ok, if you don't want to revert anything, that's fine!"
+		sys.exit(0)
+	for i in status.hunks:
+		p = []
+		if i.picked == True:
+			p.append(i.text)
+		sock = os.popen("patch -p1 -R >/dev/null", "w")
+		sock.write("".join(p))
+		sock.close()
+	revert_stale()
+	print "Finished reverting."
+
 def main(argv):
 	if len(sys.argv) == 1:
 		print "usage()"
 	else:
 		if sys.argv[1][:3] == "rec":
 			record(argv[1:])
+		elif sys.argv[1][:3] == "rev":
+			revert(argv[1:])
 		else:
 			os.system("git %s" % " ".join(argv))
 
