@@ -50,9 +50,9 @@ def bug(s=None):
 		print "bug in darcs-git!"
 	print "at %s:%d" % inspect.stack()[1][1:3]
 
-def scan_dir():
+def scan_dir(files=""):
 	ret = []
-	sock = os.popen("git diff HEAD")
+	sock = os.popen("git diff HEAD %s" % files)
 	lines = sock.readlines()
 	sock.close()
 
@@ -165,12 +165,14 @@ Options:
 			self.name = None
 			self.all = False
 			self.help = False
+			self.files = ""
 	options = Options()
 
 	try:
 		opts, args = getopt.getopt(argv, "m:ah", ["commit-name=", "all", "help"])
 	except getopt.GetoptError:
 		usage(1)
+	optind = 0
 	for opt, arg in opts:
 		if opt in ("-m", "--commit-name"):
 			options.name = arg
@@ -178,9 +180,12 @@ Options:
 			options.all = True
 		elif opt in ("-h", "--help"):
 			options.help = True
+		optind += 1
+	if optind < len(argv):
+		options.files = " ".join(argv[optind:])
 	if options.help:
 		usage(0)
-	status = scan_dir()
+	status = scan_dir(options.files)
 	if options.all:
 		status.hunks = askhunks(status.hunks, True)
 	else:
