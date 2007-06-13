@@ -200,7 +200,8 @@ Options:
 	if options.help:
 		usage(0)
 	status = scan_dir(options.files)
-	status.hunks = askhunks(status.hunks, options.all)
+	if not options.all:
+		status.hunks = askhunks(status.hunks)
 	if status.hunks:
 		if options.name:
 			msg = options.name
@@ -220,6 +221,9 @@ Options:
 		if ret == "q":
 			sys.exit(0)
 		print "Invalid response, try again!"
+	if options.all:
+		os.system("git commit -a -m '%s' %s" % (msg, opts))
+		sys.exit(0)
 	for i in status.hunks:
 		p = []
 		if i.picked == True:
