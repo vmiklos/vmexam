@@ -320,6 +320,42 @@ Options:
 	revert_stale()
 	print "Finished reverting."
 
+def whatsnew(argv):
+	def usage(ret):
+		print """Usage: darcs-git whatsnew [OPTION]... [FILE or DIRECTORY]...
+Display uncommitted changes in the working directory.
+
+Options:
+  -s  --summary             summarize changes
+  -h  --help                shows brief description of command and its arguments"""
+		sys.exit(ret)
+
+	class Options:
+		def __init__(self):
+			self.summary = ""
+			self.help = False
+			self.files = ""
+	options = Options()
+
+	try:
+		opts, args = getopt.getopt(argv, "sh", ["summary", "help"])
+	except getopt.GetoptError:
+		usage(1)
+	optind = 0
+	for opt, arg in opts:
+		if opt in ("-s", "--summary"):
+			options.summary = "--name-status"
+		elif opt in ("-h", "--help"):
+			options.help = True
+		optind += 1
+	if optind < len(argv):
+		options.files = " ".join(argv[optind:])
+	if options.help:
+		usage(0)
+	ret = os.system("git diff HEAD -M --exit-code %s %s" % (options.summary, options.files))
+	if not ret:
+		print "No changes!"
+
 def main(argv):
 	if len(sys.argv) == 1:
 		print "usage()"
@@ -328,6 +364,8 @@ def main(argv):
 			record(argv[1:])
 		elif sys.argv[1][:3] == "rev":
 			revert(argv[1:])
+		elif sys.argv[1][:4] == "what":
+			whatsnew(argv[1:])
 		else:
 			os.system("git %s" % " ".join(argv))
 
