@@ -43,7 +43,7 @@ def ask(s, type=None):
 def bug(s=None):
 	import inspect
 	if s:
-		print "%s"
+		print "%s" % s
 	else:
 		print "bug in darcs-git!"
 	print "at %s:%d" % inspect.stack()[1][1:3]
