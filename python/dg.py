@@ -20,6 +20,11 @@ class Files:
 		for i in self.files:
 			for j in i.hunks:
 				self.hunks.append(FileHunk(i.header + j))
+	def ispicked(self, hunk):
+		needle = diff2filename(hunk.text.split("\n")[0])
+		for i in self.hunks:
+			if needle == diff2filename(i.text.split("\n")[0]):
+				return i.picked
 
 def ask(s, type=None):
 	sys.stdout.write("%s " % s)
@@ -206,6 +211,8 @@ Options:
 		options.files = " ".join(argv[optind:])
 	if options.help:
 		usage(0)
+	# we need the overall status too, to exclude new files if necessary
+	allstatus = scan_dir()
 	status = scan_dir(options.files)
 	if not options.all:
 		status.hunks = askhunks(status.hunks)
@@ -243,8 +250,8 @@ Options:
 	# a list for new files. we'll revert their addition, commit and add
 	# them again
 	newlist = []
-	for i in status.hunks:
-		if not i.picked:
+	for i in allstatus.hunks:
+		if not status.ispicked(i):
 			lines = i.text.split("\n")
 			if "--- /dev/null" in lines:
 				newlist.append(diff2filename(lines[0]))
