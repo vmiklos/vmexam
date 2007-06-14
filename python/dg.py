@@ -546,8 +546,64 @@ Options:
 	print "Finished unpulling."
 
 def main(argv):
-	if len(sys.argv) == 1:
-		print "usage()"
+	def usage(ret):
+		print """Usage: darcs-git COMMAND ...
+
+The meaning of the letters are the following:
+  A             Alias.
+                Example: darcs-git get does exactly the same as git clone.
+  Y             Yes, supported, and dg adds some extra features.
+                Example: darcs-git push tries to find out what will be pushed.
+  W             Supported unintentionally, because the darcs-git wrapper calls
+                  git <subcommand> for all unknown commands.
+		Example: darcs-git mv
+  N             Not supported.
+                Example: darcs-git put is not supported.
+
+Commands:
+  W help          Display help for darcs or a single commands.
+Changing and querying the working copy:
+  W add           Add one or more new files or directories.
+  W remove        Remove one or more files or directories from the repository.
+  W mv            Move/rename one or more files or directories.
+  N replace       Replace a token with a new value for that token.
+  Y revert        Revert to the recorded version (safe the first time only).
+  N unrevert      Undo the last revert (may fail if changes after the revert).
+  Y whatsnew      Display unrecorded changes in the working copy.
+Copying changes between the working copy and the repository:
+  Y record        Save changes in the working copy to the repository as a patch.
+  A unrecord      Remove recorded patches without changing the working copy.
+  N amend-record  Replace a patch with a better version before it leaves your repository.
+  N resolve       Mark any conflicts to the working copy for manual resolution.
+Direct modification of the repository:
+  W tag           Tag the contents of the repository with a version name.
+  N setpref       Set a value for a preference (test, predist, ...).
+  A rollback      Record an inverse patch without changing the working directory.
+Querying the repository:
+  W diff          Create a diff between two versions of the repository.
+  Y changes       Gives a changelog-style summary of the repository history.
+  W annotate      Display which patch last modified something.
+  N dist          Create a distribution tarball.
+  FIXME trackdown     Locate the most recent version lacking an error.
+  N query         Query information which is stored by darcs.
+Copying patches between repositories with working copy update:
+  W pull          Copy and apply patches from another repository to this one.
+  A unpull        Opposite of pull; unsafe if patch is not in remote repository.
+  N obliterate    Delete selected patches from the repository. (UNSAFE!)
+  Y push          Copy and apply patches from this repository to another one.
+  N send          Send by email a bundle of one or more patches.
+  W apply         Apply patches (from an email bundle) to the repository.
+  A get           Create a local copy of another repository.
+  N put           Makes a copy of the repository
+Administrating repositories:
+  W initialize    Initialize a new source tree as a darcs repository.
+  FIXME optimize      Optimize the repository.
+  FIXME check         Check the repository for consistency.
+  FIXME repair        Repair the corrupted repository.
+"""
+		sys.exit(ret)
+	if len(sys.argv) == 1 or sys.argv[1] == "-h":
+		usage()
 	else:
 		if sys.argv[1][:3] == "rec":
 			record(argv[1:])
