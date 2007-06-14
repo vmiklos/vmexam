@@ -456,6 +456,27 @@ Options:
 		print "Invalid response, try again!"
 	return os.system("git reset --soft HEAD^ %s" % " ".join(argv))
 
+def unpull(argv):
+	def usage(ret):
+		print """Usage: darcs-git unpull [OPTION]...
+Opposite of pull; unsafe if the latest patch is not in remote repository.
+This is an alias for "git reset --soft HEAD^; git checkout -f".
+
+Options:
+  -h         --help                shows brief description of command and its arguments"""
+		sys.exit(ret)
+	if len(argv) and argv[0] in ("-h", "--help"):
+		usage(0)
+	while True:
+		ret = ask("Do you want to unpull the last committed patch? [ynq]")
+		if ret == "y":
+			break
+		if ret in ("n", "q"):
+			sys.exit(0)
+		print "Invalid response, try again!"
+	os.system("git reset --soft HEAD^ %s" % " ".join(argv))
+	os.system("git checkout -f %s" % " ".join(argv))
+
 def main(argv):
 	if len(sys.argv) == 1:
 		print "usage()"
@@ -474,6 +495,8 @@ def main(argv):
 			rollback(argv[1:])
 		elif sys.argv[1][:5] == "unrec":
 			unrecord(argv[1:])
+		elif sys.argv[1] == "unpull":
+			unpull(argv[1:])
 		else:
 			os.system("git %s" % " ".join(argv))
 
