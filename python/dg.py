@@ -545,6 +545,22 @@ Options:
 	os.system("git reset --hard HEAD^ %s" % " ".join(argv))
 	print "Finished unpulling."
 
+def optimize(argv):
+	def usage(ret):
+		print """Usage: darcs-git optimize [OPTION]...
+Optimize the repository.
+This is an alias for "git gc".
+
+Options:
+  -h         --help                shows brief description of command and its arguments"""
+		sys.exit(ret)
+	if len(argv) and argv[0] in ("-h", "--help"):
+		usage(0)
+	print "Checking how much disk space is wasted..."
+	os.system("git count-objects")
+	print "Chleaning up..."
+	os.system("git gc")
+
 def main(argv):
 	def usage(ret):
 		print """Usage: darcs-git COMMAND ...
@@ -597,7 +613,7 @@ Copying patches between repositories with working copy update:
   N put           Makes a copy of the repository
 Administrating repositories:
   W initialize    Initialize a new source tree as a darcs repository.
-  FIXME optimize      Optimize the repository.
+  A optimize      Optimize the repository.
   FIXME check         Check the repository for consistency.
   FIXME repair        Repair the corrupted repository.
 """
@@ -623,6 +639,8 @@ Administrating repositories:
 			unrecord(argv[1:])
 		elif sys.argv[1] == "unpull":
 			unpull(argv[1:])
+		elif sys.argv[1][:3] == "opt":
+			optimize(argv[1:])
 		else:
 			os.system("git %s" % " ".join(argv))
 
