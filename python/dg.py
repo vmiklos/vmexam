@@ -419,21 +419,20 @@ Use "darcs-git help clone" for more information.
 Options:
   -h  --help                         shows brief description of command and its arguments"""
 		sys.exit(ret)
-	if argv[0] in ("-h", "--help"):
+	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
-	else:
-		return os.system("git clone %s" % " ".join(argv))
+	return os.system("git clone %s" % " ".join(argv))
 
 def rollback(argv):
 	def usage(ret):
-		print """Usage: darcs-git rollback [OPTION]...
+		print """Usage: darcs-git rollback [OPTION]... <COMMIT-HASH>
 Commit an inverse patch.
 Use "darcs-git help revert" for more information.
 
 Options:
   -h         --help                shows brief description of command and its arguments"""
 		sys.exit(ret)
-	if argv[0] in ("-h", "--help"):
+	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
 	else:
 		return os.system("git revert %s" % " ".join(argv))
