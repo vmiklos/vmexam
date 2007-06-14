@@ -171,6 +171,7 @@ Options:
   -m PATCHNAME  --commit-name=PATCHNAME  name of commit
   -a            --all                    answer yes to all hunks
   -e            --edit-long-comment      backward compatibility
+  -s            --skip-long-comment      Don't give a long comment
   -h            --help                   shows brief description of command and its arguments"""
 		sys.exit(ret)
 
@@ -178,12 +179,13 @@ Options:
 		def __init__(self):
 			self.name = None
 			self.all = None
+			self.edit = None
 			self.help = False
 			self.files = ""
 	options = Options()
 
 	try:
-		opts, args = getopt.getopt(argv, "m:ah", ["commit-name=", "all", "help"])
+		opts, args = getopt.getopt(argv, "m:aesh", ["commit-name=", "all", "edit-long-comment", "skip-long-comment", "help"])
 	except getopt.GetoptError:
 		usage(1)
 	optind = 0
@@ -191,6 +193,10 @@ Options:
 		if opt in ("-m", "--commit-name"):
 			options.name = arg
 			optind += 1
+		elif opt in ("-e", "--edit-long-comment"):
+			options.edit = "-e"
+		elif opt in ("-s", "--skip-long-comment"):
+			options.edit = ""
 		elif opt in ("-a", "--all"):
 			options.all = True
 		elif opt in ("-h", "--help"):
@@ -204,29 +210,28 @@ Options:
 	if not options.all:
 		status.hunks = askhunks(status.hunks)
 	if status.hunks:
-		if options.name:
-			msg = options.name
-		else:
-			msg = ask("What is the patch name?", str)
+		if not options.name:
+			options.name = ask("What is the patch name?", str)
 	else:
 		print "Ok, if you don't want to record anything, that's fine!"
 		sys.exit(0)
-	while True:
-		ret = ask("Do you want to add a long comment? [ynq]")
-		if ret == "y":
-			opts = "-e"
-			break
-		if ret == "n":
-			opts = ""
-			break
-		if ret == "q":
-			sys.exit(0)
-		print "Invalid response, try again!"
+	if options.edit is None:
+		while True:
+			ret = ask("Do you want to add a long comment? [ynq]")
+			if ret == "y":
+				options.edit = "-e"
+				break
+			if ret == "n":
+				options.edit = ""
+				break
+			if ret == "q":
+				sys.exit(0)
+			print "Invalid response, try again!"
 	# in darcs, it was possible to simply rm a file and then record a
 	# patch. support this
 	os.system("git ls-files -z --deleted | git update-index -z --remove --stdin")
 	if options.all:
-		os.system("git commit -a -m '%s' %s %s" % (msg, opts, options.files))
+		os.system("git commit -a -m '%s' %s %s" % (options.name, options.edit, options.files))
 		sys.exit(0)
 	for i in status.hunks:
 		p = []
@@ -245,7 +250,7 @@ Options:
 				newlist.append(diff2filename(lines[0]))
 	for i in newlist:
 		os.system("git reset HEAD %s" % i)
-	os.system("git commit -m '%s' %s" % (msg, opts))
+	os.system("git commit -m '%s' %s" % (options.name, options.edit))
 	# readd the uncommitted new files
 	for i in newlist:
 		os.system("git add %s" % i)
