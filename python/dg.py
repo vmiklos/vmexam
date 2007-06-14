@@ -561,6 +561,19 @@ Options:
 	print "Chleaning up..."
 	os.system("git gc")
 
+def check(argv):
+	def usage(ret):
+		print """Usage: darcs-git check [OPTION]...
+Check the repository for consistency.
+This is an alias for "git fsck".
+
+Options:
+  -h         --help                shows brief description of command and its arguments"""
+		sys.exit(ret)
+	if len(argv) and argv[0] in ("-h", "--help"):
+		usage(0)
+	os.system("git fsck")
+
 def main(argv):
 	def usage(ret):
 		print """Usage: darcs-git COMMAND ...
@@ -614,8 +627,8 @@ Copying patches between repositories with working copy update:
 Administrating repositories:
   W initialize    Initialize a new source tree as a darcs repository.
   A optimize      Optimize the repository.
-  FIXME check         Check the repository for consistency.
-  FIXME repair        Repair the corrupted repository.
+  A check         Check the repository for consistency.
+  N repair        Repair the corrupted repository.
 """
 		sys.exit(ret)
 	if len(sys.argv) == 1 or sys.argv[1] == "-h":
@@ -641,6 +654,8 @@ Administrating repositories:
 			unpull(argv[1:])
 		elif sys.argv[1][:3] == "opt":
 			optimize(argv[1:])
+		elif sys.argv[1] == "check":
+			check(argv[1:])
 		else:
 			os.system("git %s" % " ".join(argv))
 
