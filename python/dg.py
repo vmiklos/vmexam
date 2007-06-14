@@ -595,6 +595,8 @@ def main(argv):
 	def usage(ret):
 		print """Usage: darcs-git COMMAND ...
 
+A darcs-like interface for git with ~22 commands. (Git has ~144.)
+
 The meaning of the letters are the following:
   A             Alias.
                 Example: darcs-git get does exactly the same as git clone.
@@ -649,7 +651,7 @@ Administrating repositories:
 """
 		sys.exit(ret)
 	if len(sys.argv) == 1 or sys.argv[1] == "-h":
-		usage()
+		usage(0)
 	else:
 		if sys.argv[1][:3] == "rec":
 			record(argv[1:])
