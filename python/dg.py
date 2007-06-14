@@ -425,6 +425,58 @@ Options:
 		usage(0)
 	return os.system("git log -M %s %s %s" % (options.last, options.logopts, options.files))
 
+def push(argv):
+	def usage(ret):
+		print """Usage: darcs-git push [OPTION]... [GIT OPTIONS]...
+Copy and apply patches from this repository to another one.
+
+Options:
+  -a         --all                 answer yes to all questions
+  -h         --help                shows brief description of command and its arguments"""
+		sys.exit(ret)
+
+	class Options:
+		def __init__(self):
+			self.all = False
+			self.help = False
+			self.gitopts = ""
+	options = Options()
+
+	try:
+		opts, args = getopt.getopt(argv, "ah", ["all", "help"])
+	except getopt.GetoptError:
+		usage(1)
+	optind = 0
+	for opt, arg in opts:
+		if opt in ("-a", "--all"):
+			options.all = True
+		elif opt in ("-h", "--help"):
+			options.help = True
+		optind += 1
+	if optind < len(argv):
+		options.gitopts = " ".join(argv[optind:])
+	if options.help:
+		usage(0)
+	sock = os.popen("git log $(git ls-remote $(git config --get remote.origin.url) master|sed 's/\t.*//').. 2>&1")
+	lines = sock.readlines()
+	ret = sock.close()
+	if not len(lines):
+		print "No recorded local changes to push!"
+		return
+	print "".join(lines)
+	if ret:
+		print "Maybe you are not up-to-date and need to pull first?"
+		return
+	if not options.all:
+		while True:
+			ret = ask("Do you want to push these patches? [ynq]")
+			if ret == "y":
+				break
+			if ret in ("n", "q"):
+				sys.exit(0)
+			print "Invalid response, try again!"
+	os.system("git push %s" % options.gitopts)
+
 def get(argv):
 	def usage(ret):
 		print """Usage: darcs-git get [OPTION]... <REPOSITORY> [<DIRECTORY>]
@@ -505,6 +557,8 @@ def main(argv):
 			whatsnew(argv[1:])
 		elif sys.argv[1][:4] == "chan":
 			changes(argv[1:])
+		elif sys.argv[1] == "push":
+			push(argv[1:])
 		elif sys.argv[1] == "get":
 			get(argv[1:])
 		elif sys.argv[1][:4] == "roll":
