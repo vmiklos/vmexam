@@ -392,6 +392,7 @@ Options:
   -l         --last=NUMBER         select the last NUMBER patches
   -s         --summary             summarize changes
   -v         --verbose             give verbose output
+  -t         --tags                include tags in the log (darcs-git only)
   -h         --help                shows brief description of command and its arguments"""
 		sys.exit(ret)
 
@@ -400,11 +401,12 @@ Options:
 			self.last = ""
 			self.logopts = ""
 			self.help = False
+			self.tags = ""
 			self.files = ""
 	options = Options()
 
 	try:
-		opts, args = getopt.getopt(argv, "l:svh", ["last=", "summary", "verbose", "help"])
+		opts, args = getopt.getopt(argv, "l:svth", ["last=", "summary", "verbose", "tags", "help"])
 	except getopt.GetoptError:
 		usage(1)
 	optind = 0
@@ -416,6 +418,8 @@ Options:
 			options.logopts = "--name-status"
 		elif opt in ("-v", "--verbose"):
 			options.logopts = "-p"
+		elif opt in ("-t", "--tags"):
+			options.tags = "| git name-rev --tags --stdin"
 		elif opt in ("-h", "--help"):
 			options.help = True
 		optind += 1
@@ -423,7 +427,7 @@ Options:
 		options.files = " ".join(argv[optind:])
 	if options.help:
 		usage(0)
-	return os.system("git log -M %s %s %s" % (options.last, options.logopts, options.files))
+	return os.system("git log -M %s %s %s %s" % (options.last, options.logopts, options.files, options.tags))
 
 def push(argv):
 	def usage(ret):
