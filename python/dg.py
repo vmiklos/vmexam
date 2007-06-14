@@ -454,7 +454,8 @@ Options:
 		if ret in ("n", "q"):
 			sys.exit(0)
 		print "Invalid response, try again!"
-	return os.system("git reset --soft HEAD^ %s" % " ".join(argv))
+	os.system("git reset --soft HEAD^ %s" % " ".join(argv))
+	print "Finished unrecording."
 
 def unpull(argv):
 	def usage(ret):
@@ -476,6 +477,7 @@ Options:
 		print "Invalid response, try again!"
 	os.system("git reset --soft HEAD^ %s" % " ".join(argv))
 	os.system("git checkout -f %s" % " ".join(argv))
+	print "Finished unpulling."
 
 def main(argv):
 	if len(sys.argv) == 1:
