@@ -434,8 +434,27 @@ Options:
 		sys.exit(ret)
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
-	else:
-		return os.system("git revert %s" % " ".join(argv))
+	return os.system("git revert %s" % " ".join(argv))
+
+def unrecord(argv):
+	def usage(ret):
+		print """Usage: darcs-git unrecord [OPTION]...
+Remove last committed patch without changing the working directory.
+This is an alias for "git reset --soft HEAD^".
+
+Options:
+  -h         --help                shows brief description of command and its arguments"""
+		sys.exit(ret)
+	if len(argv) and argv[0] in ("-h", "--help"):
+		usage(0)
+	while True:
+		ret = ask("Do you want to unrecord the last committed patch? [ynq]")
+		if ret == "y":
+			break
+		if ret in ("n", "q"):
+			sys.exit(0)
+		print "Invalid response, try again!"
+	return os.system("git reset --soft HEAD^ %s" % " ".join(argv))
 
 def main(argv):
 	if len(sys.argv) == 1:
@@ -453,6 +472,8 @@ def main(argv):
 			get(argv[1:])
 		elif sys.argv[1][:4] == "roll":
 			rollback(argv[1:])
+		elif sys.argv[1][:5] == "unrec":
+			unrecord(argv[1:])
 		else:
 			os.system("git %s" % " ".join(argv))
 
