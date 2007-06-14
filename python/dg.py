@@ -370,7 +370,7 @@ Options:
 
 def changes(argv):
 	def usage(ret):
-		print """Usage: darcs changes [OPTION]... [FILE or DIRECTORY]...
+		print """Usage: darcs-git changes [OPTION]... [FILE or DIRECTORY]...
 Gives a changelog-style summary of the branch history.
 
 Options:
