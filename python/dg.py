@@ -574,6 +574,19 @@ Options:
 		usage(0)
 	os.system("git fsck")
 
+def trackdown(argv):
+	def usage(ret):
+		print """Usage: darcs-git trackdown [OPTION]...
+Locate the most recent version lacking an error.
+This is an alias for "git bisect".
+
+Options:
+  -h         --help                shows brief description of command and its arguments"""
+		sys.exit(ret)
+	if len(argv) and argv[0] in ("-h", "--help"):
+		usage(0)
+	os.system("git bisect")
+
 def main(argv):
 	def usage(ret):
 		print """Usage: darcs-git COMMAND ...
@@ -613,7 +626,7 @@ Querying the repository:
   Y changes       Gives a changelog-style summary of the repository history.
   W annotate      Display which patch last modified something.
   N dist          Create a distribution tarball.
-  FIXME trackdown     Locate the most recent version lacking an error.
+  A trackdown     Locate the most recent version lacking an error.
   N query         Query information which is stored by darcs.
 Copying patches between repositories with working copy update:
   W pull          Copy and apply patches from another repository to this one.
@@ -656,6 +669,8 @@ Administrating repositories:
 			optimize(argv[1:])
 		elif sys.argv[1] == "check":
 			check(argv[1:])
+		elif sys.argv[1][:5] == "track":
+			trackdown(argv[1:])
 		else:
 			os.system("git %s" % " ".join(argv))
 
