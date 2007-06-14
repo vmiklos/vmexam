@@ -410,6 +410,20 @@ Options:
 		usage(0)
 	return os.system("git log -M %s %s %s" % (options.last, options.logopts, options.files))
 
+def get(argv):
+	def usage(ret):
+		print """Usage: darcs-git get [OPTION]... <REPOSITORY> [<DIRECTORY>]
+Create a local copy of another repository.
+Use "darcs-git help clone" for more information.
+
+Options:
+  -h  --help                         shows brief description of command and its arguments"""
+		sys.exit(ret)
+	if argv[0] in ("-h", "--help"):
+		usage(0)
+	else:
+		return os.system("git clone %s" % " ".join(argv))
+
 def main(argv):
 	if len(sys.argv) == 1:
 		print "usage()"
@@ -422,6 +436,8 @@ def main(argv):
 			whatsnew(argv[1:])
 		elif sys.argv[1][:4] == "chan":
 			changes(argv[1:])
+		elif sys.argv[1] == "get":
+			get(argv[1:])
 		else:
 			os.system("git %s" % " ".join(argv))
 
