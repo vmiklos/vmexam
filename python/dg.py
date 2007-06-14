@@ -464,7 +464,7 @@ def unpull(argv):
 	def usage(ret):
 		print """Usage: darcs-git unpull [OPTION]...
 Opposite of pull; unsafe if the latest patch is not in remote repository.
-This is an alias for "git reset --soft HEAD^; git checkout -f".
+This is an alias for "git reset --hard HEAD^".
 
 Options:
   -h         --help                shows brief description of command and its arguments"""
@@ -478,8 +478,7 @@ Options:
 		if ret in ("n", "q"):
 			sys.exit(0)
 		print "Invalid response, try again!"
-	os.system("git reset --soft HEAD^ %s" % " ".join(argv))
-	os.system("git checkout -f %s" % " ".join(argv))
+	os.system("git reset --hard HEAD^ %s" % " ".join(argv))
 	print "Finished unpulling."
 
 def main(argv):
