@@ -457,7 +457,7 @@ Options:
 		options.gitopts = " ".join(argv[optind:])
 	if options.help:
 		usage(0)
-	sock = os.popen("git log $(git ls-remote $(git config --get remote.origin.url) master|sed 's/\t.*//').. 2>&1")
+	sock = os.popen("git log $(git ls-remote $(git config --get remote.origin.url) master|sed 's/\t.*//').. --no-merges 2>&1")
 	lines = sock.readlines()
 	ret = sock.close()
 	if not len(lines):
