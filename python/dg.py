@@ -53,6 +53,23 @@ def bug(s=None):
 		print "bug in darcs-git!"
 	print "at %s:%d" % inspect.stack()[1][1:3]
 
+def emptydir(dir):
+	ret = True
+	for root, dirs, files in os.walk(dir):
+		for file in files:
+			ret = False
+			break
+		if not ret:
+			break
+	return ret
+
+def get_root():
+	sock = os.popen("git rev-parse --git-dir")
+	root = sock.read().strip()
+	if sock.close():
+		sys.exit(0)
+	return root
+
 def get_diff(files = ""):
 	sock = os.popen("git diff HEAD %s" % files)
 	lines = sock.readlines()
@@ -653,6 +670,8 @@ Administrating repositories:
 	if len(sys.argv) == 1 or sys.argv[1] == "-h":
 		usage(0)
 	else:
+		# this will exit if no root found
+		get_root()
 		if sys.argv[1][:3] == "rec":
 			record(argv[1:])
 		elif sys.argv[1][:3] == "rev":
