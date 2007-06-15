@@ -228,12 +228,20 @@ Options:
 		options.files = " ".join(argv[optind:])
 	if options.help:
 		usage(0)
-	# we need the overall status too, to exclude new files if necessary
-	allstatus = scan_dir()
-	status = scan_dir(options.files)
-	if not options.all:
-		status.hunks = askhunks(status.hunks)
-	if status.hunks:
+	root = get_root()
+	first = False
+	if emptydir(os.path.join(root, "refs", "heads")):
+		first = True
+		print "This is a new repo, can't cherry-pick for the first commit."
+	if first:
+		status = Files([])
+	else:
+		# we need the overall status too, to exclude new files if necessary
+		allstatus = scan_dir()
+		status = scan_dir(options.files)
+		if not options.all:
+			status.hunks = askhunks(status.hunks)
+	if first or status.hunks:
 		if not options.name:
 			options.name = ask("What is the patch name?", str)
 	else:
@@ -254,7 +262,7 @@ Options:
 	# in darcs, it was possible to simply rm a file and then record a
 	# patch. support this
 	os.system("git ls-files -z --deleted | git update-index -z --remove --stdin")
-	if options.all:
+	if first or options.all:
 		os.system("git commit -a -m '%s' %s %s" % (options.name, options.edit, options.files))
 		sys.exit(0)
 	for i in status.hunks:
