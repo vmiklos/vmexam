@@ -81,8 +81,12 @@ repository = $mygitroot
 encoding = latin2
 EOF
 
-tailor --configfile config
-
-cd $target
-git clone $mygitroot $myname
+tailor --configfile config 2>&1 |tee tailor.log
+pending="$(grep 'pending changesets' tailor.log |sed -n 's/.* \([0-9]\+\) pending changesets .*/\1/;$ p')"
+if [ "$pending" == "0" ]; then
+	cd $target
+	git clone $mygitroot $myname
+else
+	echo "pendings changesets != 0 ($pending), convert failed"
+fi
 rm -rf $myroot $mygitroot
