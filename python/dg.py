@@ -679,7 +679,8 @@ Administrating repositories:
 		usage(0)
 	else:
 		# this will exit if no root found
-		get_root()
+		if sys.argv[1] != "init":
+			get_root()
 		if sys.argv[1][:3] == "rec":
 			record(argv[1:])
 		elif sys.argv[1][:3] == "rev":
