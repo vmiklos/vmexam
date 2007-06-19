@@ -232,7 +232,18 @@ Options:
 	first = False
 	if emptydir(os.path.join(root, "refs", "heads")):
 		first = True
-		print "This is a new repo, can't cherry-pick for the first commit."
+		sock = os.popen("git status")
+		lines = sock.readlines()
+		sock.close()
+		changes = True
+		for i in lines:
+			if i.startswith("nothing"):
+				changes = False
+		if changes:
+			print "This is a new repo, can't cherry-pick for the first commit."
+		else:
+			print "No changes!"
+			sys.exit(0)
 	if first:
 		status = Files([])
 	else:
