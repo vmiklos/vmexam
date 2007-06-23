@@ -693,6 +693,7 @@ Administrating repositories:
 		# this will exit if no root found
 		if sys.argv[1] != "init":
 			get_root()
+		os.environ['GIT_PAGER'] = 'cat'
 		if sys.argv[1][:3] == "rec":
 			record(argv[1:])
 		elif sys.argv[1][:3] == "rev":
