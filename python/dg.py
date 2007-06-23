@@ -576,7 +576,8 @@ Options:
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
 	while True:
-		ret = ask("Do you want to unpull the last committed patch? [ynq]")
+		os.system("git log -1")
+		ret = ask("Do you want to unpull this patch? [ynq]")
 		if ret == "y":
 			break
 		if ret in ("n", "q"):
