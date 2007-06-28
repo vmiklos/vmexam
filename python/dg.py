@@ -497,16 +497,13 @@ Options:
 		options.gitopts = " ".join(argv[optind:])
 	if options.help:
 		usage(0)
-	sock = os.popen("git log $(git ls-remote $(git config --get remote.origin.url) master|sed 's/\t.*//').. --no-merges 2>&1")
+	sock = os.popen("git log origin/master..master --no-merges 2>&1")
 	lines = sock.readlines()
 	ret = sock.close()
 	if not len(lines):
 		print "No recorded local changes to push!"
 		return
 	print "".join(lines)
-	if ret:
-		print "Maybe you are not up-to-date and need to pull first?"
-		return
 	if not options.all:
 		while True:
 			ret = ask("Do you want to push these patches? [ynq]")
@@ -516,6 +513,56 @@ Options:
 				sys.exit(0)
 			print "Invalid response, try again!"
 	os.system("git push %s" % options.gitopts)
+
+def pull(argv):
+	def usage(ret):
+		print """Usage: darcs-git pull [OPTION]... [GIT OPTIONS]...
+Copy and apply patches to this repository from another one.
+
+Options:
+  -a         --all                 answer yes to all questions
+  -h         --help                shows brief description of command and its arguments"""
+		sys.exit(ret)
+
+	class Options:
+		def __init__(self):
+			self.all = False
+			self.help = False
+			self.gitopts = ""
+	options = Options()
+
+	try:
+		opts, args = getopt.getopt(argv, "ah", ["all", "help"])
+	except getopt.GetoptError:
+		usage(1)
+	optind = 0
+	for opt, arg in opts:
+		if opt in ("-a", "--all"):
+			options.all = True
+		elif opt in ("-h", "--help"):
+			options.help = True
+		optind += 1
+	if optind < len(argv):
+		options.gitopts = " ".join(argv[optind:])
+	if options.help:
+		usage(0)
+	os.system("git fetch")
+	sock = os.popen("git log master..origin/master --no-merges 2>&1")
+	lines = sock.readlines()
+	ret = sock.close()
+	if not len(lines):
+		print "No remote changes to pull!"
+		return
+	print "".join(lines)
+	if not options.all:
+		while True:
+			ret = ask("Do you want to pull these patches? [ynq]")
+			if ret == "y":
+				break
+			if ret in ("n", "q"):
+				sys.exit(0)
+			print "Invalid response, try again!"
+	os.system("git pull %s" % options.gitopts)
 
 def get(argv):
 	def usage(ret):
@@ -672,7 +719,7 @@ Querying the repository:
   A trackdown     Locate the most recent version lacking an error.
   N query         Query information which is stored by darcs.
 Copying patches between repositories with working copy update:
-  W pull          Copy and apply patches from another repository to this one.
+  Y pull          Copy and apply patches from another repository to this one.
   A unpull        Opposite of pull; unsafe if patch is not in remote repository.
   N obliterate    Delete selected patches from the repository. (UNSAFE!)
   Y push          Copy and apply patches from this repository to another one.
@@ -704,6 +751,8 @@ Administrating repositories:
 			changes(argv[1:])
 		elif sys.argv[1] == "push":
 			push(argv[1:])
+		elif sys.argv[1] == "pull":
+			pull(argv[1:])
 		elif sys.argv[1] == "get":
 			get(argv[1:])
 		elif sys.argv[1][:4] == "roll":
