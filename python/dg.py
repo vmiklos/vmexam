@@ -738,7 +738,7 @@ Administrating repositories:
 		usage(0)
 	else:
 		# this will exit if no root found
-		if sys.argv[1] != "init":
+		if sys.argv[1] not in ["init", "get"]:
 			get_root()
 		os.environ['GIT_PAGER'] = 'cat'
 		if sys.argv[1][:3] == "rec":
