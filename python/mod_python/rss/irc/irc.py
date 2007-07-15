@@ -22,7 +22,7 @@ class Quote:
 			return 0
 		else:
 			return 1
-	def getlist():
+	def getlist(req):
 		ignores = []
 		quotes = []
 		sock = open(os.path.join(quotepath, ".htaccess"))
@@ -43,7 +43,10 @@ class Quote:
 						quotes.append(Quote(root, file))
 
 		quotes.sort(quotes[0].compare)
-		quotes = quotes[:10]
+		if "PATH_INFO" in req.subprocess_env.keys() and req.subprocess_env["PATH_INFO"] == "/all":
+			quotes = quotes[:138]
+		else:
+			quotes = quotes[:10]
 		return quotes
 	getlist = staticmethod(getlist)
 
@@ -77,6 +80,6 @@ class Rss:
 
 def handler(req):
 	rss = Rss(req, "~/vmiklos/rss/irc", quoteurl, "VMiklos' IRC Quotes RSS")
-	for i in Quote.getlist():
+	for i in Quote.getlist(req):
 		rss.additem(i.title, "%s/%s" % (quoteurl, i.filename), escape(i.content), formatdate(i.time, True))
 	return rss.output()
