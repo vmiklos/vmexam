@@ -1,5 +1,5 @@
 from mod_python import apache
-import sys
+import sys, os
 sys.path.append("/usr/lib")
 import feedparser, time, pickle
 
@@ -8,9 +8,12 @@ dumpfile = "/home/vmiklos/public_html/firefox/feeds"
 
 def dumpcache():
 	global feeds
-	socket = open(dumpfile, "w")
-	pickle.dump(feeds, socket)
-	socket.close()
+	try:
+		socket = open(dumpfile, "w")
+		pickle.dump(feeds, socket)
+		socket.close()
+	except TypeError:
+		os.remove(dumpfile)
 
 def fetchfeed(url):
 	global feeds
@@ -36,14 +39,18 @@ def dumpfeed(url):
 			feed = fetchfeed(url)
 	else:
 		feed = fetchfeed(url)
-	ret.append('<div id="right" class="sideboxpadding">')
-	ret.append('<div class="boxheader">%s<br /></div>' % (feed.feed.title.encode('ascii', 'xmlcharrefreplace')))
-	ret.append('<div class="sidecontent">')
-	for i in feed.entries:
-		ret.append('<a href="%s">%s</a><br />' % (i.link, i.title.encode('ascii', 'xmlcharrefreplace')))
-	ret.append('</div></div>')
-	ret.append('<div id="right" class="dummybox">')
-	ret.append('</div>')
+	try:
+		ret.append('<div id="right" class="sideboxpadding">')
+		ret.append('<div class="boxheader">%s<br /></div>' % (feed.feed.title.encode('ascii', 'xmlcharrefreplace')))
+		ret.append('<div class="sidecontent">')
+		for i in feed.entries:
+			ret.append('<a href="%s">%s</a><br />' % (i.link, i.title.encode('ascii', 'xmlcharrefreplace')))
+		ret.append('</div></div>')
+		ret.append('<div id="right" class="dummybox">')
+		ret.append('</div>')
+	except AttributeError:
+		feed.feed = None
+		ret = []
 	return "\n".join(ret)
 
 if __name__ == "firefox":
