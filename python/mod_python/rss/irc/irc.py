@@ -2,6 +2,7 @@ import os, stat, re
 from email.Utils import formatdate
 from mod_python import apache
 from xml.sax.saxutils import escape
+from random import choice
 
 quotepath = "/home/vmiklos/public_html/logs/irc"
 quoteurl = "http://frugalware.org/~vmiklos/logs/irc"
@@ -22,7 +23,7 @@ class Quote:
 			return 0
 		else:
 			return 1
-	def getlist(req, all=False):
+	def getlist(req, all=False, random=False):
 		ignores = []
 		quotes = []
 		sock = open(os.path.join(quotepath, ".htaccess"))
@@ -43,7 +44,9 @@ class Quote:
 						quotes.append(Quote(root, file))
 
 		quotes.sort(quotes[0].compare)
-		if not all:
+		if random:
+			quotes = [choice(quotes)]
+		elif not all:
 			quotes = quotes[:10]
 		return quotes
 	getlist = staticmethod(getlist)
@@ -124,6 +127,11 @@ def handler(req):
 	if "PATH_INFO" in req.subprocess_env.keys() and req.subprocess_env["PATH_INFO"] == "/all":
 		html = Html(req, "~/vmiklos/rss/irc", quoteurl, "VMiklos' IRC Quotes")
 		for i in Quote.getlist(req, all=True):
+			html.additem(i.title, "%s/%s" % (quoteurl, i.filename), escape(i.content).replace("\n", "<br />"), formatdate(i.time, True))
+		return html.output()
+	elif "PATH_INFO" in req.subprocess_env.keys() and req.subprocess_env["PATH_INFO"] == "/random":
+		html = Html(req, "~/vmiklos/rss/irc", quoteurl, "VMiklos' Random IRC Quotes")
+		for i in Quote.getlist(req, random=True):
 			html.additem(i.title, "%s/%s" % (quoteurl, i.filename), escape(i.content).replace("\n", "<br />"), formatdate(i.time, True))
 		return html.output()
 	else:
