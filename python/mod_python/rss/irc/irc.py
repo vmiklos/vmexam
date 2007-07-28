@@ -89,11 +89,12 @@ class Html:
 </p></div>
 """ % (link, title, desc))
 		self.req.write("""
+     A total of %d items has been printed.
      </div>
     </div>
   </body>
 </html>
-""")
+""" % len(self.items))
 		return apache.OK
 
 class Rss:
