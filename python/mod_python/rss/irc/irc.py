@@ -12,7 +12,7 @@ class Quote:
 		self.title = filename.replace('-', ' ')
 		path = os.path.join(dir, filename)
 		sock = open(path)
-		self.content = "<br />".join(sock.readlines())
+		self.content = "".join(sock.readlines())
 		sock.close()
 		self.time = os.stat(path)[stat.ST_MTIME]
 	def compare(self, a, b):
@@ -22,7 +22,7 @@ class Quote:
 			return 0
 		else:
 			return 1
-	def getlist(req):
+	def getlist(req, all=False):
 		ignores = []
 		quotes = []
 		sock = open(os.path.join(quotepath, ".htaccess"))
@@ -43,13 +43,55 @@ class Quote:
 						quotes.append(Quote(root, file))
 
 		quotes.sort(quotes[0].compare)
-		if "PATH_INFO" in req.subprocess_env.keys() and req.subprocess_env["PATH_INFO"] == "/all":
-			quotes = quotes[:138]
-		else:
+		if not all:
 			quotes = quotes[:10]
 		return quotes
 	getlist = staticmethod(getlist)
 
+
+class Html:
+	def __init__(self, req, title, link, desc):
+		self.req = req
+		self.title = title
+		self.desc = desc
+		self.link = link
+		self.items = []
+	def additem(self, title, link, desc, pubDate):
+		self.items.append([title, link, desc, pubDate])
+	def output(self):
+		self.req.content_type = 'text/html'
+		self.req.write("""
+<?xml version="1.0" encoding="ISO-8859-2"?>
+<html id="feedHandler">
+  <head>
+    <title>Viewing Feed</title>
+    <link rel="stylesheet" href="../irc.css" type="text/css" media="all"/>
+  </head>
+  <body>
+    <div id="feedHeaderContainer"><div id="feedHeader" dir="ltr"></div></div>
+
+    <div id="feedBody">
+      <div id="feedTitle">
+        <div id="feedTitleContainer">
+          <h1 id="feedTitleText">%s</h1>
+          <h2 id="feedSubtitleText">%s</h2>
+        </div>
+      </div>
+      <div id="feedContent">
+""" % (self.title, self.desc))
+		for title, link, desc, pubDate in self.items:
+			self.req.write("""
+<div class="entry"><h3><a href="%s">%s</a></h3><p class="feedEntryContent">
+%s
+</p></div>
+""" % (link, title, desc))
+		self.req.write("""
+     </div>
+    </div>
+  </body>
+</html>
+""")
+		return apache.OK
 
 class Rss:
 	def __init__(self, req, title, link, desc):
@@ -79,7 +121,13 @@ class Rss:
 		return apache.OK
 
 def handler(req):
-	rss = Rss(req, "~/vmiklos/rss/irc", quoteurl, "VMiklos' IRC Quotes RSS")
-	for i in Quote.getlist(req):
-		rss.additem(i.title, "%s/%s" % (quoteurl, i.filename), escape(i.content), formatdate(i.time, True))
-	return rss.output()
+	if "PATH_INFO" in req.subprocess_env.keys() and req.subprocess_env["PATH_INFO"] == "/all":
+		html = Html(req, "~/vmiklos/rss/irc", quoteurl, "VMiklos' IRC Quotes")
+		for i in Quote.getlist(req, all=True):
+			html.additem(i.title, "%s/%s" % (quoteurl, i.filename), escape(i.content).replace("\n", "<br />"), formatdate(i.time, True))
+		return html.output()
+	else:
+		rss = Rss(req, "~/vmiklos/rss/irc", quoteurl, "VMiklos' IRC Quotes RSS")
+		for i in Quote.getlist(req):
+			rss.additem(i.title, "%s/%s" % (quoteurl, i.filename), escape(i.content), formatdate(i.time, True))
+		return rss.output()
