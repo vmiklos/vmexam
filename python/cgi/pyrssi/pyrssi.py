@@ -72,10 +72,22 @@ class Pyrssi:
 			self.cookie = Cookie.SimpleCookie()
 			self.cookie['pyrssi_pass'] = self.form['pass'].value
 			self.cookie['pyrssi_pass']['max-age'] = self.year
+			if 'pyrssi_channel' in self.cookie.keys():
+				self.cookie['pyrssi_channel']['max-age'] = 0
+			if 'pyrssi_network' in self.cookie.keys():
+				self.cookie['pyrssi_network']['max-age'] = 0
+			if 'pyrssi_refnum' in self.cookie.keys():
+				self.cookie['pyrssi_refnum']['max-age'] = 0
 			print self.cookie
 
 		if "action" in self.form.keys() and self.form['action'].value == "logout":
 			self.cookie['pyrssi_pass']['max-age'] = 0
+			if 'pyrssi_channel' in self.cookie.keys():
+				self.cookie['pyrssi_channel']['max-age'] = 0
+			if 'pyrssi_network' in self.cookie.keys():
+				self.cookie['pyrssi_network']['max-age'] = 0
+			if 'pyrssi_refnum' in self.cookie.keys():
+				self.cookie['pyrssi_refnum']['max-age'] = 0
 			print self.cookie
 			self.cookie = {}
 
