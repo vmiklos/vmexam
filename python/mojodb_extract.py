@@ -11,8 +11,8 @@ def parse_file(filename):
 
 	for i in lines:
 		line = i.strip()
-		if re.match(r'..:.. <.Mojojojo> [^ ]+, [^ ]+ => ', line):
-			record = re.sub(r"..:.. <[^>]+> [^ ]+, ([^ ]+) => (.*)", "\\1\n\\2", line).split("\n")
+		if re.match(r'..:.. <.Mojojojo> [^ ]+, [^ ]+ (.1/[0-9]. )?=> ', line):
+			record = re.sub(r"..:.. <[^>]+> [^ ]+, ([^ ]+) .*=> (.*)", "\\1\n\\2", line).split("\n")
 			records[record[0].replace("[WFA]", "")] = record[1]
 
 sock = open(sys.argv[1], "w")
