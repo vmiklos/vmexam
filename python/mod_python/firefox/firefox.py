@@ -70,7 +70,8 @@ if __name__ == "firefox":
 		<a href="http://openblog.hu/vmiklos">blog</a> |
 		<a href="http://bugs.frugalware.org/?dev=vmiklos">my tasks</a> |
 		<a href="http://bugs.frugalware.org/?string=[SEC]">sec tasks</a> |
-		<a href="http://rss.gmane.org/gmane.linux.frugalware.cvs">-darcs rss</a>
+		<a href="http://rss.gmane.org/gmane.linux.frugalware.cvs">-darcs rss</a> |
+		<a href="http://rss.gmane.org/gmane.linux.frugalware.scm">-git rss</a>
 		</div>
 		<div class="dummybox"></div>
 		<div id="main">
