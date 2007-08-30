@@ -1,0 +1,4 @@
+import glob
+
+big = ['.Lists.biglist1', '.Lists.biglist2']
+big.extend(glob.glob(".People.Old.*"))
