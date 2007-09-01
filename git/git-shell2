@@ -1,0 +1,52 @@
+#!/bin/sh
+
+# this script allows you to have only one 'git' unix account and add several
+# virtual git users with read-only or read-write permisson. first ask for an
+# ssh public key and when adding it to authorized_keys, use the following format:
+#
+# command="git-shell2 username" <original key>
+
+access='/usr/local/git/access'
+repodir='/usr/local/git/repos'
+
+user=$1
+
+if [ "x" = "x${user}" ]; then
+    echo "No user supplied in authorized_keys" 1>&2
+    exit 1
+fi
+
+if [ "x${SSH_ORIGINAL_COMMAND}" = "x" ]; then
+    echo "SSH_ORIGINAL_COMMAND must be given" 1>&2
+    exit 1
+fi
+
+if [ ! -f ${access} ]; then
+    echo "Access control file ${access} does not exist!" 1>&2
+    exit 1
+fi
+
+command=`echo ${SSH_ORIGINAL_COMMAND} | cut -d' ' -f1`
+repo=$(eval echo $(echo ${SSH_ORIGINAL_COMMAND} | cut -d' ' -f2))
+
+acctype=''
+if [ "x${command}" != "xgit-receive-pack" ]; then
+    acctype='[rw]'
+elif [ "x${command}" != "xgit-upload-pack" ]; then
+    acctype='w'
+else
+    echo "Unknown command" 1>&2
+    exit 1
+fi
+
+if ! grep "${user}:${repo}:${acctype}" ${access} > /dev/null; then
+    echo "No access granted for user ${user} to repository ${repo}" 1>&2
+    exit 1
+fi
+
+if [ ! -d ${repodir}/${repo} ]; then
+    echo "No such repository hosted" 1>&2
+    exit 1
+fi
+
+${command} ${repodir}/${repo}
