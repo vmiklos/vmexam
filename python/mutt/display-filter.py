@@ -22,6 +22,8 @@ def improve_date(input):
 		return input
 	else:
 		tz = rfc822.parsedate_tz(input)
+		if not tz:
+			return input
 		return "%s (%s)" % (formatdate(time.mktime(tz[:9])-tz[9]-(time.timezone), True), input)
 
 lines = sys.stdin.readlines()
