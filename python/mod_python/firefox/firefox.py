@@ -72,7 +72,7 @@ if __name__ == "firefox":
 		<a href="http://bugs.frugalware.org/?string=[SEC]">sec tasks</a> |
 		<a href="http://rss.gmane.org/gmane.linux.frugalware.cvs">-darcs rss</a> |
 		<a href="http://rss.gmane.org/gmane.linux.frugalware.scm">-git rss</a> |
-		<a href="http://ftp.frugalware.org/pub/other/people/vmiklos/bitlbee-skype/">bitlbee-skype</a>
+		<a href="http://ftp.frugalware.org/pub/other/people/vmiklos/">mirrored devspace</a>
 		</div>
 		<div class="dummybox"></div>
 		<div id="main">
