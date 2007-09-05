@@ -22,7 +22,7 @@ def improve_date(input):
 		return input
 	else:
 		tz = rfc822.parsedate_tz(input)
-		if not tz:
+		if not tz or not tz[9]:
 			return input
 		return "%s (%s)" % (formatdate(time.mktime(tz[:9])-tz[9]-(time.timezone), True), input)
 
