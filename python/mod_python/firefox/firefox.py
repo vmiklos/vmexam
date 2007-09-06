@@ -68,11 +68,13 @@ if __name__ == "firefox":
 		<div class="header">
 		<a href="http://frugalware.org/">frugalware</a> |
 		<a href="http://openblog.hu/vmiklos">blog</a> |
+		<a href="http://blogs.frugalware.org/vmiklos">fwblog</a> |
 		<a href="http://bugs.frugalware.org/?dev=vmiklos">my tasks</a> |
 		<a href="http://bugs.frugalware.org/?string=[SEC]">sec tasks</a> |
 		<a href="http://rss.gmane.org/gmane.linux.frugalware.cvs">-darcs rss</a> |
 		<a href="http://rss.gmane.org/gmane.linux.frugalware.scm">-git rss</a> |
-		<a href="http://ftp.frugalware.org/pub/other/people/vmiklos/">mirrored devspace</a>
+		<a href="http://ftp.frugalware.org/pub/other/people/vmiklos/">devspace</a> |
+		<a href="http://frugalware.org/~vmiklos">homepage</a>
 		</div>
 		<div class="dummybox"></div>
 		<div id="main">
