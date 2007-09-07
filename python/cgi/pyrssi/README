@@ -1,22 +1,26 @@
-What's pyrssi?
-==============
+= WAP Interface for Irssi
+Miklos Vajna <vmiklos@frugalware.org>
+
+== What's pyrssi?
 
 pyrssi is a successor for irssi-mobile. It provides a WAP interface so that you
 can control your client from your mobile phone.
 
-Why is it better than irssi-mobile?
-===================================
+== Why is it better than irssi-mobile?
 
 - handles private messaging (that was the most important for me)
-- it allows you do anything, join/part channels, op, kick, etc
+
+- it allows you do anything, join/part channels, op, kick, etc.
+
 - it fetches the last lines from the window's buffer so that you'll see
   everything you see in your client, including joins/quits, /names output, etc.
+
 - it uses a unix socket, rather than a port, which is quite useful in multiuser
   environment
+
 - other reasons I forgot ;)
 
-How does it work?
-=================
+== How does it work?
 
 First you need (my improved version of) socket-interface.pl so that you'll have
 a socket in your ~/.irssi/socket. Then you need pyrssi.py, that cgi will
@@ -25,15 +29,13 @@ connect to the socket and will generate the wap pages.
 Don't forget to edit the bottom of pyrssi.py: the sha1sum of your password and
 the socket path!
 
-FAQ
-===
+== FAQ
 
-Q: How frequent does it refresh?
-A: It does not. If you send an empty text then it will.
+'Q: How frequent does it refresh?'
 
-Q: My window list is looooong. Is it possible to switch between windows without
-   listing all of them?
-A: Yes, just use /g windownum or /g #channelname.
+``A: It does not. If you send an empty text then it will.''
 
-Have fun,
-- VMiklos
+'Q: My window list is looooong. Is it possible to switch between windows
+without listing all of them?'
+
+``A: Yes, just use /g windownum or /g #channelname.''
