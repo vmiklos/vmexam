@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# Copyright (c) 2007 Miklos Vajna
+# GPL version 2 or later (see http://www.gnu.org/copyleft/gpl.html)
+
+#
+# todo-graph
+#
+# graph the activity of a todo list. contains some code from spam-graph
+#
+# requires 'gnuplot'
+#
+
+set -e
+
+if [ $# -lt 3 ]; then
+	echo "usage: $0 todo outfile.png desc"
+fi
+
+data=$1
+output=$2
+desc=$3
+user=`whoami`
+
+daynum=`wc -l $data|sed 's/ .*//'`
+av=`echo "scale=2;($(cat $data|sed 's/.* //'|tr '\n' '+'|sed 's/+$//'))/$daynum" |bc|sed 's/^\./0./'`
+
+# now plot
+echo -e 'set xdata time                       \n\
+set format x"%y%m%d"                          \n\
+set timefmt "%y%m%d"                          \n\
+set yrange [*:*]                              \n\
+set title "avarage number / day: '$av'        \n\
+unset key                                     \n\
+set ylabel "'$desc' for '$user' per day"      \n\
+set terminal png                              \n\
+set output "'$output'"                        \n\
+plot "'$data'" using 1:2 with impulses' |\
+gnuplot
