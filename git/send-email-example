@@ -1,0 +1,3 @@
+#!/bin/sh
+
+git-send-email --envelope-sender "Miklos Vajna <vmiklos@frugalware.org>" --from "Miklos Vajna <vmiklos@frugalware.org>" --to "J. Bruce Fields <bfields@fieldses.org>" --cc "Junio C Hamano <gitster@pobox.com>" --cc git@vger.kernel.org --in-reply-to "<20070925201306.GW30845@fieldses.org>" 0001-User-Manual-document-import-tars.perl.patch
