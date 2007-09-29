@@ -185,6 +185,9 @@ class Pyrssi:
 		ret.insert(0, '1: (status) (notconnected)')
 		return ret
 
+	def __escape(self, s):
+		return cgi.escape(s).replace("$", "$$")
+
 	def __dumpwindowlist(self):
 		# how many channels do we want in a page?
 		cn = 10
@@ -217,7 +220,7 @@ class Pyrssi:
 				network = re.sub(r'.* \((.*)\).*', r'\1', i)
 				if not len(network):
 					network = "notconnected"
-				print """<a href="pyrssi.py?action=windowselect&amp;refnum=%s&amp;window=%s&amp;network=%s">%s</a><br />""" % (refnum, urllib.pathname2url(window), network, cgi.escape(window))
+				print """<a href="pyrssi.py?action=windowselect&amp;refnum=%s&amp;window=%s&amp;network=%s">%s</a><br />""" % (refnum, urllib.pathname2url(window), network, self.__escape(window))
 			elif int(refnum) == (page*cn+cn):
 				print """<a href="pyrssi.py?page=%d">[next]</a><br />""" % (page+1)
 	def __dumpform(self):
@@ -252,7 +255,7 @@ class Pyrssi:
 		self.lastlines = self.__getlastlines()
 		self.lastlines.reverse()
 		for i in self.lastlines:
-			print cgi.escape(i),  '<br />'
+			print self.__escape(i),  '<br />'
 
 # pass is foo for now
 pyrssi = Pyrssi('/home/vmiklos/.irssi/socket', '502b57ea9f1d731a9a63cb16b6aeb3358a8973d1')
