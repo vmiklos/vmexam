@@ -2,6 +2,7 @@
 
 import cgitb, cgi, re, socket, os, time, Cookie, sha, sys, urllib
 from distutils import sysconfig
+from config import config
 
 cgitb.enable()
 last = None
@@ -257,7 +258,6 @@ class Pyrssi:
 		for i in self.lastlines:
 			print self.__escape(i),  '<br />'
 
-# pass is foo for now
-pyrssi = Pyrssi('/home/vmiklos/.irssi/socket', '502b57ea9f1d731a9a63cb16b6aeb3358a8973d1')
+pyrssi = Pyrssi(config.socket, config.password)
 pyrssi.send(cgi.FieldStorage())
 pyrssi.receive()
