@@ -7,4 +7,4 @@ HEADER.html: README
 
 dist:
 	git log --no-merges . |git name-rev --tags --stdin >ChangeLog
-	tar czf pyrssi.tar.gz .htaccess pyrssi.py README socket-interface.pl ChangeLog
+	tar czf pyrssi.tar.gz .htaccess pyrssi.py config.py README socket-interface.pl ChangeLog
