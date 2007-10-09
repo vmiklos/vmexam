@@ -43,7 +43,8 @@ function display_node($node, $param)
 		// internal links
 		$data = str_replace("node/", "", $data);
 		// strip out images
-		$data = preg_replace('/<img src="([^"]+)" [^>]+>/', 'kep: $1', $data);
+		$data = preg_replace('/<img src="([^"]+)"[^>]*>/', 'kep: $1', $data);
+		// target attribute not supported
 		$data = preg_replace('/<a target="[^"]+"/', '<a', $data);
 		// external links
 		$data = preg_replace_callback('|"http://[^"]*"|', "googleize", $data);

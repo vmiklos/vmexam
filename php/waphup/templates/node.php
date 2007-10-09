@@ -30,6 +30,13 @@ if($data!=null)
 	// slice the footer
 	$tidy = substr($tidy, 0, strlen($tidy)-16);
 
+	// divs are not supported
+	$tidy = preg_replace('|</?div[^>]*>|', '', $tidy);
+	// ul/li
+	$tidy = preg_replace('/<li>/', '<p>* ', $tidy);
+	$tidy = preg_replace('|</li>|', '</p>', $tidy);
+	$tidy = str_replace(array('<ul>', '</ul>'), '', $tidy);
+
 	print($tidy);
 }
 else
