@@ -15,7 +15,9 @@ if($nodes!=null)
 	foreach($nodes as $node)
 	{
 		$ptr = explode("/", $node['link']);
-		print(iconv("utf8", "latin2", preg_replace("/.*, (.*) \+.*/", '$1', $node['pubDate']) . "<a href=\"" . str_replace("$rssweb/", "", $ptr[count($ptr)-1]) . "\">" . $node['title'] . "</a><br />\n"));
+		print(iconv("utf8", "latin2", preg_replace("/.*, (.*) \+.*/", '$1', $node['pubDate']) .
+			" <a href=\"" . str_replace("$rssweb/", "", $ptr[count($ptr)-1]) . "\">" .
+			$node['title'] . "</a><br />\n"));
 	}
 }
 else
