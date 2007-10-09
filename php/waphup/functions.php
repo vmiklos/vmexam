@@ -32,7 +32,7 @@ function display_node($node, $param)
 	{
 		$raw = file_get_contents("$web/$node");
 		// drop header
-		$cikk = strstr($raw, '<div class="taxonomy">');
+		$cikk = strstr($raw, '<div class="node  ">');
 		if(!($cikk))
 			// ez vmi blog lesz
 			$cikk = strstr($raw, '<div class="node">');
