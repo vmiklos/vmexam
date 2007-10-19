@@ -26,8 +26,14 @@ server - the active server in window
 witem - the active window item (eg. channel, query)
         or None if the window is empty"""
 	argv = data.split(' ')
+	tmp = []
+	for i in argv:
+		if len(i):
+			tmp.append(i)
+	argv = tmp
+	del tmp
 
-	if len(argv) > 2:
+	if len(argv) > 1:
 		lang = argv[0]
 		word = argv[1]
 	else:
