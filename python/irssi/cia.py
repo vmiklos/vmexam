@@ -1,4 +1,4 @@
-import irssi, urllib
+import irssi, urllib, threading, timeoutsocket
 from sgmllib import SGMLParser
 
 """interface to cia.vc
@@ -39,14 +39,23 @@ class HTMLParser(SGMLParser):
 		if self.inrow:
 			self.row.append(text)
 
+
 def cmd_cia(data, server, witem):
 	"""data - contains the parameters for /dict
 server - the active server in window
 witem - the active window item (eg. channel, query)
         or None if the window is empty"""
-	sock = urllib.urlopen("http://cia.vc/stats/author/VMiklos%20%3Cvmiklos%40frugalware.org%3E")
-	data = sock.read()
-	sock.close()
+	timeoutsocket.setDefaultSocketTimeout(20)
+	try:
+		sock = urllib.urlopen("http://cia.vc/stats/author/Miklos%20Vajna%20%3Cvmiklos%40frugalware.org%3E")
+		data = sock.read()
+		sock.close()
+	except timeoutsocket.Timeout, s:
+		print s
+		return
+	except IOError, s:
+		print s
+		return
 
 	parser = HTMLParser()
 	parser.reset()
