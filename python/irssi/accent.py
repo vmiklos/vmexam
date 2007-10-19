@@ -41,7 +41,7 @@ def send(msg, server, witem):
 	signal = irssi.signal_get_emitted()
 	if msg.startswith("/nounaccent"):
 		msg = msg[len("/nounaccent")+1:]
-	else:
+	elif not msg.startswith("/dict") and not msg.startswith("/spell"):
 		msg = unaccent(msg)
 	stripped_out = True
 	irssi.signal_stop()
