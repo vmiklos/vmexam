@@ -22,9 +22,15 @@ server - the active server in window
 witem - the active window item (eg. channel, query)
         or None if the window is empty"""
 	argv = data.split(' ')
+	tmp = []
+	for i in argv:
+		if len(i):
+			tmp.append(i)
+	argv = tmp
+	del tmp
 	raw = []
 
-	if len(argv) > 2:
+	if len(argv) > 1:
 		lang = argv[0]
 		word = argv[1]
 	else:
@@ -33,6 +39,8 @@ witem - the active window item (eg. channel, query)
 
 	if lang == "hu":
 		url = "http://szotar.sztaki.hu/dict_search.php?S=W&L=HUN%3AENG%3AEngHunDict&W=" + word
+	if lang == "hu2de":
+		url = "http://szotar.sztaki.hu/dict_search.php?S=W&L=HUN%3AGER%3AGerHunDict&W=" + word
 	else:
 		url = "http://szotar.sztaki.hu/dict_search.php?S=W&W=" + word
 
