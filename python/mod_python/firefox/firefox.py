@@ -67,7 +67,7 @@ if __name__ == "firefox":
 		<body>
 		<div class="header">
 		<a href="http://frugalware.org/">frugalware</a> |
-		<a href="http://openblog.hu/vmiklos">blog</a> |
+		<a href="http://vmiklos.hu/blog">blog</a> |
 		<a href="http://blogs.frugalware.org/vmiklos">fwblog</a> |
 		<a href="http://bugs.frugalware.org/?dev=vmiklos">my tasks</a> |
 		<a href="http://bugs.frugalware.org/?string=[SEC]">sec tasks</a> |
