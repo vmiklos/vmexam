@@ -2,4 +2,6 @@
 
 # NOTE: you should list all Ccs in one line, git-send-email otherwise will ignore the 2nd.. lines
 
+# NOTE2: you will be able to set --to in git 1.5.4 from config
+
 git-send-email --envelope-sender "Miklos Vajna <vmiklos@frugalware.org>" --from "Miklos Vajna <vmiklos@frugalware.org>" --to "Junio C Hamano <gitster@pobox.com>" *.patch
