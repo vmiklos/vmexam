@@ -80,6 +80,10 @@ def cmd_iinfo(data, server, witem):
 			if i.tag in idles.keys() and j.name in idles[i.tag].keys():
 				idle = how_old(idles[i.tag][j.name])
 			else:
+				if not i.tag in idles.keys():
+					idles[i.tag] = {}
+				if j.name not in idles[i.tag].keys():
+					idles[i.tag][j.name] = time.time()
 				idle = "n/a"
 			servers.append([i.tag, j.name, idle])
 	print
