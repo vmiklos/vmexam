@@ -90,14 +90,14 @@ def cmd_iinfo(data, server, witem):
 	print indent([labels]+servers).strip()
 	print
 
-def send(msg, server, witem):
+def send(server, msg, witem):
 	global idles
 	if not server or not witem:
 		return
 	if server.tag not in idles.keys():
-		idles[server.tag] = {witem.name: time.time()}
+		idles[server.tag] = {witem: time.time()}
 	else:
-		idles[server.tag][witem.name] = time.time()
+		idles[server.tag][witem] = time.time()
 
 irssi.command_bind('iinfo', cmd_iinfo)
-irssi.signal_add("send command", send)
+irssi.signal_add("message own_public", send)
