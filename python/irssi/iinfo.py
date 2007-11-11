@@ -77,14 +77,7 @@ def cmd_iinfo(data, server, witem):
 	servers = []
 	for i in irssi.servers():
 		for j in i.channels():
-			if i.tag in idles.keys() and j.name in idles[i.tag].keys():
-				idle = how_old(idles[i.tag][j.name])
-			else:
-				if not i.tag in idles.keys():
-					idles[i.tag] = {}
-				if j.name not in idles[i.tag].keys():
-					idles[i.tag][j.name] = time.time()
-				idle = "n/a"
+			idle = how_old(idles[i.tag][j.name])
 			servers.append([i.tag, j.name, idle])
 	print
 	print indent([labels]+servers).strip()
@@ -98,6 +91,13 @@ def send(server, msg, witem):
 		idles[server.tag] = {witem: time.time()}
 	else:
 		idles[server.tag][witem] = time.time()
+
+# init idles
+for i in irssi.servers():
+	for j in i.channels():
+		if not i.tag in idles.keys():
+			idles[i.tag] = {}
+		idles[i.tag][j.name] = time.time()
 
 irssi.command_bind('iinfo', cmd_iinfo)
 irssi.signal_add("message own_public", send)
