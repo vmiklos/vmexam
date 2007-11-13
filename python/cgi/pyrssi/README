@@ -39,3 +39,7 @@ the socket path!
 without listing all of them?'
 
 ``A: Yes, just use /g windownum or /g #channelname.''
+
+'Q: Is it possible to start a new query and switch to it immediately?'
+
+``A: Yes, use /q nick to to so.''

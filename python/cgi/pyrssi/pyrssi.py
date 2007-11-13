@@ -115,25 +115,33 @@ class Pyrssi:
 		self.sock.connect(self.sock_path)
 
 	def __send(self, what):
+		def go(what):
+			for i in self.__recv("windowlist").split("\n"):
+				refnum = re.sub(r'(.*): .*', r'\1', i)
+				window = re.sub(r'.*: (.*) \(.*', r'\1', i)
+				network = re.sub(r'.* \((.*)\).*', r'\1', i)
+				if refnum == what[3:] or window.lower() == what[3:].lower():
+					self.cookie['pyrssi_channel'] = window.lower()
+					self.cookie['pyrssi_channel']['max-age'] = self.year
+					self.cookie['pyrssi_network'] = network
+					self.cookie['pyrssi_network']['max-age'] = self.year
+					self.cookie['pyrssi_refnum'] = refnum
+					self.cookie['pyrssi_refnum']['max-age'] = self.year
+					print self.cookie
+					self.channel = window
+					self.network = network.lower()
+					self.refnum = refnum
+					break
 		ret = 0
 		if len(what):
 			if what.lower().startswith("/g "):
-				for i in self.__recv("windowlist").split("\n"):
-					refnum = re.sub(r'(.*): .*', r'\1', i)
-					window = re.sub(r'.*: (.*) \(.*', r'\1', i)
-					network = re.sub(r'.* \((.*)\).*', r'\1', i)
-					if refnum == what[3:] or window.lower() == what[3:].lower():
-						self.cookie['pyrssi_channel'] = window.lower()
-						self.cookie['pyrssi_channel']['max-age'] = self.year
-						self.cookie['pyrssi_network'] = network
-						self.cookie['pyrssi_network']['max-age'] = self.year
-						self.cookie['pyrssi_refnum'] = refnum
-						self.cookie['pyrssi_refnum']['max-age'] = self.year
-						print self.cookie
-						self.channel = window
-						self.network = network.lower()
-						self.refnum = refnum
-						break
+				go(what)
+			elif what.lower().startswith("/q "):
+				self.__connect()
+				ret += self.sock.send("send %s" % what)
+				time.sleep(0.5)
+				self.__connect()
+				go(what)
 			else:
 				self.__connect()
 				ret += self.sock.send("switch %s" % self.refnum)
