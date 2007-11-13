@@ -117,7 +117,7 @@ class Pyrssi:
 	def __send(self, what):
 		ret = 0
 		if len(what):
-			if what.startswith("/g "):
+			if what.lower().startswith("/g "):
 				for i in self.__recv("windowlist").split("\n"):
 					refnum = re.sub(r'(.*): .*', r'\1', i)
 					window = re.sub(r'.*: (.*) \(.*', r'\1', i)
