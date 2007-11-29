@@ -10,18 +10,35 @@ def cmd_chanstat(data, server, witem):
 	def chancmp(a, b):
 		return cmp(a[1], b[1])
 
+	prevdate = None
+	datelimit = None
+	datestr = ""
+	if data == "yesterday":
+		datestr = "previous"
+		prevdate = 86400
+		datelimit = 86400
+
 	nick = witem.server.nick
 
 	current = time.localtime()
 	fro = int(time.mktime(current) - current.tm_hour*3600 - current.tm_min*60 - current.tm_sec)
+	if prevdate:
+		fro -= prevdate
+	to = None
+	if datelimit:
+		to = fro + datelimit
 
 	sock = open(statfile)
 
 	lines = []
 	for i in sock.readlines():
 		items = i.strip().split(' ')
-		if int(items[0]) > fro and items[2] not in ignore:
-			lines.append(items)
+		if int(items[0]) > fro and items[2] not in ignore and items[2][0] == "#":
+			if to:
+				if int(items[0]) < to:
+					lines.append(items)
+			else:
+				lines.append(items)
 	sock.close()
 	total = len(lines)
 
@@ -45,7 +62,7 @@ def cmd_chanstat(data, server, witem):
 	else:
 		s = "'s"
 
-	witem.command("/me %s day: %s" % (s, " ".join(["%s [%sm]" % (i, j) for i, j in sorted])))
+	witem.command("/me %s %s day: %s" % (s, datestr, " ".join(["%s [%sm]" % (i, j) for i, j in sorted])))
 
 def timer():
 	win = irssi.active_win()
