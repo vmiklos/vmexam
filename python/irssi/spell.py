@@ -50,9 +50,9 @@ witem - the active window item (eg. channel, query)
 	pin.close()
 	ret = pout.readlines()
 	pout.close()
-	if ret[1].startswith("*"):
-		print "OK"
-	else:
+	if ret[1].startswith("&"):
 		print unicode(ret[1].split(":")[1].strip(), "latin2")
+	else:
+		print "OK"
 
 irssi.command_bind('spell', cmd_spell)
