@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# a simple script to convert youtube's flv to an avi which can be played by anyone
+
+mencoder $1 -ovc lavc -oac mp3lame -lavcopts vcodec=mpeg4:keyint=50 -o `basename $1`.avi -ffourcc XVID
