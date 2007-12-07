@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# a simple script to convert any video to an flv format which can be played by flash players
+
+mencoder \
+$1 \
+-ofps 25 \
+-o `basename $1`.flv \
+-of lavf \
+-oac mp3lame \
+-lameopts abr:br=64 \
+-srate 22050 \
+-ovc lavc \
+-lavcopts vcodec=flv:keyint=50:vbitrate=300:mbd=2:mv0:trell:\
+v4mv:cbp:last_pred=3 -vf scale=320:240
