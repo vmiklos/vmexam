@@ -18,6 +18,10 @@ def cmd_chanstat(data, server, witem):
 		prevdate = 86400
 		datelimit = 86400
 
+	if not witem:
+		print "Not in a channel"
+		return
+
 	nick = witem.server.nick
 
 	current = time.localtime()
