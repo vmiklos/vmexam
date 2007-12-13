@@ -14,15 +14,11 @@ def cmd_chanstat(data, server, witem):
 	datelimit = None
 	datestr = ""
 	if data == "yesterday":
-		datestr = "previous"
+		datestr = " previous"
 		prevdate = 86400
 		datelimit = 86400
 
-	if not witem:
-		print "Not in a channel"
-		return
-
-	nick = witem.server.nick
+	nick = irssi.active_server().nick
 
 	current = time.localtime()
 	fro = int(time.mktime(current) - current.tm_hour*3600 - current.tm_min*60 - current.tm_sec)
@@ -66,13 +62,17 @@ def cmd_chanstat(data, server, witem):
 	else:
 		s = "'s"
 
-	witem.command("/me %s %s day: %s" % (s, datestr, " ".join(["%s [%sm]" % (i, j) for i, j in sorted])))
+	dstr = "%s%s day: %s" % (s, datestr, " ".join(["%s [%sm]" % (i, j) for i, j in sorted]))
+	if witem:
+		witem.command("/me %s" % dstr)
+	else:
+		print "* %s %s" % (nick, dstr)
 
 def timer():
 	win = irssi.active_win()
 	if win.active and win.active_server:
 		sock = open(statfile, "a")
-		sock.write("%s %s %s\n" % (int(time.time()), win.active_server.tag, win.active.name))
+		sock.write("%s%s %s\n" % (int(time.time()), win.active_server.tag, win.active.name))
 		sock.close()
 	irssi.timeout_add(1000*60, timer)
 
