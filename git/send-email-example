@@ -1,7 +1,9 @@
-#!/bin/sh
+so here is my workflow
 
-# NOTE: you should list all Ccs in one line, git-send-email otherwise will ignore the 2nd.. lines
+1) git config sendemail.to foo@bar.com (m8r's email). this is required only once
 
-# NOTE2: you will be able to set --to in git 1.5.4 from config
+2) git format-patch. edit Cc and add In-Reply-To:
 
-git-send-email --envelope-sender "Miklos Vajna <vmiklos@frugalware.org>" --from "Miklos Vajna <vmiklos@frugalware.org>" --to "Junio C Hamano <gitster@pobox.com>" *.patch
+3) run git-send-email --envelope-sender "Miklos Vajna <vmiklos@frugalware.org>" --from "Miklos Vajna <vmiklos@frugalware.org>" *.patch
+
+i'm still wondering if this is the perfect workflow, but i'm pretty sure it is
