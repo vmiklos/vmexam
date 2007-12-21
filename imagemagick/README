@@ -1,0 +1,22 @@
+http://vmiklos.hu/pic/imagemagick.png <- itt lathato az elrendezes amit el
+kellett kesziteni montage-ban. a dolog elegge specifikus, de azert reszeket fel
+lehet hasznalni jol mashol is. tehat vagy egy "4es" es egy "8as" nevu konyvtar.
+elobbiben 6db 1:1 aranyu kep, utobbiban 3 1:2 aranyu kep. feladat: ezeket a
+fenti elrendezesben ugy atrendezni/meretezni/forgatni, hogy adott cm nagysagu
+legyen kinyomtatva. ami erdekes lehet belole:
+
+convert %s -scale 2200x1100! %s <- ez force-olja az atmeretezest aranytartas nelkul
+
+convert %s -rotate 90 %s <- forgatas
+
+convert %s -crop 1100x1100+0+0 %s.t.jpg
+convert %s -crop 1100x1100+0+1100 %s.b.jpg
+
+^ egy allo 1:2 aranyu kep szetvagasa 2 darabra
+
+montage *.jpg -density 500 -tile 3x4 -geometry +0+0 out.jpg
+
+^ kepek osszerakasa ugy, hogy 3 oszlop es 4 sor legyen, 0px csikot hagyva a
+keretek kozott, 500as dpivel
+
+a tobbiert read t3h code ;)
