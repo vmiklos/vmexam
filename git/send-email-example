@@ -1,9 +1,0 @@
-so here is my workflow
-
-1) git config sendemail.to foo@bar.com (m8r's email). this is required only once
-
-2) git format-patch. edit Cc and add In-Reply-To:
-
-3) run git-send-email --envelope-sender "Miklos Vajna <vmiklos@frugalware.org>" --from "Miklos Vajna <vmiklos@frugalware.org>" *.patch
-
-i'm still wondering if this is the perfect workflow, but i'm pretty sure it is
