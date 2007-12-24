@@ -75,7 +75,7 @@ if __name__ == "firefox":
 		<a href="http://rss.gmane.org/gmane.linux.frugalware.cvs">-darcs rss</a> |
 		<a href="http://rss.gmane.org/gmane.linux.frugalware.scm">-git rss</a> |
 		<a href="http://ftp.frugalware.org/pub/other/people/vmiklos/">devspace</a> |
-		<a href="http://frugalware.org/~vmiklos">homepage</a>
+		<a href="http://vmiklos.hu">homepage</a>
 		</div>
 		<div class="dummybox"></div>
 		<div id="main">
