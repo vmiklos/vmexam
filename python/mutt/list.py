@@ -32,7 +32,8 @@ class ImapLister:
 		for i in mylist(dir)[1]:
 			if i.split(" ")[-1] == dir:
 				i = "INBOX"
-			self.dirs.append(i.split(" ")[-1])
+			if i.split(" ")[-1][-8:] != "_archive":
+				self.dirs.append(i.split(" ")[-1])
 		self.dirs.sort()
 
 if __name__ == "__main__":
