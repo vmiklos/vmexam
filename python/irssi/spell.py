@@ -20,6 +20,11 @@ channel_langs = {
 		'#frugalware.hu': 'hu'
 		}
 
+aliases = {
+		'hu': 'hu-HU',
+		'en': 'en_US'
+		}
+
 def cmd_spell(data, server, witem):
 	"""data - contains the parameters for /dict
 server - the active server in window
@@ -44,8 +49,10 @@ witem - the active window item (eg. channel, query)
 			if witem.name in channel_langs.keys():
 				lang = channel_langs[witem.name]
 		word = argv[0]
+	if lang in aliases.keys():
+		lang = aliases[lang]
 	
-	pout, pin = popen2.popen2('aspell -a -l %s' % lang)
+	pout, pin = popen2.popen2('hunspell -a -d %s' % lang)
 	pin.write("%s\n" % word)
 	pin.close()
 	ret = pout.readlines()
