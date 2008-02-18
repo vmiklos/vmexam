@@ -71,12 +71,22 @@ def how_old(epoch):
 
 idles = {}
 
+def init_idles():
+	global idles
+	for i in irssi.servers():
+		for j in i.channels():
+			if not i.tag in idles.keys():
+				idles[i.tag] = {}
+			idles[i.tag][j.name] = time.time()
+
 def cmd_iinfo(data, server, witem):
 	global idles
 	labels = ('Server', 'Channel', 'Idle')
 	servers = []
 	for i in irssi.servers():
 		for j in i.channels():
+			if i.tag not in idles.keys() or j.name not in idles[i.tag].keys():
+				init_idles()
 			idle = how_old(idles[i.tag][j.name])
 			servers.append([i.tag, j.name, idle])
 	print
@@ -92,12 +102,7 @@ def send(server, msg, witem):
 	else:
 		idles[server.tag][witem] = time.time()
 
-# init idles
-for i in irssi.servers():
-	for j in i.channels():
-		if not i.tag in idles.keys():
-			idles[i.tag] = {}
-		idles[i.tag][j.name] = time.time()
+init_idles()
 
 irssi.command_bind('iinfo', cmd_iinfo)
 irssi.signal_add("message own_public", send)
