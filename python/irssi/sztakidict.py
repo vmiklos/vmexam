@@ -54,16 +54,9 @@ witem - the active window item (eg. channel, query)
 		if not line:
 			break
 		if line.find("nbsp") > 0:
-			raw.append(re.sub(r'.*&nbsp;(.*)<br/>\n', r'\1', line))
+			raw.append(re.sub(r'.*&nbsp;(.*)<br/>\n', r'\1', line).decode("utf-8").encode("latin2"))
 	if len(raw):
-		first = True
-		for i in raw:
-			if first:
-				first = False
-			else:
-				sys.stdout.write(", ")
-			sys.stdout.write(unicode(re.sub(r'\&\#([0-9]+);', rec, i), "latin2"))
-		print
+		print unicode(re.sub(r'\&\#([0-9]+);', rec, ", ".join(raw)), "latin2")
 	else:
 		print "not found"
 	socket.close()
