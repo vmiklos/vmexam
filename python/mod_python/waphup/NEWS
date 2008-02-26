@@ -1,5 +1,8 @@
 VERZIO          LEIRAS
 -----------------------------------------------------------------------------
+1.9.0         - ujrairas pythonban. a tidy u.ugy megy, a tobbi funkciot nem
+		csinaltam meg meg. majd. esetleg. (az uj kod pl implicit modon
+                tamogatja a szavazasok megtekinteset.)
 1.1.0         - bugfix: blogok kezelese
               - comment support (Elbandi patche alapjan)
               - pointer linkek a cikkek aljan
