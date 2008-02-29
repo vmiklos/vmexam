@@ -11,6 +11,7 @@ shift
 c=0
 for i in "$@"
 do
+	echo "processing input file '$i'..."
 	convert "$i" $c.pnm
 	pnmtops $c.pnm >$c.ps
 	rm $c.pnm
@@ -18,5 +19,7 @@ do
 	c=$(($c+1))
 done
 
+echo -n "merging the output..."
 gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile="$out" $outlist
 rm $outlist
+echo " done."
