@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 if [ -z "$*" ]; then
 	echo "usage: $0 out.pdf *.jpg"
@@ -6,15 +6,17 @@ if [ -z "$*" ]; then
 fi
 
 outlist=""
-out=$1
+out="$1"
 shift
-for i in $*
+c=0
+for i in "$@"
 do
-	convert $i `basename $i .jpg`.pnm
-	pnmtops `basename $i .jpg`.pnm >`basename $i .jpg`.ps
-	rm `basename $i .jpg`.pnm
-	outlist="$outlist `basename $i .jpg`.ps"
+	convert "$i" $c.pnm
+	pnmtops $c.pnm >$c.ps
+	rm $c.pnm
+	outlist="$outlist $c.ps"
+	c=$(($c+1))
 done
 
-gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=$out $outlist
+gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile="$out" $outlist
 rm $outlist
