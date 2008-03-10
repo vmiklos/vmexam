@@ -63,7 +63,7 @@ int popen2(char **args, FILE **fpin, FILE **fpout)
 		close(pout[1]);
 		close(pout[0]);
 
-		execv(args[0], args);
+		execvp(args[0], args);
 		/* on sucess, execv never returns */
 		return(-1);
 	}
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 {
 	FILE *pin, *pout;
 	char buf[256];
-	char *args[] = { "/usr/bin/bc", NULL };
+	char *args[] = { "bc", NULL };
 
 	if(popen2(args, &pin, &pout) == -1)
 		return(1);
