@@ -4,7 +4,7 @@ sys.path.append("/usr/lib")
 import feedparser, time, pickle
 
 feeds = None
-dumpfile = "/home/vmiklos/public_html/firefox/feeds"
+dumpfile = "/home/vmiklos/ftp/vmiklos.hu/htdocs/startup/feeds"
 
 def dumpcache():
 	global feeds
