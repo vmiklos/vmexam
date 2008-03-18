@@ -11,7 +11,8 @@ def dotify(s):
 	return "pkg_" + s.replace("+", "plus").replace("-", "_").replace("@", "at").replace(".", "dot")
 
 print "digraph {"
-print 'label="Frugalware-current-i686 dependencies for the \'base\' group, as of %s"' % time.strftime("%Y-%m-%d", time.localtime())
+print 'label="Frugalware 0.8 i686 dependencies for the \'base\' group"'
+print 'ratio=1.41'
 root = tempfile.mkdtemp()
 if pacman.initialize(root) == -1:
 	print "initialize() failed"

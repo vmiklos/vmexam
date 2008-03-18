@@ -1,13 +1,13 @@
-all: frugalware-current.png
+all: frugalware.png
 
-frugalware-current.png: frugalware-current.dot
-	dot frugalware-current.dot -Tpng -o frugalware-current.png
+frugalware.png: frugalware.dot
+	dot frugalware.dot -Tpng -o frugalware.png
 
-frugalware-current.dot: frugalware-current.fdb
-	python fdb2dot.py frugalware-current >frugalware-current.dot
+frugalware.dot: frugalware.fdb
+	python fdb2dot.py frugalware >frugalware.dot
 
-frugalware-current.fdb:
-	rsync -avP rsync://rsync.frugalware.org/pub/frugalware/frugalware-current/frugalware-i686/frugalware-current.fdb .
+frugalware.fdb:
+	rsync -avP rsync://rsync.frugalware.org/pub/frugalware/frugalware-stable/frugalware-i686/frugalware.fdb .
 
 clean:
-	rm -f frugalware-current.*
+	rm -f frugalware.*
