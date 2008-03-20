@@ -72,7 +72,7 @@ int popen2(char **args, FILE **fpin, FILE **fpout)
 	close(pout[1]);
 	*fpin = fdopen(pin[1], "w");
 	*fpout = fdopen(pout[0], "r");
-	return(0);
+	return(pid);
 }
 
 int main(int argc, char **argv)
@@ -80,8 +80,9 @@ int main(int argc, char **argv)
 	FILE *pin, *pout;
 	char buf[256];
 	char *args[] = { "bc", NULL };
+	int pid, status;
 
-	if(popen2(args, &pin, &pout) == -1)
+	if((pid = popen2(args, &pin, &pout)) == -1)
 		return(1);
 
 	fprintf(pin, "2+2\n");
@@ -94,6 +95,7 @@ int main(int argc, char **argv)
 		buf[0] = '\0';
 	}
 	fclose(pout);
+	waitpid(pid, &status, 0);
 
 	return(0);
 }
