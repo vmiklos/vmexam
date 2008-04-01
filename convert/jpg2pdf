@@ -13,7 +13,7 @@ for i in "$@"
 do
 	echo "processing input file '$i'..."
 	convert "$i" $c.pnm
-	pnmtops $c.pnm >$c.ps
+	pnmtops -noturn $c.pnm >$c.ps
 	rm $c.pnm
 	outlist="$outlist $c.ps"
 	c=$(($c+1))
