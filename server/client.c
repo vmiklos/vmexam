@@ -1,11 +1,7 @@
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdlib.h>
-#include <errno.h>
 
 #define BUF_LEN 512
 #define PORT 1100
