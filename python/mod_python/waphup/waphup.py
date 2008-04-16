@@ -50,9 +50,12 @@ def display_node(url, req):
 	options = dict(output_xhtml=1, add_xml_decl=1, input_encoding="utf8", output_encoding="utf8")
 	node = tidy.parseString(buf[:20000], **options)
 	
-	xml = minidom.parseString(node.__str__())
-	node = getnode(xml).toxml()
-	req.write(node)
+	try:
+		xml = minidom.parseString(node.__str__())
+		node = getnode(xml).toxml()
+		req.write(node)
+	except Exception, s:
+		req.write("Error while parsing the node: %s" % s)
 	req.write("""
 	</p>
 	</card>
