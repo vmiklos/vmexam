@@ -69,7 +69,7 @@ if __name__ == "firefox":
 		<a href="http://frugalware.org/">frugalware</a> |
 		<a href="http://vmiklos.hu/blog">blog</a> |
 		<a href="http://blogs.frugalware.org/vmiklos">fwblog</a> |
-		<a href="http://bugs.frugalware.org/?dev=vmiklos&order=dateopened&sort=desc">my tasks</a> |
+		<a href="http://bugs.frugalware.org/?dev=vmiklos&order=lastedit&sort=desc">my tasks</a> |
 		<a href="http://bugs.frugalware.org/?string=[SEC]&order=lastedit&sort=desc">sec tasks</a> |
 		<a href="http://bugs.frugalware.org/?do=roadmap">roadmap</a> |
 		<a href="http://bugs.frugalware.org/?sev[]=5">critical bugs</a> |
