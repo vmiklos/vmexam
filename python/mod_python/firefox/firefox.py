@@ -73,7 +73,6 @@ if __name__ == "firefox":
 		<a href="http://bugs.frugalware.org/?string=[SEC]&order=lastedit&sort=desc">sec tasks</a> |
 		<a href="http://bugs.frugalware.org/?do=roadmap">roadmap</a> |
 		<a href="http://bugs.frugalware.org/?sev[]=5">critical bugs</a> |
-		<a href="http://rss.gmane.org/gmane.linux.frugalware.cvs">-darcs rss</a> |
 		<a href="http://rss.gmane.org/gmane.linux.frugalware.scm">-git rss</a> |
 		<a href="http://ftp.frugalware.org/pub/other/people/vmiklos/">devspace</a> |
 		<a href="http://vmiklos.hu">homepage</a>
