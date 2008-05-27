@@ -141,9 +141,9 @@ class HostMon:
 		return self.changes.torss(self.myurl, req)
 
 def handler(req):
-	mon = HostMon({"factory":"factory.frugalware.org",
-		"helicon":"helicon.frugalware.org",
+	mon = HostMon({"helicon":"helicon.frugalware.org",
 		"yugo":"yugo.frugalware.org",
+		"tardis":"tardis.frugalware.org",
 		"bugs":"frugalware.hu",
 		"wiki":"linuxforum.hu"},
 		"/home/vmiklos/public_html/ping2rss/changes",
