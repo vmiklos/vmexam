@@ -1,4 +1,7 @@
+#!/usr/bin/env python
+
 import irssi, re, string, sys, urllib
+from xml.dom import minidom
 
 """interface to dict.sztaki.hu
 type /py load sztakidict to load it
@@ -49,14 +52,13 @@ witem - the active window item (eg. channel, query)
 	except IOError, str:
 		print "problem: %s" % str
 		return
-	while True:
-		line = socket.readline()
-		if not line:
-			break
-		if line.find("nbsp") > 0:
-			raw.append(re.sub(r'.*&nbsp;(.*)<br/>\n', r'\1', line).decode("utf-8").encode("latin2"))
+	buf = socket.read()
+	doc = minidom.parseString(buf.replace('utf8', 'utf-8'))
+	for i in doc.getElementsByTagName("p")[0].childNodes:
+		if i.toxml().startswith("\n\t") and len(i.toxml().strip()):
+			raw.append(i.toxml().strip())
 	if len(raw):
-		print unicode(re.sub(r'\&\#([0-9]+);', rec, ", ".join(raw)), "latin2")
+		print re.sub(":,", ":", re.sub(r'\&\#([0-9]+);', rec, ", ".join(raw)))
 	else:
 		print "not found"
 	socket.close()
