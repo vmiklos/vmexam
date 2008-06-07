@@ -55,7 +55,7 @@ witem - the active window item (eg. channel, query)
 	buf = socket.read()
 	doc = minidom.parseString(buf.replace('utf8', 'utf-8'))
 	for i in doc.getElementsByTagName("p")[0].childNodes:
-		if i.toxml().startswith("\n\t") and len(i.toxml().strip()):
+		if i.toxml().startswith("\n\t") and len(i.toxml().strip()) and i.toxml().strip()[-1] not in [":", "."]:
 			raw.append(i.toxml().strip().replace('\t', ''))
 	if len(raw):
 		print re.sub(":,", ":", re.sub(r'\&\#([0-9]+);', rec, ", ".join(raw)))
