@@ -88,7 +88,9 @@ def cmd_iinfo(data, server, witem):
 			if i.tag not in idles.keys() or j.name not in idles[i.tag].keys():
 				init_idles()
 			idle = how_old(idles[i.tag][j.name])
-			servers.append([i.tag, j.name, idle])
+			servers.append([i.tag, j.name, idle, str(idles[i.tag][j.name])])
+	servers.sort(lambda x, y: int(float(x[3])-float(y[3])))
+	servers = map(lambda x: x[:-1], servers)
 	print
 	print indent([labels]+servers).strip()
 	print
