@@ -29,6 +29,7 @@ def improve_date(input):
 lines = sys.stdin.readlines()
 
 ignore = False
+ignorenext = False
 
 o = []
 
@@ -36,11 +37,20 @@ for i in lines:
 	if i.startswith("Date: "):
 		date = i[6:-1]
 		o.append("Date: %s\n" % improve_date(date))
+
+	# spam from the sourceforge.net lists
 	elif i.startswith("This SF.Net email is sponsored by"):
 		ignore = True
 		del o[-1]
 	elif i.startswith("http://"):
 		ignore = False
+
+	# spam from freemail.hu
+	elif i == "___________________________\n":
+		ignorenext = True
+	elif ignorenext:
+		ignorenext = False
+
 	elif not ignore:
 		o.append(i)
 
