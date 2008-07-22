@@ -28,10 +28,21 @@ def improve_date(input):
 
 lines = sys.stdin.readlines()
 
+ignore = False
+
+o = []
+
 for i in lines:
 	if i.startswith("Date: "):
 		date = i[6:-1]
-		o = "Date: %s\n" % improve_date(date)
-	else:
-		o = i
-	sys.stdout.write(o)
+		o.append("Date: %s\n" % improve_date(date))
+	elif i.startswith("This SF.Net email is sponsored by"):
+		ignore = True
+		del o[-1]
+	elif i.startswith("http://"):
+		ignore = False
+	elif not ignore:
+		o.append(i)
+
+for i in o:
+	sys.stdout.write(i)
