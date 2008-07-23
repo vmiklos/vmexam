@@ -42,7 +42,7 @@ for i in lines:
 	elif i.startswith("This SF.Net email is sponsored by"):
 		ignore = True
 		del o[-1]
-	elif i.startswith("http://"):
+	elif i.startswith("http://") and ignore:
 		ignore = False
 
 	# spam from freemail.hu
