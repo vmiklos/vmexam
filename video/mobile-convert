@@ -1,5 +1,8 @@
 #!/bin/bash
 
-# a simple script to convert any video to a 3gp format which can be played by phones
+if [ -z "$1" ]; then
+	echo "$0 - a simple script to convert any video to a 3gp format which can be played by phones"
+	echo "usage: $0 <input file>"
+fi
 
-ffmpeg -i $1 -acodec libamr_nb -ar 8000 -ac 1 -ab 12.2k -vcodec h263 -s qcif -r 15 `basename $1`.3gp
+ffmpeg -i $1 -acodec libamr_nb -ar 8000 -ac 1 -ab 12.2k -vcodec h263 -s qcif -r 15 `basename ${1%.*}`.3gp
