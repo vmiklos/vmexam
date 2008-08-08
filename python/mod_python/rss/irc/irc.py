@@ -120,7 +120,7 @@ class Rss:
 			<link>%s</link>
 			<description>%s</description>
 			<pubDate>%s</pubDate>
-			</item>\n""" % (title, link, desc.replace('\n', '&lt;br /&gt;\n'), pubDate))
+			</item>\n""" % (title, link, desc, pubDate))
 		self.req.write("</channel>\n</rss>")
 		return apache.OK
 
@@ -138,5 +138,5 @@ def handler(req):
 	else:
 		rss = Rss(req, "~/vmiklos/rss/irc", quoteurl, "VMiklos' IRC Quotes RSS")
 		for i in Quote.getlist(req):
-			rss.additem(i.title, "%s/%s" % (quoteurl, i.filename), escape(i.content), formatdate(i.time, True))
+			rss.additem(i.title, "%s/%s" % (quoteurl, i.filename), escape(escape(i.content).replace("\n", "<br />\n")), formatdate(i.time, True))
 		return rss.output()
