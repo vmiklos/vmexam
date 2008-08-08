@@ -120,7 +120,7 @@ class Rss:
 			<link>%s</link>
 			<description>%s</description>
 			<pubDate>%s</pubDate>
-			</item>\n""" % (title, link, desc, pubDate))
+			</item>\n""" % (title, link, desc.replace('\n', '&lt;br /&gt;\n'), pubDate))
 		self.req.write("</channel>\n</rss>")
 		return apache.OK
 
