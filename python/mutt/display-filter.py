@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import time, rfc822, sys
+import time, rfc822, sys, re
 from email.Utils import formatdate
 
 def get_zone():
@@ -37,6 +37,10 @@ for i in lines:
 	if i.startswith("Date: "):
 		date = i[6:-1]
 		o.append("Date: %s\n" % improve_date(date))
+
+	# gpg spam
+	if re.search("^gpg:.*aka", i):
+		continue
 
 	# spam from the sourceforge.net lists
 	elif i.startswith("This SF.Net email is sponsored by"):
