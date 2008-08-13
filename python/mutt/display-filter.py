@@ -39,7 +39,7 @@ for i in lines:
 		o.append("Date: %s\n" % improve_date(date))
 
 	# gpg spam
-	if re.search("^gpg:.*aka", i):
+	elif re.search("^gpg:.*aka", i):
 		continue
 
 	# spam from the sourceforge.net lists
