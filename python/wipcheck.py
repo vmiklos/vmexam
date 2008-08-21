@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os, sys
 
 # a simple script to check if there are outdated pkgs in a wip repo
@@ -9,8 +11,12 @@ def vercmp(a, b):
 	sock.close()
 	return int(buf)
 
-wip = sys.argv[1]
-current = sys.argv[2]
+try:
+	wip = sys.argv[1]
+	current = sys.argv[2]
+except IndexError:
+	print "usage: ./wipcheck.py bmf frugalware-current"
+	sys.exit(1)
 
 sock = os.popen("pacman-g2 -Sl")
 buf = sock.readlines()
