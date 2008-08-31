@@ -141,11 +141,11 @@ class HostMon:
 		return self.changes.torss(self.myurl, req)
 
 def handler(req):
-	mon = HostMon({"helicon":"helicon.frugalware.org",
-		"yugo":"yugo.frugalware.org",
-		"tardis":"tardis.frugalware.org",
-		"bugs":"frugalware.hu",
-		"wiki":"linuxforum.hu"},
-		"/home/vmiklos/public_html/ping2rss/changes",
-		"http://frugalware.org/~vmiklos/ping2rss")
+	# the changes file will be created if it does not exists, that
+	# stores the result of the previous run (then it'll diff, and
+	# put the changes to the rss)
+	mon = HostMon({"foo":"www.foo.org",
+		"bar":"www.bar.org"},
+		"/path/to/the/changes",
+		"http://www.foo.org/~nick/ping2rss")
 	return mon.dorss(req)
