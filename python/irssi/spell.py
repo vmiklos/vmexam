@@ -58,7 +58,7 @@ witem - the active window item (eg. channel, query)
 	ret = pout.readlines()
 	pout.close()
 	if ret[1].startswith("&"):
-		print unicode(ret[1].split(":")[1].strip(), "latin2")
+		print ret[1].split(":")[1].strip()
 	else:
 		print "OK"
 
