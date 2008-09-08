@@ -5,4 +5,6 @@ if [ -z "$1" ]; then
 	echo "usage: $0 <input file>"
 fi
 
+# it could be done with mencoder as well, but then we loose a-v sync
+# mencoder -o `basename ${1%.*}`.3gp -oac lavc -ovc lavc -lavcopts acodec=libamr_nb:abitrate=12200:vcodec=h263 -vf scale=176:144 -af channels=1 -fps 15 -srate 8000 -of lavf $1
 ffmpeg -i $1 -acodec libamr_nb -ar 8000 -ac 1 -ab 12.2k -vcodec h263 -s qcif -r 15 `basename ${1%.*}`.3gp
