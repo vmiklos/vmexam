@@ -18,6 +18,7 @@ sub psyc_in {
 		my $emitted_signal = Irssi::signal_get_emitted();
 		my ($server, $data, $nick, $address, $junk) = @_;
 		$nick =~ s/net\/irc\/user#//;
+		$nick =~ s/klaci/eax/;
 		$stripped_in=1;
 		Irssi::signal_emit("$emitted_signal", $server, $data, $nick, $address, $junk);
 		Irssi::signal_stop();
