@@ -86,6 +86,13 @@ enum {
 
 int trans_state = NOOP;
 
+enum {
+	OPENGL = 0,
+	MANUAL
+};
+
+int matrix_state = MANUAL;
+
 // csak mert math.ht nemszabad ;-/
 # define M_PI           3.14159265358979323846
 
@@ -154,7 +161,6 @@ void onInitialization( ) {
 	transs[SHIFT] = new Matrix();
 	transs[SHIFT]->LoadIdentify();
 	transs[SHIFT]->m[1][3] = 100;
-	gluOrtho2D(0., 500., 0., 500.);
 }
 
 void onDisplay( ) {
@@ -162,11 +168,24 @@ void onDisplay( ) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glColor4d(0.9f, 0.8f, 0.7f, 1.0f);
 
+	if (matrix_state == MANUAL) {
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+	} else {
+		glMatrixMode (GL_PROJECTION);
+		glLoadMatrixf((float*)transs[trans_state]->m);
+	}
+	gluOrtho2D(0., 600., 0., 600.);
 	for (int i = 0; i < ARRAY_SIZE(points); i++) {
 		glBegin(GL_LINE_STRIP);
 		for (int j = 0; j < ARRAY_SIZE(points[i]); j++) {
-			Vector v = *transs[trans_state] * *points[i][j];
-			glVertex2d(v.x, v.y);
+			if (matrix_state == MANUAL) {
+				Vector v = *transs[trans_state] * *points[i][j];
+				glVertex2d(v.x, v.y);
+			} else {
+				Vector v = *points[i][j];
+				glVertex2d(v.x, v.y);
+			}
 		}
 		glEnd();
 	}
@@ -185,8 +204,13 @@ void onIdle( ) {
 }
 
 void onKeyboard(unsigned char key, int x, int y) {
+	if (key != 's' && key != 'S')
+		return;
 	if (key == 's')
-		trans_state = (trans_state + 1) % 4;
+		matrix_state = MANUAL;
+	else
+		matrix_state = OPENGL;
+	trans_state = (trans_state + 1) % 4;
 	onDisplay();
 }
 
