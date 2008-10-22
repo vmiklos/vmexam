@@ -29,8 +29,8 @@
 // Innentol modosithatod...
 
 //--------------------------------------------------------
-// Nev:		 
-// Neptun:
+// Nev: Vajna Miklos
+// Neptun: AYU9RZ
 //--------------------------------------------------------
 
 #define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
