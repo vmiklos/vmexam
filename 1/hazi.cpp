@@ -56,28 +56,36 @@ public:
 
 class Matrix {
 public:
-	float m[4][4];
+	float m[16];
 
 	void Clear() {
-		memset(&m[0][0], 0, sizeof(m));
+		memset(&m[0], 0, sizeof(m));
 	}
 
 	void LoadIdentify() {
 		Clear();
-		m[0][0] = m[1][1] = m[2][2] = m[3][3] = 1;
+		m[0] = m[5] = m[10] = m[15] = 1;
 	}
 
 	Vector operator*(const Vector& v) {
-		float Xh = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3];
-		float Yh = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z + m[1][3];
-		float Zh = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z + m[2][3];
-		float  h = m[3][0] * v.x + m[3][1] * v.y + m[3][2] * v.z + m[3][3];
+		float Xh = m[0] * v.x + m[1] * v.y + m[2] * v.z + m[3];
+		float Yh = m[4] * v.x + m[5] * v.y + m[6] * v.z + m[7];
+		float Zh = m[8] * v.x + m[9] * v.y + m[10] * v.z + m[11];
+		float  h = m[12] * v.x + m[13] * v.y + m[14] * v.z + m[15];
 
 		return Vector(Xh/h, Yh/h, Zh/h);
 	}
 
 	float *GetArray() {
-		return &m[0][0];
+		return &m[0];
+	}
+
+	void Dump() {
+		printf("%f\t%f\t%f\t%f\n", m[0], m[4], m[8], m[12]);
+		printf("%f\t%f\t%f\t%f\n", m[1], m[5], m[9], m[13]);
+		printf("%f\t%f\t%f\t%f\n", m[2], m[6], m[10], m[14]);
+		printf("%f\t%f\t%f\t%f\n", m[3], m[7], m[11], m[15]);
+		printf("--end--\n");
 	}
 };
 
@@ -129,6 +137,7 @@ void onInitialization( ) {
 	 */
 	transs[NOOP] = new Matrix();
 	transs[NOOP]->LoadIdentify();
+	transs[NOOP]->Dump();
 
 	/*
 	 * 0.5   0   0   0
@@ -138,9 +147,10 @@ void onInitialization( ) {
 	 */
 	transs[SCALE] = new Matrix();
 	transs[SCALE]->LoadIdentify();
-	transs[SCALE]->m[0][0] = 0.5;
-	transs[SCALE]->m[1][1] = 0.5;
-	transs[SCALE]->m[2][2] = 0.5;
+	transs[SCALE]->m[0] = 0.5;
+	transs[SCALE]->m[5] = 0.5;
+	transs[SCALE]->m[10] = 0.5;
+	transs[SCALE]->Dump();
 
 	/*
 	 *  cos  sin    0    0
@@ -151,10 +161,11 @@ void onInitialization( ) {
 	float angle = M_PI/4;
 	transs[ROTATE] = new Matrix();
 	transs[ROTATE]->LoadIdentify();
-	transs[ROTATE]->m[0][0] = cosf(angle);
-	transs[ROTATE]->m[0][1] = -sinf(angle);
-	transs[ROTATE]->m[1][0] = sinf(angle);
-	transs[ROTATE]->m[1][1] = cosf(angle);
+	transs[ROTATE]->m[0] = cosf(angle);
+	transs[ROTATE]->m[1] = -sinf(angle);
+	transs[ROTATE]->m[4] = sinf(angle);
+	transs[ROTATE]->m[5] = cosf(angle);
+	transs[ROTATE]->Dump();
 
 	/*
 	 *  1  0  0  0
@@ -164,7 +175,8 @@ void onInitialization( ) {
 	 */
 	transs[SHIFT] = new Matrix();
 	transs[SHIFT]->LoadIdentify();
-	transs[SHIFT]->m[1][3] = 100;
+	transs[SHIFT]->m[7] = 100;
+	transs[SHIFT]->Dump();
 }
 
 void onDisplay( ) {
