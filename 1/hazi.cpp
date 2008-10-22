@@ -51,6 +51,19 @@ public:
 	}
 };
 
+class Matrix {
+public:
+	float m[3][3];
+
+	Vector operator*(const Vector& v) {
+		float Xh = m[0][0] * v.x + m[0][1] * v.y + m[0][2];
+		float Yh = m[1][0] * v.x + m[1][1] * v.y + m[1][2];
+		float  h = m[2][0] * v.x + m[2][1] * v.y + m[2][2];
+
+		return Vector(Xh/h, Yh/h);
+	}
+};
+
 Vector* points[2][7];
 
 void onInitialization( ) {
