@@ -110,15 +110,33 @@ void onInitialization( ) {
 	points[1][5] = new Vector(320, 180, 0);
 	points[1][6] = new Vector(340, 120, 0);
 
+	/*
+	 * 1 0 0 0
+	 * 0 1 0 0
+	 * 0 0 1 0
+	 * 0 0 0 1
+	 */
 	transs[NOOP] = new Matrix();
 	transs[NOOP]->LoadIdentify();
 
+	/*
+	 * 0.5   0   0   0
+	 *   0 0.5   0   0
+	 *   0   0 0.5   0
+	 *   0   0   0   1
+	 */
 	transs[SCALE] = new Matrix();
 	transs[SCALE]->LoadIdentify();
 	transs[SCALE]->m[0][0] = 0.5;
 	transs[SCALE]->m[1][1] = 0.5;
 	transs[SCALE]->m[2][2] = 0.5;
 
+	/*
+	 *  cos  sin    0    0
+	 * -sin  cos    0    0
+	 *    0    0    1    0
+	 *    0    0    0    1
+	 */
 	float angle = M_PI/4;
 	transs[ROTATE] = new Matrix();
 	transs[ROTATE]->LoadIdentify();
