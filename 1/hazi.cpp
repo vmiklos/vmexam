@@ -68,9 +68,9 @@ public:
 	}
 
 	Vector operator*(const Vector& v) {
-		float Xh = m[0] * v.x + m[1] * v.y + m[2] * v.z + m[3];
-		float Yh = m[4] * v.x + m[5] * v.y + m[6] * v.z + m[7];
-		float Zh = m[8] * v.x + m[9] * v.y + m[10] * v.z + m[11];
+		float Xh =  m[0] * v.x +  m[1] * v.y +  m[2] * v.z +  m[3];
+		float Yh =  m[4] * v.x +  m[5] * v.y +  m[6] * v.z +  m[7];
+		float Zh =  m[8] * v.x +  m[9] * v.y + m[10] * v.z + m[11];
 		float  h = m[12] * v.x + m[13] * v.y + m[14] * v.z + m[15];
 
 		return Vector(Xh/h, Yh/h, Zh/h);
