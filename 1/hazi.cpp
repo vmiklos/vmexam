@@ -1,8 +1,8 @@
 //========================================================
-// Hazi feladat keret.		  
+// Hazi feladat keret.		 
 // A //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sorokon beluli reszben celszeru garazdalkodni, mert
-// a tobbit ugyis toroljuk. 
+// a tobbit ugyis toroljuk.
 // A Hazi feladat csak ebben a fajlban lehet
 // Tilos:
 // - mast "beincludolni", illetve mas konyvtarat hasznalni
@@ -14,23 +14,23 @@
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 // MsWindows-on ez is kell
-#include <windows.h>	 
+#include <windows.h>	
 #endif // Win32 platform
 
 #include <GL/gl.h>
 #include <GL/glu.h>
 // A GLUT-ot le kell tolteni: http://www.opengl.org/resources/libraries/glut/
-#include <GL/glut.h>	 
+#include <GL/glut.h>	
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Innentol modosithatod...
 
 //--------------------------------------------------------
-// Nev:		  
+// Nev:		 
 // Neptun:
 //--------------------------------------------------------
 
-void onInitialization( ) { 
+void onInitialization( ) {
 }
 
 void onDisplay( ) {
@@ -59,7 +59,7 @@ void onKeyboard(unsigned char key, int x, int y) {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 int main(int argc, char **argv) {
-	glutInit(&argc, argv); 
+	glutInit(&argc, argv);
 	glutInitWindowSize(600, 600);
 	glutInitWindowPosition(100, 100);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
 	onInitialization();
 
 	glutDisplayFunc(onDisplay);
-	glutMouseFunc(onMouse); 
+	glutMouseFunc(onMouse);
 	glutIdleFunc(onIdle);
 	glutKeyboardFunc(onKeyboard);
 
