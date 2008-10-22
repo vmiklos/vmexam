@@ -15,7 +15,7 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 // MsWindows-on ez is kell
 #include <windows.h>	
-#else // g++ nem fordit a stanard include-ok nelkul :(
+#else // g++ nem fordit a stanard include-ok nelkul :-/
 #include <string.h>
 #endif // Win32 platform
 
@@ -84,7 +84,8 @@ enum {
 	SHIFT
 };
 
-#define PI 3.14
+// csak mert math.ht nemszabad ;-/
+# define M_PI           3.14159265358979323846
 
 const Vector* points[2][7];
 
@@ -118,7 +119,7 @@ void onInitialization( ) {
 	transs[SCALE]->m[1][1] = 0.5;
 	transs[SCALE]->m[2][2] = 0.5;
 
-	float angle = PI/4;
+	float angle = M_PI/4;
 	transs[ROTATE] = new Matrix();
 	transs[ROTATE]->LoadIdentify();
 	transs[ROTATE]->m[0][0] = cosf(angle);
