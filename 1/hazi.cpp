@@ -94,21 +94,21 @@ const Vector* points[2][7];
 Matrix* transs[4];
 
 void onInitialization( ) {
-	points[0][0] = new Vector(10, 20, 0);
-	points[0][1] = new Vector(100, 80, 0);
-	points[0][2] = new Vector(120, 20, 0);
-	points[0][3] = new Vector(210, 80, 0);
-	points[0][4] = new Vector(230, 20, 0);
-	points[0][5] = new Vector(320, 80, 0);
-	points[0][6] = new Vector(340, 20, 0);
+	points[0][0] = new Vector(160, 20, 0);
+	points[0][1] = new Vector(250, 80, 0);
+	points[0][2] = new Vector(270, 20, 0);
+	points[0][3] = new Vector(360, 80, 0);
+	points[0][4] = new Vector(390, 20, 0);
+	points[0][5] = new Vector(470, 80, 0);
+	points[0][6] = new Vector(490, 20, 0);
 
-	points[1][0] = new Vector(10, 120, 0);
-	points[1][1] = new Vector(100, 180, 0);
-	points[1][2] = new Vector(120, 120, 0);
-	points[1][3] = new Vector(210, 180, 0);
-	points[1][4] = new Vector(230, 120, 0);
-	points[1][5] = new Vector(320, 180, 0);
-	points[1][6] = new Vector(340, 120, 0);
+	points[1][0] = new Vector(160, 120, 0);
+	points[1][1] = new Vector(250, 180, 0);
+	points[1][2] = new Vector(270, 120, 0);
+	points[1][3] = new Vector(360, 180, 0);
+	points[1][4] = new Vector(390, 120, 0);
+	points[1][5] = new Vector(470, 180, 0);
+	points[1][6] = new Vector(490, 120, 0);
 
 	/*
 	 * 1 0 0 0
