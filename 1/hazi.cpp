@@ -15,6 +15,8 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 // MsWindows-on ez is kell
 #include <windows.h>	
+#else // g++ nem fordit a stanard include-ok nelkul :(
+#include <string.h>
 #endif // Win32 platform
 
 #include <GL/gl.h>
@@ -56,6 +58,15 @@ class Matrix {
 public:
 	float m[4][4];
 
+	void Clear() {
+		memset(&m[0][0], 0, sizeof(m));
+	}
+
+	void LoadIdentify() {
+		Clear();
+		m[0][0] = m[1][1] = m[2][2] = m[3][3] = 1;
+	}
+
 	Vector operator*(const Vector& v) {
 		float Xh = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3];
 		float Yh = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z + m[1][3];
@@ -64,6 +75,13 @@ public:
 
 		return Vector(Xh/h, Yh/h, Zh/h);
 	}
+};
+
+enum {
+	STATE_NOOP,
+	STATE_SCALE,
+	STATE_ROTATE,
+	STATE_SHIFT
 };
 
 const Vector* points[2][7];
@@ -88,22 +106,10 @@ void onInitialization( ) {
 	points[1][6] = new Vector(340, 120, 0);
 
 	transs[0] = new Matrix();
-	transs[0]->m[0][0] = 2;
-	transs[0]->m[0][1] = 0;
-	transs[0]->m[0][2] = 0;
-	transs[0]->m[0][3] = 0;
-	transs[0]->m[1][0] = 0;
-	transs[0]->m[1][1] = 2;
-	transs[0]->m[1][2] = 0;
-	transs[0]->m[1][3] = 0;
-	transs[0]->m[2][0] = 0;
-	transs[0]->m[2][1] = 0;
-	transs[0]->m[2][2] = 2;
-	transs[0]->m[2][3] = 0;
-	transs[0]->m[3][0] = 0;
-	transs[0]->m[3][1] = 0;
-	transs[0]->m[3][2] = 0;
-	transs[0]->m[3][3] = 1;
+	transs[0]->LoadIdentify();
+	transs[0]->m[0][0] = 1.2;
+	transs[0]->m[1][1] = 1.2;
+	transs[0]->m[2][2] = 1.2;
 
 	gluOrtho2D(0., 500., 0., 500.);
 }
