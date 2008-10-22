@@ -51,25 +51,39 @@ public:
 	}
 };
 
-Vector* points[4];
+Vector* points[2][7];
 
 void onInitialization( ) {
-	points[0] = new Vector(10, 10);
-	points[1] = new Vector(10, 20);
-	points[2] = new Vector(20, 10);
-	points[3] = new Vector(20, 20);
+	points[0][0] = new Vector(10, 20);
+	points[0][1] = new Vector(100, 80);
+	points[0][2] = new Vector(120, 20);
+	points[0][3] = new Vector(210, 80);
+	points[0][4] = new Vector(230, 20);
+	points[0][5] = new Vector(320, 80);
+	points[0][6] = new Vector(340, 20);
+
+	points[1][0] = new Vector(10, 120);
+	points[1][1] = new Vector(100, 180);
+	points[1][2] = new Vector(120, 120);
+	points[1][3] = new Vector(210, 180);
+	points[1][4] = new Vector(230, 120);
+	points[1][5] = new Vector(320, 180);
+	points[1][6] = new Vector(340, 120);
+
+	gluOrtho2D(0., 500., 0., 500.);
 }
 
 void onDisplay( ) {
 	glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	gluOrtho2D(0., 100., 0., 100.);
 	glColor4d(0.9f, 0.8f, 0.7f, 1.0f);
-	glBegin(GL_LINE_LOOP);
-	for (int i = 0; i < ARRAY_SIZE(points); i++)
-		glVertex2d(points[i]->x, points[i]->y);
-	glEnd();
+
+	for (int i = 0; i < ARRAY_SIZE(points); i++) {
+		glBegin(GL_LINE_STRIP);
+		for (int j = 0; j < ARRAY_SIZE(points[i]); j++)
+			glVertex2d(points[i][j]->x, points[i][j]->y);
+		glEnd();
+	}
 
 	// Buffercsere: rajzolas vege
 	glFinish();
