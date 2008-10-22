@@ -84,14 +84,14 @@ enum {
 	SHIFT
 };
 
+int trans_state = SHIFT;
+
 // csak mert math.ht nemszabad ;-/
 # define M_PI           3.14159265358979323846
 
 const Vector* points[2][7];
 
-Matrix* transs[3];
-
-int trans_state = ROTATE;
+Matrix* transs[4];
 
 void onInitialization( ) {
 	points[0][0] = new Vector(10, 20, 0);
@@ -145,6 +145,15 @@ void onInitialization( ) {
 	transs[ROTATE]->m[1][0] = sinf(angle);
 	transs[ROTATE]->m[1][1] = cosf(angle);
 
+	/*
+	 *  1  0  0  0
+	 *  0  1  0  0
+	 *  0  0  1  0
+	 * px py pz  1
+	 */
+	transs[SHIFT] = new Matrix();
+	transs[SHIFT]->LoadIdentify();
+	transs[SHIFT]->m[1][3] = 100;
 	gluOrtho2D(0., 500., 0., 500.);
 }
 
