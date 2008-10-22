@@ -75,6 +75,10 @@ public:
 
 		return Vector(Xh/h, Yh/h, Zh/h);
 	}
+
+	float *GetArray() {
+		return &m[0][0];
+	}
 };
 
 enum {
@@ -168,12 +172,11 @@ void onDisplay( ) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glColor4d(0.9f, 0.8f, 0.7f, 1.0f);
 
+	glMatrixMode(GL_PROJECTION);
 	if (matrix_state == MANUAL) {
-		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 	} else {
-		glMatrixMode (GL_PROJECTION);
-		glLoadMatrixf((float*)transs[trans_state]->m);
+		glLoadMatrixf(transs[trans_state]->GetArray());
 	}
 	gluOrtho2D(0., 600., 0., 600.);
 	for (int i = 0; i < ARRAY_SIZE(points); i++) {
