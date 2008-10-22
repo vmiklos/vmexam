@@ -78,15 +78,19 @@ public:
 };
 
 enum {
-	STATE_NOOP,
-	STATE_SCALE,
-	STATE_ROTATE,
-	STATE_SHIFT
+	NOOP = 0,
+	SCALE,
+	ROTATE,
+	SHIFT
 };
+
+#define PI 3.14
 
 const Vector* points[2][7];
 
-Matrix* transs[1];
+Matrix* transs[3];
+
+int trans_state = ROTATE;
 
 void onInitialization( ) {
 	points[0][0] = new Vector(10, 20, 0);
@@ -105,11 +109,22 @@ void onInitialization( ) {
 	points[1][5] = new Vector(320, 180, 0);
 	points[1][6] = new Vector(340, 120, 0);
 
-	transs[0] = new Matrix();
-	transs[0]->LoadIdentify();
-	transs[0]->m[0][0] = 1.2;
-	transs[0]->m[1][1] = 1.2;
-	transs[0]->m[2][2] = 1.2;
+	transs[NOOP] = new Matrix();
+	transs[NOOP]->LoadIdentify();
+
+	transs[SCALE] = new Matrix();
+	transs[SCALE]->LoadIdentify();
+	transs[SCALE]->m[0][0] = 0.5;
+	transs[SCALE]->m[1][1] = 0.5;
+	transs[SCALE]->m[2][2] = 0.5;
+
+	float angle = PI/4;
+	transs[ROTATE] = new Matrix();
+	transs[ROTATE]->LoadIdentify();
+	transs[ROTATE]->m[0][0] = cosf(angle);
+	transs[ROTATE]->m[0][1] = -sinf(angle);
+	transs[ROTATE]->m[1][0] = sinf(angle);
+	transs[ROTATE]->m[1][1] = cosf(angle);
 
 	gluOrtho2D(0., 500., 0., 500.);
 }
@@ -122,7 +137,7 @@ void onDisplay( ) {
 	for (int i = 0; i < ARRAY_SIZE(points); i++) {
 		glBegin(GL_LINE_STRIP);
 		for (int j = 0; j < ARRAY_SIZE(points[i]); j++) {
-			Vector v = *transs[0] * *points[i][j];
+			Vector v = *transs[trans_state] * *points[i][j];
 			glVertex2d(v.x, v.y);
 		}
 		glEnd();
