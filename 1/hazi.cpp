@@ -84,7 +84,7 @@ enum {
 	SHIFT
 };
 
-int trans_state = SHIFT;
+int trans_state = NOOP;
 
 // csak mert math.ht nemszabad ;-/
 # define M_PI           3.14159265358979323846
@@ -185,6 +185,9 @@ void onIdle( ) {
 }
 
 void onKeyboard(unsigned char key, int x, int y) {
+	if (key == 's')
+		trans_state = (trans_state + 1) % 4;
+	onDisplay();
 }
 
 // ...Idaig modosithatod
