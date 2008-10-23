@@ -87,6 +87,14 @@ public:
 		printf("%f\t%f\t%f\t%f\n", m[3], m[7], m[11], m[15]);
 		printf("--end--\n");
 	}
+
+	Matrix Transpose() {
+		Matrix result;
+		for (int i = 0; i < 4; i++)
+			for (int j = 0; j < 4; j++)
+				result.m[j * 4 + i] = m[i * 4 + j];
+		return result;
+	}
 };
 
 enum {
@@ -175,7 +183,7 @@ void onInitialization( ) {
 	 */
 	transs[SHIFT] = new Matrix();
 	transs[SHIFT]->LoadIdentify();
-	transs[SHIFT]->m[7] = 100;
+	transs[SHIFT]->m[7] = 1.2f;
 	transs[SHIFT]->Dump();
 }
 
@@ -184,12 +192,11 @@ void onDisplay( ) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glColor4d(0.9f, 0.8f, 0.7f, 1.0f);
 
-	glMatrixMode(GL_PROJECTION);
-	if (matrix_state == MANUAL) {
+	glMatrixMode(GL_MODELVIEW);
+	if (matrix_state == MANUAL)
 		glLoadIdentity();
-	} else {
-		glLoadMatrixf(transs[trans_state]->GetArray());
-	}
+	else
+		glLoadMatrixf(transs[trans_state]->Transpose().GetArray());
 	gluOrtho2D(0., 600., 0., 600.);
 	for (int i = 0; i < ARRAY_SIZE(points); i++) {
 		glBegin(GL_LINE_STRIP);
