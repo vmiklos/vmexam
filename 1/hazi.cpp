@@ -113,12 +113,10 @@ const Vector* points[2][13];
 Matrix* transs[4];
 
 void CatmullClark(const Vector** p, int len) {
-	for (int i = 1; i < len; i += 2) {
+	for (int i = 1; i < len; i += 2)
 		p[i] = new Vector(((Vector)*p[i-1]) * 0.5 + ((Vector)*p[i+1]) * 0.5);
-	}
-	for (int i = 2; i + 2 < len; i += 2) {
+	for (int i = 2; i + 2 < len; i += 2)
 		p[i] = new Vector(((Vector)*p[i-1]) * 0.25 + ((Vector)*p[i+1]) * 0.25 + ((Vector)*p[i]) * 0.5);
-	}
 }
 
 void onInitialization( ) {
@@ -186,7 +184,7 @@ void onInitialization( ) {
 	transs[SHIFT]->m[7] = 1.2f;
 }
 
-void onDisplay( ) {
+void onDisplay() {
 	glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glColor4d(0.9f, 0.8f, 0.7f, 1.0f);
@@ -221,7 +219,7 @@ void onMouse(int button, int state, int x, int y) {
 	// ill. a GLUT_DOWN / GLUT_UP makrokat hasznald.
 }
 
-void onIdle( ) {
+void onIdle() {
 }
 
 void onKeyboard(unsigned char key, int x, int y) {
