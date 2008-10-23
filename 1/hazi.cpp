@@ -80,14 +80,6 @@ public:
 		return &m[0];
 	}
 
-	void Dump() {
-		printf("%f\t%f\t%f\t%f\n", m[0], m[4], m[8], m[12]);
-		printf("%f\t%f\t%f\t%f\n", m[1], m[5], m[9], m[13]);
-		printf("%f\t%f\t%f\t%f\n", m[2], m[6], m[10], m[14]);
-		printf("%f\t%f\t%f\t%f\n", m[3], m[7], m[11], m[15]);
-		printf("--end--\n");
-	}
-
 	Matrix Transpose() {
 		Matrix result;
 		for (int i = 0; i < 4; i++)
@@ -145,7 +137,6 @@ void onInitialization( ) {
 	 */
 	transs[NOOP] = new Matrix();
 	transs[NOOP]->LoadIdentify();
-	transs[NOOP]->Dump();
 
 	/*
 	 * 0.5   0   0   0
@@ -158,7 +149,6 @@ void onInitialization( ) {
 	transs[SCALE]->m[0] = 0.5;
 	transs[SCALE]->m[5] = 0.5;
 	transs[SCALE]->m[10] = 0.5;
-	transs[SCALE]->Dump();
 
 	/*
 	 *  cos  sin    0    0
@@ -173,7 +163,6 @@ void onInitialization( ) {
 	transs[ROTATE]->m[1] = -sinf(angle);
 	transs[ROTATE]->m[4] = sinf(angle);
 	transs[ROTATE]->m[5] = cosf(angle);
-	transs[ROTATE]->Dump();
 
 	/*
 	 *  1  0  0  0
@@ -184,7 +173,6 @@ void onInitialization( ) {
 	transs[SHIFT] = new Matrix();
 	transs[SHIFT]->LoadIdentify();
 	transs[SHIFT]->m[7] = 1.2f;
-	transs[SHIFT]->Dump();
 }
 
 void onDisplay( ) {
