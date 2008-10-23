@@ -108,26 +108,37 @@ int matrix_state = MANUAL;
 // csak mert math.ht nemszabad ;-/
 # define M_PI           3.14159265358979323846
 
-const Vector* points[2][7];
+const Vector* points[2][13];
 
 Matrix* transs[4];
 
+void CatmullClark(const Vector** p, int len) {
+	for (int i = 1; i < len; i += 2) {
+		p[i] = new Vector(((Vector)*p[i-1]) * 0.5 + ((Vector)*p[i+1]) * 0.5);
+	}
+	for (int i = 2; i + 2 < len; i += 2) {
+		p[i] = new Vector(((Vector)*p[i-1]) * 0.25 + ((Vector)*p[i+1]) * 0.25 + ((Vector)*p[i]) * 0.5);
+	}
+}
+
 void onInitialization( ) {
 	points[0][0] = new Vector(160, 20, 0);
-	points[0][1] = new Vector(250, 80, 0);
-	points[0][2] = new Vector(270, 20, 0);
-	points[0][3] = new Vector(360, 80, 0);
-	points[0][4] = new Vector(390, 20, 0);
-	points[0][5] = new Vector(470, 80, 0);
-	points[0][6] = new Vector(490, 20, 0);
+	points[0][2] = new Vector(250, 80, 0);
+	points[0][4] = new Vector(270, 20, 0);
+	points[0][6] = new Vector(360, 80, 0);
+	points[0][8] = new Vector(390, 20, 0);
+	points[0][10] = new Vector(470, 80, 0);
+	points[0][12] = new Vector(490, 20, 0);
+	CatmullClark(points[0], ARRAY_SIZE(points[0]));
 
 	points[1][0] = new Vector(160, 120, 0);
-	points[1][1] = new Vector(250, 180, 0);
-	points[1][2] = new Vector(270, 120, 0);
-	points[1][3] = new Vector(360, 180, 0);
-	points[1][4] = new Vector(390, 120, 0);
-	points[1][5] = new Vector(470, 180, 0);
-	points[1][6] = new Vector(490, 120, 0);
+	points[1][2] = new Vector(250, 180, 0);
+	points[1][4] = new Vector(270, 120, 0);
+	points[1][6] = new Vector(360, 180, 0);
+	points[1][8] = new Vector(390, 120, 0);
+	points[1][10] = new Vector(470, 180, 0);
+	points[1][12] = new Vector(490, 120, 0);
+	CatmullClark(points[1], ARRAY_SIZE(points[1]));
 
 	/*
 	 * 1 0 0 0
