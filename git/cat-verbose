@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# simple script to help applying git patches when they are attachements
+# withtout saving the patches manually
+#
+# usage: 'v', enter, ssh remotemachine cat /tmp/foo |git am, 'q' and
+# you're done. :)
+
+echo "[-- Autoview using cat-verbose '$1' --]"
+cat $1
