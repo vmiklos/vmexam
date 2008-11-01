@@ -193,6 +193,8 @@ void onInitialization( ) {
 	transs[SHIFT] = new Matrix();
 	transs[SHIFT]->LoadIdentify();
 	transs[SHIFT]->m[7] = 1.2f;
+
+	gluOrtho2D(0., 600., 0., 600.);
 }
 
 void onDisplay() {
@@ -212,7 +214,6 @@ void onDisplay() {
 		glLoadIdentity();
 	else
 		glLoadMatrixf(m.Transpose().GetArray());
-	gluOrtho2D(0., 600., 0., 600.);
 	for (int i = 0; i < ARRAY_SIZE(points); i++) {
 		glBegin(GL_LINE_STRIP);
 		for (int j = 0; j < ARRAY_SIZE(points[i]); j++) {
@@ -243,10 +244,7 @@ void onIdle() {
 void onKeyboard(unsigned char key, int x, int y) {
 	if (key != 's' && key != 'S')
 		return;
-	if (key == 's')
-		matrix_state = MANUAL;
-	else
-		matrix_state = OPENGL;
+	matrix_state = key == 's' ? MANUAL : OPENGL;
 	onDisplay();
 }
 
