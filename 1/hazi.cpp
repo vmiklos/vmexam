@@ -192,7 +192,8 @@ void onInitialization( ) {
 	 */
 	transs[SHIFT] = new Matrix();
 	transs[SHIFT]->LoadIdentify();
-	transs[SHIFT]->m[7] = 1.2f;
+	transs[SHIFT]->m[3] = 50;
+	transs[SHIFT]->m[7] = 50;
 
 	gluOrtho2D(0., 600., 0., 600.);
 }
