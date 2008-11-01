@@ -76,6 +76,18 @@ public:
 		return Vector(Xh/h, Yh/h, Zh/h);
 	}
 
+	Matrix operator*(const Matrix &arg) {
+		Matrix res;
+
+		for (int i = 0; i < 4; i++)
+			for (int j = 0; j < 4; j++) {
+				res.m[i * 4 + j] = 0;
+				for (int k = 0; k < 4; k++)
+					res.m[i * 4 + j] += m[i * 4 + k] * arg.m[k * 4 + j];
+			}
+		return res;
+	}
+
 	float *GetArray() {
 		return &m[0];
 	}
@@ -96,14 +108,13 @@ enum {
 	SHIFT
 };
 
-int trans_state = NOOP;
-
 enum {
-	OPENGL = 0,
+	DEFAULT = 0,
+	OPENGL,
 	MANUAL
 };
 
-int matrix_state = MANUAL;
+int matrix_state = DEFAULT;
 
 // csak mert math.ht nemszabad ;-/
 # define M_PI           3.14159265358979323846
@@ -185,21 +196,28 @@ void onInitialization( ) {
 }
 
 void onDisplay() {
+	Matrix m;
+
 	glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glColor4d(0.9f, 0.8f, 0.7f, 1.0f);
+
+	if (matrix_state == DEFAULT)
+		m = *transs[NOOP];
+	else
+		m = *transs[SCALE] * *transs[ROTATE] * *transs[SHIFT];
 
 	glMatrixMode(GL_MODELVIEW);
 	if (matrix_state == MANUAL)
 		glLoadIdentity();
 	else
-		glLoadMatrixf(transs[trans_state]->Transpose().GetArray());
+		glLoadMatrixf(m.Transpose().GetArray());
 	gluOrtho2D(0., 600., 0., 600.);
 	for (int i = 0; i < ARRAY_SIZE(points); i++) {
 		glBegin(GL_LINE_STRIP);
 		for (int j = 0; j < ARRAY_SIZE(points[i]); j++) {
 			if (matrix_state == MANUAL) {
-				Vector v = *transs[trans_state] * *points[i][j];
+				Vector v = m * *points[i][j];
 				glVertex2d(v.x, v.y);
 			} else {
 				Vector v = *points[i][j];
@@ -229,7 +247,6 @@ void onKeyboard(unsigned char key, int x, int y) {
 		matrix_state = MANUAL;
 	else
 		matrix_state = OPENGL;
-	trans_state = (trans_state + 1) % 4;
 	onDisplay();
 }
 
