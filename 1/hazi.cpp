@@ -115,9 +115,7 @@ enum {
 };
 
 int matrix_state = DEFAULT;
-
-// csak mert math.ht nemszabad ;-/
-# define M_PI           3.14159265358979323846
+int matrix_dirty = 0;
 
 const Vector* points[2][13];
 
@@ -210,11 +208,18 @@ void onDisplay() {
 	else
 		m = *transs[SCALE] * *transs[ROTATE] * *transs[SHIFT];
 
-	glMatrixMode(GL_MODELVIEW);
-	if (matrix_state == MANUAL)
-		glLoadIdentity();
-	else
-		glLoadMatrixf(m.Transpose().GetArray());
+	if (matrix_state == MANUAL && matrix_dirty) {
+		glTranslatef(-50, -50, 0);
+		glRotatef(-180/4, 0, 0, 1);
+		glScalef(1/0.5, 1/0.5, 0);
+		matrix_dirty = 0;
+	}
+	else if (matrix_state == OPENGL && !matrix_dirty){
+		glScalef(0.5, 0.5, 0);
+		glRotatef(180/4, 0, 0, 1);
+		glTranslatef(50, 50, 0);
+		matrix_dirty = 1;
+	}
 	for (int i = 0; i < ARRAY_SIZE(points); i++) {
 		glBegin(GL_LINE_STRIP);
 		for (int j = 0; j < ARRAY_SIZE(points[i]); j++) {
