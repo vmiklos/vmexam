@@ -1,8 +1,8 @@
 //========================================================
-// Hazi feladat keret.          
+// Hazi feladat keret.
 // A //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sorokon beluli reszben celszeru garazdalkodni, mert
-// a tobbit ugyis toroljuk. 
+// a tobbit ugyis toroljuk.
 // A Hazi feladat csak ebben a fajlban lehet
 // Tilos:
 // - mast "beincludolni", illetve mas konyvtarat hasznalni
@@ -14,13 +14,13 @@
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 // MsWindows-on ez is kell
-#include <windows.h>     
+#include <windows.h>
 #endif // Win32 platform
 
 #include <GL/gl.h>
 #include <GL/glu.h>
 // A GLUT-ot le kell tolteni: http://www.opengl.org/resources/libraries/glut/
-#include <GL/glut.h>     
+#include <GL/glut.h>
 // FIXME
 #include <vector>
 #include <iostream>
@@ -77,30 +77,30 @@ class Vector {
 		}
 
 		// unary operators
-		void operator+=(float f) { 
-			x += f; y += f; z += f; 
+		void operator+=(float f) {
+			x += f; y += f; z += f;
 		}
 
-		void operator+=(const Vector& c) { 
-			x += c.x; y += c.y; z += c.z; 
+		void operator+=(const Vector& c) {
+			x += c.x; y += c.y; z += c.z;
 		}
 
-		void operator*=(float f) { 
-			x *= f; y *= f; z *= f; 
+		void operator*=(float f) {
+			x *= f; y *= f; z *= f;
 		}
 
-		Vector operator-(void) const { 
+		Vector operator-(void) const {
 			return Vector(-x, -y, -z);
 		}
 
 		// other methods
 		float operator*(const Vector& v) const {		// DotProduct
-			return x * v.x + y * v.y + z * v.z; 
+			return x * v.x + y * v.y + z * v.z;
 		}
 
 		Vector operator%(const Vector& v) const {		// CrossProduct
 			return Vector(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
-		}    
+		}
 
 		void operator<=(const Vector& smallVec) {
 			if (x > smallVec.x) x = smallVec.x;
@@ -153,9 +153,9 @@ public:
 	float r, g, b;		// color coefficients on the representative wavelengths
 
 	Color() {}
-	Color(float rr, float gg, float bb) { 
+	Color(float rr, float gg, float bb) {
 		r = rr; g = gg; b = bb;
-	} 
+	}
 
 	void Set(float rr, float gg, float bb) {
 		r = rr; g = gg; b = bb;
@@ -217,9 +217,9 @@ const Color             gColorAmbient(1.5, 1.5, 1.5);   // global ambient
 class Material {
 	public:
 		char name[256];	// anyag neve
-		Color Ka;			// ambiens albedo (ka*pi)	
+		Color Ka;			// ambiens albedo (ka*pi)
 		Color Kd;			// diffúz albedo (kd*pi)
-		Color Ks;			// spekuláris albedó 
+		Color Ks;			// spekuláris albedó
 		float shine;	// fényesség
 
 		// eloreszámított értékek
@@ -227,7 +227,7 @@ class Material {
 		Color kd;			// a BRDF diffúz tagja
 
 		Color kr;			// tökéletes tükör hányados
-		Color kt;			// tökéletes 
+		Color kt;			// tökéletes
 		float n;		// toresmutato
 
 		Material();
@@ -277,13 +277,13 @@ inline bool Material::RefractionDir(const Vector& inDir, const Vector& normal, V
 	float cn = n;
 	Vector useNormal = normal;
 	if (cosIn < 0) {				// ha az anyag belsejebol jovunk
-		cn			= 1.0 / n;	 
+		cn			= 1.0 / n;
 		useNormal	= -normal;		// a toresmutato reciprokat kell hasznalni
 		cosIn		= -cosIn;
-	}															
+	}
 
 	float disc = 1 - (1 - cosIn * cosIn) / cn / cn;	 // Snellius-Descartes torveny
-	if (disc < 0) 
+	if (disc < 0)
 		return false;
 
 	*outDir = useNormal * (cosIn / cn - sqrt(disc)) + inDir / cn;
@@ -327,7 +327,7 @@ bool Sphere::Intersect(const Ray& ray, HitRec* hitRec) {
 	double c = (dist * dist) - radius * radius;
 
 	double discr = b * b - 4.0 * a * c;
-	if ( discr < 0 ) 
+	if ( discr < 0 )
 		return false;
 	double sqrt_discr = sqrt( discr );
 	double t1 = (-b + sqrt_discr)/2.0/a;
@@ -355,7 +355,7 @@ public:
 	Vector			*a, *b, *c;		//! defines the 3 vertices
 	long			ai, bi, ci;		// indexes
 
-	Vector			normal;	
+	Vector			normal;
 	Vector			*Na, *Nb, *Nc;	//! normal for vertex a,b,c
 
 	Material*		material;
@@ -404,7 +404,7 @@ bool Triangle::FinishTriangle(void)  {
 	va = *b - *a;
 	vb = *c - *b;
 	normal= va % vb;
-	normal.Normalize();		
+	normal.Normalize();
 	// if 3 vertices in the same line, this result normal= (NAN,NAN,NAN), which is OK.
 	if (IntersectMethod == IntersectType2D) {
 		dominantAxis = normal.GetDominantAxis();
@@ -448,7 +448,7 @@ bool Triangle::FinishTriangle(void)  {
 			d3 = c->z - b->z;
 			d4 = c->x - b->x;
 			d5 = a->z - c->z;
-			d6 = a->x - c->x;		
+			d6 = a->x - c->x;
 			break;
 		case Z_DOMINANT:
 			d1 = b->y - a->y;
@@ -456,7 +456,7 @@ bool Triangle::FinishTriangle(void)  {
 			d3 = c->y - b->y;
 			d4 = c->x - b->x;
 			d5 = a->y - c->y;
-			d6 = a->x - c->x;			
+			d6 = a->x - c->x;
 			break;
 		}
 	}	// IntersectMethod == Intersect2D
@@ -554,11 +554,11 @@ bool Triangle::FinishTriangle(void)  {
 		break;
 		}
 	}
-	return !isnan(normal.x) && !isnan(normal.y) && !isnan(normal.z);		
+	return !isnan(normal.x) && !isnan(normal.y) && !isnan(normal.z);
 }
 
 //-----------------------------------------------------------------
-bool Triangle::Intersect2D(const Ray& ray, HitRec* hitRec) {	
+bool Triangle::Intersect2D(const Ray& ray, HitRec* hitRec) {
 //-----------------------------------------------------------------
 	float cosa = normal * ray.dir;
 	//if (cosa > -EPSILON)	// back facing patch
@@ -599,7 +599,7 @@ bool Triangle::Intersect2D(const Ray& ray, HitRec* hitRec) {
 	case Z_DOMINANT:
 		s = ray.origin.x + t * ray.dir.x;
 		v = ray.origin.y + t * ray.dir.y;
-		
+
 		if ((b->x - s) * (d1) < (b->y - v) * (d2))
 			return false;
 		if ((c->x - s) * (d3) < (c->y - v) * (d4))
@@ -615,7 +615,7 @@ bool Triangle::Intersect2D(const Ray& ray, HitRec* hitRec) {
 }
 
 //-----------------------------------------------------------------
-bool Triangle::IntersectGreen(const Ray& ray, HitRec* hitRec) {	
+bool Triangle::IntersectGreen(const Ray& ray, HitRec* hitRec) {
 //-----------------------------------------------------------------
 	float cosa = normal * ray.dir;
 	//if (cosa > -EPSILON)	// back facing patch
@@ -658,11 +658,11 @@ bool Triangle::IntersectGreen(const Ray& ray, HitRec* hitRec) {
 bool  Triangle::Intersect3D(const Ray& ray, HitRec* hitRec) {
 //-----------------------------------------------------------------
 	double cost = ray.dir * normal;
-	if (fabs(cost) <= EPSILON) 
+	if (fabs(cost) <= EPSILON)
 		return false;
 
 	double t = ((*a - ray.origin) * normal) / cost;
-	if(t < EPSILON4) 
+	if(t < EPSILON4)
 		return false;
 
 	Vector ip = ray.origin + ray.dir * t;
@@ -672,9 +672,9 @@ bool  Triangle::Intersect3D(const Ray& ray, HitRec* hitRec) {
 	double c1 = (((*b - *a) % (ip - *a)) * normal);
 	double c2 = (((*c - *b) % (ip - *b)) * normal);
 	double c3 = (((*a - *c) % (ip - *c)) * normal);
-	if (c1 >= 0 && c2 >= 0 && c3 >= 0) 
+	if (c1 >= 0 && c2 >= 0 && c3 >= 0)
 		return true;
-	if (c1 <= 0 && c2 <= 0 && c3 <= 0) 
+	if (c1 <= 0 && c2 <= 0 && c3 <= 0)
 		return true;
 	return false;
 }
@@ -698,7 +698,7 @@ bool Mesh::Intersect(const Ray& ray, HitRec* hitRec) {
 			continue;
 
 		if (hitRecLocal.t < mint) {
-			mint = hitRecLocal.t; 
+			mint = hitRecLocal.t;
 			hitRec->primitiveInd = i;
 			hitRec->t		= hitRecLocal.t;
 			hitRec->point	= hitRecLocal.point;
@@ -722,12 +722,12 @@ public:
 	Vector	lookp;			//! focus point of camera
 	Vector	updir;			//! direction pointing upward
 
-	float	viewdist;		//! distance from eyepoint to focus point	
+	float	viewdist;		//! distance from eyepoint to focus point
 	float	fov, hfov, vfov;	//! half of the field of view, horizontal and vertical, in degrees.
 
 	float	nearClip, farClip;		//! near and far clipping plane distance
 	long	hres, vres;			//! horizontal and vertical resolution
-		
+
 	Vector	X, Y, Z;			//! eye coordinate system (right-hand-orientation): X=right, Y=down, Z=viewing direction
 	float	pixh, pixv;		//! Width and height of a pixel
 
@@ -767,7 +767,7 @@ void Camera::CompleteCamera() {
 	}
 	Z *= 1.0 / viewdist;
 
-	// set up X   Camera->X is a direction pointing to the right in the window 
+	// set up X   Camera->X is a direction pointing to the right in the window
 	X = Z % updir;
 	float lengthX = X.Norm();
 	if (lengthX < EPSILON) {
@@ -783,10 +783,10 @@ void Camera::CompleteCamera() {
 	// compute horizontal and vertical field of view angle from the specified one
 	// if the vertical resolution is smaller, it is the specified fov = 45, the other is greater than 45
 	if (hres < vres) {
-		hfov = fov; 
+		hfov = fov;
 		vfov = atan(tan(fov * M_PI/180.0) * (float)vres/(float)hres) * 180.0/M_PI;
 	} else {
-		vfov = fov; 
+		vfov = fov;
 		hfov = atan(tan(fov * M_PI/180.0) * (float)hres/(float)vres) * 180.0/M_PI;
 	}
 
@@ -828,7 +828,7 @@ public:
 
 class DirectionalLight : public Light {
 public:
-	Vector direction; 
+	Vector direction;
 };
 
 class Scene {
@@ -854,7 +854,7 @@ bool Scene::Intersect(const Ray& ray, HitRec* hitRec) {
 		if (!objects[i]->Intersect(ray, &hitRecLocal))
 			continue;
 		if (hitRecLocal.t < mint) {
-			mint = hitRecLocal.t; 
+			mint = hitRecLocal.t;
 			*hitRec = hitRecLocal;
 			hitRec->objectInd	= i;
 		}
@@ -889,7 +889,7 @@ Color Scene::DirectLightsource(const Vector& inDir, const HitRec& hitRec) {
 		if (isIntersect) {//a metszéspont távolabb van, mint a fényforrás
 			Vector distIntersect = pLight->location - hitRecToLight.point;
 			if (distIntersect.Norm() > lightDist)
-				meetLight = true; 	
+				meetLight = true; 
 		}
 		if (!meetLight)
 			continue;	// árnyékban vagyunk
@@ -904,7 +904,7 @@ const short MaxDepth = 5;
 
 Color Scene::Trace(const Ray& ray, short depth) {
 	if (depth > MaxDepth)	   // rekurzio korlatozasa
-		return gColorBlack;     
+		return gColorBlack;
 
 	HitRec hitRec;
 	if (!Intersect(ray, &hitRec))
@@ -921,7 +921,7 @@ Color Scene::Trace(const Ray& ray, short depth) {
 	Color idealReflector = gColorBlack;
 	Color kr = pMaterial->kr;
 	if (kr.Lum() > EPSILON) {
-		Vector reflDir = hitRec.normal * (-2.0 * (ray.dir * hitRec.normal)) 
+		Vector reflDir = hitRec.normal * (-2.0 * (ray.dir * hitRec.normal))
 			+ ray.dir;
 		idealReflector = kr * Trace(Ray(hitRec.point, reflDir), depth + 1);
 	}
@@ -961,7 +961,7 @@ void Render(void) {
 	}
 }
 
-void onInitialization( ) { 
+void onInitialization( ) {
 }
 
 void onDisplay( ) {
@@ -990,7 +990,7 @@ void onKeyboard(unsigned char key, int x, int y) {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 int main(int argc, char **argv) {
-    glutInit(&argc, argv); 
+    glutInit(&argc, argv);
     glutInitWindowSize(600, 600);
     glutInitWindowPosition(100, 100);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
@@ -1005,11 +1005,11 @@ int main(int argc, char **argv) {
     onInitialization();
 
     glutDisplayFunc(onDisplay);
-    glutMouseFunc(onMouse); 
+    glutMouseFunc(onMouse);
     glutIdleFunc(onIdle);
     glutKeyboardFunc(onKeyboard);
 
     glutMainLoop();
-    
-    return 0;    
+
+    return 0;
 }
