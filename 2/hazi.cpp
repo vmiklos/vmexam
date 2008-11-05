@@ -33,8 +33,11 @@
 #include <iostream>
 #include <vector>
 #include <float.h>
+// FIXME printf miatt, majd ki lehet szedni
+#include <stdio.h>
 
-int window_size = 600;
+// FIXME ez majd a vegen 600 kell legyen
+int window_size = 200;
 float* pixels = new float[window_size*window_size*3];
 
 #define EPSILON                         1e-5F
@@ -143,8 +146,8 @@ inline Vector operator*(float f, const Vector& v) {
 	return Vector(f * v.x, f * v.y, f * v.z);
 }
 
-const short DefaultScreenWidth  = 200;
-const short DefaultScreenHeight = 200;
+const short DefaultScreenWidth  = window_size;
+const short DefaultScreenHeight = window_size;
 
 const float DefaultCameraNearClip       = 0.05;
 const float DefaultCameraFarClip        = 500.0;
@@ -628,7 +631,7 @@ bool Triangle::Intersect2D(const Ray& ray, HitRec* hitRec) {
 	if (t < EPSILON4 || t > MAX_DISTANCE)
 		return false;
 
-	float s, v;
+	float s = 0, v = 0;
 	switch (dominantAxis)
 	{
 		case X_DOMINANT:
@@ -682,10 +685,10 @@ bool Triangle::IntersectGreen(const Ray& ray, HitRec* hitRec) {
 
 	float originDistOnNormal = normal * ray.origin;
 	float t = -(hiperPlaneShiftOffset + originDistOnNormal) / cosa;
-	if (t < EPSILON4 || t > MAX_DISTANCE)
+	if (t < (EPSILON4) || t > (MAX_DISTANCE))
 		return false;
 
-	float s, v;
+	float s = 0, v = 0;
 	switch (dominantAxis) {
 	case X_DOMINANT:
 		s = ray.origin.y + t * ray.dir.y;
@@ -898,7 +901,182 @@ Ray GetRay(int x, int y) {
 	return Ray(scene.camera.eyep, rayDir);	// a sugár a szembol
 }
 
-void onInitialization( ) { 
+// Compute a target and up vector from position/orientation/distance.
+//-----------------------------------------------------------------
+void ComputeView(const float position[3], float orientation[4], float distance, float target[3], float up[3]) {
+//-----------------------------------------------------------------
+	// Graphics Gems, p 466. Convert between axis/angle and rotation matrix
+	float len = sqrt( orientation[0]*orientation[0] + orientation[1]*orientation[1] + orientation[2]*orientation[2] );
+	if (len > 0.0) {
+		orientation[0] /= len;
+		orientation[1] /= len;
+		orientation[2] /= len;
+	}
+
+	float s = sin(orientation[3]);
+	float c = cos(orientation[3]);
+	float t = 1.0 - c;
+
+	// Transform [0,0,1] by the orientation to determine sight line
+	target[0] = t * orientation[0] * orientation[2] + s * orientation[1];
+	target[1] = t * orientation[1] * orientation[2] - s * orientation[0];
+	target[2] = t * orientation[2] * orientation[2] + c;
+
+	// Move along that vector the specified distance away from position[]
+	target[0] = -distance*target[0] + position[0];
+	target[1] = -distance*target[1] + position[1];
+	target[2] = -distance*target[2] + position[2];
+
+	// Transform [0,1,0] by the orientation to determine up vector
+	up[0] = t * orientation[0] * orientation[1] - s * orientation[2];
+	up[1] = t * orientation[1] * orientation[1] + c;
+	up[2] = t * orientation[1] * orientation[2] + s * orientation[0];
+}
+
+#define VRML_REFERENCE_DISTANCE_FROM_EYE 20.0
+
+void HandleCamera(Scene *scene)
+{
+	float position[3] = { 1.184, 30.52, 61.69};
+	float orientation[4] = { 0.9996, -0.02772, -0.006409, -0.4547 };
+	float field = 0.6024;
+	float avatarSize = 0.25;
+	float visibilityLimit = 0.0;
+	float target[3], up[3];
+	float dist = VRML_REFERENCE_DISTANCE_FROM_EYE;
+
+	ComputeView(position, orientation, dist, target, up);
+
+	scene->camera.fov = (field / 3.14f) * 180.0f / 2.0;
+	scene->camera.eyep.Set(position[0], position[1], position[2]);
+	scene->camera.updir.Set(up[0], up[1], up[2]);
+	scene->camera.lookp.Set(target[0], target[1], target[2]);
+	scene->camera.nearClip  = DefaultCameraNearClip;
+	scene->camera.farClip   = DefaultCameraFarClip;
+	scene->camera.CompleteCamera();
+}
+
+void HandlePointLight(Scene *scene)
+{
+	PointLight* light = new PointLight;
+	light->location.Set(-100.6, 51.43, 18.99);
+	light->emission.Set(4, 4, 4);
+	scene->lights.push_back(light);
+}
+
+void HandleMaterial(Scene *scene)
+{
+	float ambientIntensity = 1.0;
+	float transparency = 0;
+	Material material;
+	material.Kd.Set(0.08627, 0.08627, 0.08627);
+	material.Ks.Set(0.9294, 0.9294, 0.9294);
+	material.Ka             = material.Kd * ambientIntensity;
+	material.shine  = 100;
+	material.kt.Set(transparency, transparency, transparency);
+	material.FinishMaterial();
+	scene->materials.push_back(material);
+}
+
+#define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
+void HandleMesh(Scene *scene)
+{
+	Mesh* mesh = new Mesh;
+	Vector  newVector;
+	newVector.Set(-10, 0, 5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(-5, 0, 5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(0, 0, 5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(5, 0, 5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(10, 0, 5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(-10, 0, 2.5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(-5, 0, 2.5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(0, 0, 2.5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(5, 0, 2.5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(10, 0, 2.5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(-10, 0, 0);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(-5, 0, 0);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(0, 0, 0);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(5, 0, 0);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(10, 0, 0);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(-10, 0, -2.5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(-5, 0, -2.5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(0, 0, -2.5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(5, 0, -2.5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(10, 0, -2.5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(-10, 0, -5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(-5, 0, -5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(0, 0, -5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(5, 0, -5);
+	mesh->vertices.push_back(newVector);
+	newVector.Set(10, 0, -5);
+	mesh->vertices.push_back(newVector);
+
+	int coordIndex[] = {
+		5, 0, 6, -1, 1, 6, 0, -1, 6, 1, 7, -1, 2, 7, 1, -1, 7, 2, 8, -1,
+		3, 8, 2, -1, 8, 3, 9, -1, 4, 9, 3, -1, 10, 5, 11, -1,
+		6, 11, 5, -1, 11, 6, 12, -1, 7, 12, 6, -1, 12, 7, 13, -1,
+		8, 13, 7, -1, 13, 8, 14, -1, 9, 14, 8, -1, 15, 10, 16, -1,
+		11, 16, 10, -1, 16, 11, 17, -1, 12, 17, 11, -1, 17, 12, 18, -1,
+		13, 18, 12, -1, 18, 13, 19, -1, 14, 19, 13, -1, 20, 15, 21, -1,
+		16, 21, 15, -1, 21, 16, 22, -1, 17, 22, 16, -1, 22, 17, 23, -1,
+		18, 23, 17, -1, 23, 18, 24, -1, 19, 24, 18, -1
+	};
+	for (int i = 0; i < ARRAY_SIZE(coordIndex)-2; i++) {
+		Triangle triangle;
+
+		triangle.ai = coordIndex[i];
+		triangle.bi = coordIndex[i+1];
+		triangle.ci = coordIndex[i+2];
+		triangle.materialInd = scene->materials.size() - 1;
+		mesh->triangles.push_back(triangle);
+	}
+
+	scene->objects.push_back(mesh);
+}
+
+void FinishScene(Scene *scene)
+{
+	for (long i = 0; i < scene->objects.size(); i++) {
+		Mesh* pMesh = scene->objects[i];
+		for (long j = 0; j < pMesh->triangles.size(); j++) {
+			pMesh->triangles[j].a                   = &pMesh->vertices[pMesh->triangles[j].ai];
+			pMesh->triangles[j].b                   = &pMesh->vertices[pMesh->triangles[j].bi];
+			pMesh->triangles[j].c                   = &pMesh->vertices[pMesh->triangles[j].ci];
+			pMesh->triangles[j].material    = &scene->materials[pMesh->triangles[j].materialInd];
+			pMesh->triangles[j].FinishTriangle();
+		}
+	}
+}
+
+void onInitialization( ) {
+	HandleCamera(&scene);
+	HandlePointLight(&scene);
+	HandleMaterial(&scene);
+	HandleMesh(&scene);
+	FinishScene(&scene);
 	for (int y = 0; y <= scene.camera.vres; y++) {
 		for (int x = 0; x <= scene.camera.hres; x++) {
 			Ray r = GetRay(x, y);
@@ -906,8 +1084,14 @@ void onInitialization( ) {
 			pixels[x * window_size + y] = col.r;
 			pixels[x * window_size + y + 1] = col.g;
 			pixels[x * window_size + y + 2] = col.b;
+			//printf("debug, (%d, %d) = (%f, %f, %f)\n", x, y, col.r, col.g, col.b);
+		}
+		if (y % 2 == 0) {
+			printf("\r%d %%", y / 2);
+			fflush(stdout);
 		}
 	}
+	putchar('\n');
 }
 
 void onDisplay( ) {
