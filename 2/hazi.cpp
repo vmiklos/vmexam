@@ -38,7 +38,13 @@
 
 // FIXME ez majd a vegen 600 kell legyen
 int window_size = 200;
-float* pixels = new float[window_size*window_size*3];
+struct RGBType {
+	float r;
+	float g;
+	float b;
+};
+
+RGBType *pixels = new RGBType[window_size*window_size];
 
 #define EPSILON                         1e-5F
 #define EPSILON9                        1e-9F
@@ -1081,9 +1087,9 @@ void onInitialization( ) {
 		for (int x = 0; x <= scene.camera.hres; x++) {
 			Ray r = GetRay(x, y);
 			Color col = scene.Trace(r, 0);
-			pixels[x * window_size + y] = col.r;
-			pixels[x * window_size + y + 1] = col.g;
-			pixels[x * window_size + y + 2] = col.b;
+			pixels[(window_size-y) * window_size + x].r = col.r;
+			pixels[(window_size-y) * window_size + x].r = col.g;
+			pixels[(window_size-y) * window_size + x].r = col.b;
 			//printf("debug, (%d, %d) = (%f, %f, %f)\n", x, y, col.r, col.g, col.b);
 		}
 		if (y % 2 == 0) {
