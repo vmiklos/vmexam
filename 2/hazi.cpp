@@ -989,56 +989,18 @@ void HandleMesh(Scene *scene)
 {
 	Mesh* mesh = new Mesh;
 	Vector  newVector;
-	newVector.Set(-10, 0, 5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(-5, 0, 5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(0, 0, 5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(5, 0, 5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(10, 0, 5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(-10, 0, 2.5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(-5, 0, 2.5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(0, 0, 2.5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(5, 0, 2.5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(10, 0, 2.5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(-10, 0, 0);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(-5, 0, 0);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(0, 0, 0);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(5, 0, 0);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(10, 0, 0);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(-10, 0, -2.5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(-5, 0, -2.5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(0, 0, -2.5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(5, 0, -2.5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(10, 0, -2.5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(-10, 0, -5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(-5, 0, -5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(0, 0, -5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(5, 0, -5);
-	mesh->vertices.push_back(newVector);
-	newVector.Set(10, 0, -5);
-	mesh->vertices.push_back(newVector);
+
+	int coord [] = {
+		-25, 0, 25, -12.5, 0, 25, 0, 0, 25, 12.5, 0, 25, 25, 0, 25, -25, 0, 12.5,
+		-12.5, 0, 12.5, 0, 0, 12.5, 12.5, 0, 12.5, 25, 0, 12.5, -25, 0, 0,
+		-12.5, 0, 0, 0, 0, 0, 12.5, 0, 0, 25, 0, 0, -25, 0, -12.5, -12.5, 0, -12.5,
+		0, 0, -12.5, 12.5, 0, -12.5, 25, 0, -12.5, -25, 0, -25, -12.5, 0, -25,
+		0, 0, -25, 12.5, 0, -25, 25, 0, -25
+	};
+	for (int i = 0; i < ARRAY_SIZE(coord); i+=3) {
+		Vector vector(coord[i], coord[i+1], coord[i+2]);
+		mesh->vertices.push_back(vector);
+	}
 
 	int coordIndex[] = {
 		5, 0, 6, -1, 1, 6, 0, -1, 6, 1, 7, -1, 2, 7, 1, -1, 7, 2, 8, -1,
@@ -1087,9 +1049,9 @@ void onInitialization( ) {
 		for (int x = 0; x <= scene.camera.hres; x++) {
 			Ray r = GetRay(x, y);
 			Color col = scene.Trace(r, 0);
-			pixels[(window_size-y) * window_size + x].r = col.r;
-			pixels[(window_size-y) * window_size + x].r = col.g;
-			pixels[(window_size-y) * window_size + x].r = col.b;
+			pixels[y * window_size + x].r = col.r;
+			pixels[y * window_size + x].r = col.g;
+			pixels[y * window_size + x].r = col.b;
 			//printf("debug, (%d, %d) = (%f, %f, %f)\n", x, y, col.r, col.g, col.b);
 		}
 		if (y % 2 == 0) {
