@@ -438,15 +438,7 @@ public:
 
 
 //===============================================================
-class Object {
-//===============================================================
-public:
-	virtual bool		Intersect(const Ray& ray, HitRec* hitRec) { return false; };
-	virtual Material*	GetMaterial(const HitRec& hitRec) {return NULL; };
-};
-
-//===============================================================
-class Mesh : public Object {
+class Mesh {
 //===============================================================
 public:
 	vector <Vector>	vertices;	// csúcspontok
@@ -550,7 +542,7 @@ class Scene {
 public:
 	Camera					camera;
 	vector <Material>	materials;
-	vector <Object*>	objects;
+	vector <Mesh*>	objects;
 	vector <Light*>	lights;
 
 	bool	Read				() {
@@ -568,15 +560,13 @@ public:
 
 		// finishScene
 		for (long i = 0; i < objects.size(); i++) {
-			if (dynamic_cast<Mesh*>(objects[i]) != NULL) {
-				Mesh* pMesh = dynamic_cast<Mesh*>(objects[i]);
-				for (long j = 0; j < pMesh->triangles.size(); j++) {
-					pMesh->triangles[j].a			= &pMesh->vertices[pMesh->triangles[j].ai];
-					pMesh->triangles[j].b			= &pMesh->vertices[pMesh->triangles[j].bi];
-					pMesh->triangles[j].c			= &pMesh->vertices[pMesh->triangles[j].ci];
-					pMesh->triangles[j].material	= &materials[pMesh->triangles[j].materialInd];
-					pMesh->triangles[j].FinishTriangle();
-				}
+			Mesh* pMesh = objects[i];
+			for (long j = 0; j < pMesh->triangles.size(); j++) {
+				pMesh->triangles[j].a			= &pMesh->vertices[pMesh->triangles[j].ai];
+				pMesh->triangles[j].b			= &pMesh->vertices[pMesh->triangles[j].bi];
+				pMesh->triangles[j].c			= &pMesh->vertices[pMesh->triangles[j].ci];
+				pMesh->triangles[j].material	= &materials[pMesh->triangles[j].materialInd];
+				pMesh->triangles[j].FinishTriangle();
 			}
 		}
 		return true;
@@ -633,12 +623,6 @@ public:
 	Color	DirectLightsource	(const Vector& inDir, const HitRec& hitRec) {
 		Color sumColor = gColorBlack; // akkumulált radiancia
 		for (short i = 0; i < lights.size(); i++) {
-			//		if (dynamic_cast<DirectionalLight*>(lights[i]) != NULL) {
-			//			// 1. handle directional lights
-			//			DirectionalLight* dLight = dynamic_cast<DirectionalLight*>(lights[i]);
-			//			continue;
-			//		}
-
 			// 2. pontszeru fényforrások kezelése
 			PointLight* pLight = dynamic_cast<PointLight*>(lights[i]);
 			// sugár a felületi pontból a fényforrásig
