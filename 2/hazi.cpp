@@ -517,8 +517,21 @@ public:
 };
 
 
-extern Scene scene;
+//===============================================================
+class VrmlReader {
+//===============================================================
+	Scene*					scene;
 
+	void	HandleCamera			();
+	void	HandleMaterial			();
+	void	HandleIFaceSet			();
+	void	HandlePointLight		();
+	void	ComputeView				(const float position[3], float orientation[4], float distance, float target[3], float up[3]);
+
+public:
+	VrmlReader(Scene* pScene) { scene = pScene; }
+	bool ReadFile();
+};
 void onInitialization( ) {
 }
 
