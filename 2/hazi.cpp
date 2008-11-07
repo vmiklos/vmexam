@@ -25,15 +25,16 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Innentol modosithatod...
 
-// FIXME get rid of includes
-#include <iostream>
-#include <vector>
-#include <float.h>
-
 //--------------------------------------------------------
 // Nev: Vajna Miklos
 // Neptun: AYU9RZ
 //--------------------------------------------------------
+
+// FIXME get rid of includes
+#include <iostream>
+#include <vector>
+using namespace std;
+#include <float.h>
 
 //===============================================================
 class Vector {
@@ -413,8 +414,8 @@ public:
 class Mesh : public Object {
 //===============================================================
 public:
-	std::vector <Vector>	vertices;	// csúcspontok
-	std::vector <Triangle>	triangles;	// háromszögek
+	vector <Vector>	vertices;	// csúcspontok
+	vector <Triangle>	triangles;	// háromszögek
 
 	bool		Intersect(const Ray& ray, HitRec* hitRec);
 	Material*	GetMaterial(const HitRec& hitRec) { return triangles[hitRec.primitiveInd].material; }
@@ -443,23 +444,7 @@ public:
 	Vector direction; 
 };
 
-//===============================================================
-class Scene {
-//===============================================================
-public:
-	Camera					camera;
-	std::vector <Material>	materials;
-	std::vector <Object*>	objects;
-	std::vector <Light*>	lights;
-	bool					isLoaded;
-
-	Scene() { isLoaded = false;}
-	bool	Read				();
-	bool	Intersect			(const Ray& ray, HitRec* hitRec);
-	Color	Trace				(const Ray& ray, short depth);
-	Color	DirectLightsource	(const Vector& inDir, const HitRec& hitRec);
-};
-
+class Scene;
 
 //===============================================================
 class VrmlReader {
@@ -477,14 +462,29 @@ public:
 	bool ReadFile();
 };
 
-const short MaxDepth = 5;
 
-//-----------------------------------------------------------------
-bool Scene::Read() {
-//-----------------------------------------------------------------
-	VrmlReader vrmlRaeder(this);
-	return vrmlRaeder.ReadFile();
-}
+//===============================================================
+class Scene {
+//===============================================================
+public:
+	Camera					camera;
+	vector <Material>	materials;
+	vector <Object*>	objects;
+	vector <Light*>	lights;
+	bool					isLoaded;
+
+	Scene() { isLoaded = false;}
+	bool	Read				() {
+		VrmlReader vrmlRaeder(this);
+		return vrmlRaeder.ReadFile();
+	}
+	bool	Intersect			(const Ray& ray, HitRec* hitRec);
+	Color	Trace				(const Ray& ray, short depth);
+	Color	DirectLightsource	(const Vector& inDir, const HitRec& hitRec);
+};
+
+
+const short MaxDepth = 5;
 
 //-----------------------------------------------------------------
 bool Scene::Intersect(const Ray& ray, HitRec* hitRec) {
@@ -951,7 +951,6 @@ void LoadFile(void) {
 //-----------------------------------------------------------------
 	scene.isLoaded = false;		// tilt Render scene while processing 
 	if (!scene.Read()) {
-		std::cout << "Error Hibás fájl olvasás" << std::endl;
 		return;
 	}
 
@@ -963,17 +962,9 @@ void LoadFile(void) {
 
 	
 	// 3. Render
-	long start = time(NULL);
 	
 	Render();
 	glutPostRedisplay();
-
-	long finish = time(NULL);
-	double duration = finish - start;
-	char s[256];
-	sprintf(s, "Rendering time is %3.3f seconds\n", duration);
-	std::cout << s;
-
 }
 
 void onInitialization( ) {
