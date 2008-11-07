@@ -532,6 +532,9 @@ public:
 	VrmlReader(Scene* pScene) { scene = pScene; }
 	bool ReadFile();
 };
+
+const short MaxDepth = 5;
+
 void onInitialization( ) {
 }
 
