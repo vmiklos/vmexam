@@ -467,26 +467,13 @@ public:
 };
 
 //===============================================================
-class Light {
+class PointLight {
 //===============================================================
 public:
 	Color emission;
 
 	virtual Color	GetEmission() { return emission; };
-};
-
-//===============================================================
-class PointLight : public Light {
-//===============================================================
-public:
 	Vector location;
-};
-
-//===============================================================
-class DirectionalLight : public Light {
-//===============================================================
-public:
-	Vector direction; 
 };
 
 class Scene;
@@ -543,7 +530,7 @@ public:
 	Camera					camera;
 	vector <Material>	materials;
 	vector <Mesh*>	objects;
-	vector <Light*>	lights;
+	vector <PointLight*>	lights;
 
 	bool	Read				() {
 		VrmlReader vr(this);
@@ -624,7 +611,7 @@ public:
 		Color sumColor = gColorBlack; // akkumulált radiancia
 		for (short i = 0; i < lights.size(); i++) {
 			// 2. pontszeru fényforrások kezelése
-			PointLight* pLight = dynamic_cast<PointLight*>(lights[i]);
+			PointLight* pLight = lights[i];
 			// sugár a felületi pontból a fényforrásig
 			Ray		rayToLight(hitRec.point, pLight->location - hitRec.point);
 			float	lightDist	= rayToLight.dir.Norm();
