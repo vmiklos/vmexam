@@ -365,8 +365,29 @@ public:
 	}
 };
 
-class Ray;
-class HitRec;
+//===============================================================
+class Ray {
+//===============================================================
+public:
+	Vector	origin;
+	Vector dir;
+	Ray(const Vector& newOrigin,  const Vector& newDir) { origin = newOrigin; dir = newDir; };
+
+};
+
+//===============================================================
+class HitRec {
+//===============================================================
+public:
+	int		objectInd;		// objektum index
+	int		primitiveInd;	// primitív index
+	Vector	point;			// metszéspont
+	Vector	normal;			// normálvektor az adott pontban
+	float	t;				// sugárparaméter
+
+	HitRec() { objectInd = primitiveInd = -1; }
+};
+
 
 //===============================================================
 class Triangle {
@@ -392,29 +413,6 @@ public:
 	bool	Intersect(const Ray& ray, HitRec* hitRec);
 };
 
-
-//===============================================================
-class Ray {
-//===============================================================
-public:
-	Vector	origin;
-	Vector dir;
-	Ray(const Vector& newOrigin,  const Vector& newDir) { origin = newOrigin; dir = newDir; };
-
-};
-
-//===============================================================
-class HitRec {
-//===============================================================
-public:
-	int		objectInd;		// objektum index
-	int		primitiveInd;	// primitív index
-	Vector	point;			// metszéspont
-	Vector	normal;			// normálvektor az adott pontban
-	float	t;				// sugárparaméter
-
-	HitRec() { objectInd = primitiveInd = -1; }
-};
 
 
 //===============================================================
