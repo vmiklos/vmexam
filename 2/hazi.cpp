@@ -641,12 +641,6 @@ public:
 };
 
 
-enum IntersectMethodType {
-	IntersectType3D
-};
-
-IntersectMethodType IntersectMethod = IntersectType3D;
-
 // Compute a target and up vector from position/orientation/distance.
 //-----------------------------------------------------------------
 void VrmlReader::ComputeView(const float position[3], float orientation[4], float distance, float target[3], float up[3]) {
