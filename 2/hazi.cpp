@@ -313,73 +313,57 @@ public:
 	Color kt;			// tökéletes 
 	float n;		// toresmutato
 
-	Material();
-	void	FinishMaterial (void);
-	Color	Brdf(const Vector& inDir, const Vector& outDir, const Vector& normal);
-	bool	RefractionDir(const Vector& inDir, const Vector& normal, Vector* outDir);
+	Material() {
+		name[0] = '\0';
+		Ka = Kd = Ks = ka = kd = kr = kt = gColorBlack;
+		shine = 0;
+	}
+	void FinishMaterial (void) {
+		ka = Ka / M_PI;			// a BRDF ambines tagja
+		kd = Kd / M_PI;			// a BRDF diffúz tagja
+		
+		if (shine >= 100.0) {	// 100-as shine esetén tükörnek tekintjük
+			kr	= Ks;
+			Ks	= gColorBlack;
+		}
+
+		n = 1.2;				// törésmutatót VRML-ben nem lehet megadni
+	}
+	Color Brdf(const Vector& inDir, const Vector& outDir, const Vector& normal) {
+		double cosIn = -1.0 * (inDir * normal);
+		if (cosIn <= EPSILON)		// ha az anyag belsejébol jövünk
+			return gColorBlack;
+
+		Color ks = gColorBlack;
+		Vector reflDir = normal * (2.0 * cosIn) + inDir;
+		double cos_refl_out = reflDir * outDir;
+		if (cos_refl_out > EPSILON) {
+			Color ref = Ks * (shine + 2) / M_PI / 2.0;
+			ks = ref * pow(cos_refl_out, shine);
+		}
+		return kd + ks;		// diffúz + spekuláris BRDF
+	}
+	bool RefractionDir(const Vector& inDir, const Vector& normal, Vector* outDir) {
+		double cosIn = -1.0 * (inDir * normal);
+		if (fabs(cosIn) <= EPSILON4)
+			return false;
+
+		float cn = n;
+		Vector useNormal = normal;
+		if (cosIn < 0) {				// ha az anyag belsejebol jovunk
+			cn			= 1.0 / n;	 
+			useNormal	= -normal;		// a toresmutato reciprokat kell hasznalni
+			cosIn		= -cosIn;
+		}															
+		
+		float disc = 1 - (1 - cosIn * cosIn) / cn / cn;	 // Snellius-Descartes torveny
+		if (disc < 0) 
+			return false;
+
+		*outDir = useNormal * (cosIn / cn - sqrt(disc)) + inDir / cn;
+		return true;
+	}
 };
-
-//-----------------------------------------------------------------
-inline Material::Material() {
-//-----------------------------------------------------------------
-	name[0] = '\0';
-	Ka = Kd = Ks = ka = kd = kr = kt = gColorBlack;
-	shine = 0;
-}
-
-//-----------------------------------------------------------------
-inline void Material::FinishMaterial(void) {
-//-----------------------------------------------------------------
-	ka = Ka / M_PI;			// a BRDF ambines tagja
-	kd = Kd / M_PI;			// a BRDF diffúz tagja
-	
-	if (shine >= 100.0) {	// 100-as shine esetén tükörnek tekintjük
-		kr	= Ks;
-		Ks	= gColorBlack;
-	}
-
-	n = 1.2;				// törésmutatót VRML-ben nem lehet megadni
-}
-
-//-----------------------------------------------------------------
-inline Color Material::Brdf(const Vector& inDir, const Vector& outDir, const Vector& normal) {
-//-----------------------------------------------------------------
-	double cosIn = -1.0 * (inDir * normal);
-	if (cosIn <= EPSILON)		// ha az anyag belsejébol jövünk
-		return gColorBlack;
-
-	Color ks = gColorBlack;
-	Vector reflDir = normal * (2.0 * cosIn) + inDir;
-	double cos_refl_out = reflDir * outDir;
-	if (cos_refl_out > EPSILON) {
-		Color ref = Ks * (shine + 2) / M_PI / 2.0;
-		ks = ref * pow(cos_refl_out, shine);
-	}
-	return kd + ks;		// diffúz + spekuláris BRDF
-}
-
-//-----------------------------------------------------------------
-inline bool Material::RefractionDir(const Vector& inDir, const Vector& normal, Vector* outDir)  {
-//-----------------------------------------------------------------
-	double cosIn = -1.0 * (inDir * normal);
-	if (fabs(cosIn) <= EPSILON4)
-		return false;
-
-	float cn = n;
-	Vector useNormal = normal;
-	if (cosIn < 0) {				// ha az anyag belsejebol jovunk
-		cn			= 1.0 / n;	 
-		useNormal	= -normal;		// a toresmutato reciprokat kell hasznalni
-		cosIn		= -cosIn;
-	}															
-	
-	float disc = 1 - (1 - cosIn * cosIn) / cn / cn;	 // Snellius-Descartes torveny
-	if (disc < 0) 
-		return false;
-
-	*outDir = useNormal * (cosIn / cn - sqrt(disc)) + inDir / cn;
-	return true;
-}
 
 class Ray;
 class HitRec;
