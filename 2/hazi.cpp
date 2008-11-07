@@ -400,6 +400,39 @@ inline bool Material::RefractionDir(const Vector& inDir, const Vector& normal, V
 	return true;
 }
 
+class Ray;
+class HitRec;
+
+//===============================================================
+class Triangle {
+//===============================================================
+public:
+	Vector			*a, *b, *c;		//! defines the 3 vertices
+	long			ai, bi, ci;		// indexes
+
+	Vector			normal;	
+	Vector			*Na, *Nb, *Nc;	//! normal for vertex a,b,c
+
+	Material*		material;
+	long			materialInd;
+
+	DominantAxis	dominantAxis;
+	float			hiperPlaneShiftOffset;
+	bool			wasSwap;
+	float			u1, u2, v1, v2;				// for Intersect2D()
+	float			d1, d2, d3, d4, d5, d6;		// pre-computation for IntersectFast() speed-up
+	float			abV1, abV2, abC, bcV1, bcV2, bcC, caV1, caV2, caC;	// for IntersectGreen()
+protected:
+	bool	Intersect3D(const Ray& ray, HitRec* hitRec);
+	bool	Intersect2D(const Ray& ray, HitRec* hitRec);
+	bool	IntersectGreen(const Ray& ray, HitRec* hitRec);
+public:
+	bool	FinishTriangle(void);
+	bool	Intersect(const Ray& ray, HitRec* hitRec);
+};
+
+
+
 void onInitialization( ) {
 }
 
