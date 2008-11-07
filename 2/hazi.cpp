@@ -35,12 +35,6 @@
 // Neptun: AYU9RZ
 //--------------------------------------------------------
 
-enum DominantAxis {
-	X_DOMINANT,
-	Y_DOMINANT,
-	Z_DOMINANT
-};
-
 //===============================================================
 class Vector {
 //===============================================================
@@ -120,13 +114,6 @@ public:
 		x /= norm;
 		y /= norm;
 		z /= norm;
-	}
-
-	DominantAxis GetDominantAxis (void) const {
-		float dx = fabs(x);
-		float dy = fabs(y);
-		float dz = fabs(z);
-		return (dx > dy) ? ((dx > dz) ? X_DOMINANT : Z_DOMINANT) : ((dy > dz) ? Y_DOMINANT : Z_DOMINANT);
 	}
 
 	friend Vector operator*(float f, const Vector& v) {
@@ -402,7 +389,6 @@ public:
 	Material*		material;
 	long			materialInd;
 
-	DominantAxis	dominantAxis;
 	float			hiperPlaneShiftOffset;
 	bool			wasSwap;
 	float			u1, u2, v1, v2;				// for Intersect2D()
