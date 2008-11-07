@@ -389,8 +389,6 @@ public:
 	float			abV1, abV2, abC, bcV1, bcV2, bcC, caV1, caV2, caC;	// for IntersectGreen()
 protected:
 	bool	Intersect3D(const Ray& ray, HitRec* hitRec);
-	bool	Intersect2D(const Ray& ray, HitRec* hitRec);
-	bool	IntersectGreen(const Ray& ray, HitRec* hitRec);
 public:
 	bool	FinishTriangle(void);
 	bool	Intersect(const Ray& ray, HitRec* hitRec);
@@ -623,24 +621,17 @@ bool Mesh::Intersect(const Ray& ray, HitRec* hitRec) {
 }
 
 enum IntersectMethodType {
-	IntersectType3D,
-	IntersectType2D,
-	IntersectTypeGreen
+	IntersectType3D
 };
 
-IntersectMethodType IntersectMethod = IntersectTypeGreen;
+IntersectMethodType IntersectMethod = IntersectType3D;
 
 #define MAX_DISTANCE	1e+7
 
 //-----------------------------------------------------------------
 bool Triangle::Intersect(const Ray& ray, HitRec* hitRec) {
 //-----------------------------------------------------------------
-	if (IntersectMethod == 0)
-		return Intersect3D(ray, hitRec);
-	if (IntersectMethod == 1)
-		return Intersect2D(ray, hitRec);
-	if (IntersectMethod == 2)
-		return IntersectGreen(ray, hitRec);
+	return Intersect3D(ray, hitRec);
 }
 
 //-----------------------------------------------------------------
@@ -652,252 +643,7 @@ bool Triangle::FinishTriangle(void)  {
 	normal= va % vb;
 	normal.Normalize();		
 	// if 3 vertices in the same line, this result normal= (NAN,NAN,NAN), which is OK.
-	if (IntersectMethod == IntersectType2D) {
-		dominantAxis = normal.GetDominantAxis();
-		// it doens't matter which point to choose for hiperPlaneShiftOffset
-		hiperPlaneShiftOffset = -1.0 * normal * *a;
-
-		wasSwap = false;
-		switch (dominantAxis) {
-		case X_DOMINANT:
-			if ((b->y - c->y) * (b->z - a->z) < (b->z - c->z) * (b->y - a->y))
-				wasSwap = true;
-			break;
-		case Y_DOMINANT:
-			if ((b->x - c->x) * (b->z - a->z) < (b->z - c->z) * (b->x - a->x))
-				wasSwap = true;
-			break;
-		case Z_DOMINANT:
-			if ((b->x - c->x) * (b->y - a->y) < (b->y - c->y) * (b->x - a->x))
-				wasSwap = true;
-			break;
-		}
-
-		if (wasSwap) {	// change pointers pf vertices
-			Vector* temp = b;
-			b = a;
-			a = temp;
-			// change pointer of normals
-		}
-		switch (dominantAxis) {
-		case X_DOMINANT:
-			d1 = b->z - a->z;
-			d2 = b->y - a->y;
-			d3 = c->z - b->z;
-			d4 = c->y - b->y;
-			d5 = a->z - c->z;
-			d6 = a->y - c->y;
-			break;
-		case Y_DOMINANT:
-			d1 = b->z - a->z;
-			d2 = b->x - a->x;
-			d3 = c->z - b->z;
-			d4 = c->x - b->x;
-			d5 = a->z - c->z;
-			d6 = a->x - c->x;		
-			break;
-		case Z_DOMINANT:
-			d1 = b->y - a->y;
-			d2 = b->x - a->x;
-			d3 = c->y - b->y;
-			d4 = c->x - b->x;
-			d5 = a->y - c->y;
-			d6 = a->x - c->x;			
-			break;
-		}
-	}	// IntersectMethod == Intersect2D
-
-	if (IntersectMethod == IntersectTypeGreen) {
-		dominantAxis = normal.GetDominantAxis();
-		// it doens't matter which point to choose for hiperPlaneShiftOffset
-		hiperPlaneShiftOffset = -1.0 * normal * *a;
-
-		switch (dominantAxis) {
-	case X_DOMINANT:
-		abV1	= b->z - a->z;
-		abV2	= a->y - b->y;
-		abC		= abV1 * b->y + abV2 * b->z;
-		if (c->y * abV1 + c->z * abV2 > abC) {
-			abC		*= -1.0;
-			abV1	*= -1.0;
-			abV2	*= -1.0;
-		}
-
-		bcV1	= c->z - b->z;
-		bcV2	= b->y - c->y;
-		bcC		= bcV1 * c->y + bcV2 * c->z;
-		if (a->y * bcV1 + a->z * bcV2 > bcC) {
-			bcC		*= -1.0;
-			bcV1	*= -1.0;
-			bcV2	*= -1.0;
-		}
-
-		caV1	= a->z - c->z;
-		caV2	= c->y - a->y;
-		caC		= caV1 * a->y + caV2 * a->z;
-		if (b->y * caV1 + b->z * caV2 > caC) {
-			caC		*= -1.0;
-			caV1	*= -1.0;
-			caV2	*= -1.0;
-		}
-
-		break;
-	case Y_DOMINANT:
-		abV1	= b->z - a->z;
-		abV2	= a->x - b->x;
-		abC		= abV1 * b->x + abV2 * b->z;
-		if (c->x * abV1 + c->z * abV2 > abC) {
-			abC		*= -1.0;
-			abV1	*= -1.0;
-			abV2	*= -1.0;
-		}
-
-		bcV1	= c->z - b->z;
-		bcV2	= b->x - c->x;
-		bcC		= bcV1 * c->x + bcV2 * c->z;
-		if (a->x * bcV1 + a->z * bcV2 > bcC){
-			bcC		*= -1.0;
-			bcV1	*= -1.0;
-			bcV2	*= -1.0;
-		}
-
-		caV1	= a->z - c->z;
-		caV2	= c->x - a->x;
-		caC		= caV1 * a->x + caV2 * a->z;
-		if (b->x * caV1 + b->z * caV2 > caC){
-			caC		*= -1.0;
-			caV1	*= -1.0;
-			caV2	*= -1.0;
-		}
-		break;
-	case Z_DOMINANT:
-		abV1	= b->y - a->y;
-		abV2	= a->x - b->x;
-		abC		= abV1 * b->x + abV2 * b->y;
-		if (c->x * abV1 + c->y * abV2 > abC) {
-			abC		*= -1.0;
-			abV1	*= -1.0;
-			abV2	*= -1.0;
-		}
-
-		bcV1	= c->y - b->y;
-		bcV2	= b->x - c->x;
-		bcC		= bcV1 * c->x + bcV2 * c->y;
-		if (a->x * bcV1 + a->y * bcV2 > bcC) {
-			bcC		*= -1.0;
-			bcV1	*= -1.0;
-			bcV2	*= -1.0;
-		}
-
-		caV1	= a->y - c->y;
-		caV2	= c->x - a->x;
-		caC		= caV1 * a->x + caV2 * a->y;
-		if (b->x * caV1 + b->y * caV2 > caC){
-			caC		*= -1.0;
-			caV1	*= -1.0;
-			caV2	*= -1.0;
-		}
-		break;
-		}
-	}
 	return !isnan(normal.x) && !isnan(normal.y) && !isnan(normal.z);		
-}
-
-//-----------------------------------------------------------------
-bool Triangle::Intersect2D(const Ray& ray, HitRec* hitRec) {	
-//-----------------------------------------------------------------
-	float cosa = normal * ray.dir;
-	//if (cosa > -EPSILON)	// back facing patch
-	//	return false;
-
-	float originDistOnNormal = normal * ray.origin;
-	float t = -(hiperPlaneShiftOffset + originDistOnNormal) / cosa;
-	if (t < EPSILON4 || t > MAX_DISTANCE)
-		return false;
-
-	float s, v;
-	switch (dominantAxis)
-	{
-		case X_DOMINANT:
-		// project to YZ plane than
-		// test that tg(P2->P1) > tg(P2->Pintersect)   , so if Pintersect is on the wrong side, drop it
-		s = ray.origin.y + t * ray.dir.y;
-		v = ray.origin.z + t * ray.dir.z;
-
-		if ((b->y - s) * (d1) < (b->z - v) * (d2))	// speed up: e->g store: (b->z - a->z)
-			return false;
-		if ((c->y - s) * (d3) < (c->z - v) * (d4))
-			return false;
-		if ((a->y - s) * (d5) < (a->z - v) * (d6))
-			return false;
-		break;
-	case Y_DOMINANT:
-		s = ray.origin.x + t * ray.dir.x;
-		v = ray.origin.z + t * ray.dir.z;
-
-		if ((b->x - s) * (d1) < (b->z - v) * (d2))
-			return false;
-		if ((c->x - s) * (d3) < (c->z - v) * (d4))
-			return false;
-		if ((a->x -s) * (d5) < (a->z - v) * (d6))
-			return false;
-		break;
-	case Z_DOMINANT:
-		s = ray.origin.x + t * ray.dir.x;
-		v = ray.origin.y + t * ray.dir.y;
-		
-		if ((b->x - s) * (d1) < (b->y - v) * (d2))
-			return false;
-		if ((c->x - s) * (d3) < (c->y - v) * (d4))
-			return false;
-		if ((a->x - s) * (d5) < (a->y - v) * (d6))
-			return false;
-		break;
-
-	}
-	hitRec->point	= ray.origin + ray.dir * t;
-	hitRec->t		= t;
-	return true;
-}
-
-//-----------------------------------------------------------------
-bool Triangle::IntersectGreen(const Ray& ray, HitRec* hitRec) {	
-//-----------------------------------------------------------------
-	float cosa = normal * ray.dir;
-	//if (cosa > -EPSILON)	// back facing patch
-	//	return false;
-
-	float originDistOnNormal = normal * ray.origin;
-	float t = -(hiperPlaneShiftOffset + originDistOnNormal) / cosa;
-	if (t < EPSILON4 || t > MAX_DISTANCE)
-		return false;
-
-	float s, v;
-	switch (dominantAxis) {
-	case X_DOMINANT:
-		s = ray.origin.y + t * ray.dir.y;
-		v = ray.origin.z + t * ray.dir.z;
-		break;
-	case Y_DOMINANT:
-		s = ray.origin.x + t * ray.dir.x;
-		v = ray.origin.z + t * ray.dir.z;
-		break;
-	case Z_DOMINANT:
-		s = ray.origin.x + t * ray.dir.x;
-		v = ray.origin.y + t * ray.dir.y;
-		break;
-	}
-
-	if (abV1 * s + abV2 * v > abC)
-		return false;
-	else if (bcV1 * s + bcV2 * v > bcC)
-		return false;
-	else if (caV1 * s + caV2 * v > caC)
-		return false;
-
-	hitRec->point	= ray.origin + ray.dir * t;
-	hitRec->t		= t;
-	return true;
 }
 
 //-----------------------------------------------------------------
