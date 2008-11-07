@@ -471,9 +471,7 @@ public:
 	vector <Material>	materials;
 	vector <Object*>	objects;
 	vector <Light*>	lights;
-	bool					isLoaded;
 
-	Scene() { isLoaded = false;}
 	bool	Read				() {
 		VrmlReader vrmlRaeder(this);
 		return vrmlRaeder.ReadFile();
@@ -949,12 +947,9 @@ void Render(void) {
 //-----------------------------------------------------------------
 void LoadFile(void) {
 //-----------------------------------------------------------------
-	scene.isLoaded = false;		// tilt Render scene while processing 
 	if (!scene.Read()) {
 		return;
 	}
-
-	scene.isLoaded = true;
 
 	scene.camera.vres	 = DefaultScreenWidth;
 	scene.camera.hres	 = DefaultScreenHeight;
