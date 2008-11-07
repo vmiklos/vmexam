@@ -27,6 +27,7 @@
 
 // FIXME get rid of includes
 #include <iostream>
+#include <vector>
 
 //--------------------------------------------------------
 // Nev: Vajna Miklos
@@ -432,6 +433,91 @@ public:
 };
 
 
+//===============================================================
+class Ray {
+//===============================================================
+public:
+	Vector	origin;
+	Vector dir;
+	Ray(const Vector& newOrigin,  const Vector& newDir) { origin = newOrigin; dir = newDir; };
+
+};
+
+//===============================================================
+class HitRec {
+//===============================================================
+public:
+	int		objectInd;		// objektum index
+	int		primitiveInd;	// primitív index
+	Vector	point;			// metszéspont
+	Vector	normal;			// normálvektor az adott pontban
+	float	t;				// sugárparaméter
+
+	HitRec() { objectInd = primitiveInd = -1; }
+};
+
+
+//===============================================================
+class Object {
+//===============================================================
+public:
+	virtual bool		Intersect(const Ray& ray, HitRec* hitRec) { return false; };
+	virtual Material*	GetMaterial(const HitRec& hitRec) {return NULL; };
+};
+
+//===============================================================
+class Mesh : public Object {
+//===============================================================
+public:
+	std::vector <Vector>	vertices;	// csúcspontok
+	std::vector <Triangle>	triangles;	// háromszögek
+
+	bool		Intersect(const Ray& ray, HitRec* hitRec);
+	Material*	GetMaterial(const HitRec& hitRec) { return triangles[hitRec.primitiveInd].material; }
+};
+
+//===============================================================
+class Light {
+//===============================================================
+public:
+	Color emission;
+
+	virtual Color	GetEmission() { return emission; };
+};
+
+//===============================================================
+class PointLight : public Light {
+//===============================================================
+public:
+	Vector location;
+};
+
+//===============================================================
+class DirectionalLight : public Light {
+//===============================================================
+public:
+	Vector direction; 
+};
+
+//===============================================================
+class Scene {
+//===============================================================
+public:
+	Camera					camera;
+	std::vector <Material>	materials;
+	std::vector <Object*>	objects;
+	std::vector <Light*>	lights;
+	bool					isLoaded;
+
+	Scene() { isLoaded = false;}
+	bool	Read				();
+	bool	Intersect			(const Ray& ray, HitRec* hitRec);
+	Color	Trace				(const Ray& ray, short depth);
+	Color	DirectLightsource	(const Vector& inDir, const HitRec& hitRec);
+};
+
+
+extern Scene scene;
 
 void onInitialization( ) {
 }
