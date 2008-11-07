@@ -163,87 +163,70 @@ public:
 	Vector	X, Y, Z;			//! eye coordinate system (right-hand-orientation): X=right, Y=down, Z=viewing direction
 	float	pixh, pixv;		//! Width and height of a pixel
 
-	inline Camera();
-	inline void CompleteCamera();
-	inline void MoveUpDown(float step);
-	inline void Strafe(float step);
+	Camera() {
+		eyep.Set(0.0, 0.0, 10.0);
+		lookp.Set(0.0, 0.0, 0.0);
+		updir.Set(0., 1.0, 0.0);
+		fov			= 22.5;
+
+		nearClip	= DefaultCameraNearClip; //EPSILON;
+		farClip		= DefaultCameraFarClip;
+
+		hres		= DefaultScreenWidth;
+		vres		= DefaultScreenHeight;
+
+		CompleteCamera();
+	}
+	void CompleteCamera() {
+		// set up Z
+		Z = lookp - eyep;
+		/* distance from virtual camera position to focus point */
+		viewdist = Z.Norm();
+		if (viewdist < EPSILON) {
+			std::cout << "Camera eyepoint and look-point coincide" << std::endl;
+			return;
+		}
+		Z *= 1.0 / viewdist;
+
+		// set up X   Camera->X is a direction pointing to the right in the window 
+		X = Z % updir;
+		float lengthX = X.Norm();
+		if (lengthX < EPSILON) {
+			std::cout << "Camera up-direction and viewing direction coincide" << std::endl;
+			return;
+		}
+		X *= 1.0 / lengthX;
+
+		// set up Y
+		Y = Z % X;
+		Y.Normalize();
+
+		// compute horizontal and vertical field of view angle from the specified one
+		// if the vertical resolution is smaller, it is the specified fov = 45, the other is greater than 45
+		if (hres < vres) {
+			hfov = fov; 
+			vfov = atan(tan(fov * M_PI/180.0) * (float)vres/(float)hres) * 180.0/M_PI;
+		} else {
+			vfov = fov; 
+			hfov = atan(tan(fov * M_PI/180.0) * (float)hres/(float)vres) * 180.0/M_PI;
+		}
+
+		float tanFovH = tan(hfov * M_PI / 180.0);
+		float tanFovV = tan(vfov * M_PI / 180.0);
+		pixh = 2.0 * tanFovH / (float)(hres);
+		pixv = 2.0 * tanFovV / (float)(vres);
+	}
+	void MoveUpDown(float step) {
+		eyep	+= step * Y;
+		lookp	+= step * Y;
+		CompleteCamera();
+	}
+	void Strafe(float step) {
+		eyep	+= step * X;
+		lookp	+= step * X;
+		CompleteCamera();
+	}
 };
-
-//-----------------------------------------------------------------
-Camera::Camera() {
-//-----------------------------------------------------------------
-	eyep.Set(0.0, 0.0, 10.0);
-	lookp.Set(0.0, 0.0, 0.0);
-	updir.Set(0., 1.0, 0.0);
-	fov			= 22.5;
-
-	nearClip	= DefaultCameraNearClip; //EPSILON;
-	farClip		= DefaultCameraFarClip;
-
-	hres		= DefaultScreenWidth;
-	vres		= DefaultScreenHeight;
-
-	CompleteCamera();
-}
-
-//-----------------------------------------------------------------
-void Camera::CompleteCamera() {
-//-----------------------------------------------------------------
-	// set up Z
-	Z = lookp - eyep;
-	/* distance from virtual camera position to focus point */
-	viewdist = Z.Norm();
-	if (viewdist < EPSILON) {
-		std::cout << "Camera eyepoint and look-point coincide" << std::endl;
-		return;
-	}
-	Z *= 1.0 / viewdist;
-
-	// set up X   Camera->X is a direction pointing to the right in the window 
-	X = Z % updir;
-	float lengthX = X.Norm();
-	if (lengthX < EPSILON) {
-		std::cout << "Camera up-direction and viewing direction coincide" << std::endl;
-		return;
-	}
-	X *= 1.0 / lengthX;
-
-	// set up Y
-	Y = Z % X;
-	Y.Normalize();
-
-	// compute horizontal and vertical field of view angle from the specified one
-	// if the vertical resolution is smaller, it is the specified fov = 45, the other is greater than 45
-	if (hres < vres) {
-		hfov = fov; 
-		vfov = atan(tan(fov * M_PI/180.0) * (float)vres/(float)hres) * 180.0/M_PI;
-	} else {
-		vfov = fov; 
-		hfov = atan(tan(fov * M_PI/180.0) * (float)hres/(float)vres) * 180.0/M_PI;
-	}
-
-	float tanFovH = tan(hfov * M_PI / 180.0);
-	float tanFovV = tan(vfov * M_PI / 180.0);
-	pixh = 2.0 * tanFovH / (float)(hres);
-	pixv = 2.0 * tanFovV / (float)(vres);
-
-}
-
-//-----------------------------------------------------------------
-void Camera::Strafe(float step) {
-//-----------------------------------------------------------------
-	eyep	+= step * X;
-	lookp	+= step * X;
-	CompleteCamera();
-}
-
-//-----------------------------------------------------------------
-void Camera::MoveUpDown(float step) {
-//-----------------------------------------------------------------
-	eyep	+= step * Y;
-	lookp	+= step * Y;
-	CompleteCamera();
-}
 
 //===============================================================
 class Color {
