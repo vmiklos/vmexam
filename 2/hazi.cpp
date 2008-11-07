@@ -1292,18 +1292,15 @@ void LoadFile(void) {
 
 }
 
-
-
-
-
 void onInitialization( ) {
+	LoadFile();
 }
 
 void onDisplay( ) {
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // ...
+    glDrawPixels(DefaultScreenWidth, DefaultScreenHeight, GL_RGB, GL_FLOAT, pixels);
 
     // Buffercsere: rajzolas vege
     glFinish();
