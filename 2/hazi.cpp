@@ -419,7 +419,25 @@ public:
 	vector <Vector>	vertices;	// csúcspontok
 	vector <Triangle>	triangles;	// háromszögek
 
-	bool		Intersect(const Ray& ray, HitRec* hitRec);
+	bool		Intersect(const Ray& ray, HitRec* hitRec) {
+		hitRec->primitiveInd = -1;
+
+		float mint = FLT_MAX;
+		HitRec hitRecLocal;
+		for (long i = 0; i < triangles.size(); i++) {
+			if (!triangles[i].Intersect(ray, &hitRecLocal))
+				continue;
+
+			if (hitRecLocal.t < mint) {
+				mint = hitRecLocal.t; 
+				hitRec->primitiveInd = i;
+				hitRec->t		= hitRecLocal.t;
+				hitRec->point	= hitRecLocal.point;
+				hitRec->normal	= triangles[i].normal;
+			}
+	}
+	return hitRec->primitiveInd != -1;
+	}
 	Material*	GetMaterial(const HitRec& hitRec) { return triangles[hitRec.primitiveInd].material; }
 };
 
@@ -566,28 +584,6 @@ public:
 	}
 };
 
-
-//-----------------------------------------------------------------
-bool Mesh::Intersect(const Ray& ray, HitRec* hitRec) {
-//-----------------------------------------------------------------
-	hitRec->primitiveInd = -1;
-
-	float mint = FLT_MAX;
-	HitRec hitRecLocal;
-	for (long i = 0; i < triangles.size(); i++) {
-		if (!triangles[i].Intersect(ray, &hitRecLocal))
-			continue;
-
-		if (hitRecLocal.t < mint) {
-			mint = hitRecLocal.t; 
-			hitRec->primitiveInd = i;
-			hitRec->t		= hitRecLocal.t;
-			hitRec->point	= hitRecLocal.point;
-			hitRec->normal	= triangles[i].normal;
-		}
-	}
-	return hitRec->primitiveInd != -1;
-}
 
 enum IntersectMethodType {
 	IntersectType3D
