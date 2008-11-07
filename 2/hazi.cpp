@@ -509,7 +509,36 @@ public:
 	void	HandleMaterial ();
 	void	HandleIFaceSet ();
 	void	HandlePointLight ();
-	void	ComputeView (const float position[3], float orientation[4], float distance, float target[3], float up[3]);
+	void	ComputeView (const float position[3], float orientation[4], float distance, float target[3], float up[3]) {
+		// Graphics Gems, p 466. Convert between axis/angle and rotation matrix
+		float len = sqrt( orientation[0]*orientation[0] +
+				orientation[1]*orientation[1] +
+				orientation[2]*orientation[2] );
+		if (len > 0.0) {
+			orientation[0] /= len;
+			orientation[1] /= len;
+			orientation[2] /= len;
+		}
+
+		float s = sin(orientation[3]);
+		float c = cos(orientation[3]);
+		float t = 1.0 - c;
+
+		// Transform [0,0,1] by the orientation to determine sight line
+		target[0] = t * orientation[0] * orientation[2] + s * orientation[1];
+		target[1] = t * orientation[1] * orientation[2] - s * orientation[0];
+		target[2] = t * orientation[2] * orientation[2] + c;
+
+		// Move along that vector the specified distance away from position[]
+		target[0] = -distance*target[0] + position[0];
+		target[1] = -distance*target[1] + position[1];
+		target[2] = -distance*target[2] + position[2];
+
+		// Transform [0,1,0] by the orientation to determine up vector
+		up[0] = t * orientation[0] * orientation[1] - s * orientation[2];
+		up[1] = t * orientation[1] * orientation[1] + c;
+		up[2] = t * orientation[1] * orientation[2] + s * orientation[0];
+	}
 
 	VrmlReader(Scene* pScene) { scene = pScene; }
 };
@@ -641,37 +670,6 @@ public:
 };
 
 
-// Compute a target and up vector from position/orientation/distance.
-//-----------------------------------------------------------------
-void VrmlReader::ComputeView(const float position[3], float orientation[4], float distance, float target[3], float up[3]) {
-//-----------------------------------------------------------------
-	// Graphics Gems, p 466. Convert between axis/angle and rotation matrix
-	float len = sqrt( orientation[0]*orientation[0] + orientation[1]*orientation[1] + orientation[2]*orientation[2] );
-	if (len > 0.0) {
-		orientation[0] /= len;
-		orientation[1] /= len;
-		orientation[2] /= len;
-	}
-
-	float s = sin(orientation[3]);
-	float c = cos(orientation[3]);
-	float t = 1.0 - c;
-
-	// Transform [0,0,1] by the orientation to determine sight line
-	target[0] = t * orientation[0] * orientation[2] + s * orientation[1];
-	target[1] = t * orientation[1] * orientation[2] - s * orientation[0];
-	target[2] = t * orientation[2] * orientation[2] + c;
-
-	// Move along that vector the specified distance away from position[]
-	target[0] = -distance*target[0] + position[0];
-	target[1] = -distance*target[1] + position[1];
-	target[2] = -distance*target[2] + position[2];
-
-	// Transform [0,1,0] by the orientation to determine up vector
-	up[0] = t * orientation[0] * orientation[1] - s * orientation[2];
-	up[1] = t * orientation[1] * orientation[1] + c;
-	up[2] = t * orientation[1] * orientation[2] + s * orientation[0];
-}
 
 //-----------------------------------------------------------------
 void VrmlReader::HandleCamera() {
@@ -691,6 +689,7 @@ void VrmlReader::HandleCamera() {
 	float target[3], up[3];
 
 	float dist = VRML_REFERENCE_DISTANCE_FROM_EYE;
+	// Compute a target and up vector from position/orientation/distance.
 	ComputeView(position, orientation, dist, target, up);
 
 	scene->camera.fov = (field / 3.14f) * 180.0f / 2.0;
