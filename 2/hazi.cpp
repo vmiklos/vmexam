@@ -1219,6 +1219,83 @@ void VrmlReader::HandlePointLight() {
 	scene->lights.push_back(light);
 }
 
+Scene		scene;
+Ray GetRay(int x, int y) {
+	float	h = scene.camera.pixh;	// pixel horizontális mérete
+	float	v = scene.camera.pixv;	// pixel vertikális mérete
+	// az aktuális pixel középpontja
+	float	pix_x = -h * scene.camera.hres / 2.0 + x * h + h / 2.0;
+	float	pix_y = -v * scene.camera.vres / 2.0 + y * v + v / 2.0;
+
+	Vector rayDir = scene.camera.Z + pix_x * scene.camera.X + pix_y * scene.camera.Y;
+	rayDir.Normalize();
+	return Ray(scene.camera.eyep, rayDir);	// a sugár a szembol
+}
+
+struct RGBType {
+	float r;
+	float g;
+	float b;
+};
+
+RGBType *pixels = new RGBType[DefaultScreenWidth*DefaultScreenWidth];
+
+void SetPixel(int x, int y, Color col) {
+	pixels[(DefaultScreenHeight-y) * DefaultScreenHeight + x].r = col.r;
+	pixels[(DefaultScreenHeight-y) * DefaultScreenHeight + x].g = col.g;
+	pixels[(DefaultScreenHeight-y) * DefaultScreenHeight + x].b = col.b;
+}
+
+//-----------------------------------------------------------------
+void Render(void) {
+//-----------------------------------------------------------------
+	for (int y = 0; y <= scene.camera.vres; y++) {
+		for (int x = 0; x <= scene.camera.hres; x++) {
+			Ray r = GetRay(x, y);
+			Color col = scene.Trace(r, 0);
+			SetPixel(x, y, col);
+		}
+		if (y % 2 == 0) {
+			printf("\r%d %%", y / 2);
+			fflush(stdout);
+		}
+	}
+	putchar('\n');
+}
+//-----------------------------------------------------------------
+void LoadFile(void) {
+//-----------------------------------------------------------------
+	scene.isLoaded = false;		// tilt Render scene while processing 
+	if (!scene.Read()) {
+		std::cout << "Error Hibás fájl olvasás" << std::endl;
+		return;
+	}
+
+	scene.isLoaded = true;
+
+	scene.camera.vres	 = DefaultScreenWidth;
+	scene.camera.hres	 = DefaultScreenHeight;
+	scene.camera.CompleteCamera();
+
+	
+	// 3. Render
+	long start = time(NULL);
+	
+	Render();
+	glutPostRedisplay();
+
+	long finish = time(NULL);
+	double duration = finish - start;
+	char s[256];
+	sprintf(s, "Rendering time is %3.3f seconds\n", duration);
+	std::cout << s;
+
+}
+
+
+
+
+
 void onInitialization( ) {
 }
 
