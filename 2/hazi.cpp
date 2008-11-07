@@ -170,7 +170,7 @@ public:
 		/* distance from virtual camera position to focus point */
 		viewdist = Z.Norm();
 		if (viewdist < EPSILON) {
-			std::cout << "Camera eyepoint and look-point coincide" << std::endl;
+			// Camera eyepoint and look-point coincide
 			return;
 		}
 		Z *= 1.0 / viewdist;
@@ -179,7 +179,7 @@ public:
 		X = Z % updir;
 		float lengthX = X.Norm();
 		if (lengthX < EPSILON) {
-			std::cout << "Camera up-direction and viewing direction coincide" << std::endl;
+			// Camera up-direction and viewing direction coincide
 			return;
 		}
 		X *= 1.0 / lengthX;
