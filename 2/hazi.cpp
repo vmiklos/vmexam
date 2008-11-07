@@ -504,13 +504,13 @@ class VrmlReader {
 //===============================================================
 	Scene*					scene;
 
-	void	HandleCamera			();
-	void	HandleMaterial			();
-	void	HandleIFaceSet			();
-	void	HandlePointLight		();
-	void	ComputeView				(const float position[3], float orientation[4], float distance, float target[3], float up[3]);
-
 public:
+	void	HandleCamera ();
+	void	HandleMaterial ();
+	void	HandleIFaceSet ();
+	void	HandlePointLight ();
+	void	ComputeView (const float position[3], float orientation[4], float distance, float target[3], float up[3]);
+
 	VrmlReader(Scene* pScene) { scene = pScene; }
 	bool ReadFile();
 };
@@ -526,8 +526,32 @@ public:
 	vector <Light*>	lights;
 
 	bool	Read				() {
-		VrmlReader vrmlRaeder(this);
-		return vrmlRaeder.ReadFile();
+		VrmlReader vr(this);
+		vr.HandleCamera();
+		vr.HandlePointLight();
+		vr.HandleMaterial();
+		vr.HandleIFaceSet();
+		vr.HandleMaterial();
+		vr.HandleIFaceSet();
+		vr.HandleMaterial();
+		vr.HandleIFaceSet();
+		vr.HandleMaterial();
+		vr.HandleIFaceSet();
+
+		// finishScene
+		for (long i = 0; i < objects.size(); i++) {
+			if (dynamic_cast<Mesh*>(objects[i]) != NULL) {
+				Mesh* pMesh = dynamic_cast<Mesh*>(objects[i]);
+				for (long j = 0; j < pMesh->triangles.size(); j++) {
+					pMesh->triangles[j].a			= &pMesh->vertices[pMesh->triangles[j].ai];
+					pMesh->triangles[j].b			= &pMesh->vertices[pMesh->triangles[j].bi];
+					pMesh->triangles[j].c			= &pMesh->vertices[pMesh->triangles[j].ci];
+					pMesh->triangles[j].material	= &materials[pMesh->triangles[j].materialInd];
+					pMesh->triangles[j].FinishTriangle();
+				}
+			}
+		}
+		return true;
 	}
 	bool	Intersect			(const Ray& ray, HitRec* hitRec) {
 		hitRec->objectInd = -1;
@@ -627,33 +651,6 @@ IntersectMethodType IntersectMethod = IntersectType3D;
 //-----------------------------------------------------------------
 bool VrmlReader::ReadFile() {
 //-----------------------------------------------------------------
-	HandleCamera();
-	HandlePointLight();
-	HandleMaterial();
-	HandleIFaceSet();
-	HandleMaterial();
-	HandleIFaceSet();
-	HandleMaterial();
-	HandleIFaceSet();
-	HandleMaterial();
-	HandleIFaceSet();
-
-	// finishScene
-	for (long i = 0; i < scene->objects.size(); i++) {
-		if (dynamic_cast<Mesh*>(scene->objects[i]) != NULL) {
-			Mesh* pMesh = dynamic_cast<Mesh*>(scene->objects[i]);
-			for (long j = 0; j < pMesh->triangles.size(); j++) {
-				pMesh->triangles[j].a			= &pMesh->vertices[pMesh->triangles[j].ai];
-				pMesh->triangles[j].b			= &pMesh->vertices[pMesh->triangles[j].bi];
-				pMesh->triangles[j].c			= &pMesh->vertices[pMesh->triangles[j].ci];
-				pMesh->triangles[j].material	= &scene->materials[pMesh->triangles[j].materialInd];
-				pMesh->triangles[j].FinishTriangle();
-			}
-		}
-	}
-
-	// delete vrmlScene;
-	return true;
 }
 
 // Compute a target and up vector from position/orientation/distance.
