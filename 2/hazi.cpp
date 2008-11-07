@@ -129,13 +129,10 @@ public:
 		return (dx > dy) ? ((dx > dz) ? X_DOMINANT : Z_DOMINANT) : ((dy > dz) ? Y_DOMINANT : Z_DOMINANT);
 	}
 
-	// other methods
-	friend Vector operator*(float f, const Vector& v);
+	friend Vector operator*(float f, const Vector& v) {
+		return Vector(f * v.x, f * v.y, f * v.z);
+	}
 };
-
-inline Vector operator*(float f, const Vector& v) {
-	return Vector(f * v.x, f * v.y, f * v.z);
-}
 
 const int DefaultScreenWidth	= 200;
 const int DefaultScreenHeight	= 200;
