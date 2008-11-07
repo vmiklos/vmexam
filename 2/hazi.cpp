@@ -285,12 +285,10 @@ public:
 	float Lum() const {
 		return (r + g + b) / 3.0;
 	}
-	friend Color operator*(float f, const Color& c);
+	friend Color operator*(float f, const Color& c) {
+		return Color(f * c.r, f * c.g, f * c.b);
+	}
 };
-
-inline Color operator*(float f, const Color& c) {
-	return Color(f * c.r, f * c.g, f * c.b);
-}
 
 const Color             gColorBlack(0.0, 0.0, 0.0);
 const Color             gColorWhite(0.9, 0.9, 0.9);
