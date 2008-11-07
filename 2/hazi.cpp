@@ -512,7 +512,6 @@ public:
 	void	ComputeView (const float position[3], float orientation[4], float distance, float target[3], float up[3]);
 
 	VrmlReader(Scene* pScene) { scene = pScene; }
-	bool ReadFile();
 };
 
 
@@ -647,11 +646,6 @@ enum IntersectMethodType {
 };
 
 IntersectMethodType IntersectMethod = IntersectType3D;
-
-//-----------------------------------------------------------------
-bool VrmlReader::ReadFile() {
-//-----------------------------------------------------------------
-}
 
 // Compute a target and up vector from position/orientation/distance.
 //-----------------------------------------------------------------
