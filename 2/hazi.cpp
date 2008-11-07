@@ -38,6 +38,9 @@ using namespace std;
 
 const short MaxDepth = 5;
 
+#define MAX_DISTANCE	1e+7
+#define VRML_REFERENCE_DISTANCE_FROM_EYE 20.0
+
 //===============================================================
 class Vector {
 //===============================================================
@@ -398,8 +401,38 @@ public:
 	float			d1, d2, d3, d4, d5, d6;		// pre-computation for IntersectFast() speed-up
 	float			abV1, abV2, abC, bcV1, bcV2, bcC, caV1, caV2, caC;	// for IntersectGreen()
 public:
-	bool	FinishTriangle(void);
-	bool	Intersect(const Ray& ray, HitRec* hitRec);
+	bool	FinishTriangle(void){
+		Vector va, vb;
+		va = *b - *a;
+		vb = *c - *b;
+		normal= va % vb;
+		normal.Normalize();		
+		// if 3 vertices in the same line, this result normal= (NAN,NAN,NAN), which is OK.
+		return !isnan(normal.x) && !isnan(normal.y) && !isnan(normal.z);		
+	}
+
+	bool	Intersect(const Ray& ray, HitRec* hitRec) {
+		double cost = ray.dir * normal;
+		if (fabs(cost) <= EPSILON) 
+			return false;
+
+		double t = ((*a - ray.origin) * normal) / cost;
+		if(t < EPSILON4) 
+			return false;
+
+		Vector ip = ray.origin + ray.dir * t;
+		hitRec->point	= ip;
+		hitRec->t		= t;
+
+		double c1 = (((*b - *a) % (ip - *a)) * normal);
+		double c2 = (((*c - *b) % (ip - *b)) * normal);
+		double c3 = (((*a - *c) % (ip - *c)) * normal);
+		if (c1 >= 0 && c2 >= 0 && c3 >= 0) 
+			return true;
+		if (c1 <= 0 && c2 <= 0 && c3 <= 0) 
+			return true;
+		return false;
+	}
 };
 
 
@@ -590,47 +623,6 @@ enum IntersectMethodType {
 };
 
 IntersectMethodType IntersectMethod = IntersectType3D;
-
-#define MAX_DISTANCE	1e+7
-
-//-----------------------------------------------------------------
-bool Triangle::Intersect(const Ray& ray, HitRec* hitRec) {
-//-----------------------------------------------------------------
-	double cost = ray.dir * normal;
-	if (fabs(cost) <= EPSILON) 
-		return false;
-
-	double t = ((*a - ray.origin) * normal) / cost;
-	if(t < EPSILON4) 
-		return false;
-
-	Vector ip = ray.origin + ray.dir * t;
-	hitRec->point	= ip;
-	hitRec->t		= t;
-
-	double c1 = (((*b - *a) % (ip - *a)) * normal);
-	double c2 = (((*c - *b) % (ip - *b)) * normal);
-	double c3 = (((*a - *c) % (ip - *c)) * normal);
-	if (c1 >= 0 && c2 >= 0 && c3 >= 0) 
-		return true;
-	if (c1 <= 0 && c2 <= 0 && c3 <= 0) 
-		return true;
-	return false;
-}
-
-//-----------------------------------------------------------------
-bool Triangle::FinishTriangle(void)  {
-//-----------------------------------------------------------------
-	Vector va, vb;
-	va = *b - *a;
-	vb = *c - *b;
-	normal= va % vb;
-	normal.Normalize();		
-	// if 3 vertices in the same line, this result normal= (NAN,NAN,NAN), which is OK.
-	return !isnan(normal.x) && !isnan(normal.y) && !isnan(normal.z);		
-}
-
-#define VRML_REFERENCE_DISTANCE_FROM_EYE 20.0
 
 //-----------------------------------------------------------------
 bool VrmlReader::ReadFile() {
