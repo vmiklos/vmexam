@@ -36,6 +36,8 @@
 using namespace std;
 #include <float.h>
 
+const short MaxDepth = 5;
+
 //===============================================================
 class Vector {
 //===============================================================
@@ -476,107 +478,94 @@ public:
 		VrmlReader vrmlRaeder(this);
 		return vrmlRaeder.ReadFile();
 	}
-	bool	Intersect			(const Ray& ray, HitRec* hitRec);
-	Color	Trace				(const Ray& ray, short depth);
-	Color	DirectLightsource	(const Vector& inDir, const HitRec& hitRec);
+	bool	Intersect			(const Ray& ray, HitRec* hitRec) {
+		hitRec->objectInd = -1;
+		float mint = FLT_MAX;
+		HitRec hitRecLocal;
+		for (long i = 0; i < objects.size(); i++) {	// min. kereses
+			if (!objects[i]->Intersect(ray, &hitRecLocal))
+				continue;
+			if (hitRecLocal.t < mint) {
+				mint = hitRecLocal.t; 
+				*hitRec = hitRecLocal;
+				hitRec->objectInd	= i;
+			}
+		}
+		return hitRec->objectInd != -1;
+	}
+	Color	Trace				(const Ray& ray, short depth) {
+		if (depth > MaxDepth)	   // rekurzio korlatozasa
+			return gColorBlack;     
+
+		HitRec hitRec;
+		if (!Intersect(ray, &hitRec))
+			return gColorBlack;
+
+		// 1. ambiens resz
+		Color ambientColor = objects[hitRec.objectInd]->
+			GetMaterial(hitRec)->ka * gColorAmbient;
+		// 2. fényforrások közvetlen hatása
+		Color directLightColor = DirectLightsource(ray.dir, hitRec);
+
+		Material* pMaterial = objects[hitRec.objectInd]->GetMaterial(hitRec);
+		// 3. idealis tukor resz
+		Color idealReflector = gColorBlack;
+		Color kr = pMaterial->kr;
+		if (kr.Lum() > EPSILON) {
+			Vector reflDir = hitRec.normal * (-2.0 * (ray.dir * hitRec.normal)) 
+				+ ray.dir;
+			idealReflector = kr * Trace(Ray(hitRec.point, reflDir), depth + 1);
+		}
+		// 4. idealis fenyu ateresztes resz
+		Color idealRefractor = gColorBlack;
+		Color kt = pMaterial->kt;
+		if (kt.Lum() > EPSILON) {
+			Vector refrDir; //toresmutato függo
+			if (pMaterial->RefractionDir(ray.dir, hitRec.normal, &refrDir))
+				idealRefractor = kt * Trace(Ray(hitRec.point, refrDir), depth + 1);
+		}
+		return ambientColor + directLightColor + idealReflector + idealRefractor;
+	}
+
+	Color	DirectLightsource	(const Vector& inDir, const HitRec& hitRec) {
+		Color sumColor = gColorBlack; // akkumulált radiancia
+		for (short i = 0; i < lights.size(); i++) {
+			//		if (dynamic_cast<DirectionalLight*>(lights[i]) != NULL) {
+			//			// 1. handle directional lights
+			//			DirectionalLight* dLight = dynamic_cast<DirectionalLight*>(lights[i]);
+			//			continue;
+			//		}
+
+			// 2. pontszeru fényforrások kezelése
+			PointLight* pLight = dynamic_cast<PointLight*>(lights[i]);
+			// sugár a felületi pontból a fényforrásig
+			Ray		rayToLight(hitRec.point, pLight->location - hitRec.point);
+			float	lightDist	= rayToLight.dir.Norm();
+			rayToLight.dir.Normalize();
+
+			// az árnyalási normális az adott pontban
+			float	cost = rayToLight.dir * hitRec.normal;
+			if (cost <= 0)	// a test belsejébol jövünk
+				continue;
+
+			HitRec	hitRecToLight;
+			bool isIntersect = Intersect(rayToLight, &hitRecToLight);
+			bool meetLight = !isIntersect;
+			if (isIntersect) {//a metszéspont távolabb van, mint a fényforrás
+				Vector distIntersect = pLight->location - hitRecToLight.point;
+				if (distIntersect.Norm() > lightDist)
+					meetLight = true; 	
+			}
+			if (!meetLight)
+				continue;	// árnyékban vagyunk
+
+			Color brdf = objects[hitRec.objectInd]->GetMaterial(hitRec)->Brdf(inDir, rayToLight.dir, hitRec.normal);
+			sumColor += brdf * lights[i]->emission * cost;
+		}
+		return sumColor;
+	}
 };
 
-
-const short MaxDepth = 5;
-
-//-----------------------------------------------------------------
-bool Scene::Intersect(const Ray& ray, HitRec* hitRec) {
-//-----------------------------------------------------------------
-	hitRec->objectInd = -1;
-	float mint = FLT_MAX;
-	HitRec hitRecLocal;
-	for (long i = 0; i < objects.size(); i++) {	// min. kereses
-		if (!objects[i]->Intersect(ray, &hitRecLocal))
-			continue;
-		if (hitRecLocal.t < mint) {
-			mint = hitRecLocal.t; 
-			*hitRec = hitRecLocal;
-			hitRec->objectInd	= i;
-		}
-	}
-	return hitRec->objectInd != -1;
-}
-
-//-----------------------------------------------------------------
-Color Scene::DirectLightsource(const Vector& inDir, const HitRec& hitRec) {
-//-----------------------------------------------------------------
-	Color sumColor = gColorBlack; // akkumulált radiancia
-	for (short i = 0; i < lights.size(); i++) {
-		//		if (dynamic_cast<DirectionalLight*>(lights[i]) != NULL) {
-		//			// 1. handle directional lights
-		//			DirectionalLight* dLight = dynamic_cast<DirectionalLight*>(lights[i]);
-		//			continue;
-		//		}
-
-		// 2. pontszeru fényforrások kezelése
-		PointLight* pLight = dynamic_cast<PointLight*>(lights[i]);
-		// sugár a felületi pontból a fényforrásig
-		Ray		rayToLight(hitRec.point, pLight->location - hitRec.point);
-		float	lightDist	= rayToLight.dir.Norm();
-		rayToLight.dir.Normalize();
-
-		// az árnyalási normális az adott pontban
-		float	cost = rayToLight.dir * hitRec.normal;
-		if (cost <= 0)	// a test belsejébol jövünk
-			continue;
-
-		HitRec	hitRecToLight;
-		bool isIntersect = Intersect(rayToLight, &hitRecToLight);
-		bool meetLight = !isIntersect;
-		if (isIntersect) {//a metszéspont távolabb van, mint a fényforrás
-			Vector distIntersect = pLight->location - hitRecToLight.point;
-			if (distIntersect.Norm() > lightDist)
-				meetLight = true; 	
-		}
-		if (!meetLight)
-			continue;	// árnyékban vagyunk
-
-		Color brdf = objects[hitRec.objectInd]->GetMaterial(hitRec)->Brdf(inDir, rayToLight.dir, hitRec.normal);
-		sumColor += brdf * lights[i]->emission * cost;
-	}
-	return sumColor;
-}
-
-//-----------------------------------------------------------------
-Color Scene::Trace(const Ray& ray, short depth) {
-//-----------------------------------------------------------------
-	if (depth > MaxDepth)	   // rekurzio korlatozasa
-		return gColorBlack;     
-
-	HitRec hitRec;
-	if (!Intersect(ray, &hitRec))
-		return gColorBlack;
-
-	// 1. ambiens resz
-	Color ambientColor = objects[hitRec.objectInd]->
-		GetMaterial(hitRec)->ka * gColorAmbient;
-	// 2. fényforrások közvetlen hatása
-	Color directLightColor = DirectLightsource(ray.dir, hitRec);
-
-	Material* pMaterial = objects[hitRec.objectInd]->GetMaterial(hitRec);
-	// 3. idealis tukor resz
-	Color idealReflector = gColorBlack;
-	Color kr = pMaterial->kr;
-	if (kr.Lum() > EPSILON) {
-		Vector reflDir = hitRec.normal * (-2.0 * (ray.dir * hitRec.normal)) 
-			+ ray.dir;
-		idealReflector = kr * Trace(Ray(hitRec.point, reflDir), depth + 1);
-	}
-	// 4. idealis feny ateresztes resz
-	Color idealRefractor = gColorBlack;
-	Color kt = pMaterial->kt;
-	if (kt.Lum() > EPSILON) {
-		Vector refrDir; //toresmutato függo
-		if (pMaterial->RefractionDir(ray.dir, hitRec.normal, &refrDir))
-			idealRefractor = kt * Trace(Ray(hitRec.point, refrDir), depth + 1);
-	}
-	return ambientColor + directLightColor + idealReflector + idealRefractor;
-}
 
 //-----------------------------------------------------------------
 bool Mesh::Intersect(const Ray& ray, HitRec* hitRec) {
