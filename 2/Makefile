@@ -1,4 +1,4 @@
-CXXFLAGS += -g
+CXXFLAGS += -g -Wall -Werror
 LDFLAGS += -lGL -lglut -lm
 
 run: hazi

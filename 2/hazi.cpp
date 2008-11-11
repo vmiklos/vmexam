@@ -394,7 +394,7 @@ public:
 
 		float mint = FLT_MAX;
 		HitRec hitRecLocal;
-		for (long i = 0; i < triangles.size(); i++) {
+		for (unsigned i = 0; i < triangles.size(); i++) {
 			if (!triangles[i].Intersect(ray, &hitRecLocal))
 				continue;
 
@@ -485,9 +485,9 @@ public:
 		vr.HandleIFaceSet();
 
 		// finishScene
-		for (long i = 0; i < objects.size(); i++) {
+		for (unsigned i = 0; i < objects.size(); i++) {
 			Mesh* pMesh = objects[i];
-			for (long j = 0; j < pMesh->triangles.size(); j++) {
+			for (unsigned j = 0; j < pMesh->triangles.size(); j++) {
 				pMesh->triangles[j].a			= &pMesh->vertices[pMesh->triangles[j].ai];
 				pMesh->triangles[j].b			= &pMesh->vertices[pMesh->triangles[j].bi];
 				pMesh->triangles[j].c			= &pMesh->vertices[pMesh->triangles[j].ci];
@@ -501,7 +501,7 @@ public:
 		hitRec->objectInd = -1;
 		float mint = FLT_MAX;
 		HitRec hitRecLocal;
-		for (long i = 0; i < objects.size(); i++) {	// min. kereses
+		for (unsigned i = 0; i < objects.size(); i++) {	// min. kereses
 			if (!objects[i]->Intersect(ray, &hitRecLocal))
 				continue;
 			if (hitRecLocal.t < mint) {
@@ -548,7 +548,7 @@ public:
 
 	Color	DirectLightsource	(const Vector& inDir, const HitRec& hitRec) {
 		Color sumColor = gColorBlack; // akkumulált radiancia
-		for (short i = 0; i < lights.size(); i++) {
+		for (unsigned i = 0; i < lights.size(); i++) {
 			// 2. pontszeru fényforrások kezelése
 			PointLight* pLight = lights[i];
 			// sugár a felületi pontból a fényforrásig
@@ -594,8 +594,6 @@ void VrmlReader::HandleCamera() {
 	float position[3] = { 1.184, 30.52, 61.69};
 	float orientation[4] = { 0.9996, -0.02772, -0.006409, -0.4547 };
 	float field = 0.6024;
-	float avatarSize = 0.25;
-	float visibilityLimit = 0.0;
 	float target[3], up[3];
 	float dist = 20;
 
@@ -657,7 +655,7 @@ void VrmlReader::HandleIFaceSet() {
 		float coords[] = {
 			-24.995596, 0.368900, 25.000000, -12.495596, 0.368900, 25.000000, 0.004404, 0.368900, 25.000000, 12.504404, 0.368900, 25.000000, 25.004404, 0.368900, 25.000000, -24.995596, 0.368900, 12.500000, -12.495596, 0.368900, 12.500000, 0.004404, 0.368900, 12.500000, 12.504404, 0.368900, 12.500000, 25.004404, 0.368900, 12.500000, -24.995596, 0.368900, 0.000000, -12.495596, 0.368900, 0.000000, 0.004404, 0.368900, 0.000000, 12.504404, 0.368900, 0.000000, 25.004404, 0.368900, 0.000000, -24.995596, 0.368900, -12.500000, -12.495596, 0.368900, -12.500000, 0.004404, 0.368900, -12.500000, 12.504404, 0.368900, -12.500000, 25.004404, 0.368900, -12.500000, -24.995596, 0.368900, -25.000000, -12.495596, 0.368900, -25.000000, 0.004404, 0.368900, -25.000000, 12.504404, 0.368900, -25.000000, 25.004404, 0.368900, -25.000000
 		};
-		for (int i = 0; i < ARRAY_SIZE(coords); i+= 3) {
+		for (unsigned i = 0; i < ARRAY_SIZE(coords); i+= 3) {
 			newVector.Set(coords[i], coords[i+1], coords[i+2]);
 			mesh->vertices.push_back(newVector);
 		}
@@ -665,7 +663,7 @@ void VrmlReader::HandleIFaceSet() {
 		float coords[] = {
 			-9.510000, 17.138000, -15.300000, -9.510000, 7.138000, -15.300000, -19.510000, 7.138000, -15.300000, -19.510000, 17.138000, -15.300000, -9.510000, 17.137989, -5.300000, -9.510010, 7.137999, -5.300000, -19.510000, 7.138000, -5.300000, -19.510000, 17.138000, -5.300000
 		};
-		for (int i = 0; i < ARRAY_SIZE(coords); i+= 3) {
+		for (unsigned i = 0; i < ARRAY_SIZE(coords); i+= 3) {
 			newVector.Set(coords[i], coords[i+1], coords[i+2]);
 			mesh->vertices.push_back(newVector);
 		}
@@ -673,7 +671,7 @@ void VrmlReader::HandleIFaceSet() {
 		float coords[] = {
 			8.510000, 13.138000, -18.299999, 8.510000, 3.138000, -18.299999, -1.490000, 3.138000, -18.299999, -1.490000, 13.138000, -18.299999, 8.510000, 13.137989, -8.300000, 8.509990, 3.137999, -8.300000, -1.490000, 3.138000, -8.300000, -1.490000, 13.138000, -8.300000
 		};
-		for (int i = 0; i < ARRAY_SIZE(coords); i+= 3) {
+		for (unsigned i = 0; i < ARRAY_SIZE(coords); i+= 3) {
 			newVector.Set(coords[i], coords[i+1], coords[i+2]);
 			mesh->vertices.push_back(newVector);
 		}
@@ -681,7 +679,7 @@ void VrmlReader::HandleIFaceSet() {
 		float coords[] = {
 			24.778297, -0.005699, -25.468597, 24.781147, 12.494300, -25.471447, 24.783998, 24.994299, -25.474298, 24.786850, 37.494297, -25.477148, 24.789700, 49.994297, -25.480000, 12.278297, -0.002849, -25.471447, 12.281149, 12.497150, -25.474298, 12.283999, 24.997150, -25.477148, 12.286850, 37.497150, -25.480000, 12.289701, 49.997147, -25.482849, -0.221702, 0.000001, -25.474298, -0.218851, 12.500001, -25.477150, -0.216000, 25.000000, -25.480000, -0.213149, 37.500000, -25.482849, -0.210298, 50.000000, -25.485701, -12.721701, 0.002852, -25.477150, -12.718850, 12.502851, -25.480000, -12.716000, 25.002850, -25.482851, -12.713148, 37.502850, -25.485701, -12.710298, 50.002850, -25.488552, -25.221701, 0.005702, -25.480000, -25.218849, 12.505702, -25.482851, -25.215998, 25.005701, -25.485701, -25.213148, 37.505699, -25.488552, -25.210297, 50.005699, -25.491402
 		};
-		for (int i = 0; i < ARRAY_SIZE(coords); i+= 3) {
+		for (unsigned i = 0; i < ARRAY_SIZE(coords); i+= 3) {
 			newVector.Set(coords[i], coords[i+1], coords[i+2]);
 			mesh->vertices.push_back(newVector);
 		}
