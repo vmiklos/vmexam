@@ -30,8 +30,6 @@
 // Neptun: AYU9RZ
 //--------------------------------------------------------
 
-// FIXME get rid of includes
-#include <iostream>
 #include <vector>
 using namespace std;
 #include <float.h>
@@ -853,12 +851,7 @@ void Render(void) {
 			Color col = scene.Trace(r, 0);
 			SetPixel(x, y, col);
 		}
-		if (y % 2 == 0) {
-			printf("\r%d %%", y / 2);
-			fflush(stdout);
-		}
 	}
-	putchar('\n');
 }
 //-----------------------------------------------------------------
 void LoadFile(void) {
