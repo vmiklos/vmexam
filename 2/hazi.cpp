@@ -253,7 +253,6 @@ const Vector    gVectorNull(0.0, 0.0, 0.0);
 
 class Material {
 public:
-	char name[256];	// anyag neve
 	Color Ka;			// ambiens albedo (ka*pi)	
 	Color Kd;			// diffúz albedo (kd*pi)
 	Color Ks;			// spekuláris albedó 
@@ -268,7 +267,6 @@ public:
 	float n;		// toresmutato
 
 	Material() {
-		name[0] = '\0';
 		Ka = Kd = Ks = ka = kd = kr = kt = gColorBlack;
 		shine = 0;
 	}
