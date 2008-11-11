@@ -127,10 +127,7 @@ const float DefaultCameraNearClip	= 0.05;
 const float DefaultCameraFarClip	= 500.0;
 
 #define EPSILON                         1e-5F
-#define EPSILON9                        1e-9F
-#define EPSILON5                        1e-5F
 #define EPSILON4                        1e-4F
-#define EPSILON3                        1e-3F
 
 class Camera {
 public:
