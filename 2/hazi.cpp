@@ -209,16 +209,6 @@ public:
 		pixh = 2.0 * tanFovH / (float)(hres);
 		pixv = 2.0 * tanFovV / (float)(vres);
 	}
-	void MoveUpDown(float step) {
-		eyep	+= step * Y;
-		lookp	+= step * Y;
-		CompleteCamera();
-	}
-	void Strafe(float step) {
-		eyep	+= step * X;
-		lookp	+= step * X;
-		CompleteCamera();
-	}
 };
 
 //===============================================================
@@ -394,12 +384,6 @@ public:
 
 	Material*		material;
 	long			materialInd;
-
-	float			hiperPlaneShiftOffset;
-	bool			wasSwap;
-	float			u1, u2, v1, v2;				// for Intersect2D()
-	float			d1, d2, d3, d4, d5, d6;		// pre-computation for IntersectFast() speed-up
-	float			abV1, abV2, abC, bcV1, bcV2, bcC, caV1, caV2, caC;	// for IntersectGreen()
 public:
 	bool	FinishTriangle(void){
 		Vector va, vb;
