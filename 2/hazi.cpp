@@ -787,18 +787,12 @@ Ray GetRay(int x, int y) {
 	return Ray(scene.camera.eyep, rayDir);	// a sugár a szembol
 }
 
-struct RGBType {
-	float r;
-	float g;
-	float b;
-};
-
-RGBType *pixels = new RGBType[scene.camera.hres*scene.camera.vres];
+float *pixels = new float[scene.camera.hres*scene.camera.vres*3];
 
 void SetPixel(int x, int y, Color col) {
-	pixels[(scene.camera.vres-y) * scene.camera.vres + x].r = col.r;
-	pixels[(scene.camera.vres-y) * scene.camera.vres + x].g = col.g;
-	pixels[(scene.camera.vres-y) * scene.camera.vres + x].b = col.b;
+	pixels[((scene.camera.vres-y) * scene.camera.vres + x)*3] = col.r;
+	pixels[((scene.camera.vres-y) * scene.camera.vres + x)*3+1] = col.g;
+	pixels[((scene.camera.vres-y) * scene.camera.vres + x)*3+2] = col.b;
 }
 
 //-----------------------------------------------------------------
