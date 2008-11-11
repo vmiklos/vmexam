@@ -142,18 +142,8 @@ public:
 	float	pixh, pixv;		//! Width and height of a pixel
 
 	Camera() {
-		eyep.Set(0.0, 0.0, 10.0);
-		lookp.Set(0.0, 0.0, 0.0);
-		updir.Set(0., 1.0, 0.0);
-		fov			= 22.5;
-
-		nearClip	= DefaultCameraNearClip; //EPSILON;
-		farClip		= DefaultCameraFarClip;
-
 		hres		= 200;
 		vres		= 200;
-
-		CompleteCamera();
 	}
 	void CompleteCamera() {
 		// set up Z
