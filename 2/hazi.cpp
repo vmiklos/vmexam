@@ -120,9 +120,6 @@ public:
 	}
 };
 
-const int DefaultScreenWidth	= 200;
-const int DefaultScreenHeight	= 200;
-
 const float DefaultCameraNearClip	= 0.05;
 const float DefaultCameraFarClip	= 500.0;
 
@@ -153,8 +150,8 @@ public:
 		nearClip	= DefaultCameraNearClip; //EPSILON;
 		farClip		= DefaultCameraFarClip;
 
-		hres		= DefaultScreenWidth;
-		vres		= DefaultScreenHeight;
+		hres		= 200;
+		vres		= 200;
 
 		CompleteCamera();
 	}
@@ -806,12 +803,12 @@ struct RGBType {
 	float b;
 };
 
-RGBType *pixels = new RGBType[DefaultScreenWidth*DefaultScreenWidth];
+RGBType *pixels = new RGBType[scene.camera.hres*scene.camera.vres];
 
 void SetPixel(int x, int y, Color col) {
-	pixels[(DefaultScreenHeight-y) * DefaultScreenHeight + x].r = col.r;
-	pixels[(DefaultScreenHeight-y) * DefaultScreenHeight + x].g = col.g;
-	pixels[(DefaultScreenHeight-y) * DefaultScreenHeight + x].b = col.b;
+	pixels[(scene.camera.vres-y) * scene.camera.vres + x].r = col.r;
+	pixels[(scene.camera.vres-y) * scene.camera.vres + x].g = col.g;
+	pixels[(scene.camera.vres-y) * scene.camera.vres + x].b = col.b;
 }
 
 //-----------------------------------------------------------------
@@ -836,7 +833,7 @@ void onDisplay( ) {
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glDrawPixels(DefaultScreenWidth, DefaultScreenHeight, GL_RGB, GL_FLOAT, pixels);
+    glDrawPixels(scene.camera.hres, scene.camera.vres, GL_RGB, GL_FLOAT, pixels);
 
     // Buffercsere: rajzolas vege
     glFinish();
