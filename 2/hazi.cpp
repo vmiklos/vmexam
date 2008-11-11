@@ -36,12 +36,7 @@ using namespace std;
 
 const short MaxDepth = 5;
 
-#define MAX_DISTANCE	1e+7
-#define VRML_REFERENCE_DISTANCE_FROM_EYE 20.0
-
-//===============================================================
 class Vector {
-//===============================================================
 public:
 	float x, y, z;
 
@@ -137,9 +132,7 @@ const float DefaultCameraFarClip	= 500.0;
 #define EPSILON4                        1e-4F
 #define EPSILON3                        1e-3F
 
-//===============================================================
 class Camera {
-//===============================================================
 public:
 	Vector	eyep;			//! virtual camera position in 3D space
 	Vector	lookp;			//! focus point of camera
@@ -209,9 +202,7 @@ public:
 	}
 };
 
-//===============================================================
 class Color {
-//===============================================================
 public:
 	float r, g, b;		// color coefficients on the representative wavelengths
 
@@ -276,9 +267,7 @@ const Color             gColorWhite(0.9, 0.9, 0.9);
 const Color             gColorAmbient(1.5, 1.5, 1.5);   // global ambient
 const Vector    gVectorNull(0.0, 0.0, 0.0);
 
-//===============================================================
 class Material {
-//===============================================================
 public:
 	char name[256];	// anyag neve
 	Color Ka;			// ambiens albedo (ka*pi)	
@@ -346,9 +335,7 @@ public:
 	}
 };
 
-//===============================================================
 class Ray {
-//===============================================================
 public:
 	Vector	origin;
 	Vector dir;
@@ -356,9 +343,7 @@ public:
 
 };
 
-//===============================================================
 class HitRec {
-//===============================================================
 public:
 	int		objectInd;		// objektum index
 	int		primitiveInd;	// primitív index
@@ -370,9 +355,7 @@ public:
 };
 
 
-//===============================================================
 class Triangle {
-//===============================================================
 public:
 	Vector			*a, *b, *c;		//! defines the 3 vertices
 	long			ai, bi, ci;		// indexes
@@ -419,9 +402,7 @@ public:
 
 
 
-//===============================================================
 class Mesh {
-//===============================================================
 public:
 	vector <Vector>	vertices;	// csúcspontok
 	vector <Triangle>	triangles;	// háromszögek
@@ -448,9 +429,7 @@ public:
 	Material*	GetMaterial(const HitRec& hitRec) { return triangles[hitRec.primitiveInd].material; }
 };
 
-//===============================================================
 class PointLight {
-//===============================================================
 public:
 	Color emission;
 
@@ -460,9 +439,7 @@ public:
 
 class Scene;
 
-//===============================================================
 class VrmlReader {
-//===============================================================
 	Scene*					scene;
 
 public:
@@ -505,9 +482,7 @@ public:
 };
 
 
-//===============================================================
 class Scene {
-//===============================================================
 public:
 	Camera					camera;
 	vector <Material>	materials;
@@ -640,8 +615,8 @@ void VrmlReader::HandleCamera() {
 	float avatarSize = 0.25;
 	float visibilityLimit = 0.0;
 	float target[3], up[3];
+	float dist = 20;
 
-	float dist = VRML_REFERENCE_DISTANCE_FROM_EYE;
 	// Compute a target and up vector from position/orientation/distance.
 	ComputeView(position, orientation, dist, target, up);
 
