@@ -825,26 +825,11 @@ void Render(void) {
 		}
 	}
 }
-//-----------------------------------------------------------------
-void LoadFile(void) {
-//-----------------------------------------------------------------
-	if (!scene.Read()) {
-		return;
-	}
-
-	scene.camera.vres	 = DefaultScreenWidth;
-	scene.camera.hres	 = DefaultScreenHeight;
-	scene.camera.CompleteCamera();
-
-	
-	// 3. Render
-	
-	Render();
-	glutPostRedisplay();
-}
 
 void onInitialization( ) {
-	LoadFile();
+	scene.Read();
+	Render();
+	glutPostRedisplay();
 }
 
 void onDisplay( ) {
