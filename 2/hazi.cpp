@@ -36,6 +36,8 @@ using namespace std;
 
 const short MaxDepth = 5;
 
+#define SIZE 600
+
 class Vector {
 public:
 	float x, y, z;
@@ -170,8 +172,8 @@ public:
 
 		float tanFovH = tan(hfov * M_PI / 180.0);
 		float tanFovV = tan(vfov * M_PI / 180.0);
-		pixh = 2.0 * tanFovH / 600.;
-		pixv = 2.0 * tanFovV / 600.;
+		pixh = 2.0 * tanFovH / SIZE;
+		pixv = 2.0 * tanFovV / SIZE;
 	}
 };
 
@@ -764,8 +766,8 @@ Ray GetRay(int x, int y) {
 	float	h = scene.camera.pixh;	// pixel horizontális mérete
 	float	v = scene.camera.pixv;	// pixel vertikális mérete
 	// az aktuális pixel középpontja
-	float	pix_x = -h * 600. / 2.0 + x * h + h / 2.0;
-	float	pix_y = -v * 600. / 2.0 + y * v + v / 2.0;
+	float	pix_x = -h * SIZE / 2.0 + x * h + h / 2.0;
+	float	pix_y = -v * SIZE / 2.0 + y * v + v / 2.0;
 
 	Vector rayDir = scene.camera.Z + pix_x * scene.camera.X + pix_y * scene.camera.Y;
 	rayDir.Normalize();
@@ -774,16 +776,16 @@ Ray GetRay(int x, int y) {
 
 float pixels[600*600*3];
 void SetPixel(int x, int y, Color col) {
-	pixels[(y * 600 + x)*3] = col.r;
-	pixels[(y * 600 + x)*3+1] = col.g;
-	pixels[(y * 600 + x)*3+2] = col.b;
+	pixels[((SIZE-y-1) * SIZE + x)*3] = col.r;
+	pixels[((SIZE-y-1) * SIZE + x)*3+1] = col.g;
+	pixels[((SIZE-y-1) * SIZE + x)*3+2] = col.b;
 }
 
 //-----------------------------------------------------------------
 void Render(void) {
 //-----------------------------------------------------------------
-	for (int y = 0; y < 600; y++) {
-		for (int x = 0; x < 600; x++) {
+	for (int y = 0; y < SIZE; y++) {
+		for (int x = 0; x < SIZE; x++) {
 			Ray r = GetRay(x, y);
 			Color col = scene.Trace(r, 0);
 			SetPixel(x, y, col);
@@ -801,7 +803,7 @@ void onDisplay( ) {
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glDrawPixels(600, 600, GL_RGB, GL_FLOAT, pixels);
+    glDrawPixels(SIZE, SIZE, GL_RGB, GL_FLOAT, pixels);
 
     // Buffercsere: rajzolas vege
     glFinish();
