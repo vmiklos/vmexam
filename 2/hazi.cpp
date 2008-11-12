@@ -136,15 +136,10 @@ public:
 	float	fov, hfov, vfov;	//! half of the field of view, horizontal and vertical, in degrees.
 
 	float	nearClip, farClip;		//! near and far clipping plane distance
-	long	hres, vres;			//! horizontal and vertical resolution
 		
 	Vector	X, Y, Z;			//! eye coordinate system (right-hand-orientation): X=right, Y=down, Z=viewing direction
 	float	pixh, pixv;		//! Width and height of a pixel
 
-	Camera() {
-		hres		= 200;
-		vres		= 200;
-	}
 	void CompleteCamera() {
 		// set up Z
 		Z = lookp - eyep;
@@ -170,19 +165,13 @@ public:
 		Y.Normalize();
 
 		// compute horizontal and vertical field of view angle from the specified one
-		// if the vertical resolution is smaller, it is the specified fov = 45, the other is greater than 45
-		if (hres < vres) {
-			hfov = fov; 
-			vfov = atan(tan(fov * M_PI/180.0) * (float)vres/(float)hres) * 180.0/M_PI;
-		} else {
-			vfov = fov; 
-			hfov = atan(tan(fov * M_PI/180.0) * (float)hres/(float)vres) * 180.0/M_PI;
-		}
+		vfov = fov; 
+		hfov = atan(tan(fov * M_PI/180.0)) * 180.0/M_PI;
 
 		float tanFovH = tan(hfov * M_PI / 180.0);
 		float tanFovV = tan(vfov * M_PI / 180.0);
-		pixh = 2.0 * tanFovH / (float)(hres);
-		pixv = 2.0 * tanFovV / (float)(vres);
+		pixh = 2.0 * tanFovH / 600.;
+		pixv = 2.0 * tanFovV / 600.;
 	}
 };
 
@@ -775,8 +764,8 @@ Ray GetRay(int x, int y) {
 	float	h = scene.camera.pixh;	// pixel horizontális mérete
 	float	v = scene.camera.pixv;	// pixel vertikális mérete
 	// az aktuális pixel középpontja
-	float	pix_x = -h * scene.camera.hres / 2.0 + x * h + h / 2.0;
-	float	pix_y = -v * scene.camera.vres / 2.0 + y * v + v / 2.0;
+	float	pix_x = -h * 600. / 2.0 + x * h + h / 2.0;
+	float	pix_y = -v * 600. / 2.0 + y * v + v / 2.0;
 
 	Vector rayDir = scene.camera.Z + pix_x * scene.camera.X + pix_y * scene.camera.Y;
 	rayDir.Normalize();
@@ -784,18 +773,17 @@ Ray GetRay(int x, int y) {
 }
 
 float pixels[600*600*3];
-
 void SetPixel(int x, int y, Color col) {
-	pixels[((scene.camera.vres-y) * scene.camera.vres + x)*3] = col.r;
-	pixels[((scene.camera.vres-y) * scene.camera.vres + x)*3+1] = col.g;
-	pixels[((scene.camera.vres-y) * scene.camera.vres + x)*3+2] = col.b;
+	pixels[(y * 600 + x)*3] = col.r;
+	pixels[(y * 600 + x)*3+1] = col.g;
+	pixels[(y * 600 + x)*3+2] = col.b;
 }
 
 //-----------------------------------------------------------------
 void Render(void) {
 //-----------------------------------------------------------------
-	for (int y = 0; y <= scene.camera.vres; y++) {
-		for (int x = 0; x <= scene.camera.hres; x++) {
+	for (int y = 0; y < 600; y++) {
+		for (int x = 0; x < 600; x++) {
 			Ray r = GetRay(x, y);
 			Color col = scene.Trace(r, 0);
 			SetPixel(x, y, col);
@@ -813,7 +801,7 @@ void onDisplay( ) {
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glDrawPixels(scene.camera.hres, scene.camera.vres, GL_RGB, GL_FLOAT, pixels);
+    glDrawPixels(600, 600, GL_RGB, GL_FLOAT, pixels);
 
     // Buffercsere: rajzolas vege
     glFinish();
