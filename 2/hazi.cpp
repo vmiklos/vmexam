@@ -572,9 +572,7 @@ public:
 
 
 
-//-----------------------------------------------------------------
 void VrmlReader::HandleCamera() {
-//-----------------------------------------------------------------
 	// orientation specifies a rotation relative to the default orientation (0 0 1  0); 
 	// orientation field of the Viewpoint does not affect the definition of the down or up vectors
 	// navigation types (see NavigationInfo) that require a definition of an up vector shall use the positive Y-axis of 
@@ -601,9 +599,7 @@ void VrmlReader::HandleCamera() {
 	scene->camera.CompleteCamera();
 }
 
-//-----------------------------------------------------------------
 void VrmlReader::HandleMaterial() {
-//-----------------------------------------------------------------
 	static int cnum = 0;
 	Material material;
 
@@ -633,9 +629,7 @@ void VrmlReader::HandleMaterial() {
 }
 
 #define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
-//-----------------------------------------------------------------
 void VrmlReader::HandleIFaceSet() {
-//-----------------------------------------------------------------
 	static int cnum = 0;
 
 	Mesh* mesh = new Mesh;
@@ -752,9 +746,7 @@ void VrmlReader::HandleIFaceSet() {
 
 }
 
-//-----------------------------------------------------------------
 void VrmlReader::HandlePointLight() {
-//-----------------------------------------------------------------
 	PointLight* light = new PointLight;
 	light->location.Set( -20.6, 51.43, 28.99);
 	light->emission.Set(4, 4, 4);
@@ -781,9 +773,7 @@ void SetPixel(int x, int y, Color col) {
 	pixels[((SIZE-y-1) * SIZE + x)*3+2] = col.b;
 }
 
-//-----------------------------------------------------------------
 void Render(void) {
-//-----------------------------------------------------------------
 	for (int y = 0; y < SIZE; y++) {
 		for (int x = 0; x < SIZE; x++) {
 			Ray r = GetRay(x, y);
