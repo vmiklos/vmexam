@@ -39,7 +39,11 @@ using namespace std;
 
 const short MaxDepth = 5;
 
+#ifdef DEBUG
+#define SIZE 200
+#else
 #define SIZE 600
+#endif
 
 class Vector {
 public:
@@ -784,8 +788,8 @@ void Render(void) {
 			SetPixel(x, y, col);
 		}
 #ifdef DEBUG
-		if (y % 6 == 0) {
-			printf("\r%d %%", y / 6);
+		if (y % (SIZE/100) == 0) {
+			printf("\r%d %%", y / (SIZE/100));
 			fflush(stdout);
 		}
 #endif
