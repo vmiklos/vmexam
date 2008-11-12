@@ -30,6 +30,9 @@
 // Neptun: AYU9RZ
 //--------------------------------------------------------
 
+#ifdef DEBUG
+#include <iostream>
+#endif
 #include <vector>
 using namespace std;
 #include <float.h>
@@ -780,7 +783,16 @@ void Render(void) {
 			Color col = scene.Trace(r, 0);
 			SetPixel(x, y, col);
 		}
+#ifdef DEBUG
+		if (y % 6 == 0) {
+			printf("\r%d %%", y / 6);
+			fflush(stdout);
+		}
+#endif
 	}
+#ifdef DEBUG
+	putchar('\n');
+#endif
 }
 
 void onInitialization( ) {
