@@ -783,7 +783,7 @@ Ray GetRay(int x, int y) {
 	return Ray(scene.camera.eyep, rayDir);	// a sugár a szembol
 }
 
-float *pixels = new float[scene.camera.hres*scene.camera.vres*3];
+float pixels[600*600*3];
 
 void SetPixel(int x, int y, Color col) {
 	pixels[((scene.camera.vres-y) * scene.camera.vres + x)*3] = col.r;
