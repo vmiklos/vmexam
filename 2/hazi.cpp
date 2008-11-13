@@ -39,11 +39,7 @@ using namespace std;
 
 const short MaxDepth = 5;
 
-#ifdef DEBUG
-#define SIZE 200
-#else
 #define SIZE 600
-#endif
 
 class Vector {
 public:
@@ -131,6 +127,8 @@ public:
 
 const float DefaultCameraNearClip	= 0.05;
 const float DefaultCameraFarClip	= 500.0;
+int clickx = 0, clicky = 0;
+vector<Vector> raypoints;
 
 #define EPSILON                         1e-5F
 #define EPSILON4                        1e-4F
@@ -517,6 +515,8 @@ public:
 		HitRec hitRec;
 		if (!Intersect(ray, &hitRec))
 			return gColorBlack;
+		if (clickx && clicky)
+			raypoints.push_back(hitRec.point);
 
 		// 1. ambiens resz
 		Color ambientColor = objects[hitRec.objectInd]->
@@ -760,7 +760,8 @@ void VrmlReader::HandlePointLight() {
 	scene->lights.push_back(light);
 }
 
-Scene		scene;
+Scene scene;
+
 Ray GetRay(int x, int y) {
 	float	h = scene.camera.pixh;	// pixel horizontális mérete
 	float	v = scene.camera.pixv;	// pixel vertikális mérete
@@ -801,6 +802,13 @@ void Render(void) {
 
 void onInitialization( ) {
 	scene.Read();
+    gluLookAt(scene.camera.eyep.x, scene.camera.eyep.y, scene.camera.eyep.z,
+		    scene.camera.lookp.x, scene.camera.lookp.y, scene.camera.lookp.z,
+		    scene.camera.updir.x, scene.camera.updir.y, scene.camera.updir.z);
+	printf("debug, camera:\neye: %f, %f, %f\nlookp: %f, %f, %f\nup: %f, %f, %f\n",
+			scene.camera.eyep.x, scene.camera.eyep.y, scene.camera.eyep.z,
+			scene.camera.lookp.x, scene.camera.lookp.y, scene.camera.lookp.z,
+			scene.camera.updir.x, scene.camera.updir.y, scene.camera.updir.z);
 	Render();
 	glutPostRedisplay();
 }
@@ -811,6 +819,14 @@ void onDisplay( ) {
 
     glDrawPixels(SIZE, SIZE, GL_RGB, GL_FLOAT, pixels);
 
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glBegin(GL_LINE_STRIP);
+    for (unsigned i = 0; i < raypoints.size(); i++) {
+	    glVertex3f(raypoints[i].x, raypoints[i].y, raypoints[i].z);
+	    printf("debug, drawing %f, %f, %f\n", raypoints[i].x, raypoints[i].y, raypoints[i].z);
+    }
+    glEnd();
+
     // Buffercsere: rajzolas vege
     glFinish();
     glutSwapBuffers();
@@ -819,6 +835,14 @@ void onDisplay( ) {
 void onMouse(int button, int state, int x, int y) {
     // A GLUT_LEFT_BUTTON / GLUT_RIGHT_BUTTON
     // ill. a GLUT_DOWN / GLUT_UP makrokat hasznald.
+    if (button != GLUT_LEFT_BUTTON || state != GLUT_DOWN)
+	    return;
+    raypoints.clear();
+    clickx = x;
+    clicky = y;
+    Ray r = GetRay(x, y);
+    scene.Trace(r, 0);
+    glutPostRedisplay();
 }
 
 void onIdle( ) {
