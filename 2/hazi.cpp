@@ -823,7 +823,6 @@ void onDisplay( ) {
     glBegin(GL_LINE_STRIP);
     for (unsigned i = 0; i < raypoints.size(); i++) {
 	    glVertex3f(raypoints[i].x, raypoints[i].y, raypoints[i].z);
-	    printf("debug, drawing %f, %f, %f\n", raypoints[i].x, raypoints[i].y, raypoints[i].z);
     }
     glEnd();
     // majd az egyes pontokat a fenyforrassal
