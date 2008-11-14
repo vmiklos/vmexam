@@ -250,16 +250,16 @@ const Vector    gVectorNull(0.0, 0.0, 0.0);
 class Material {
 public:
 	Color Ka;			// ambiens albedo (ka*pi)	
-	Color Kd;			// diffúz albedo (kd*pi)
-	Color Ks;			// spekuláris albedó 
-	float shine;	// fényesség
+	Color Kd;			// diffuz albedo (kd*pi)
+	Color Ks;			// spekularis albedo 
+	float shine;	// fenyesseg
 
-	// eloreszámított értékek
+	// eloreszamitott ertekek
 	Color ka;			// a BRDF ambines tagja
-	Color kd;			// a BRDF diffúz tagja
+	Color kd;			// a BRDF diffuz tagja
 
-	Color kr;			// tökéletes tükör hányados
-	Color kt;			// tökéletes 
+	Color kr;			// tokeletes tukor hanyados
+	Color kt;			// tokeletes 
 	float n;		// toresmutato
 
 	Material() {
@@ -268,18 +268,18 @@ public:
 	}
 	void FinishMaterial (void) {
 		ka = Ka / M_PI;			// a BRDF ambines tagja
-		kd = Kd / M_PI;			// a BRDF diffúz tagja
+		kd = Kd / M_PI;			// a BRDF diffuz tagja
 		
-		if (shine >= 100.0) {	// 100-as shine esetén tükörnek tekintjük
+		if (shine >= 100.0) {	// 100-as shine eseten tukornek tekintjuk
 			kr	= Ks;
 			Ks	= gColorBlack;
 		}
 
-		n = 1.2;				// törésmutatót VRML-ben nem lehet megadni
+		n = 1.2;				// toresmutatot VRML-ben nem lehet megadni
 	}
 	Color Brdf(const Vector& inDir, const Vector& outDir, const Vector& normal) {
 		double cosIn = -1.0 * (inDir * normal);
-		if (cosIn <= EPSILON)		// ha az anyag belsejébol jövünk
+		if (cosIn <= EPSILON)		// ha az anyag belsejebol jovunk
 			return gColorBlack;
 
 		Color ks = gColorBlack;
@@ -289,7 +289,7 @@ public:
 			Color ref = Ks * (shine + 2) / M_PI / 2.0;
 			ks = ref * pow(cos_refl_out, shine);
 		}
-		return kd + ks;		// diffúz + spekuláris BRDF
+		return kd + ks;		// diffuz + spekularis BRDF
 	}
 	bool RefractionDir(const Vector& inDir, const Vector& normal, Vector* outDir) {
 		double cosIn = -1.0 * (inDir * normal);
@@ -324,10 +324,10 @@ public:
 class HitRec {
 public:
 	int		objectInd;		// objektum index
-	int		primitiveInd;	// primitív index
-	Vector	point;			// metszéspont
-	Vector	normal;			// normálvektor az adott pontban
-	float	t;				// sugárparaméter
+	int		primitiveInd;	// primitiv index
+	Vector	point;			// metszespont
+	Vector	normal;			// normalvektor az adott pontban
+	float	t;				// sugarparameter
 
 	HitRec() { objectInd = primitiveInd = -1; }
 };
@@ -382,8 +382,8 @@ public:
 
 class Mesh {
 public:
-	vector <Vector>	vertices;	// csúcspontok
-	vector <Triangle>	triangles;	// háromszögek
+	vector <Vector>	vertices;	// csucspontok
+	vector <Triangle>	triangles;	// haromszogek
 
 	bool		Intersect(const Ray& ray, HitRec* hitRec) {
 		hitRec->primitiveInd = -1;
@@ -521,7 +521,7 @@ public:
 		// 1. ambiens resz
 		Color ambientColor = objects[hitRec.objectInd]->
 			GetMaterial(hitRec)->ka * gColorAmbient;
-		// 2. fényforrások közvetlen hatása
+		// 2. fenyforrasok kozvetlen hatasa
 		Color directLightColor = DirectLightsource(ray.dir, hitRec);
 
 		Material* pMaterial = objects[hitRec.objectInd]->GetMaterial(hitRec);
@@ -537,7 +537,7 @@ public:
 		Color idealRefractor = gColorBlack;
 		Color kt = pMaterial->kt;
 		if (kt.Lum() > EPSILON) {
-			Vector refrDir; //toresmutato függo
+			Vector refrDir; //toresmutato fuggo
 			if (pMaterial->RefractionDir(ray.dir, hitRec.normal, &refrDir))
 				idealRefractor = kt * Trace(Ray(hitRec.point, refrDir), depth + 1);
 		}
@@ -545,30 +545,30 @@ public:
 	}
 
 	Color	DirectLightsource	(const Vector& inDir, const HitRec& hitRec) {
-		Color sumColor = gColorBlack; // akkumulált radiancia
+		Color sumColor = gColorBlack; // akkumulalt radiancia
 		for (unsigned i = 0; i < lights.size(); i++) {
-			// 2. pontszeru fényforrások kezelése
+			// 2. pontszeru fenyforrasok kezelese
 			PointLight* pLight = lights[i];
-			// sugár a felületi pontból a fényforrásig
+			// sugar a feluleti pontbol a fenyforrasig
 			Ray		rayToLight(hitRec.point, pLight->location - hitRec.point);
 			float	lightDist	= rayToLight.dir.Norm();
 			rayToLight.dir.Normalize();
 
-			// az árnyalási normális az adott pontban
+			// az arnyalasi normalis az adott pontban
 			float	cost = rayToLight.dir * hitRec.normal;
-			if (cost <= 0)	// a test belsejébol jövünk
+			if (cost <= 0)	// a test belsejebol jovunk
 				continue;
 
 			HitRec	hitRecToLight;
 			bool isIntersect = Intersect(rayToLight, &hitRecToLight);
 			bool meetLight = !isIntersect;
-			if (isIntersect) {//a metszéspont távolabb van, mint a fényforrás
+			if (isIntersect) {//a metszespont tavolabb van, mint a fenyforras
 				Vector distIntersect = pLight->location - hitRecToLight.point;
 				if (distIntersect.Norm() > lightDist)
 					meetLight = true; 	
 			}
 			if (!meetLight)
-				continue;	// árnyékban vagyunk
+				continue;	// arnyekban vagyunk
 
 			Color brdf = objects[hitRec.objectInd]->GetMaterial(hitRec)->Brdf(inDir, rayToLight.dir, hitRec.normal);
 			sumColor += brdf * lights[i]->emission * cost;
@@ -763,15 +763,15 @@ void VrmlReader::HandlePointLight() {
 Scene scene;
 
 Ray GetRay(int x, int y) {
-	float	h = scene.camera.pixh;	// pixel horizontális mérete
-	float	v = scene.camera.pixv;	// pixel vertikális mérete
-	// az aktuális pixel középpontja
+	float	h = scene.camera.pixh;	// pixel horizontalis merete
+	float	v = scene.camera.pixv;	// pixel vertikalis merete
+	// az aktualis pixel kozeppontja
 	float	pix_x = -h * SIZE / 2.0 + x * h + h / 2.0;
 	float	pix_y = -v * SIZE / 2.0 + y * v + v / 2.0;
 
 	Vector rayDir = scene.camera.Z + pix_x * scene.camera.X + pix_y * scene.camera.Y;
 	rayDir.Normalize();
-	return Ray(scene.camera.eyep, rayDir);	// a sugár a szembol
+	return Ray(scene.camera.eyep, rayDir);	// a sugar a szembol
 }
 
 float pixels[600*600*3];
