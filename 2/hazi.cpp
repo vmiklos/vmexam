@@ -265,6 +265,7 @@ class Material {
 		Material() {
 			Ka = Kd = Ks = ka = kd = kr = kt = gColorBlack;
 			shine = 0;
+			n = 1.2;
 		}
 		void FinishMaterial (void) {
 			ka = Ka / M_PI;			// a BRDF ambines tagja
@@ -274,8 +275,6 @@ class Material {
 				kr	= Ks;
 				Ks	= gColorBlack;
 			}
-
-			n = 1.2;				// toresmutatot VRML-ben nem lehet megadni
 		}
 		Color Brdf(const Vector& inDir, const Vector& outDir, const Vector& normal) {
 			double cosIn = -1.0 * (inDir * normal);
