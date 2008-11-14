@@ -42,87 +42,87 @@ const short MaxDepth = 5;
 #define SIZE 600
 
 class Vector {
-public:
-	float x, y, z;
+	public:
+		float x, y, z;
 
-	Vector() {}
-	Vector(float xx, float yy, float zz) {
-		x = xx; y = yy; z = zz;
-	}
-	
-	void Set(float xx, float yy, float zz) {
-		x = xx; y = yy; z = zz;
-	}
+		Vector() {}
+		Vector(float xx, float yy, float zz) {
+			x = xx; y = yy; z = zz;
+		}
 
-	// binary operators
-	Vector operator+(const Vector& c) const {
-		return Vector(x + c.x, y + c.y, z + c.z);
-	}
+		void Set(float xx, float yy, float zz) {
+			x = xx; y = yy; z = zz;
+		}
 
-	Vector operator-(const Vector& c) const {
-		return Vector(x - c.x, y - c.y, z - c.z);
-	}
+		// binary operators
+		Vector operator+(const Vector& c) const {
+			return Vector(x + c.x, y + c.y, z + c.z);
+		}
 
-	Vector operator*(float f) const {
-		return Vector(x * f, y * f, z * f);
-	}
+		Vector operator-(const Vector& c) const {
+			return Vector(x - c.x, y - c.y, z - c.z);
+		}
 
-	Vector operator/(float f) const {
-		return Vector(x / f, y / f, z / f);
-	}
+		Vector operator*(float f) const {
+			return Vector(x * f, y * f, z * f);
+		}
 
-	// unary operators
-	void operator+=(float f) { 
-		x += f; y += f; z += f; 
-	}
+		Vector operator/(float f) const {
+			return Vector(x / f, y / f, z / f);
+		}
 
-	void operator+=(const Vector& c) { 
-		x += c.x; y += c.y; z += c.z; 
-	}
+		// unary operators
+		void operator+=(float f) { 
+			x += f; y += f; z += f; 
+		}
 
-	void operator*=(float f) { 
-		x *= f; y *= f; z *= f; 
-	}
+		void operator+=(const Vector& c) { 
+			x += c.x; y += c.y; z += c.z; 
+		}
 
-	Vector operator-(void) const { 
-		return Vector(-x, -y, -z);
-	}
+		void operator*=(float f) { 
+			x *= f; y *= f; z *= f; 
+		}
 
-	// other methods
-	float operator*(const Vector& v) const {		// DotProduct
-		return x * v.x + y * v.y + z * v.z; 
-	}
+		Vector operator-(void) const { 
+			return Vector(-x, -y, -z);
+		}
 
-	Vector operator%(const Vector& v) const {		// CrossProduct
-		return Vector(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
-	}    
+		// other methods
+		float operator*(const Vector& v) const {		// DotProduct
+			return x * v.x + y * v.y + z * v.z; 
+		}
 
-	void operator<=(const Vector& smallVec) {
-		if (x > smallVec.x) x = smallVec.x;
-		if (y > smallVec.y) y = smallVec.y;
-		if (z > smallVec.z) z = smallVec.z;
-	}
+		Vector operator%(const Vector& v) const {		// CrossProduct
+			return Vector(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
+		}    
 
-	void operator>=(const Vector& largeVec) {
-		if (x < largeVec.x) x = largeVec.x;
-		if (y < largeVec.y) y = largeVec.y;
-		if (z < largeVec.z) z = largeVec.z;
-	}
+		void operator<=(const Vector& smallVec) {
+			if (x > smallVec.x) x = smallVec.x;
+			if (y > smallVec.y) y = smallVec.y;
+			if (z > smallVec.z) z = smallVec.z;
+		}
 
-	float Norm(void) const {
-		return sqrt(x*x + y*y + z*z);
-	}
+		void operator>=(const Vector& largeVec) {
+			if (x < largeVec.x) x = largeVec.x;
+			if (y < largeVec.y) y = largeVec.y;
+			if (z < largeVec.z) z = largeVec.z;
+		}
 
-	void Normalize() {
-		float norm = Norm();
-		x /= norm;
-		y /= norm;
-		z /= norm;
-	}
+		float Norm(void) const {
+			return sqrt(x*x + y*y + z*z);
+		}
 
-	friend Vector operator*(float f, const Vector& v) {
-		return Vector(f * v.x, f * v.y, f * v.z);
-	}
+		void Normalize() {
+			float norm = Norm();
+			x /= norm;
+			y /= norm;
+			z /= norm;
+		}
+
+		friend Vector operator*(float f, const Vector& v) {
+			return Vector(f * v.x, f * v.y, f * v.z);
+		}
 };
 
 const float DefaultCameraNearClip	= 0.05;
@@ -134,112 +134,112 @@ vector<Vector> raypoints;
 #define EPSILON4                        1e-4F
 
 class Camera {
-public:
-	Vector	eyep;			//! virtual camera position in 3D space
-	Vector	lookp;			//! focus point of camera
-	Vector	updir;			//! direction pointing upward
+	public:
+		Vector	eyep;			//! virtual camera position in 3D space
+		Vector	lookp;			//! focus point of camera
+		Vector	updir;			//! direction pointing upward
 
-	float	viewdist;		//! distance from eyepoint to focus point	
-	float	fov, hfov, vfov;	//! half of the field of view, horizontal and vertical, in degrees.
+		float	viewdist;		//! distance from eyepoint to focus point	
+		float	fov, hfov, vfov;	//! half of the field of view, horizontal and vertical, in degrees.
 
-	float	nearClip, farClip;		//! near and far clipping plane distance
-		
-	Vector	X, Y, Z;			//! eye coordinate system (right-hand-orientation): X=right, Y=down, Z=viewing direction
-	float	pixh, pixv;		//! Width and height of a pixel
+		float	nearClip, farClip;		//! near and far clipping plane distance
 
-	void CompleteCamera() {
-		// set up Z
-		Z = lookp - eyep;
-		/* distance from virtual camera position to focus point */
-		viewdist = Z.Norm();
-		if (viewdist < EPSILON) {
-			// Camera eyepoint and look-point coincide
-			return;
+		Vector	X, Y, Z;			//! eye coordinate system (right-hand-orientation): X=right, Y=down, Z=viewing direction
+		float	pixh, pixv;		//! Width and height of a pixel
+
+		void CompleteCamera() {
+			// set up Z
+			Z = lookp - eyep;
+			/* distance from virtual camera position to focus point */
+			viewdist = Z.Norm();
+			if (viewdist < EPSILON) {
+				// Camera eyepoint and look-point coincide
+				return;
+			}
+			Z *= 1.0 / viewdist;
+
+			// set up X   Camera->X is a direction pointing to the right in the window 
+			X = Z % updir;
+			float lengthX = X.Norm();
+			if (lengthX < EPSILON) {
+				// Camera up-direction and viewing direction coincide
+				return;
+			}
+			X *= 1.0 / lengthX;
+
+			// set up Y
+			Y = Z % X;
+			Y.Normalize();
+
+			// compute horizontal and vertical field of view angle from the specified one
+			vfov = fov; 
+			hfov = atan(tan(fov * M_PI/180.0)) * 180.0/M_PI;
+
+			float tanFovH = tan(hfov * M_PI / 180.0);
+			float tanFovV = tan(vfov * M_PI / 180.0);
+			pixh = 2.0 * tanFovH / SIZE;
+			pixv = 2.0 * tanFovV / SIZE;
 		}
-		Z *= 1.0 / viewdist;
-
-		// set up X   Camera->X is a direction pointing to the right in the window 
-		X = Z % updir;
-		float lengthX = X.Norm();
-		if (lengthX < EPSILON) {
-			// Camera up-direction and viewing direction coincide
-			return;
-		}
-		X *= 1.0 / lengthX;
-
-		// set up Y
-		Y = Z % X;
-		Y.Normalize();
-
-		// compute horizontal and vertical field of view angle from the specified one
-		vfov = fov; 
-		hfov = atan(tan(fov * M_PI/180.0)) * 180.0/M_PI;
-
-		float tanFovH = tan(hfov * M_PI / 180.0);
-		float tanFovV = tan(vfov * M_PI / 180.0);
-		pixh = 2.0 * tanFovH / SIZE;
-		pixv = 2.0 * tanFovV / SIZE;
-	}
 };
 
 class Color {
-public:
-	float r, g, b;		// color coefficients on the representative wavelengths
+	public:
+		float r, g, b;		// color coefficients on the representative wavelengths
 
-	Color() {}
-	Color(float rr, float gg, float bb) { 
-		r = rr; g = gg; b = bb;
-	} 
+		Color() {}
+		Color(float rr, float gg, float bb) { 
+			r = rr; g = gg; b = bb;
+		} 
 
-	void Set(float rr, float gg, float bb) {
-		r = rr; g = gg; b = bb;
-	}
+		void Set(float rr, float gg, float bb) {
+			r = rr; g = gg; b = bb;
+		}
 
-	// binary operators
-	Color operator+(const Color& c) const {
-		return Color(r + c.r, g + c.g, b + c.b);
-	}
+		// binary operators
+		Color operator+(const Color& c) const {
+			return Color(r + c.r, g + c.g, b + c.b);
+		}
 
-	Color operator-(const Color& c) const {
-		return Color(r - c.r, g - c.g, b - c.b);
-	}
+		Color operator-(const Color& c) const {
+			return Color(r - c.r, g - c.g, b - c.b);
+		}
 
-	Color operator*(float f) const {
-		return Color(r * f, g * f, b * f);
-	}
+		Color operator*(float f) const {
+			return Color(r * f, g * f, b * f);
+		}
 
-	Color operator*(const Color& c) const {
-		return Color(r * c.r, g * c.g, b * c.b);
-	}
+		Color operator*(const Color& c) const {
+			return Color(r * c.r, g * c.g, b * c.b);
+		}
 
-	Color operator/(float f) const {
-		return Color(r / f, g / f, b / f);
-	}
+		Color operator/(float f) const {
+			return Color(r / f, g / f, b / f);
+		}
 
-	// unary operators
-	void operator+=(const Color& c) {
-		r += c.r; g += c.g; b += c.b;
-	}
+		// unary operators
+		void operator+=(const Color& c) {
+			r += c.r; g += c.g; b += c.b;
+		}
 
-	void operator*=(const Color& c) {
-		r *= c.r; g *= c.g; b *= c.b;
-	}
+		void operator*=(const Color& c) {
+			r *= c.r; g *= c.g; b *= c.b;
+		}
 
-	void operator*=(float c) {
-		r *= c; g *= c; b *= c;
-	}
+		void operator*=(float c) {
+			r *= c; g *= c; b *= c;
+		}
 
-	Color operator-(void) {
-		return Color(-r, -g, -b);
-	}
+		Color operator-(void) {
+			return Color(-r, -g, -b);
+		}
 
-	// other methods
-	float Lum() const {
-		return (r + g + b) / 3.0;
-	}
-	friend Color operator*(float f, const Color& c) {
-		return Color(f * c.r, f * c.g, f * c.b);
-	}
+		// other methods
+		float Lum() const {
+			return (r + g + b) / 3.0;
+		}
+		friend Color operator*(float f, const Color& c) {
+			return Color(f * c.r, f * c.g, f * c.b);
+		}
 };
 
 const Color             gColorBlack(0.0, 0.0, 0.0);
@@ -248,171 +248,171 @@ const Color             gColorAmbient(1.5, 1.5, 1.5);   // global ambient
 const Vector    gVectorNull(0.0, 0.0, 0.0);
 
 class Material {
-public:
-	Color Ka;			// ambiens albedo (ka*pi)	
-	Color Kd;			// diffuz albedo (kd*pi)
-	Color Ks;			// spekularis albedo 
-	float shine;	// fenyesseg
+	public:
+		Color Ka;			// ambiens albedo (ka*pi)	
+		Color Kd;			// diffuz albedo (kd*pi)
+		Color Ks;			// spekularis albedo 
+		float shine;	// fenyesseg
 
-	// eloreszamitott ertekek
-	Color ka;			// a BRDF ambines tagja
-	Color kd;			// a BRDF diffuz tagja
+		// eloreszamitott ertekek
+		Color ka;			// a BRDF ambines tagja
+		Color kd;			// a BRDF diffuz tagja
 
-	Color kr;			// tokeletes tukor hanyados
-	Color kt;			// tokeletes 
-	float n;		// toresmutato
+		Color kr;			// tokeletes tukor hanyados
+		Color kt;			// tokeletes 
+		float n;		// toresmutato
 
-	Material() {
-		Ka = Kd = Ks = ka = kd = kr = kt = gColorBlack;
-		shine = 0;
-	}
-	void FinishMaterial (void) {
-		ka = Ka / M_PI;			// a BRDF ambines tagja
-		kd = Kd / M_PI;			// a BRDF diffuz tagja
-		
-		if (shine >= 100.0) {	// 100-as shine eseten tukornek tekintjuk
-			kr	= Ks;
-			Ks	= gColorBlack;
+		Material() {
+			Ka = Kd = Ks = ka = kd = kr = kt = gColorBlack;
+			shine = 0;
 		}
+		void FinishMaterial (void) {
+			ka = Ka / M_PI;			// a BRDF ambines tagja
+			kd = Kd / M_PI;			// a BRDF diffuz tagja
 
-		n = 1.2;				// toresmutatot VRML-ben nem lehet megadni
-	}
-	Color Brdf(const Vector& inDir, const Vector& outDir, const Vector& normal) {
-		double cosIn = -1.0 * (inDir * normal);
-		if (cosIn <= EPSILON)		// ha az anyag belsejebol jovunk
-			return gColorBlack;
+			if (shine >= 100.0) {	// 100-as shine eseten tukornek tekintjuk
+				kr	= Ks;
+				Ks	= gColorBlack;
+			}
 
-		Color ks = gColorBlack;
-		Vector reflDir = normal * (2.0 * cosIn) + inDir;
-		double cos_refl_out = reflDir * outDir;
-		if (cos_refl_out > EPSILON) {
-			Color ref = Ks * (shine + 2) / M_PI / 2.0;
-			ks = ref * pow(cos_refl_out, shine);
+			n = 1.2;				// toresmutatot VRML-ben nem lehet megadni
 		}
-		return kd + ks;		// diffuz + spekularis BRDF
-	}
-	bool RefractionDir(const Vector& inDir, const Vector& normal, Vector* outDir) {
-		double cosIn = -1.0 * (inDir * normal);
-		if (fabs(cosIn) <= EPSILON4)
-			return false;
+		Color Brdf(const Vector& inDir, const Vector& outDir, const Vector& normal) {
+			double cosIn = -1.0 * (inDir * normal);
+			if (cosIn <= EPSILON)		// ha az anyag belsejebol jovunk
+				return gColorBlack;
 
-		float cn = n;
-		Vector useNormal = normal;
-		if (cosIn < 0) {				// ha az anyag belsejebol jovunk
-			cn			= 1.0 / n;	 
-			useNormal	= -normal;		// a toresmutato reciprokat kell hasznalni
-			cosIn		= -cosIn;
-		}															
-		
-		float disc = 1 - (1 - cosIn * cosIn) / cn / cn;	 // Snellius-Descartes torveny
-		if (disc < 0) 
-			return false;
+			Color ks = gColorBlack;
+			Vector reflDir = normal * (2.0 * cosIn) + inDir;
+			double cos_refl_out = reflDir * outDir;
+			if (cos_refl_out > EPSILON) {
+				Color ref = Ks * (shine + 2) / M_PI / 2.0;
+				ks = ref * pow(cos_refl_out, shine);
+			}
+			return kd + ks;		// diffuz + spekularis BRDF
+		}
+		bool RefractionDir(const Vector& inDir, const Vector& normal, Vector* outDir) {
+			double cosIn = -1.0 * (inDir * normal);
+			if (fabs(cosIn) <= EPSILON4)
+				return false;
 
-		*outDir = useNormal * (cosIn / cn - sqrt(disc)) + inDir / cn;
-		return true;
-	}
+			float cn = n;
+			Vector useNormal = normal;
+			if (cosIn < 0) {				// ha az anyag belsejebol jovunk
+				cn			= 1.0 / n;	 
+				useNormal	= -normal;		// a toresmutato reciprokat kell hasznalni
+				cosIn		= -cosIn;
+			}															
+
+			float disc = 1 - (1 - cosIn * cosIn) / cn / cn;	 // Snellius-Descartes torveny
+			if (disc < 0) 
+				return false;
+
+			*outDir = useNormal * (cosIn / cn - sqrt(disc)) + inDir / cn;
+			return true;
+		}
 };
 
 class Ray {
-public:
-	Vector	origin;
-	Vector dir;
-	Ray(const Vector& newOrigin,  const Vector& newDir) { origin = newOrigin; dir = newDir; };
+	public:
+		Vector	origin;
+		Vector dir;
+		Ray(const Vector& newOrigin,  const Vector& newDir) { origin = newOrigin; dir = newDir; };
 
 };
 
 class HitRec {
-public:
-	int		objectInd;		// objektum index
-	int		primitiveInd;	// primitiv index
-	Vector	point;			// metszespont
-	Vector	normal;			// normalvektor az adott pontban
-	float	t;				// sugarparameter
+	public:
+		int		objectInd;		// objektum index
+		int		primitiveInd;	// primitiv index
+		Vector	point;			// metszespont
+		Vector	normal;			// normalvektor az adott pontban
+		float	t;				// sugarparameter
 
-	HitRec() { objectInd = primitiveInd = -1; }
+		HitRec() { objectInd = primitiveInd = -1; }
 };
 
 
 class Triangle {
-public:
-	Vector			*a, *b, *c;		//! defines the 3 vertices
-	long			ai, bi, ci;		// indexes
+	public:
+		Vector			*a, *b, *c;		//! defines the 3 vertices
+		long			ai, bi, ci;		// indexes
 
-	Vector			normal;	
-	Vector			*Na, *Nb, *Nc;	//! normal for vertex a,b,c
+		Vector			normal;	
+		Vector			*Na, *Nb, *Nc;	//! normal for vertex a,b,c
 
-	Material*		material;
-	long			materialInd;
-public:
-	bool	FinishTriangle(void){
-		Vector va, vb;
-		va = *b - *a;
-		vb = *c - *b;
-		normal= va % vb;
-		normal.Normalize();		
-		// if 3 vertices in the same line, this result normal= (NAN,NAN,NAN), which is OK.
-		return !isnan(normal.x) && !isnan(normal.y) && !isnan(normal.z);		
-	}
+		Material*		material;
+		long			materialInd;
+	public:
+		bool	FinishTriangle(void){
+			Vector va, vb;
+			va = *b - *a;
+			vb = *c - *b;
+			normal= va % vb;
+			normal.Normalize();		
+			// if 3 vertices in the same line, this result normal= (NAN,NAN,NAN), which is OK.
+			return !isnan(normal.x) && !isnan(normal.y) && !isnan(normal.z);		
+		}
 
-	bool	Intersect(const Ray& ray, HitRec* hitRec) {
-		double cost = ray.dir * normal;
-		if (fabs(cost) <= EPSILON) 
+		bool	Intersect(const Ray& ray, HitRec* hitRec) {
+			double cost = ray.dir * normal;
+			if (fabs(cost) <= EPSILON) 
+				return false;
+
+			double t = ((*a - ray.origin) * normal) / cost;
+			if(t < EPSILON4) 
+				return false;
+
+			Vector ip = ray.origin + ray.dir * t;
+			hitRec->point	= ip;
+			hitRec->t		= t;
+
+			double c1 = (((*b - *a) % (ip - *a)) * normal);
+			double c2 = (((*c - *b) % (ip - *b)) * normal);
+			double c3 = (((*a - *c) % (ip - *c)) * normal);
+			if (c1 >= 0 && c2 >= 0 && c3 >= 0) 
+				return true;
+			if (c1 <= 0 && c2 <= 0 && c3 <= 0) 
+				return true;
 			return false;
-
-		double t = ((*a - ray.origin) * normal) / cost;
-		if(t < EPSILON4) 
-			return false;
-
-		Vector ip = ray.origin + ray.dir * t;
-		hitRec->point	= ip;
-		hitRec->t		= t;
-
-		double c1 = (((*b - *a) % (ip - *a)) * normal);
-		double c2 = (((*c - *b) % (ip - *b)) * normal);
-		double c3 = (((*a - *c) % (ip - *c)) * normal);
-		if (c1 >= 0 && c2 >= 0 && c3 >= 0) 
-			return true;
-		if (c1 <= 0 && c2 <= 0 && c3 <= 0) 
-			return true;
-		return false;
-	}
+		}
 };
 
 
 
 class Mesh {
-public:
-	vector <Vector>	vertices;	// csucspontok
-	vector <Triangle>	triangles;	// haromszogek
+	public:
+		vector <Vector>	vertices;	// csucspontok
+		vector <Triangle>	triangles;	// haromszogek
 
-	bool		Intersect(const Ray& ray, HitRec* hitRec) {
-		hitRec->primitiveInd = -1;
+		bool		Intersect(const Ray& ray, HitRec* hitRec) {
+			hitRec->primitiveInd = -1;
 
-		float mint = FLT_MAX;
-		HitRec hitRecLocal;
-		for (unsigned i = 0; i < triangles.size(); i++) {
-			if (!triangles[i].Intersect(ray, &hitRecLocal))
-				continue;
+			float mint = FLT_MAX;
+			HitRec hitRecLocal;
+			for (unsigned i = 0; i < triangles.size(); i++) {
+				if (!triangles[i].Intersect(ray, &hitRecLocal))
+					continue;
 
-			if (hitRecLocal.t < mint) {
-				mint = hitRecLocal.t; 
-				hitRec->primitiveInd = i;
-				hitRec->t		= hitRecLocal.t;
-				hitRec->point	= hitRecLocal.point;
-				hitRec->normal	= triangles[i].normal;
+				if (hitRecLocal.t < mint) {
+					mint = hitRecLocal.t; 
+					hitRec->primitiveInd = i;
+					hitRec->t		= hitRecLocal.t;
+					hitRec->point	= hitRecLocal.point;
+					hitRec->normal	= triangles[i].normal;
+				}
 			}
-	}
-	return hitRec->primitiveInd != -1;
-	}
-	Material*	GetMaterial(const HitRec& hitRec) { return triangles[hitRec.primitiveInd].material; }
+			return hitRec->primitiveInd != -1;
+		}
+		Material*	GetMaterial(const HitRec& hitRec) { return triangles[hitRec.primitiveInd].material; }
 };
 
 class PointLight {
-public:
-	Color emission;
+	public:
+		Color emission;
 
-	virtual Color	GetEmission() { return emission; };
-	Vector location;
+		virtual Color	GetEmission() { return emission; };
+		Vector location;
 };
 
 class Scene;
@@ -420,7 +420,7 @@ class Scene;
 class VrmlReader {
 	Scene*					scene;
 
-public:
+	public:
 	void	HandleCamera ();
 	void	HandleMaterial ();
 	void	HandleIFaceSet ();
@@ -461,120 +461,120 @@ public:
 
 
 class Scene {
-public:
-	Camera					camera;
-	vector <Material>	materials;
-	vector <Mesh*>	objects;
-	vector <PointLight*>	lights;
+	public:
+		Camera					camera;
+		vector <Material>	materials;
+		vector <Mesh*>	objects;
+		vector <PointLight*>	lights;
 
-	bool	Read				() {
-		VrmlReader vr(this);
-		vr.HandleCamera();
-		vr.HandlePointLight();
-		vr.HandleMaterial();
-		vr.HandleIFaceSet();
-		vr.HandleMaterial();
-		vr.HandleIFaceSet();
-		vr.HandleMaterial();
-		vr.HandleIFaceSet();
-		vr.HandleMaterial();
-		vr.HandleIFaceSet();
+		bool	Read				() {
+			VrmlReader vr(this);
+			vr.HandleCamera();
+			vr.HandlePointLight();
+			vr.HandleMaterial();
+			vr.HandleIFaceSet();
+			vr.HandleMaterial();
+			vr.HandleIFaceSet();
+			vr.HandleMaterial();
+			vr.HandleIFaceSet();
+			vr.HandleMaterial();
+			vr.HandleIFaceSet();
 
-		// finishScene
-		for (unsigned i = 0; i < objects.size(); i++) {
-			Mesh* pMesh = objects[i];
-			for (unsigned j = 0; j < pMesh->triangles.size(); j++) {
-				pMesh->triangles[j].a			= &pMesh->vertices[pMesh->triangles[j].ai];
-				pMesh->triangles[j].b			= &pMesh->vertices[pMesh->triangles[j].bi];
-				pMesh->triangles[j].c			= &pMesh->vertices[pMesh->triangles[j].ci];
-				pMesh->triangles[j].material	= &materials[pMesh->triangles[j].materialInd];
-				pMesh->triangles[j].FinishTriangle();
+			// finishScene
+			for (unsigned i = 0; i < objects.size(); i++) {
+				Mesh* pMesh = objects[i];
+				for (unsigned j = 0; j < pMesh->triangles.size(); j++) {
+					pMesh->triangles[j].a			= &pMesh->vertices[pMesh->triangles[j].ai];
+					pMesh->triangles[j].b			= &pMesh->vertices[pMesh->triangles[j].bi];
+					pMesh->triangles[j].c			= &pMesh->vertices[pMesh->triangles[j].ci];
+					pMesh->triangles[j].material	= &materials[pMesh->triangles[j].materialInd];
+					pMesh->triangles[j].FinishTriangle();
+				}
 			}
+			return true;
 		}
-		return true;
-	}
-	bool	Intersect			(const Ray& ray, HitRec* hitRec) {
-		hitRec->objectInd = -1;
-		float mint = FLT_MAX;
-		HitRec hitRecLocal;
-		for (unsigned i = 0; i < objects.size(); i++) {	// min. kereses
-			if (!objects[i]->Intersect(ray, &hitRecLocal))
-				continue;
-			if (hitRecLocal.t < mint) {
-				mint = hitRecLocal.t; 
-				*hitRec = hitRecLocal;
-				hitRec->objectInd	= i;
+		bool	Intersect			(const Ray& ray, HitRec* hitRec) {
+			hitRec->objectInd = -1;
+			float mint = FLT_MAX;
+			HitRec hitRecLocal;
+			for (unsigned i = 0; i < objects.size(); i++) {	// min. kereses
+				if (!objects[i]->Intersect(ray, &hitRecLocal))
+					continue;
+				if (hitRecLocal.t < mint) {
+					mint = hitRecLocal.t; 
+					*hitRec = hitRecLocal;
+					hitRec->objectInd	= i;
+				}
 			}
+			return hitRec->objectInd != -1;
 		}
-		return hitRec->objectInd != -1;
-	}
-	Color	Trace				(const Ray& ray, short depth) {
-		if (depth > MaxDepth)	   // rekurzio korlatozasa
-			return gColorBlack;     
+		Color	Trace				(const Ray& ray, short depth) {
+			if (depth > MaxDepth)	   // rekurzio korlatozasa
+				return gColorBlack;     
 
-		HitRec hitRec;
-		if (!Intersect(ray, &hitRec))
-			return gColorBlack;
-		if (clickx && clicky)
-			raypoints.push_back(hitRec.point);
+			HitRec hitRec;
+			if (!Intersect(ray, &hitRec))
+				return gColorBlack;
+			if (clickx && clicky)
+				raypoints.push_back(hitRec.point);
 
-		// 1. ambiens resz
-		Color ambientColor = objects[hitRec.objectInd]->
-			GetMaterial(hitRec)->ka * gColorAmbient;
-		// 2. fenyforrasok kozvetlen hatasa
-		Color directLightColor = DirectLightsource(ray.dir, hitRec);
+			// 1. ambiens resz
+			Color ambientColor = objects[hitRec.objectInd]->
+				GetMaterial(hitRec)->ka * gColorAmbient;
+			// 2. fenyforrasok kozvetlen hatasa
+			Color directLightColor = DirectLightsource(ray.dir, hitRec);
 
-		Material* pMaterial = objects[hitRec.objectInd]->GetMaterial(hitRec);
-		// 3. idealis tukor resz
-		Color idealReflector = gColorBlack;
-		Color kr = pMaterial->kr;
-		if (kr.Lum() > EPSILON) {
-			Vector reflDir = hitRec.normal * (-2.0 * (ray.dir * hitRec.normal)) 
-				+ ray.dir;
-			idealReflector = kr * Trace(Ray(hitRec.point, reflDir), depth + 1);
-		}
-		// 4. idealis fenyu ateresztes resz
-		Color idealRefractor = gColorBlack;
-		Color kt = pMaterial->kt;
-		if (kt.Lum() > EPSILON) {
-			Vector refrDir; //toresmutato fuggo
-			if (pMaterial->RefractionDir(ray.dir, hitRec.normal, &refrDir))
-				idealRefractor = kt * Trace(Ray(hitRec.point, refrDir), depth + 1);
-		}
-		return ambientColor + directLightColor + idealReflector + idealRefractor;
-	}
-
-	Color	DirectLightsource	(const Vector& inDir, const HitRec& hitRec) {
-		Color sumColor = gColorBlack; // akkumulalt radiancia
-		for (unsigned i = 0; i < lights.size(); i++) {
-			// 2. pontszeru fenyforrasok kezelese
-			PointLight* pLight = lights[i];
-			// sugar a feluleti pontbol a fenyforrasig
-			Ray		rayToLight(hitRec.point, pLight->location - hitRec.point);
-			float	lightDist	= rayToLight.dir.Norm();
-			rayToLight.dir.Normalize();
-
-			// az arnyalasi normalis az adott pontban
-			float	cost = rayToLight.dir * hitRec.normal;
-			if (cost <= 0)	// a test belsejebol jovunk
-				continue;
-
-			HitRec	hitRecToLight;
-			bool isIntersect = Intersect(rayToLight, &hitRecToLight);
-			bool meetLight = !isIntersect;
-			if (isIntersect) {//a metszespont tavolabb van, mint a fenyforras
-				Vector distIntersect = pLight->location - hitRecToLight.point;
-				if (distIntersect.Norm() > lightDist)
-					meetLight = true; 	
+			Material* pMaterial = objects[hitRec.objectInd]->GetMaterial(hitRec);
+			// 3. idealis tukor resz
+			Color idealReflector = gColorBlack;
+			Color kr = pMaterial->kr;
+			if (kr.Lum() > EPSILON) {
+				Vector reflDir = hitRec.normal * (-2.0 * (ray.dir * hitRec.normal)) 
+					+ ray.dir;
+				idealReflector = kr * Trace(Ray(hitRec.point, reflDir), depth + 1);
 			}
-			if (!meetLight)
-				continue;	// arnyekban vagyunk
-
-			Color brdf = objects[hitRec.objectInd]->GetMaterial(hitRec)->Brdf(inDir, rayToLight.dir, hitRec.normal);
-			sumColor += brdf * lights[i]->emission * cost;
+			// 4. idealis fenyu ateresztes resz
+			Color idealRefractor = gColorBlack;
+			Color kt = pMaterial->kt;
+			if (kt.Lum() > EPSILON) {
+				Vector refrDir; //toresmutato fuggo
+				if (pMaterial->RefractionDir(ray.dir, hitRec.normal, &refrDir))
+					idealRefractor = kt * Trace(Ray(hitRec.point, refrDir), depth + 1);
+			}
+			return ambientColor + directLightColor + idealReflector + idealRefractor;
 		}
-		return sumColor;
-	}
+
+		Color	DirectLightsource	(const Vector& inDir, const HitRec& hitRec) {
+			Color sumColor = gColorBlack; // akkumulalt radiancia
+			for (unsigned i = 0; i < lights.size(); i++) {
+				// 2. pontszeru fenyforrasok kezelese
+				PointLight* pLight = lights[i];
+				// sugar a feluleti pontbol a fenyforrasig
+				Ray		rayToLight(hitRec.point, pLight->location - hitRec.point);
+				float	lightDist	= rayToLight.dir.Norm();
+				rayToLight.dir.Normalize();
+
+				// az arnyalasi normalis az adott pontban
+				float	cost = rayToLight.dir * hitRec.normal;
+				if (cost <= 0)	// a test belsejebol jovunk
+					continue;
+
+				HitRec	hitRecToLight;
+				bool isIntersect = Intersect(rayToLight, &hitRecToLight);
+				bool meetLight = !isIntersect;
+				if (isIntersect) {//a metszespont tavolabb van, mint a fenyforras
+					Vector distIntersect = pLight->location - hitRecToLight.point;
+					if (distIntersect.Norm() > lightDist)
+						meetLight = true; 	
+				}
+				if (!meetLight)
+					continue;	// arnyekban vagyunk
+
+				Color brdf = objects[hitRec.objectInd]->GetMaterial(hitRec)->Brdf(inDir, rayToLight.dir, hitRec.normal);
+				sumColor += brdf * lights[i]->emission * cost;
+			}
+			return sumColor;
+		}
 };
 
 
@@ -802,53 +802,53 @@ void Render(void) {
 
 void onInitialization( ) {
 	scene.Read();
-    glMatrixMode(GL_MODELVIEW);
-    gluLookAt(scene.camera.eyep.x, scene.camera.eyep.y, scene.camera.eyep.z,
-		    scene.camera.eyep.x-scene.camera.lookp.x, scene.camera.eyep.y-scene.camera.lookp.y, scene.camera.eyep.z-scene.camera.lookp.z,
-		    scene.camera.updir.x, scene.camera.updir.y, scene.camera.updir.z);
-    glMatrixMode(GL_PROJECTION);
-    gluPerspective(scene.camera.fov*2, 1, scene.camera.nearClip, scene.camera.farClip);
+	glMatrixMode(GL_MODELVIEW);
+	gluLookAt(scene.camera.eyep.x, scene.camera.eyep.y, scene.camera.eyep.z,
+			scene.camera.eyep.x-scene.camera.lookp.x, scene.camera.eyep.y-scene.camera.lookp.y, scene.camera.eyep.z-scene.camera.lookp.z,
+			scene.camera.updir.x, scene.camera.updir.y, scene.camera.updir.z);
+	glMatrixMode(GL_PROJECTION);
+	gluPerspective(scene.camera.fov*2, 1, scene.camera.nearClip, scene.camera.farClip);
 	Render();
 	glutPostRedisplay();
 }
 
 void onDisplay( ) {
-    glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glDrawPixels(SIZE, SIZE, GL_RGB, GL_FLOAT, pixels);
+	glDrawPixels(SIZE, SIZE, GL_RGB, GL_FLOAT, pixels);
 
-    glColor3f(1.0f, 1.0f, 1.0f);
-    // eloszor a pontokat kotjuk ossze
-    glBegin(GL_LINE_STRIP);
-    for (unsigned i = 0; i < raypoints.size(); i++) {
-	    glVertex3f(raypoints[i].x, raypoints[i].y, raypoints[i].z);
-    }
-    glEnd();
-    // majd az egyes pontokat a fenyforrassal
-    glBegin(GL_LINES);
-    for (unsigned i = 0; i < raypoints.size(); i++) {
-	    glVertex3f(raypoints[i].x, raypoints[i].y, raypoints[i].z);
-	    glVertex3f(scene.lights[0]->location.x, scene.lights[0]->location.y, scene.lights[0]->location.z);
-    }
-    glEnd();
+	glColor3f(1.0f, 1.0f, 1.0f);
+	// eloszor a pontokat kotjuk ossze
+	glBegin(GL_LINE_STRIP);
+	for (unsigned i = 0; i < raypoints.size(); i++) {
+		glVertex3f(raypoints[i].x, raypoints[i].y, raypoints[i].z);
+	}
+	glEnd();
+	// majd az egyes pontokat a fenyforrassal
+	glBegin(GL_LINES);
+	for (unsigned i = 0; i < raypoints.size(); i++) {
+		glVertex3f(raypoints[i].x, raypoints[i].y, raypoints[i].z);
+		glVertex3f(scene.lights[0]->location.x, scene.lights[0]->location.y, scene.lights[0]->location.z);
+	}
+	glEnd();
 
-    // Buffercsere: rajzolas vege
-    glFinish();
-    glutSwapBuffers();
+	// Buffercsere: rajzolas vege
+	glFinish();
+	glutSwapBuffers();
 }
 
 void onMouse(int button, int state, int x, int y) {
-    // A GLUT_LEFT_BUTTON / GLUT_RIGHT_BUTTON
-    // ill. a GLUT_DOWN / GLUT_UP makrokat hasznald.
-    if (button != GLUT_LEFT_BUTTON || state != GLUT_DOWN)
-	    return;
-    raypoints.clear();
-    clickx = x;
-    clicky = y;
-    Ray r = GetRay(x, y);
-    scene.Trace(r, 0);
-    glutPostRedisplay();
+	// A GLUT_LEFT_BUTTON / GLUT_RIGHT_BUTTON
+	// ill. a GLUT_DOWN / GLUT_UP makrokat hasznald.
+	if (button != GLUT_LEFT_BUTTON || state != GLUT_DOWN)
+		return;
+	raypoints.clear();
+	clickx = x;
+	clicky = y;
+	Ray r = GetRay(x, y);
+	scene.Trace(r, 0);
+	glutPostRedisplay();
 }
 
 void onIdle( ) {
