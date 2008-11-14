@@ -466,7 +466,7 @@ class Scene {
 		vector <Mesh*>	objects;
 		vector <PointLight*>	lights;
 
-		bool	Read				() {
+		bool	Build() {
 			VrmlReader vr(this);
 			vr.HandleCamera();
 			vr.HandlePointLight();
@@ -800,7 +800,7 @@ void Render(void) {
 }
 
 void onInitialization( ) {
-	scene.Read();
+	scene.Build();
 	glMatrixMode(GL_MODELVIEW);
 	gluLookAt(scene.camera.eyep.x, scene.camera.eyep.y, scene.camera.eyep.z,
 			scene.camera.eyep.x-scene.camera.lookp.x, scene.camera.eyep.y-scene.camera.lookp.y, scene.camera.eyep.z-scene.camera.lookp.z,
