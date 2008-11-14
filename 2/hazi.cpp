@@ -802,13 +802,15 @@ void Render(void) {
 
 void onInitialization( ) {
 	scene.Read();
+    glMatrixMode(GL_MODELVIEW);
     gluLookAt(scene.camera.eyep.x, scene.camera.eyep.y, scene.camera.eyep.z,
 		    scene.camera.eyep.x-scene.camera.lookp.x, scene.camera.eyep.y-scene.camera.lookp.y, scene.camera.eyep.z-scene.camera.lookp.z,
 		    scene.camera.updir.x, scene.camera.updir.y, scene.camera.updir.z);
-	printf("debug, camera:\neye: %f, %f, %f\nlookp: %f, %f, %f\nup: %f, %f, %f\n",
 			scene.camera.eyep.x, scene.camera.eyep.y, scene.camera.eyep.z,
 			scene.camera.lookp.x, scene.camera.lookp.y, scene.camera.lookp.z,
 			scene.camera.updir.x, scene.camera.updir.y, scene.camera.updir.z);
+    glMatrixMode(GL_PROJECTION);
+    gluPerspective(scene.camera.fov*2, 1, scene.camera.nearClip, scene.camera.farClip);
 	Render();
 	glutPostRedisplay();
 }
