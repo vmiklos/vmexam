@@ -416,7 +416,7 @@ class PointLight {
 
 class Scene;
 
-class VrmlReader {
+class Model {
 	Scene*					scene;
 
 	public:
@@ -455,7 +455,7 @@ class VrmlReader {
 		up[2] = t * orientation[1] * orientation[2] + s * orientation[0];
 	}
 
-	VrmlReader(Scene* pScene) { scene = pScene; }
+	Model(Scene* pScene) { scene = pScene; }
 };
 
 
@@ -467,17 +467,17 @@ class Scene {
 		vector <PointLight*>	lights;
 
 		bool	Build() {
-			VrmlReader vr(this);
-			vr.HandleCamera();
-			vr.HandlePointLight();
-			vr.HandleMaterial();
-			vr.HandleIFaceSet();
-			vr.HandleMaterial();
-			vr.HandleIFaceSet();
-			vr.HandleMaterial();
-			vr.HandleIFaceSet();
-			vr.HandleMaterial();
-			vr.HandleIFaceSet();
+			Model m(this);
+			m.HandleCamera();
+			m.HandlePointLight();
+			m.HandleMaterial();
+			m.HandleIFaceSet();
+			m.HandleMaterial();
+			m.HandleIFaceSet();
+			m.HandleMaterial();
+			m.HandleIFaceSet();
+			m.HandleMaterial();
+			m.HandleIFaceSet();
 
 			// finishScene
 			for (unsigned i = 0; i < objects.size(); i++) {
@@ -578,7 +578,7 @@ class Scene {
 
 
 
-void VrmlReader::HandleCamera() {
+void Model::HandleCamera() {
 	// orientation specifies a rotation relative to the default orientation (0 0 1  0); 
 	// orientation field of the Viewpoint does not affect the definition of the down or up vectors
 	// navigation types (see NavigationInfo) that require a definition of an up vector shall use the positive Y-axis of 
@@ -605,7 +605,7 @@ void VrmlReader::HandleCamera() {
 	scene->camera.CompleteCamera();
 }
 
-void VrmlReader::HandleMaterial() {
+void Model::HandleMaterial() {
 	static int cnum = 0;
 	Material material;
 
@@ -635,7 +635,7 @@ void VrmlReader::HandleMaterial() {
 }
 
 #define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
-void VrmlReader::HandleIFaceSet() {
+void Model::HandleIFaceSet() {
 	static int cnum = 0;
 
 	Mesh* mesh = new Mesh;
@@ -752,7 +752,7 @@ void VrmlReader::HandleIFaceSet() {
 
 }
 
-void VrmlReader::HandlePointLight() {
+void Model::HandlePointLight() {
 	PointLight* light = new PointLight;
 	light->location.Set( -20.6, 51.43, 28.99);
 	light->emission.Set(4, 4, 4);
