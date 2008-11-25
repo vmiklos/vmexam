@@ -24,6 +24,14 @@ public class Hazi {
 		}
 		return false;
 	}
+	Node nodeFromList(String y, List l) {
+		for (Iterator i = l.listIterator(); i.hasNext();) {
+			Node n = (Node) i.next();
+			if (n.name.equals(y))
+				return n;
+		}
+		return null;
+	}
 	public Hazi() {
 	}
 }
