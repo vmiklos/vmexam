@@ -60,6 +60,7 @@ public class Hazi {
 		}
 	}
 	boolean aStar(String start, String end) {
+		System.out.println("aStar() start: '"+start+"', end: '"+end+"'");
 		try {
 			BufferedWriter sock = new BufferedWriter(
 					new OutputStreamWriter(
@@ -69,6 +70,7 @@ public class Hazi {
 			openlist.add(new Node(start, 0, hn.get(start)));
 			List<Node> closedlist = new LinkedList<Node>();
 			for (int count = 0; openlist.size() > 0; count++) {
+				System.out.println("aStar::for(): count = " + count);
 				Collections.sort(openlist);
 				sock.write("(:openlist " + count);
 				for (Iterator i = openlist.listIterator(); i.hasNext();) {
@@ -95,7 +97,8 @@ public class Hazi {
 						sock.write(" "+s);
 					}
 					sock.write(")");
-					sock.newLine();
+					//sock.newLine();
+					sock.close();
 					return true;
 				}
 				closedlist.add(x);
@@ -134,11 +137,11 @@ public class Hazi {
 				if (prefix.equals("(:start")) {
 					String s = tokens.nextToken();
 					start = s.substring(0, s.length()-1);
-					//System.out.println("debug, start: '"+start+"'");
+					System.out.println("debug, start: '"+start+"'");
 				} else if (prefix.equals("(:end")) {
 					String s = tokens.nextToken();
 					end = s.substring(0, s.length()-1);
-					//System.out.println("debug, end: '"+end+"'");
+					System.out.println("debug, end: '"+end+"'");
 				} else if (prefix.equals("(:hn")) {
 					inhn = true;
 				} else if (prefix.equals("(:gn")) {
@@ -148,7 +151,7 @@ public class Hazi {
 					String key = t.nextToken();
 					String value = t.nextToken();
 					if (inhn) {
-						//System.out.println("hn k/v: '"+key+"'/'"+value+"'");
+						System.out.println("hn k/v: '"+key+"'/'"+value+"'");
 						hn.put(key, Integer.parseInt(value));
 					} else if (ingn) {
 						String n = t.nextToken();
@@ -163,7 +166,7 @@ public class Hazi {
 						if (!in_keys) {
 							gn.put(key, new HashMap<String, Integer>());
 						}
-						//System.out.println("gn k/k/v: '"+key+"'/'"+value+"'/'"+n+"'");
+						System.out.println("gn k/k/v: '"+key+"'/'"+value+"'/'"+n+"'");
 						gn.get(key).put(value, Integer.parseInt(n));
 					}
 				} else if (prefix.substring(0, 1).equals(")")) {
