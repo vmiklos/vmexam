@@ -148,6 +148,19 @@ public class Hazi {
 						System.out.println("hn k/v: '"+key+"'/'"+value+"'");
 						hn.put(key, Integer.parseInt(value));
 					} else if (ingn) {
+						String n = t.nextToken();
+						boolean in_keys = false;
+						for (Iterator j = gn.keySet().iterator(); j.hasNext(); ) {
+							String s = (String) j.next();
+							if (s.equals(key)) {
+								in_keys = true;
+								break;
+							}
+						}
+						if (!in_keys) {
+							gn.put(key, new HashMap<String, Integer>());
+						}
+						gn.get(key).put(value, Integer.parseInt(n));
 					}
 				}
 			}
