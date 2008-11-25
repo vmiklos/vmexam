@@ -136,6 +136,10 @@ public class Hazi {
 					String s = tokens.nextToken();
 					end = s.substring(0, s.length()-1);
 					System.out.println("debug, end: '"+end+"'");
+				} else if (prefix.equals("(:hn")) {
+					inhn = true;
+				} else if (prefix.equals("(:gn")) {
+					ingn = true;
 				}
 			}
 		} catch(Exception e) {
