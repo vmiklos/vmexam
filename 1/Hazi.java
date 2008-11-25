@@ -3,6 +3,7 @@ import java.io.*;
 
 public class Hazi {
 	HashMap<String,Integer> hn;
+	HashMap<String,String> cameFrom;
 	class Node implements Comparable<Node> {
 		String name;
 		int f, g, h;
@@ -64,6 +65,36 @@ public class Hazi {
 			List<Node> closedlist = new LinkedList<Node>();
 			int count = 0;
 			while (openlist.size() > 0) {
+				Collections.sort(openlist);
+				sock.write("(:openlist " + count);
+				for (Iterator i = openlist.listIterator(); i.hasNext();) {
+					Node n = (Node) i.next();
+					sock.write(" ("+n.f+" "+n.name+")");
+				}
+				sock.write(")");
+				sock.newLine();
+				sock.write("(:closedlist " + count);
+				for (Iterator i = closedlist.listIterator(); i.hasNext();) {
+					Node n = (Node) i.next();
+					sock.write(" ("+n.f+" "+n.name+")");
+				}
+				sock.write(")");
+				sock.newLine();
+				
+				Node x = openlist.get(0);
+				openlist.remove(0);
+				if (x.name.equals(end)) {
+					sock.write("(:sol "+x.f);
+					List<String> l = reconstructPath(cameFrom, end);
+					for (Iterator i = l.listIterator(); i.hasNext();) {
+						String s = (String) i.next();
+						sock.write(" "+s);
+					}
+					sock.write(")");
+					sock.newLine();
+					return true;
+				}
+				closedlist.add(x);
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
