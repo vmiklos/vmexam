@@ -1,6 +1,8 @@
 import java.util.*;
+import java.io.*;
 
 public class Hazi {
+	HashMap<String,Integer> hn;
 	class Node implements Comparable<Node> {
 		String name;
 		int f, g, h;
@@ -50,6 +52,23 @@ public class Hazi {
 			p.add(currentNode);
 			return p;
 		}
+	}
+	boolean aStar(String start, String end) {
+		try {
+			BufferedWriter sock = new BufferedWriter(
+					new OutputStreamWriter(
+						new FileOutputStream("output.txt"), "8859_2")
+					);
+			List<Node> openlist = new LinkedList<Node>();
+			openlist.add(new Node(start, 0, hn.get(start)));
+			List<Node> closedlist = new LinkedList<Node>();
+			int count = 0;
+			while (openlist.size() > 0) {
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 	public Hazi() {
 	}
