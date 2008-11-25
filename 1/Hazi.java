@@ -3,6 +3,7 @@ import java.io.*;
 
 public class Hazi {
 	HashMap<String,Integer> hn;
+	HashMap<String,HashMap<String,Integer>> gn;
 	HashMap<String,String> cameFrom;
 	class Node implements Comparable<Node> {
 		String name;
@@ -63,8 +64,7 @@ public class Hazi {
 			List<Node> openlist = new LinkedList<Node>();
 			openlist.add(new Node(start, 0, hn.get(start)));
 			List<Node> closedlist = new LinkedList<Node>();
-			int count = 0;
-			while (openlist.size() > 0) {
+			for (int count = 0; openlist.size() > 0; count++) {
 				Collections.sort(openlist);
 				sock.write("(:openlist " + count);
 				for (Iterator i = openlist.listIterator(); i.hasNext();) {
@@ -95,6 +95,21 @@ public class Hazi {
 					return true;
 				}
 				closedlist.add(x);
+				for (Iterator i = gn.get(x.name).keySet().iterator(); i.hasNext(); ) {
+					String y = (String) i.next();
+					if (nameInList(y, closedlist))
+						continue;
+					int tentative_g_score = x.g + gn.get(x.name).get(y);
+					boolean tentative_is_better = false;
+					if (!nameInList(y, openlist)) {
+						openlist.add(new Node(y, tentative_g_score, hn.get(y)));
+						tentative_is_better = true;
+					} else if (tentative_g_score < nodeFromList(y, openlist).g) {
+						tentative_is_better = true;
+					}
+					if (tentative_is_better == true)
+						cameFrom.put(y, x.name);
+				}
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
