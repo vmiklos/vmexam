@@ -140,6 +140,15 @@ public class Hazi {
 					inhn = true;
 				} else if (prefix.equals("(:gn")) {
 					ingn = true;
+				} else if (prefix.substring(0, 1).equals("(")) {
+					StringTokenizer t = new StringTokenizer(line.substring(1, line.length()-1));
+					String key = t.nextToken();
+					String value = t.nextToken();
+					if (inhn) {
+						System.out.println("hn k/v: '"+key+"'/'"+value+"'");
+						hn.put(key, Integer.parseInt(value));
+					} else if (ingn) {
+					}
 				}
 			}
 		} catch(Exception e) {
