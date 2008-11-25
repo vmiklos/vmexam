@@ -22,3 +22,6 @@ test: output.txt
 
 doc:
 	a2x -f pdf doc.txt
+
+dist:
+	zip program *.java
