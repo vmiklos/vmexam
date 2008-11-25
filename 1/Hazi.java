@@ -32,6 +32,25 @@ public class Hazi {
 		}
 		return null;
 	}
+	List<String> reconstructPath(HashMap<String,String>cameFrom, String currentNode){
+		boolean in_keys = false;
+		for (Iterator i = cameFrom.keySet().iterator(); i.hasNext(); ) {
+			String s = (String) i.next();
+			if (s.equals(currentNode)) {
+				in_keys = true;
+				break;
+			}
+		}
+		if (in_keys) {
+			List<String> p = reconstructPath(cameFrom, cameFrom.get(currentNode));
+			p.add(currentNode);
+			return p;
+		} else {
+			List<String> p = new LinkedList<String>();
+			p.add(currentNode);
+			return p;
+		}
+	}
 	public Hazi() {
 	}
 }
