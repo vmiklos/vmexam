@@ -148,7 +148,7 @@ public class Hazi {
 					String key = t.nextToken();
 					String value = t.nextToken();
 					if (inhn) {
-						System.out.println("hn k/v: '"+key+"'/'"+value+"'");
+						//System.out.println("hn k/v: '"+key+"'/'"+value+"'");
 						hn.put(key, Integer.parseInt(value));
 					} else if (ingn) {
 						String n = t.nextToken();
@@ -163,8 +163,14 @@ public class Hazi {
 						if (!in_keys) {
 							gn.put(key, new HashMap<String, Integer>());
 						}
+						//System.out.println("gn k/k/v: '"+key+"'/'"+value+"'/'"+n+"'");
 						gn.get(key).put(value, Integer.parseInt(n));
 					}
+				} else if (prefix.substring(0, 1).equals(")")) {
+					if (inhn)
+						inhn = false;
+					else if (ingn)
+						ingn = false;
 				}
 			}
 		} catch(Exception e) {
