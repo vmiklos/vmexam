@@ -7,7 +7,7 @@ program.jar: $(CLASSES)
 	jar cmf manifest.mf program.jar *.class
 
 %.class: %.java
-	javac $(SOURCES)
+	javac -source 5.0 $(SOURCES)
 
 clean:
 	rm -f *.class
