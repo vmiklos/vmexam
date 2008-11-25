@@ -2,6 +2,10 @@ import java.util.*;
 import java.io.*;
 
 public class Hazi {
+	boolean inhn = false;
+	boolean ingn = false;
+	String start = null;
+	String end = null;
 	HashMap<String,Integer> hn;
 	HashMap<String,HashMap<String,Integer>> gn;
 	HashMap<String,String> cameFrom;
