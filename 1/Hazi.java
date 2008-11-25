@@ -126,6 +126,17 @@ public class Hazi {
 			String i;
 			while((i = sock.readLine()) != null) {
 				String line = i.trim();
+				StringTokenizer tokens = new StringTokenizer(line);
+				String prefix = tokens.nextToken();
+				if (prefix.equals("(:start")) {
+					String s = tokens.nextToken();
+					start = s.substring(0, s.length()-1);
+					System.out.println("debug, start: '"+start+"'");
+				} else if (prefix.equals("(:end")) {
+					String s = tokens.nextToken();
+					end = s.substring(0, s.length()-1);
+					System.out.println("debug, end: '"+end+"'");
+				}
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
