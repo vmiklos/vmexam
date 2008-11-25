@@ -176,6 +176,9 @@ public class Hazi {
 						tentative_is_better = true;
 					} else if (tentative_g_score < nodeFromList(y, openlist).g) {
 						tentative_is_better = true;
+						Node n = nodeFromList(y, openlist);
+						n.g = tentative_g_score;
+						n.f = n.g + n.h;
 					}
 					if (tentative_is_better == true)
 						cameFrom.put(y, x.name);
