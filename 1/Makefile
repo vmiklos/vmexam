@@ -19,3 +19,6 @@ output.txt: run
 
 test: output.txt
 	diff -u hf01_pelda_output.txt output.txt
+
+doc:
+	a2x -f pdf doc.txt
