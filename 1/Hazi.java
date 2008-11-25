@@ -120,6 +120,15 @@ public class Hazi {
 		}
 		return false;
 	}
-	public Hazi() {
+	public Hazi(String filename) {
+		try {
+			BufferedReader sock = new BufferedReader(new FileReader(new File(filename)));
+			String i;
+			while((i = sock.readLine()) != null) {
+				String line = i.trim();
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
