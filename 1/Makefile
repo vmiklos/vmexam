@@ -10,7 +10,7 @@ program.jar: $(CLASSES)
 	javac $(SOURCES)
 
 clean:
-	rm -f $(CLASSES)
+	rm -f *.class
 
 run: program.jar
 	java -jar program.jar hf01_pelda_input.txt
