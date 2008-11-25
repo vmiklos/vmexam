@@ -16,6 +16,14 @@ public class Hazi {
 			return fi.compareTo(nfi);
 		}
 	}
+	boolean nameInList(String y, List l) {
+		for (Iterator i = l.listIterator(); i.hasNext();) {
+			Node n = (Node) i.next();
+			if (n.name.equals(y))
+				return true;
+		}
+		return false;
+	}
 	public Hazi() {
 	}
 }
