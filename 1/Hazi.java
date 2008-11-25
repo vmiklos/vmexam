@@ -122,6 +122,9 @@ public class Hazi {
 	}
 	public Hazi(String filename) {
 		try {
+			hn = new HashMap<String,Integer>();
+			gn = new HashMap<String,HashMap<String,Integer>>();
+			cameFrom = new HashMap<String,String>();
 			BufferedReader sock = new BufferedReader(new FileReader(new File(filename)));
 			String i;
 			while((i = sock.readLine()) != null) {
