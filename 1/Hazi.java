@@ -134,11 +134,11 @@ public class Hazi {
 				if (prefix.equals("(:start")) {
 					String s = tokens.nextToken();
 					start = s.substring(0, s.length()-1);
-					System.out.println("debug, start: '"+start+"'");
+					//System.out.println("debug, start: '"+start+"'");
 				} else if (prefix.equals("(:end")) {
 					String s = tokens.nextToken();
 					end = s.substring(0, s.length()-1);
-					System.out.println("debug, end: '"+end+"'");
+					//System.out.println("debug, end: '"+end+"'");
 				} else if (prefix.equals("(:hn")) {
 					inhn = true;
 				} else if (prefix.equals("(:gn")) {
@@ -176,5 +176,6 @@ public class Hazi {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+		aStar(start, end);
 	}
 }
