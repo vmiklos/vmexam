@@ -1,0 +1,72 @@
+= MI második házifeladat, Vajna Miklós <vmiklos@vmiklos.hu>, AYU9RZ, 2008-12-03
+
+== Formális felépítés
+
+A segédlet útmutatása szerint először a domain PDDL leírását készítettem
+el. Úgy döntöttem, hogy típusokat vezetek be, ezt a requirements
+listában meg is adtam.
+
+Négy fajta típust vezettem be: A műholdat, célpontot, műszert és
+üzemmódot.
+
+A következő predikátumokat vettem fel:
+
+- vanfelvetel: Van-e felvétel egy célpontrol adott üzemmódban?
+
+- vanmuszer: Milyen műszerek tartoznak egy adott műholdhoz?
+
+- irany: Melyik célpont irányába néz jelenleg a műhold?
+
+- bekapcsolt: Be van-e kapcsolva egy adott műholdon lévő műszer?
+
+- vanuzemmod: Lista arról, hogy egy adott műszer milyen üzemmódokat
+  támogat.
+
+- calibrated: Egy adott célpont felé néző műholdon lévő műszer
+  kalibrálva van-e?
+
+- vanaram: Van-e áram az adott műholdon?
+
+A következő műveleteket definiáltam:
+
+- turn-to: Egy adott műholdat egy célponttól egy másik felé fordítunk.
+
+- switch-on: Egy adott műszer bekapcsolása egy adott műholdon.
+
+- switch-off: Egy adott műszer kikapcsolása egy adott műholdon.
+
+- calibrate: Egy adott célpont felé néző, adott műholdon adott
+  üzemmodban lévő adott műszer kalibrálása.
+
+- take-image: Ez maga a fényképezés, melynél szintén fontos, hogy mely
+  műholdról, mely célpontot, mely műszerrel és milyen üzemmódban történik.
+
+== Megoldási terv
+
+Idáig a domain leírása. Következzen a probléma.
+
+Úgy definiáltam, hogy:
+
+- egy műholdam van
+
+- két műszerem
+
+- három üzemmódom
+
+- négy célpontom
+
+Kezdetben a következő feltételek adottak:
+
+- Az első műszerrel lehet mérni a és b üzemmódban
+
+- A második műszerrel lehet mérni c és d üzemmódban
+
+- Az egyetlen műholdon helyezkedik el mind a két műszer
+
+- A műhold áram-ellátása biztosított
+
+- A műhold az első célpont felé néz
+
+Ez után már csak a cél megfogalmazása marad, mely a következőképpen
+hangzik: Minden egyes célpontról minden egyes üzemmódban el akarom érni,
+hogy keletkezzen kép.
