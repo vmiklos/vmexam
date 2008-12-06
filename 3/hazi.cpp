@@ -31,6 +31,22 @@
 //--------------------------------------------------------
 
 float zoom = 3;
+
+class Texture {
+	public:
+		unsigned int texture_id;
+		void MakeTexture(int width, int height, const GLvoid* pixels) {
+			glGenTextures(1, &texture_id);
+			glBindTexture(GL_TEXTURE_2D, texture_id);
+			// ismetlodes bekapcsolasa
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			// bitterkepes textura definialasa
+			glTexImage2D(GL_TEXTURE_2D, 0, 3,
+					width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+		}
+};
+
 void onInitialization( ) {
 	//float al[] = {0.1, 0.1, 0.1, 1.0};
 	//float dl[] = {0.5, 0.2, 0.3, 1.0};
