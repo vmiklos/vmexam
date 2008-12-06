@@ -142,6 +142,15 @@ void onInitialization( ) {
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);
+	unsigned int id = 13;
+	glBindTexture (GL_TEXTURE_2D, id);
+	glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, 32, 32, 0, GL_RGB, GL_UNSIGNED_BYTE, pixel_data);
 }
 
 void onDisplay( ) {
@@ -165,14 +174,21 @@ void onDisplay( ) {
 	}
 	glEnd();*/
 	// terep
-	float green[] = {0.0, 1.0, 0.0, 1.0};
+	glEnable (GL_TEXTURE_2D);
+	glBindTexture (GL_TEXTURE_2D, 13);
+	//float green[] = {0.0, 1.0, 0.0, 1.0};
 	glBegin(GL_QUADS);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, green);
+	//glMaterialfv(GL_FRONT, GL_DIFFUSE, green);
+	glTexCoord2f (0.0f,0.0f);
 	glVertex3f(-3*zoom, 0, -1*zoom);
+	glTexCoord2f (1.0f, 0.0f);
 	glVertex3f(-3*zoom, 0, 2*zoom);
+	glTexCoord2f (1.0f, 1.0f);
 	glVertex3f(3*zoom, 0, 2*zoom);
+	glTexCoord2f (0.0f, 1.0f);
 	glVertex3f(3*zoom, 0, -1*zoom);
 	glEnd();
+	glDisable (GL_TEXTURE_2D);
 	// ut
 	glBegin(GL_QUADS);
 	float gray[] = {0.5, 0.5, 0.5, 1.0};
