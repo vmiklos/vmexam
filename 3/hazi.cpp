@@ -254,9 +254,12 @@ void onDisplay( ) {
 	glTranslatef(-0.15*zoom, 0.3*zoom, d1*zoom);
 	glRotatef(90, 1, 1, 0);
 	GLUquadric *lab1 = gluNewQuadric();
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, dd);
+	//glMaterialfv(GL_FRONT, GL_DIFFUSE, dd);
 	float red[] = {1.0, 0.0, 0.0, 1.0};
-	glMaterialfv(GL_FRONT, GL_SPECULAR, red);
+	float white[] = {1.0, 1.0, 1.0, 1.0};
+	glMaterialf(GL_FRONT, GL_SHININESS, 20.0);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, red);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, white);
 	gluCylinder(lab1, 0.1, 0.2, 1, 100, 100);
 	glPopMatrix();
 	glPushMatrix();
