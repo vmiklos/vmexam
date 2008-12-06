@@ -168,6 +168,11 @@ void onDisplay( ) {
 	//glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// defaults
+	float dd[] = {0.8, 0.8, 0.8, 1.0};
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, dd);
+	float sd[] = {0.0, 0.0, 0.0, 1.0};
+	glMaterialfv(GL_FRONT, GL_SPECULAR, sd);
 	/*glColor3f(1.0f, 1.0f, 1.0f);
 	glBegin(GL_LINES);
 	for (int i = -3; i < 3; i++) {
@@ -241,6 +246,7 @@ void onDisplay( ) {
 	glTranslatef(-0.15*zoom, 0.3*zoom, d1*zoom);
 	glRotatef(90, 1, 1, 0);
 	GLUquadric *lab1 = gluNewQuadric();
+	glMaterialfv(GL_FRONT, GL_SPECULAR, yellow);
 	gluCylinder(lab1, 0.1, 0.2, 1, 100, 100);
 	glPopMatrix();
 	glPushMatrix();
@@ -249,6 +255,16 @@ void onDisplay( ) {
 	glRotatef(-45, 0, 1, 0);
 	GLUquadric *lab2 = gluNewQuadric();
 	gluCylinder(lab2, 0.1, 0.2, 1, 100, 100);
+	glPopMatrix();
+	// csor
+	glPushMatrix();
+	float red[] = {1.0, 0.0, 0.0, 1.0};
+	glMaterialfv(GL_FRONT, GL_SPECULAR, red);
+	glTranslatef(-0.45*zoom, 0.75*zoom, 0.25*zoom);
+	glRotatef(45, 1, 0, 0);
+	glRotatef(-90, 0, 1, 0);
+	GLUquadric *csor = gluNewQuadric();
+	gluCylinder(csor, 0.2, 0.0, 0.5, 100, 100);
 	glPopMatrix();
 
 	// Buffercsere: rajzolas vege
