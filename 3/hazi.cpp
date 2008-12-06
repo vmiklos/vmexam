@@ -209,13 +209,37 @@ void onDisplay( ) {
 	glVertex3f(3*zoom, 0, 0);
 	glEnd();
 
-	// csirke
+	// csirke feje
 	glPushMatrix();
 	float yellow[] = {1.0, 1.0, 0.0, 1.0};
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, yellow);
-	glTranslatef(-0.5*zoom, 1*zoom, 0);
+	glTranslatef(-0.4*zoom, 0.75*zoom, 0.3*zoom);
 	GLUquadric *quad = gluNewQuadric();
 	gluSphere(quad, 0.1*zoom, 100, 100);
+	glPopMatrix();
+	// teste
+	glPushMatrix();
+	glTranslatef(-0.4*zoom, 0.2*zoom, 0.3*zoom);
+	glScalef(0.5, 0.5, 1);
+	glBegin(GL_TRIANGLES);
+	glVertex3f(0, 1*zoom, 0);
+	glVertex3f(1*zoom, 1*zoom, 0);
+	glVertex3f(0.5*zoom, 0, 0);
+	glEnd();
+	glPopMatrix();
+	// laba
+	glPushMatrix();
+	glTranslatef(-0.15*zoom, 0.3*zoom, 0.3*zoom);
+	glRotatef(90, 1, 1, 0);
+	GLUquadric *lab1 = gluNewQuadric();
+	gluCylinder(lab1, 0.1, 0.2, 1, 100, 100);
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(-0.15*zoom, 0.3*zoom, 0.2*zoom);
+	glRotatef(45, 1, 0, 0);
+	glRotatef(-45, 0, 1, 0);
+	GLUquadric *lab2 = gluNewQuadric();
+	gluCylinder(lab2, 0.1, 0.2, 1, 100, 100);
 	glPopMatrix();
 
 	// Buffercsere: rajzolas vege
