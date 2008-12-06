@@ -30,7 +30,6 @@
 // Neptun: AYU9RZ
 //--------------------------------------------------------
 
-#include <stdio.h>
 float zoom = 3;
 int state = 0;
 
