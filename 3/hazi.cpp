@@ -127,6 +127,7 @@ unsigned char	 pixel_data[] = {
   "\0\0",
 };
 
+unsigned int texture;
 void onInitialization( ) {
 	//float al[] = {0.1, 0.1, 0.1, 1.0};
 	//float dl[] = {0.5, 0.2, 0.3, 1.0};
@@ -142,8 +143,8 @@ void onInitialization( ) {
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);
-	unsigned int id = 13;
-	glBindTexture (GL_TEXTURE_2D, id);
+	glGenTextures(1, &texture);
+	glBindTexture (GL_TEXTURE_2D, texture);
 	glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -175,7 +176,7 @@ void onDisplay( ) {
 	glEnd();*/
 	// terep
 	glEnable (GL_TEXTURE_2D);
-	glBindTexture (GL_TEXTURE_2D, 13);
+	glBindTexture (GL_TEXTURE_2D, texture);
 	//float green[] = {0.0, 1.0, 0.0, 1.0};
 	glBegin(GL_QUADS);
 	//glMaterialfv(GL_FRONT, GL_DIFFUSE, green);
