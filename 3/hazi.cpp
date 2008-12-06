@@ -227,11 +227,11 @@ void onDisplay( ) {
 	glPushMatrix();
 	float d1, d2;
 	if (!state) {
-		d1 = 0.3;
-		d2 = 0.2;
-	} else {
 		d1 = 0.2;
 		d2 = 0.3;
+	} else {
+		d1 = 0.3;
+		d2 = 0.2;
 	}
 	glTranslatef(-0.15*zoom, 0.3*zoom, d1*zoom);
 	glRotatef(90, 1, 1, 0);
