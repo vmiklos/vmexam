@@ -164,7 +164,6 @@ void onInitialization( ) {
 
 void onDisplay( ) {
 	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
-	//glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// defaults
@@ -172,28 +171,11 @@ void onDisplay( ) {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, dd);
 	float sd[] = {0.0, 0.0, 0.0, 1.0};
 	glMaterialfv(GL_FRONT, GL_SPECULAR, sd);
-	/*glColor3f(1.0f, 1.0f, 1.0f);
-	glBegin(GL_LINES);
-	for (int i = -3; i < 3; i++) {
-		for (int j = -3; j <= 3; j++) {
-			glVertex3f(i*zoom, 0, j*zoom);
-			glVertex3f((i+1)*zoom, 0, j*zoom);
-		}
-	}
-	for (int i = -3; i < 3; i++) {
-		for (int j = -3; j <= 3; j++) {
-			glVertex3f(j*zoom, 0, i*zoom);
-			glVertex3f(j*zoom, 0, (i+1)*zoom);
-		}
-	}
-	glEnd();*/
 	// terep
 	glNormal3f(1.0, 1.0, 1.0);
 	glEnable (GL_TEXTURE_2D);
 	glBindTexture (GL_TEXTURE_2D, texture);
-	//float green[] = {0.0, 1.0, 0.0, 1.0};
 	glBegin(GL_QUADS);
-	//glMaterialfv(GL_FRONT, GL_DIFFUSE, green);
 	glTexCoord2f (0.0f,0.0f);
 	glVertex3f(-3*zoom, 0, -1*zoom);
 	glTexCoord2f (1.0f, 0.0f);
@@ -254,7 +236,6 @@ void onDisplay( ) {
 	glTranslatef(-0.15*zoom, 0.3*zoom, d1*zoom);
 	glRotatef(90, 1, 1, 0);
 	GLUquadric *lab1 = gluNewQuadric();
-	//glMaterialfv(GL_FRONT, GL_DIFFUSE, dd);
 	float red[] = {1.0, 0.0, 0.0, 1.0};
 	float white[] = {1.0, 1.0, 1.0, 1.0};
 	glMaterialf(GL_FRONT, GL_SHININESS, 20.0);
@@ -271,7 +252,6 @@ void onDisplay( ) {
 	glPopMatrix();
 	// csor
 	glPushMatrix();
-	//glMaterialfv(GL_FRONT, GL_SPECULAR, red);
 	glTranslatef(-0.45*zoom, 0.75*zoom, 0.25*zoom);
 	glRotatef(45, 1, 0, 0);
 	glRotatef(-90, 0, 1, 0);
