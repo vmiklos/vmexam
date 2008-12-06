@@ -32,6 +32,7 @@
 
 #include <stdio.h>
 float zoom = 3;
+int state = 0;
 
 // gimpbol exportalva
 unsigned char	 pixel_data[] = {
@@ -229,13 +230,21 @@ void onDisplay( ) {
 	glPopMatrix();
 	// laba
 	glPushMatrix();
-	glTranslatef(-0.15*zoom, 0.3*zoom, 0.3*zoom);
+	float d1, d2;
+	if (!state) {
+		d1 = 0.3;
+		d2 = 0.2;
+	} else {
+		d1 = 0.2;
+		d2 = 0.3;
+	}
+	glTranslatef(-0.15*zoom, 0.3*zoom, d1*zoom);
 	glRotatef(90, 1, 1, 0);
 	GLUquadric *lab1 = gluNewQuadric();
 	gluCylinder(lab1, 0.1, 0.2, 1, 100, 100);
 	glPopMatrix();
 	glPushMatrix();
-	glTranslatef(-0.15*zoom, 0.3*zoom, 0.2*zoom);
+	glTranslatef(-0.15*zoom, 0.3*zoom, d2*zoom);
 	glRotatef(45, 1, 0, 0);
 	glRotatef(-45, 0, 1, 0);
 	GLUquadric *lab2 = gluNewQuadric();
@@ -256,6 +265,10 @@ void onIdle( ) {
 }
 
 void onKeyboard(unsigned char key, int x, int y) {
+	if (key == ' ' && !state) {
+		state = 1;
+		glutPostRedisplay();
+	}
 }
 
 // ...Idaig modosithatod
