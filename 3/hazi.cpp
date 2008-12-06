@@ -197,11 +197,20 @@ void onDisplay( ) {
 	glTexCoord2f (0.0f,0.0f);
 	glVertex3f(-3*zoom, 0, -1*zoom);
 	glTexCoord2f (1.0f, 0.0f);
+	glVertex3f(-3*zoom, 0, 0*zoom);
+	glTexCoord2f (1.0f, 1.0f);
+	glVertex3f(3*zoom, 0, 0*zoom);
+	glTexCoord2f (0.0f, 1.0f);
+	glVertex3f(3*zoom, 0, -1*zoom);
+
+	glTexCoord2f (0.0f,0.0f);
+	glVertex3f(-3*zoom, 0, 1*zoom);
+	glTexCoord2f (1.0f, 0.0f);
 	glVertex3f(-3*zoom, 0, 2*zoom);
 	glTexCoord2f (1.0f, 1.0f);
 	glVertex3f(3*zoom, 0, 2*zoom);
 	glTexCoord2f (0.0f, 1.0f);
-	glVertex3f(3*zoom, 0, -1*zoom);
+	glVertex3f(3*zoom, 0, 1*zoom);
 	glEnd();
 	glDisable (GL_TEXTURE_2D);
 	// ut
