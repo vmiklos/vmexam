@@ -135,17 +135,19 @@ unsigned char	 pixel_data[] = {
 
 unsigned int texture;
 void onInitialization( ) {
-	//float al[] = {0.1, 0.1, 0.1, 1.0};
-	//float dl[] = {0.5, 0.2, 0.3, 1.0};
+	float al[] = {1.0, 1.0, 1.0, 1.0};
+	float dl[] = {1.0, 1.0, 1.0, 1.0};
+	float sl[] = {1.0, 1.0, 1.0, 1.0};
+	float pos[] = {0.0, 10.0, 0.0, 0.0};
 	glMatrixMode(GL_PROJECTION);
 	gluPerspective(90, -1.0, 1.0 ,100.0);
 	glMatrixMode(GL_MODELVIEW);
 	gluLookAt(0, 2, 5,0,0,-10,0,1,0);
 	glEnable(GL_LIGHTING);
-	//glLightfv(GL_LIGHT0,GL_AMBIENT,al);
-	//glLightfv(GL_LIGHT0,GL_DIFFUSE,dl);
-	// glLightfv(GL_LIGHT0,GL_SPECULAR,sl);
-	// glLightfv(GL_LIGHT0,GL_POSITION,pos);
+	glLightfv(GL_LIGHT0,GL_AMBIENT,al);
+	glLightfv(GL_LIGHT0,GL_DIFFUSE,dl);
+	glLightfv(GL_LIGHT0,GL_SPECULAR,sl);
+	glLightfv(GL_LIGHT0,GL_POSITION,pos);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);
@@ -181,6 +183,7 @@ void onDisplay( ) {
 	}
 	glEnd();*/
 	// terep
+	glNormal3f(1.0, 1.0, 1.0);
 	glEnable (GL_TEXTURE_2D);
 	glBindTexture (GL_TEXTURE_2D, texture);
 	//float green[] = {0.0, 1.0, 0.0, 1.0};
