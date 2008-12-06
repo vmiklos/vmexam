@@ -209,6 +209,15 @@ void onDisplay( ) {
 	glVertex3f(3*zoom, 0, 0);
 	glEnd();
 
+	// csirke
+	glPushMatrix();
+	float yellow[] = {1.0, 1.0, 0.0, 1.0};
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, yellow);
+	glTranslatef(-0.5*zoom, 1*zoom, 0);
+	GLUquadric *quad = gluNewQuadric();
+	gluSphere(quad, 0.1*zoom, 100, 100);
+	glPopMatrix();
+
 	// Buffercsere: rajzolas vege
 	glFinish();
 	glutSwapBuffers();
