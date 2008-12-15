@@ -185,7 +185,7 @@ void drawCsirke() {
 	glVertex3f(0.5*zoom, 0, 0);
 	glEnd();
 	glPopMatrix();
-	// laba
+	// bal laba
 	glPushMatrix();
 	float d1, d2;
 	if (!labpos) {
@@ -196,7 +196,8 @@ void drawCsirke() {
 		d2 = 0.2;
 	}
 	glTranslatef(-0.15*zoom, 0.3*zoom, d1*zoom);
-	glRotatef(90, 1, 1, 0);
+	glRotatef(90, 0, 1, 0);
+	glRotatef(45, 1, 0, 0);
 	GLUquadric *lab1 = gluNewQuadric();
 	float red[] = {1.0, 0.0, 0.0, 1.0};
 	float white[] = {1.0, 1.0, 1.0, 1.0};
@@ -205,10 +206,11 @@ void drawCsirke() {
 	glMaterialfv(GL_FRONT, GL_SPECULAR, white);
 	gluCylinder(lab1, 0.1, 0.2, 1, 100, 100);
 	glPopMatrix();
+	// jobb laba
 	glPushMatrix();
 	glTranslatef(-0.15*zoom, 0.3*zoom, d2*zoom);
+	glRotatef(-90, 0, 1, 0);
 	glRotatef(45, 1, 0, 0);
-	glRotatef(-45, 0, 1, 0);
 	GLUquadric *lab2 = gluNewQuadric();
 	gluCylinder(lab2, 0.1, 0.2, 1, 100, 100);
 	glPopMatrix();
