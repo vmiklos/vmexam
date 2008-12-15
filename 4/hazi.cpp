@@ -30,8 +30,10 @@
 // Neptun: AYU9RZ
 //--------------------------------------------------------
 
+#include <stdio.h>
+
 float zoom = 3;
-int state = 0;
+int labpos = 0;
 
 // gimpbol exportalva
 unsigned char	 pixel_data[] = {
@@ -184,7 +186,7 @@ void drawCsirke() {
 	// laba
 	glPushMatrix();
 	float d1, d2;
-	if (!state) {
+	if (!labpos) {
 		d1 = 0.2;
 		d2 = 0.3;
 	} else {
@@ -218,6 +220,8 @@ void drawCsirke() {
 	glPopMatrix();
 
 }
+
+float state = 0;
 
 void onDisplay( ) {
 	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
@@ -262,7 +266,10 @@ void onDisplay( ) {
 	glVertex3f(3*zoom, 0, 0);
 	glEnd();
 
+	glPushMatrix();
+	glTranslatef(-state*zoom, 0, 0);
 	drawCsirke();
+	glPopMatrix();
 
 	// Buffercsere: rajzolas vege
 	glFinish();
@@ -274,12 +281,20 @@ void onMouse(int button, int state, int x, int y) {
 	// ill. a GLUT_DOWN / GLUT_UP makrokat hasznald.
 }
 
+int prevtime = 0;
 void onIdle( ) {
+	int curr = glutGet(GLUT_ELAPSED_TIME);
+	float diff = curr - prevtime;
+	state += diff / 1000;
+	if (state > 2)
+		state -= 4;
+	glutPostRedisplay();
+	prevtime = curr;
 }
 
 void onKeyboard(unsigned char key, int x, int y) {
-	if (key == ' ' && !state) {
-		state = 1;
+	if (key == ' ' && !labpos) {
+		labpos = 1;
 		glutPostRedisplay();
 	}
 }
