@@ -214,6 +214,7 @@ void drawCsirke() {
 	// az utolso parameter a lab melysege, a ket lab gyak ebben
 	// kulonbozik (meg a szogben)
 	glTranslatef(-0.15*zoom, 0.3*zoom, 0.23*zoom);
+	// ha az elso ertek 0, akkor kell magasan lennie a testnek
 	glRotatef(45*labstate, 0, 1, 0);
 	glRotatef(135, 1, 0, 0);
 	GLUquadric *lab1 = gluNewQuadric();
