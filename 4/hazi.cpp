@@ -213,7 +213,7 @@ void drawCsirke() {
 	glPushMatrix();
 	// az utolso parameter a lab melysege, a ket lab gyak ebben
 	// kulonbozik (meg a szogben)
-	glTranslatef(-0.15*zoom, 0.3*zoom, 0.2*zoom);
+	glTranslatef(-0.15*zoom, 0.3*zoom, 0.23*zoom);
 	glRotatef(45*labstate, 0, 1, 0);
 	glRotatef(135, 1, 0, 0);
 	GLUquadric *lab1 = gluNewQuadric();
@@ -226,7 +226,7 @@ void drawCsirke() {
 	glPopMatrix();
 	// jobb laba
 	glPushMatrix();
-	glTranslatef(-0.15*zoom, 0.3*zoom, 0.3*zoom);
+	glTranslatef(-0.15*zoom, 0.3*zoom, 0.27*zoom);
 	glRotatef(45*labstate, 0, 1, 0);
 	glRotatef(45, 1, 0, 0);
 	GLUquadric *lab2 = gluNewQuadric();
