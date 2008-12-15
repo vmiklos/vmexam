@@ -309,6 +309,8 @@ void onDisplay( ) {
 	glVertex3f(3*zoom, 0, 0);
 	glEnd();
 
+	float fejstate = fejState();
+
 	// bomba
 	if (bombx) {
 		glPushMatrix();
@@ -320,6 +322,13 @@ void onDisplay( ) {
 			GLUquadric *quad = gluNewQuadric();
 			gluSphere(quad, 0.1*zoom, 100, 100);
 		} else {
+			// nezzuk meg, hogy talalt-e
+			if (abs(bombx-fejstate) < 1) {
+				printf("talalt!\n");
+			} else {
+				printf("nemtalalt!\n");
+			}
+			//printf("debug, bomb x pos, csirke x pos: %f, %f\n", bombx, fejstate);
 			// ezt azert, hogy ujra lehessen clickelni
 			bombtime = 0;
 			// ezt azert, hogy mi sajat magunkat ne hivjuk
@@ -330,7 +339,7 @@ void onDisplay( ) {
 	}
 
 	glPushMatrix();
-	glTranslatef(fejState()*zoom, vertState()*zoom/50, 0);
+	glTranslatef(fejstate*zoom, vertState()*zoom/50, 0);
 	drawCsirke();
 	glPopMatrix();
 
