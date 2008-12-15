@@ -36,6 +36,10 @@ float zoom = 3;
 // 0 milyen sugaru kornyezeteben valtozzon a state
 int barrier = 2;
 
+// ha igaz, akkor a kovetkezo menetig nem mutatjuk a csirket mert lesz
+// helyette huscafat
+int blocktillnext = 0;
+
 int prevtime = 0;
 int difftime = 0;
 
@@ -201,6 +205,7 @@ float fejState() {
 	state += (float)difftime / 1000;
 	if (state > barrier){
 		state -= 2*barrier;
+		blocktillnext = 0;
 	}
 	return -1*state;
 }
@@ -324,6 +329,7 @@ void onDisplay( ) {
 		} else {
 			// nezzuk meg, hogy talalt-e
 			if (abs(bombx-fejstate) < 1) {
+				blocktillnext = 1;
 				printf("talalt!\n");
 			} else {
 				printf("nemtalalt!\n");
@@ -338,10 +344,12 @@ void onDisplay( ) {
 		glPopMatrix();
 	}
 
-	glPushMatrix();
-	glTranslatef(fejstate*zoom, vertState()*zoom/50, 0);
-	drawCsirke();
-	glPopMatrix();
+	if (!blocktillnext) {
+		glPushMatrix();
+		glTranslatef(fejstate*zoom, vertState()*zoom/50, 0);
+		drawCsirke();
+		glPopMatrix();
+	}
 
 	// Buffercsere: rajzolas vege
 	glFinish();
