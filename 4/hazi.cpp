@@ -215,8 +215,8 @@ void drawCsirke() {
 	// kulonbozik (meg a szogben)
 	glTranslatef(-0.15*zoom, 0.3*zoom, 0.23*zoom);
 	// ha az elso ertek 0, akkor kell magasan lennie a testnek
-	glRotatef(45*labstate, 0, 1, 0);
 	glRotatef(112.5, 1, 0, 0);
+	glRotatef(45*labstate, 0, 1, 0);
 	GLUquadric *lab1 = gluNewQuadric();
 	float red[] = {1.0, 0.0, 0.0, 1.0};
 	float white[] = {1.0, 1.0, 1.0, 1.0};
@@ -228,8 +228,8 @@ void drawCsirke() {
 	// jobb laba
 	glPushMatrix();
 	glTranslatef(-0.15*zoom, 0.3*zoom, 0.27*zoom);
-	glRotatef(45*labstate, 0, 1, 0);
 	glRotatef(67.5, 1, 0, 0);
+	glRotatef(-45*labstate, 0, 1, 0);
 	GLUquadric *lab2 = gluNewQuadric();
 	gluCylinder(lab2, 0.1, 0.2, 1, 100, 100);
 	glPopMatrix();
