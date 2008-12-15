@@ -162,49 +162,7 @@ void onInitialization( ) {
 	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, 32, 32, 0, GL_RGB, GL_UNSIGNED_BYTE, pixel_data);
 }
 
-void onDisplay( ) {
-	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// defaults
-	float dd[] = {0.8, 0.8, 0.8, 1.0};
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, dd);
-	float sd[] = {0.0, 0.0, 0.0, 1.0};
-	glMaterialfv(GL_FRONT, GL_SPECULAR, sd);
-	// terep
-	glNormal3f(1.0, 1.0, 1.0);
-	glEnable (GL_TEXTURE_2D);
-	glBindTexture (GL_TEXTURE_2D, texture);
-	glBegin(GL_QUADS);
-	glTexCoord2f (0.0f,0.0f);
-	glVertex3f(-3*zoom, 0, -1*zoom);
-	glTexCoord2f (1.0f, 0.0f);
-	glVertex3f(-3*zoom, 0, 0*zoom);
-	glTexCoord2f (1.0f, 1.0f);
-	glVertex3f(3*zoom, 0, 0*zoom);
-	glTexCoord2f (0.0f, 1.0f);
-	glVertex3f(3*zoom, 0, -1*zoom);
-
-	glTexCoord2f (0.0f,0.0f);
-	glVertex3f(-3*zoom, 0, 1*zoom);
-	glTexCoord2f (1.0f, 0.0f);
-	glVertex3f(-3*zoom, 0, 2*zoom);
-	glTexCoord2f (1.0f, 1.0f);
-	glVertex3f(3*zoom, 0, 2*zoom);
-	glTexCoord2f (0.0f, 1.0f);
-	glVertex3f(3*zoom, 0, 1*zoom);
-	glEnd();
-	glDisable (GL_TEXTURE_2D);
-	// ut
-	glBegin(GL_QUADS);
-	float gray[] = {0.5, 0.5, 0.5, 1.0};
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, gray);
-	glVertex3f(-3*zoom, 0, 0);
-	glVertex3f(-3*zoom, 0, 1*zoom);
-	glVertex3f(3*zoom, 0, 1*zoom);
-	glVertex3f(3*zoom, 0, 0);
-	glEnd();
-
+void drawCsirke() {
 	// csirke feje
 	glPushMatrix();
 	float yellow[] = {1.0, 1.0, 0.0, 1.0};
@@ -258,6 +216,53 @@ void onDisplay( ) {
 	GLUquadric *csor = gluNewQuadric();
 	gluCylinder(csor, 0.2, 0.0, 0.5, 100, 100);
 	glPopMatrix();
+
+}
+
+void onDisplay( ) {
+	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// defaults
+	float dd[] = {0.8, 0.8, 0.8, 1.0};
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, dd);
+	float sd[] = {0.0, 0.0, 0.0, 1.0};
+	glMaterialfv(GL_FRONT, GL_SPECULAR, sd);
+	// terep
+	glNormal3f(1.0, 1.0, 1.0);
+	glEnable (GL_TEXTURE_2D);
+	glBindTexture (GL_TEXTURE_2D, texture);
+	glBegin(GL_QUADS);
+	glTexCoord2f (0.0f,0.0f);
+	glVertex3f(-3*zoom, 0, -1*zoom);
+	glTexCoord2f (1.0f, 0.0f);
+	glVertex3f(-3*zoom, 0, 0*zoom);
+	glTexCoord2f (1.0f, 1.0f);
+	glVertex3f(3*zoom, 0, 0*zoom);
+	glTexCoord2f (0.0f, 1.0f);
+	glVertex3f(3*zoom, 0, -1*zoom);
+
+	glTexCoord2f (0.0f,0.0f);
+	glVertex3f(-3*zoom, 0, 1*zoom);
+	glTexCoord2f (1.0f, 0.0f);
+	glVertex3f(-3*zoom, 0, 2*zoom);
+	glTexCoord2f (1.0f, 1.0f);
+	glVertex3f(3*zoom, 0, 2*zoom);
+	glTexCoord2f (0.0f, 1.0f);
+	glVertex3f(3*zoom, 0, 1*zoom);
+	glEnd();
+	glDisable (GL_TEXTURE_2D);
+	// ut
+	glBegin(GL_QUADS);
+	float gray[] = {0.5, 0.5, 0.5, 1.0};
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, gray);
+	glVertex3f(-3*zoom, 0, 0);
+	glVertex3f(-3*zoom, 0, 1*zoom);
+	glVertex3f(3*zoom, 0, 1*zoom);
+	glVertex3f(3*zoom, 0, 0);
+	glEnd();
+
+	drawCsirke();
 
 	// Buffercsere: rajzolas vege
 	glFinish();
