@@ -192,7 +192,7 @@ void drawCsirke() {
 	// kulonbozik (meg a szogben)
 	glTranslatef(-0.15*zoom, 0.3*zoom, 0.2*zoom);
 	glRotatef(45*state, 0, 1, 0);
-	glRotatef(45, 1, 0, 0);
+	glRotatef(135, 1, 0, 0);
 	GLUquadric *lab1 = gluNewQuadric();
 	float red[] = {1.0, 0.0, 0.0, 1.0};
 	float white[] = {1.0, 1.0, 1.0, 1.0};
@@ -204,7 +204,7 @@ void drawCsirke() {
 	// jobb laba
 	glPushMatrix();
 	glTranslatef(-0.15*zoom, 0.3*zoom, 0.3*zoom);
-	glRotatef(-45*state, 0, 1, 0);
+	glRotatef(45*state, 0, 1, 0);
 	glRotatef(45, 1, 0, 0);
 	GLUquadric *lab2 = gluNewQuadric();
 	gluCylinder(lab2, 0.1, 0.2, 1, 100, 100);
