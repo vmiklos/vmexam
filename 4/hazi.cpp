@@ -180,6 +180,17 @@ float labState() {
 	return state * swap;
 }
 
+float vertState() {
+	static int swap = 1;
+	static float state = 0;
+	state += (float)difftime / 100;
+	if (state > barrier){
+		state -= 2*barrier;
+		swap = swap == 1 ? -1 : 1;
+	}
+	return state * swap;
+}
+
 float fejState() {
 	static float state = -1*barrier;
 	state += (float)difftime / 1000;
@@ -288,7 +299,7 @@ void onDisplay( ) {
 	glEnd();
 
 	glPushMatrix();
-	glTranslatef(fejState()*zoom, 0, 0);
+	glTranslatef(fejState()*zoom, vertState()*zoom/50, 0);
 	drawCsirke();
 	glPopMatrix();
 
