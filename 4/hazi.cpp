@@ -315,9 +315,17 @@ void onDisplay( ) {
 		float black[] = {0.0, 0.0, 0.0, 1.0};
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, black);
 		updateBomb();
-		glTranslatef(bombx*zoom, bomby*zoom, 0);
-		GLUquadric *quad = gluNewQuadric();
-		gluSphere(quad, 0.1*zoom, 100, 100);
+		if (bomby > 0){
+			glTranslatef(bombx*zoom, bomby*zoom, 0);
+			GLUquadric *quad = gluNewQuadric();
+			gluSphere(quad, 0.1*zoom, 100, 100);
+		} else {
+			// ezt azert, hogy ujra lehessen clickelni
+			bombtime = 0;
+			// ezt azert, hogy mi sajat magunkat ne hivjuk
+			// meg a kovetkezo clickig
+			bombx = 0;
+		}
 		glPopMatrix();
 	}
 
