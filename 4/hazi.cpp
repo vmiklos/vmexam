@@ -36,6 +36,9 @@ float zoom = 3;
 // 0 milyen sugaru kornyezeteben valtozzon a state
 int barrier = 2;
 
+int prevtime = 0;
+int difftime = 0;
+
 // gimpbol exportalva
 unsigned char	 pixel_data[] = {
   "\0\221\0\0\221\0\0\221\0\0\221\0\0\221\0\0\221\0\0\221\0\0\221\0\0\221\0"
@@ -165,9 +168,27 @@ void onInitialization( ) {
 	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, 32, 32, 0, GL_RGB, GL_UNSIGNED_BYTE, pixel_data);
 }
 
-float state = -1*barrier;
+float labState() {
+	static int swap = 1;
+	static float state = -1*barrier;
+	state += (float)difftime / 1000;
+	if (state > barrier){
+		state -= 2*barrier;
+		swap = swap == 1 ? -1 : 1;
+	}
+	//printf("debug, labState(), returning %f\n", state*swap);
+	return state * swap;
+}
 
-int swap = 1;
+float fejState() {
+	static float state = -1*barrier;
+	state += (float)difftime / 1000;
+	if (state > barrier){
+		state -= 2*barrier;
+	}
+	return -1*state;
+}
+
 void drawCsirke() {
 	// csirke feje
 	glPushMatrix();
@@ -188,11 +209,12 @@ void drawCsirke() {
 	glEnd();
 	glPopMatrix();
 	// bal laba
+	float labstate = labState();
 	glPushMatrix();
 	// az utolso parameter a lab melysege, a ket lab gyak ebben
 	// kulonbozik (meg a szogben)
 	glTranslatef(-0.15*zoom, 0.3*zoom, 0.2*zoom);
-	glRotatef(swap*45*state, 0, 1, 0);
+	glRotatef(45*labstate, 0, 1, 0);
 	glRotatef(135, 1, 0, 0);
 	GLUquadric *lab1 = gluNewQuadric();
 	float red[] = {1.0, 0.0, 0.0, 1.0};
@@ -205,7 +227,7 @@ void drawCsirke() {
 	// jobb laba
 	glPushMatrix();
 	glTranslatef(-0.15*zoom, 0.3*zoom, 0.3*zoom);
-	glRotatef(swap*45*state, 0, 1, 0);
+	glRotatef(45*labstate, 0, 1, 0);
 	glRotatef(45, 1, 0, 0);
 	GLUquadric *lab2 = gluNewQuadric();
 	gluCylinder(lab2, 0.1, 0.2, 1, 100, 100);
@@ -265,7 +287,7 @@ void onDisplay( ) {
 	glEnd();
 
 	glPushMatrix();
-	glTranslatef(-state*zoom, 0, 0);
+	glTranslatef(fejState()*zoom, 0, 0);
 	drawCsirke();
 	glPopMatrix();
 
@@ -279,15 +301,9 @@ void onMouse(int button, int state, int x, int y) {
 	// ill. a GLUT_DOWN / GLUT_UP makrokat hasznald.
 }
 
-int prevtime = 0;
 void onIdle( ) {
 	int curr = glutGet(GLUT_ELAPSED_TIME);
-	float diff = curr - prevtime;
-	state += diff / 1000;
-	if (state > barrier){
-		state -= 2*barrier;
-		swap = swap == 1 ? -1 : 1;
-	}
+	difftime = curr - prevtime;
 	glutPostRedisplay();
 	prevtime = curr;
 }
