@@ -42,6 +42,7 @@ int difftime = 0;
 // ha 0 akkor nem kell megjeleniteni
 // x: -1..1, y: 2..0
 float bombx = 0, bomby;
+float bombtime = 0;
 
 // gimpbol exportalva
 unsigned char	 pixel_data[] = {
@@ -259,6 +260,12 @@ void drawCsirke() {
 
 }
 
+void updateBomb() {
+	bombtime += (float)difftime / 1000;
+	// a/2*t^2
+	bomby = 2-(10/2)*bombtime*bombtime;
+}
+
 void onDisplay( ) {
 	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -307,6 +314,7 @@ void onDisplay( ) {
 		glPushMatrix();
 		float black[] = {0.0, 0.0, 0.0, 1.0};
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, black);
+		updateBomb();
 		glTranslatef(bombx*zoom, bomby*zoom, 0);
 		GLUquadric *quad = gluNewQuadric();
 		gluSphere(quad, 0.1*zoom, 100, 100);
@@ -326,7 +334,7 @@ void onDisplay( ) {
 void onMouse(int button, int state, int x, int y) {
 	// A GLUT_LEFT_BUTTON / GLUT_RIGHT_BUTTON
 	// ill. a GLUT_DOWN / GLUT_UP makrokat hasznald.
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && !bombtime) {
 		bombx = (300-(float)x)/300;
 		bomby = 2;
 	}
