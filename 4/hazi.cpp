@@ -34,6 +34,8 @@
 
 float zoom = 3;
 int labpos = 0;
+// 0 milyen sugaru kornyezeteben valtozzon a state
+int barrier = 2;
 
 // gimpbol exportalva
 unsigned char	 pixel_data[] = {
@@ -221,7 +223,7 @@ void drawCsirke() {
 
 }
 
-float state = 0;
+float state = -1*barrier;
 
 void onDisplay( ) {
 	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
@@ -286,8 +288,8 @@ void onIdle( ) {
 	int curr = glutGet(GLUT_ELAPSED_TIME);
 	float diff = curr - prevtime;
 	state += diff / 1000;
-	if (state > 2)
-		state -= 4;
+	if (state > barrier)
+		state -= 2*barrier;
 	glutPostRedisplay();
 	prevtime = curr;
 }
