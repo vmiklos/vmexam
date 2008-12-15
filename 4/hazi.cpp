@@ -33,7 +33,6 @@
 #include <stdio.h>
 
 float zoom = 3;
-int labpos = 0;
 // 0 milyen sugaru kornyezeteben valtozzon a state
 int barrier = 2;
 
@@ -187,15 +186,9 @@ void drawCsirke() {
 	glPopMatrix();
 	// bal laba
 	glPushMatrix();
-	float d1, d2;
-	if (!labpos) {
-		d1 = 0.2;
-		d2 = 0.3;
-	} else {
-		d1 = 0.3;
-		d2 = 0.2;
-	}
-	glTranslatef(-0.15*zoom, 0.3*zoom, d1*zoom);
+	// az utolso parameter a lab melysege, a ket lab gyak ebben
+	// kulonbozik (meg a szogben)
+	glTranslatef(-0.15*zoom, 0.3*zoom, 0.2*zoom);
 	glRotatef(90, 0, 1, 0);
 	glRotatef(45, 1, 0, 0);
 	GLUquadric *lab1 = gluNewQuadric();
@@ -208,7 +201,7 @@ void drawCsirke() {
 	glPopMatrix();
 	// jobb laba
 	glPushMatrix();
-	glTranslatef(-0.15*zoom, 0.3*zoom, d2*zoom);
+	glTranslatef(-0.15*zoom, 0.3*zoom, 0.3*zoom);
 	glRotatef(-90, 0, 1, 0);
 	glRotatef(45, 1, 0, 0);
 	GLUquadric *lab2 = gluNewQuadric();
@@ -297,9 +290,7 @@ void onIdle( ) {
 }
 
 void onKeyboard(unsigned char key, int x, int y) {
-	if (key == ' ' && !labpos) {
-		labpos = 1;
-		glutPostRedisplay();
+	if (key == ' ') {
 	}
 }
 
