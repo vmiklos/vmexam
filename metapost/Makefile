@@ -8,3 +8,5 @@ all: test.png
 
 %.1: %.mp
 	mpost $<
+
+.SECONDARY:
