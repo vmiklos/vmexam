@@ -167,6 +167,7 @@ void onInitialization( ) {
 
 float state = -1*barrier;
 
+int swap = 1;
 void drawCsirke() {
 	// csirke feje
 	glPushMatrix();
@@ -191,7 +192,7 @@ void drawCsirke() {
 	// az utolso parameter a lab melysege, a ket lab gyak ebben
 	// kulonbozik (meg a szogben)
 	glTranslatef(-0.15*zoom, 0.3*zoom, 0.2*zoom);
-	glRotatef(45*state, 0, 1, 0);
+	glRotatef(swap*45*state, 0, 1, 0);
 	glRotatef(135, 1, 0, 0);
 	GLUquadric *lab1 = gluNewQuadric();
 	float red[] = {1.0, 0.0, 0.0, 1.0};
@@ -204,7 +205,7 @@ void drawCsirke() {
 	// jobb laba
 	glPushMatrix();
 	glTranslatef(-0.15*zoom, 0.3*zoom, 0.3*zoom);
-	glRotatef(45*state, 0, 1, 0);
+	glRotatef(swap*45*state, 0, 1, 0);
 	glRotatef(45, 1, 0, 0);
 	GLUquadric *lab2 = gluNewQuadric();
 	gluCylinder(lab2, 0.1, 0.2, 1, 100, 100);
@@ -283,8 +284,10 @@ void onIdle( ) {
 	int curr = glutGet(GLUT_ELAPSED_TIME);
 	float diff = curr - prevtime;
 	state += diff / 1000;
-	if (state > barrier)
+	if (state > barrier){
 		state -= 2*barrier;
+		swap = swap == 1 ? -1 : 1;
+	}
 	glutPostRedisplay();
 	prevtime = curr;
 }
