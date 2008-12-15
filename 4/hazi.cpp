@@ -330,9 +330,9 @@ void onDisplay( ) {
 			// nezzuk meg, hogy talalt-e
 			if (abs(bombx-fejstate) < 1) {
 				blocktillnext = 1;
-				printf("talalt!\n");
+				//printf("talalt!\n");
 			} else {
-				printf("nemtalalt!\n");
+				//printf("nemtalalt!\n");
 			}
 			//printf("debug, bomb x pos, csirke x pos: %f, %f\n", bombx, fejstate);
 			// ezt azert, hogy ujra lehessen clickelni
