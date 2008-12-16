@@ -47,6 +47,12 @@ int difftime = 0;
 // x: -1..1, y: 2..0
 float bombx = 0, bomby;
 float bombtime = 0;
+// ha ez igaz akkor meg kell jeleniteni a huscafatot, mint a bomba
+// robbanasanak kovetkezmenyet
+float activebomb = 0;
+
+float huscafatx = 0, huscafaty, huscafatxbase;
+float huscafattime = 0;
 
 // gimpbol exportalva
 unsigned char	 pixel_data[] = {
@@ -269,6 +275,16 @@ void updateBomb() {
 	bombtime += (float)difftime / 1000;
 	// a/2*t^2
 	bomby = 2-(10/2)*bombtime*bombtime;
+	//printf("bomb: x/y %f/%f\n", bombx, bomby);
+}
+
+void updateHuscafat() {
+	huscafattime += (float)difftime / 1000;
+	// y: v0*t - a/2*t^2
+	// x: x0 + v0*t
+	huscafaty = 1+0.1*huscafattime-(10/2)*huscafattime*huscafattime;
+	huscafatx = huscafatxbase - 1*huscafattime;
+	//printf("huscafat: x/y %f/%f\n", huscafatx, huscafaty);
 }
 
 void onDisplay( ) {
@@ -330,6 +346,9 @@ void onDisplay( ) {
 			// nezzuk meg, hogy talalt-e
 			if (abs(bombx-fejstate) < 1) {
 				blocktillnext = 1;
+				activebomb = 1;
+				huscafaty = 0.1;
+				huscafatxbase = fejstate;
 				//printf("talalt!\n");
 			} else {
 				//printf("nemtalalt!\n");
@@ -351,15 +370,35 @@ void onDisplay( ) {
 		glPopMatrix();
 	}
 
+	if (activebomb) {
+		glPushMatrix();
+		float red[] = {1.0, 0.0, 0.0, 1.0};
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, red);
+		updateHuscafat();
+		if (huscafaty > 0){
+			glTranslatef(huscafatx*zoom, huscafaty*zoom, 0);
+			GLUquadric *quad = gluNewQuadric();
+			gluSphere(quad, 0.1*zoom, 100, 100);
+		} else {
+			// ezt azert, hogy ujra lehessen clickelni
+			huscafattime = 0;
+			// ezt azert, hogy mi sajat magunkat ne hivjuk
+			// meg a kovetkezo clickig
+			activebomb = 0;
+		}
+		glPopMatrix();
+	}
+
 	// Buffercsere: rajzolas vege
 	glFinish();
 	glutSwapBuffers();
 }
 
 void onMouse(int button, int state, int x, int y) {
+	//printf("debug, onMouse(): x/y is %d/%d\n", x, y);
 	// A GLUT_LEFT_BUTTON / GLUT_RIGHT_BUTTON
 	// ill. a GLUT_DOWN / GLUT_UP makrokat hasznald.
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && !bombtime) {
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && !bombtime && !huscafattime) {
 		bombx = (300-(float)x)/300;
 		bomby = 2;
 	}
