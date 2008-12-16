@@ -362,7 +362,7 @@ void onDisplay( ) {
 			bombx = 0;
 		}
 		glPopMatrix();
-	} else if (spacepressed) {
+	} else if (spacepressed && !blocktillnext) {
 		spacepressed = 0;
 		if (!activebomb) {
 			blocktillnext = 1;
