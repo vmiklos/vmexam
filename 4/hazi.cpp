@@ -282,8 +282,9 @@ void updateHuscafat() {
 	huscafattime += (float)difftime / 1000;
 	// y: v0*t - a/2*t^2
 	// x: x0 + v0*t
-	huscafaty = 1+0.1*huscafattime-(10/2)*huscafattime*huscafattime;
-	huscafatx = huscafatxbase - 1*huscafattime;
+	int v0 = 2;
+	huscafaty = 1+v0*huscafattime-(10/2)*huscafattime*huscafattime;
+	huscafatx = huscafatxbase - v0*huscafattime;
 	//printf("huscafat: x/y %f/%f\n", huscafatx, huscafaty);
 }
 
