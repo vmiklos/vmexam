@@ -38,8 +38,8 @@ int barrier = 2;
 // helyette huscafat
 int blocktillnext = 0;
 
-int prevtime = 0;
-int difftime = 0;
+int prevTime = 0;
+int diffTime = 0;
 
 // ha 0 akkor nem kell megjeleniteni
 // x: -1..1, y: 2..0
@@ -186,7 +186,7 @@ void onInitialization( ) {
 float labState() {
 	static int swap = 1;
 	static float state = -1*barrier;
-	state += (float)difftime / 200;
+	state += (float)diffTime / 200;
 	if (state > barrier){
 		state -= 2*barrier;
 		swap = swap == 1 ? -1 : 1;
@@ -198,7 +198,7 @@ float labState() {
 float vertState() {
 	static int swap = 1;
 	static float state = 0;
-	state += (float)difftime / 100;
+	state += (float)diffTime / 100;
 	if (state > barrier){
 		state -= 2*barrier;
 		swap = swap == 1 ? -1 : 1;
@@ -208,7 +208,7 @@ float vertState() {
 
 float fejState() {
 	static float state = -1*barrier;
-	state += (float)difftime / 1000;
+	state += (float)diffTime / 1000;
 	if (state > barrier){
 		state -= 2*barrier;
 		blocktillnext = 0;
@@ -272,14 +272,14 @@ void drawCsirke() {
 }
 
 void updateBomb() {
-	bombtime += (float)difftime / 1000;
+	bombtime += (float)diffTime / 1000;
 	// a/2*t^2
 	bomby = 2-(10/2)*bombtime*bombtime;
 	//printf("bomb: x/y %f/%f\n", bombx, bomby);
 }
 
 void updateHuscafat() {
-	huscafattime += (float)difftime / 1000;
+	huscafattime += (float)diffTime / 1000;
 	// y: v0*t - a/2*t^2
 	// x: x0 + v0*t
 	int v0 = 2;
@@ -416,8 +416,8 @@ void onMouse(int button, int state, int x, int y) {
 
 void onIdle( ) {
 	int curr = glutGet(GLUT_ELAPSED_TIME);
-	difftime = curr - prevtime;
-	prevtime = curr;
+	diffTime = curr - prevTime;
+	prevTime = curr;
 	glutPostRedisplay();
 }
 
