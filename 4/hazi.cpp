@@ -206,11 +206,13 @@ float vertState() {
 	return state * swap;
 }
 
+int resetfejstate = 0;
 float fejState() {
 	static float state = -1*barrier;
 	state += (float)diffTime / 3000;
-	if (state > barrier){
-		state -= 2*barrier;
+	if (state > barrier || resetfejstate){
+		resetfejstate = 0;
+		state = -1*barrier;
 		blocktillnext = 0;
 	}
 	return -1*state;
@@ -394,6 +396,7 @@ void onDisplay( ) {
 			// ezt azert, hogy mi sajat magunkat ne hivjuk
 			// meg a kovetkezo clickig
 			activebomb = 0;
+			resetfejstate = 1;
 		}
 		glPopMatrix();
 	}
