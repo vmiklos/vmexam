@@ -186,7 +186,7 @@ void onInitialization( ) {
 float labState() {
 	static int swap = 1;
 	static float state = -1*barrier;
-	state += (float)diffTime / 300;
+	state += (float)diffTime / 600;
 	if (state > barrier){
 		state -= 2*barrier;
 		swap = swap == 1 ? -1 : 1;
@@ -198,7 +198,7 @@ float labState() {
 float vertState() {
 	static int swap = 1;
 	static float state = 0;
-	state += (float)diffTime / 150;
+	state += (float)diffTime / 300;
 	if (state > barrier){
 		state -= 2*barrier;
 		swap = swap == 1 ? -1 : 1;
@@ -208,7 +208,7 @@ float vertState() {
 
 float fejState() {
 	static float state = -1*barrier;
-	state += (float)diffTime / 1500;
+	state += (float)diffTime / 3000;
 	if (state > barrier){
 		state -= 2*barrier;
 		blocktillnext = 0;
