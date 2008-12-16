@@ -30,8 +30,6 @@
 // Neptun: AYU9RZ
 //--------------------------------------------------------
 
-#include <stdio.h>
-
 float zoom = 3;
 // 0 milyen sugaru kornyezeteben valtozzon a state
 int barrier = 2;
