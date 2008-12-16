@@ -54,6 +54,8 @@ float activebomb = 0;
 float huscafatx = 0, huscafaty, huscafatxbase;
 float huscafattime = 0;
 
+int spacepressed = 0;
+
 // gimpbol exportalva
 unsigned char	 pixel_data[] = {
   "\0\221\0\0\221\0\0\221\0\0\221\0\0\221\0\0\221\0\0\221\0\0\221\0\0\221\0"
@@ -362,6 +364,14 @@ void onDisplay( ) {
 			bombx = 0;
 		}
 		glPopMatrix();
+	} else if (spacepressed) {
+		spacepressed = 0;
+		if (!activebomb) {
+			blocktillnext = 1;
+			activebomb = 1;
+			huscafaty = 0.1;
+			huscafatxbase = fejstate;
+		}
 	}
 
 	if (!blocktillnext) {
@@ -414,6 +424,7 @@ void onIdle( ) {
 
 void onKeyboard(unsigned char key, int x, int y) {
 	if (key == ' ') {
+		spacepressed = 1;
 	}
 }
 
