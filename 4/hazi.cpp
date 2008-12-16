@@ -43,13 +43,13 @@ int difftime = 0;
 
 // ha 0 akkor nem kell megjeleniteni
 // x: -1..1, y: 2..0
-float bombx = 0, bomby;
+float bombx = 0, bomby = 0;
 float bombtime = 0;
 // ha ez igaz akkor meg kell jeleniteni a huscafatot, mint a bomba
 // robbanasanak kovetkezmenyet
 float activebomb = 0;
 
-float huscafatx = 0, huscafaty, huscafatxbase;
+float huscafatx = 0, huscafaty = 0, huscafatxbase = 0;
 float huscafattime = 0;
 
 int spacepressed = 0;
@@ -154,7 +154,7 @@ unsigned char	 pixel_data[] = {
   "\0\0}\0\0j\0\0]\0\0]\0\0j\0\0}\0\0\212\0\0\221\0\0\221\0\0\221\0\0\221\0",
 };
 
-unsigned int texture;
+unsigned int texture = 0;
 void onInitialization( ) {
 	float al[] = {1.0, 1.0, 1.0, 1.0};
 	float dl[] = {1.0, 1.0, 1.0, 1.0};
@@ -411,19 +411,21 @@ void onMouse(int button, int state, int x, int y) {
 		bombx = (300-(float)x)/300;
 		bomby = 2;
 	}
+	glutPostRedisplay();
 }
 
 void onIdle( ) {
 	int curr = glutGet(GLUT_ELAPSED_TIME);
 	difftime = curr - prevtime;
-	glutPostRedisplay();
 	prevtime = curr;
+	glutPostRedisplay();
 }
 
 void onKeyboard(unsigned char key, int x, int y) {
 	if (key == ' ') {
 		spacepressed = 1;
 	}
+	glutPostRedisplay();
 }
 
 // ...Idaig modosithatod
