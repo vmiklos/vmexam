@@ -111,6 +111,8 @@ void onDisplay( ) {
 	glEnd();
 
 	mygluSphere mgs(2., 100., 100.);
+	//GLUquadric *quad = gluNewQuadric();
+	//gluSphere(quad, 2., 100., 100.);
 
 	// Buffercsere: rajzolas vege
 	glFinish();
