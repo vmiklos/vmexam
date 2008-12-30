@@ -42,10 +42,10 @@ def dumpfeed(url):
 	try:
 		ret.append('<div id="right" class="sideboxpadding">')
 		ret.append('<div class="boxheader">%s<br /></div>' % (feed.feed.title.encode('ascii', 'xmlcharrefreplace')))
-		ret.append('<div class="sidecontent">')
+		ret.append('<div class="sidecontent"><ul>')
 		for i in feed.entries:
-			ret.append('<a href="%s">%s</a><br />' % (i.link, i.title.encode('ascii', 'xmlcharrefreplace')))
-		ret.append('</div></div>')
+			ret.append('<li><a href="%s">%s</a></li>' % (i.link, i.title.encode('ascii', 'xmlcharrefreplace')))
+		ret.append('</ul></div></div>')
 		ret.append('<div id="right" class="dummybox">')
 		ret.append('</div>')
 	except AttributeError:

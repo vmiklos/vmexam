@@ -37,3 +37,13 @@ body #main > *{
 	background-color: #fff;
 	color: #000;
 }
+
+ul {
+	list-style: none;
+	margin-left: -35px;
+
+}
+
+li {
+	margin: 5px 0;
+}
