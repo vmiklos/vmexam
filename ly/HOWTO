@@ -1,0 +1,9 @@
+Chords above a given note:
+
+Original:
+
+a'4
+
+With a C7:
+
+a'4^\markup{C\small\raise#1.0"7"}
