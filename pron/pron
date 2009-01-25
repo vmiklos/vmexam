@@ -1,0 +1,6 @@
+#!/bin/sh
+
+tmp=$(mktemp)
+wget -O $tmp -q "http://szotar.sztaki.hu/pron/audict.php?L=ENG:HUN:EngHunDict&lang=en&word=$1&accent="
+mpg123 -q $tmp
+rm -f $tmp
