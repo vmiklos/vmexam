@@ -1,0 +1,37 @@
+----------------------
+Mûhold Vezérlõ Központ
+----------------------
+
+
+Megbízást kapunk a NASA-tól, hogy adjunk egy általános, lehetõleg
+optimális megoldást a Cape Canaveral-ban található Mûhold Vezérlõ
+Központ (SCC - Satellite Control Center) számára az alábbi ütemezési
+probléma kapcsán. Mûholdak egy csoportjának adott megfigyelési
+mûveleteket kell végezni. Minden megfigyelési mûvelet kapcsán adott,
+hogy mely célpontról milyen típusú felvételt kell készíteni (pl.
+termográfia, spektrográfia).  A mûholdak különféle mérõmûszereket
+szállítanak. Más-más mûszerek más-más mérési üzemmódokat támogatnak,
+azaz más-más típusú felvétel készítésére alkalmasak. A mûholdak által
+végezhetõ mûveletek:
+
+Fordulás (turn-to):				A mûhold egy adott célpont felé fordul.
+Bekapcsolás (switch-on):	Adott mûszer bekapcsolása a mûholdon.
+				Csak akkor lehetséges, ha más mûszer nincs bekapcsolva a mûholdon, és
+				van áram.
+Kikapcsolás (switch-off):	Adott mûszer kikapcsolása a mûholdon.
+Kalibrálás (calibrate):		Mûszer kalibrálása, ami csak akkor
+				hajtható végre, ha a mûhold épp egy alkalmas kalibrációs célpont felé
+				néz, és a mûszer be van kapcsolva.
+Fényképezés (take-image):	A mûhold valamely mûszere adott
+				üzemmódban felvételt készít arról a célpontról, amire a mûhold éppen
+				néz. Nyilván csak akkor hajtható végre, ha a mûszer be van kapcsolva, és
+				elõzõleg kalibrálva volt.
+													
+Legyen adott 1 darab mûhold, és legalább annyi mûszer, továbbá 3-féle
+üzemmód, és 4 különbözõ csillagászati célpont.  Egy mûszer legfeljebb 2
+üzemmódot támogathat. A mûszerek kalibrálásához az õket hordozó
+mûholdaknak adott célpont felé kell nézni.  Minden mûholdon legalább egy
+mûszer van. Minden mûhold számára biztosított az energia-ellátás,
+továbbá kezdetben minden mûhold különbözõ célpont felé néz. A cél az,
+hogy minden célpontról minden üzemmódban legalább egy felvétel
+készüljön.
