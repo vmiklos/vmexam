@@ -1,0 +1,12 @@
+Els? feladat: Írjon programot, amely csillagjegyét (bika, mérleg, sz?z,
+stb.) Bézier/B-spline/NURBS/CatmullClark (tetszés szerint választható)
+görbékkel felrajzolja a képerny?re. A kis 's' bet? hatására a program
+kiszámítja a görbe nagyított/kicsinyített, majd elforgatott, végül
+eltolt változatát (a skálatényez?, forgatási szög és az eltolás vektora
+úgy választandó meg, hogy az ábra továbbra is látható maradjon) és azt
+jeleníti meg a képerny?n. Egyik elemi transzformáció sem lehet helyben
+hagyás. A nagy 'S' bet? hatására a program meghagyja az eredeti
+pontokat, viszont az OpenGL transzformációkat úgy állítja át, hogy az
+eredmény hasonló legyen a kis 's' hatásához. A háttér szín és a görbe
+színe egymás komplementei, azaz, ha kevernénk ?ket, akkor fehéret
+kapnánk eredményül. Beadási határid?: november 2. CET 23:59:59
