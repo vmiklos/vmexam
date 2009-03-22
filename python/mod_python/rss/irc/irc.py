@@ -126,17 +126,17 @@ class Rss:
 
 def handler(req):
 	if "PATH_INFO" in req.subprocess_env.keys() and req.subprocess_env["PATH_INFO"] == "/all":
-		html = Html(req, "~/vmiklos/rss/irc", quoteurl, "VMiklos' IRC Quotes")
+		html = Html(req, "~vmiklos/rss/irc", quoteurl, "VMiklos' IRC Quotes")
 		for i in Quote.getlist(req, all=True):
 			html.additem(i.title, "%s/%s" % (quoteurl, i.filename), escape(i.content).replace("\n", "<br />"), formatdate(i.time, True))
 		return html.output()
 	elif "PATH_INFO" in req.subprocess_env.keys() and req.subprocess_env["PATH_INFO"] == "/random":
-		html = Html(req, "~/vmiklos/rss/irc", quoteurl, "VMiklos' Random IRC Quotes")
+		html = Html(req, "~vmiklos/rss/irc", quoteurl, "VMiklos' Random IRC Quotes")
 		for i in Quote.getlist(req, random=True):
 			html.additem(i.title, "%s/%s" % (quoteurl, i.filename), escape(i.content).replace("\n", "<br />"), formatdate(i.time, True))
 		return html.output()
 	else:
-		rss = Rss(req, "~/vmiklos/rss/irc", quoteurl, "VMiklos' IRC Quotes RSS")
+		rss = Rss(req, "~vmiklos/rss/irc", quoteurl, "VMiklos' IRC Quotes RSS")
 		for i in Quote.getlist(req):
 			rss.additem(i.title, "%s/%s" % (quoteurl, i.filename), escape(escape(i.content).replace("\n", "<br />\n")), formatdate(i.time, True))
 		return rss.output()
