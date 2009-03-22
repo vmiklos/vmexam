@@ -30,6 +30,7 @@ lines = sys.stdin.readlines()
 
 ignore = False
 ignorenext = False
+ignoresf = False
 
 o = []
 
@@ -48,7 +49,15 @@ for i in lines:
 		del o[-1]
 	elif i.startswith("http://") and ignore:
 		ignore = False
-
+	# next spam from sf.net
+	elif i == "------------------------------------------------------------------------------\n":
+		ignoresf = True
+		continue
+	elif ignoresf and "http://p.sf.net/sfu/" in i:
+		ignoresf = False
+		continue
+	elif ignoresf:
+		continue
 	# spam from freemail.hu
 	elif i == "___________________________\n":
 		ignorenext = True
