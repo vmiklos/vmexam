@@ -79,9 +79,11 @@ def handler(req):
 	<div class="dummybox"></div>
 	<div id="main">
 	""")
-	out.append(dumpfeed("http://vmiklos.hu/rss/hup/"))
-	out.append(dumpfeed("http://frugalware.org/~vmiklos/rss/irc/irc.py"))
 	out.append(dumpfeed("http://rss.slashdot.org/Slashdot/slashdot"))
+	out.append(dumpfeed("http://frugalware.org/~vmiklos/rss/irc/irc.py"))
+	out.append(dumpfeed("http://qdb.hu/latest/rss"))
+	out.append(dumpfeed("http://bash.hu/rss"))
+	out.append(dumpfeed("http://magerquark.com/feeds/bash.org/Latest.ashx"))
 	out.append(dumpfeed("http://frugalware.org/~vmiklos/rss/legalja/legalja.py"))
 	out.append("""
 	</div>
