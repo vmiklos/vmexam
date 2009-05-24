@@ -25,7 +25,7 @@ class BaseHTMLProcessor(SGMLParser):
 				self.data = []
 
 	def end_span(self):
-		text = "".join(self.data)
+		text = "".join(self.data).replace("&", "&amp;")
 		if text == "Latest News":
 			self.intable = True
 		elif self.intable:
@@ -52,7 +52,7 @@ class Rss:
 		self.items.append([title, pubDate, body])
 	def output(self):
 		self.req.content_type = 'application/xml'
-		self.req.write("""<?xml version="1.0" encoding="utf-8"?>
+		self.req.write("""<?xml version="1.0" encoding="iso-8859-1"?>
 <rss version="2.0">
 <channel>
 <title>%s</title>
