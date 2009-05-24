@@ -2,8 +2,7 @@ from sgmllib import SGMLParser
 import urllib
 import time
 from email.Utils import formatdate
-###from mod_python import apache
-import sys
+from mod_python import apache
 
 class BaseHTMLProcessor(SGMLParser):
 	def reset(self):
@@ -52,7 +51,7 @@ class Rss:
 	def additem(self, title, pubDate, body):
 		self.items.append([title, pubDate, body])
 	def output(self):
-		###self.req.content_type = 'application/xml'
+		self.req.content_type = 'application/xml'
 		self.req.write("""<?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0">
 <channel>
@@ -66,7 +65,7 @@ class Rss:
 		<pubDate>%s</pubDate>
 	</item>\n""" % (title, body, pubDate))
 		self.req.write("</channel>\n</rss>")
-		###return apache.OK
+		return apache.OK
 
 def handler(req):
 	sock = urllib.urlopen("http://www.scootertechno.com/")
@@ -76,5 +75,3 @@ def handler(req):
 	parser.close()
 	sock.close()
 	return parser.rss.output()
-
-handler(sys.stdout)
