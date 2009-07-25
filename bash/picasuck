@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# example: picasuck macrisc3 5358800752754168177
+
+user=$1
+albumid=$2
+
+for i in $(lynx -source -dump "http://picasaweb.google.com/data/feed/base/user/$user/albumid/$albumid"|xmllint --format - |grep media:content |sed 's/.*url="\([^"]*\)".*/\1/')
+do
+	wget $i
+done
