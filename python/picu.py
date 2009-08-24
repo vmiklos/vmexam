@@ -38,7 +38,9 @@ photoTitleListOnline = []
 for photoEntry in gd_client.GetFeed(albumUrl).entry:
 	photoTitleListOnline.append(photoEntry.title.text)
 
-for filename in glob.glob('*'):
+l = glob.glob('*')
+l.sort();
+for filename in l:
 	if isJPG(filename) and not filename in photoTitleListOnline:
 		print datetime.datetime.now().strftime("%H:%M:%S"), filename, "uploading"
 		entry = gd_client.InsertPhotoSimple(albumUrl, filename, '', filename, content_type='image/jpeg')
