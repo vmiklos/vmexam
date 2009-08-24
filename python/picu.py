@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os, sys, getpass, glob, datetime
 import gdata.photos.service
 
@@ -10,7 +12,9 @@ dir = os.path.basename(os.getcwd())
 print "local album =", dir
 
 #login
-id = raw_input("Username:") + "@gmail.com"
+id = raw_input("Username:")
+if '@' not in id:
+	id += "@gmail.com"
 ps = getpass.getpass()
 print "Login in..."
 gd_client = gdata.photos.service.PhotosService()
