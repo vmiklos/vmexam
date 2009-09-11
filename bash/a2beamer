@@ -1,0 +1,44 @@
+#!/bin/sh -e
+
+asciidoc --doctype=article -b docbook prezi.txt
+out=$(dblatex -d -t pdf -p /etc/asciidoc/dblatex/asciidoc-dblatex.xsl -s /etc/asciidoc/dblatex/asciidoc-dblatex.sty \
+	prezi.xml 2>&1|sed -n 's/ .*//;$ p')
+rm prezi.xml
+mv $out .
+cd $(basename $out)
+rm *_tmp.tex
+# drop old header
+sed -i '0,/secnumdepth/ d' prezi.tex
+# insert new one
+sed -i '1i \
+\\documentclass{beamer}\
+\\setbeamertemplate{background canvas}[vertical shading][bottom=white,top=structure.fg!25]\
+\\usetheme{Warsaw}\
+\\setbeamertemplate{headline}{}\
+\\setbeamertemplate{footline}{}\
+\\setbeamersize{text margin left=0.5cm}\
+\\usepackage[english]{babel}\
+\\usepackage[latin1]{inputenc}\
+\\usepackage{times}\
+\\usepackage[T1]{fontenc}\
+\\begin{document}\
+' prezi.tex
+# drop old first page(s)
+sed -i '/\\hypersetup/,/\\tableofcontents/ d' prezi.tex
+# insert new one
+sed -i 's/\\mainmatter/\\frame{\\titlepage}/' prezi.tex
+# fix date
+sed -i 's/\\renewcommand{\\DBKdate}/\\date/' prezi.tex
+# convert sections (containging enumerations) to frames
+sed -i 's/\\section/\\begin{frame}[fragile]\n\\frametitle/' prezi.tex
+sed -i 's/\(\\end{itemize}\)/\1\n\\end{frame}/' prezi.tex
+# drop labels
+sed -i '/\\label/d' prezi.tex
+# fix listings
+sed -i 's/lstlisting/verbatim/' prezi.tex
+sed -i 's/\[firstnumber=.*,\]//' prezi.tex
+ln -s /home/vmiklos/git/prezi/szeged-swig/Makefile .
+make
+mv prezi.pdf ..
+cd ..
+rm -r $(basename $out)
