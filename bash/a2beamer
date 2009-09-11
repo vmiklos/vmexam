@@ -1,14 +1,19 @@
 #!/bin/sh -e
 
-asciidoc --doctype=article -b docbook prezi.txt
+txt=$1
+xml=$(basename $txt .xml).xml
+tex=$(basename $txt .txt).tex
+pdf=$(basename $txt .txt).pdf
+
+asciidoc --doctype=article -b docbook $txt
 out=$(dblatex -d -t pdf -p /etc/asciidoc/dblatex/asciidoc-dblatex.xsl -s /etc/asciidoc/dblatex/asciidoc-dblatex.sty \
-	prezi.xml 2>&1|sed -n 's/ .*//;$ p')
-rm prezi.xml
+	$xml 2>&1|sed -n 's/ .*//;$ p')
+rm $xml
 mv $out .
 cd $(basename $out)
 rm *_tmp.tex
 # drop old header
-sed -i '0,/secnumdepth/ d' prezi.tex
+sed -i '0,/secnumdepth/ d' $tex
 # insert new one
 sed -i '1i \
 \\documentclass{beamer}\
@@ -22,23 +27,23 @@ sed -i '1i \
 \\usepackage{times}\
 \\usepackage[T1]{fontenc}\
 \\begin{document}\
-' prezi.tex
+' $tex
 # drop old first page(s)
-sed -i '/\\hypersetup/,/\\tableofcontents/ d' prezi.tex
+sed -i '/\\hypersetup/,/\\tableofcontents/ d' $tex
 # insert new one
-sed -i 's/\\mainmatter/\\frame{\\titlepage}/' prezi.tex
+sed -i 's/\\mainmatter/\\frame{\\titlepage}/' $tex
 # fix date
-sed -i 's/\\renewcommand{\\DBKdate}/\\date/' prezi.tex
+sed -i 's/\\renewcommand{\\DBKdate}/\\date/' $tex
 # convert sections (containging enumerations) to frames
-sed -i 's/\\section/\\begin{frame}[fragile]\n\\frametitle/' prezi.tex
-sed -i 's/\(\\end{itemize}\)/\1\n\\end{frame}/' prezi.tex
+sed -i 's/\\section/\\begin{frame}[fragile]\n\\frametitle/' $tex
+sed -i 's/\(\\end{itemize}\)/\1\n\\end{frame}/' $tex
 # drop labels
-sed -i '/\\label/d' prezi.tex
+sed -i '/\\label/d' $tex
 # fix listings
-sed -i 's/lstlisting/verbatim/' prezi.tex
-sed -i 's/\[firstnumber=.*,\]//' prezi.tex
-ln -s /home/vmiklos/git/prezi/szeged-swig/Makefile .
+sed -i 's/lstlisting/verbatim/' $tex
+sed -i 's/\[firstnumber=.*,\]//' $tex
+ln -s ~/git/vmexam/tex/Makefile .
 make
-mv prezi.pdf ..
+mv $pdf ..
 cd ..
 rm -r $(basename $out)
