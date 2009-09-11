@@ -1,5 +1,10 @@
 #!/bin/sh -e
 
+msg()
+{
+	echo -e "\033[1;32m==>\033[1;0m \033[1;1m$1\033[1;0m" >&2
+}
+
 txt=$1
 
 if [ -z "$1" ]; then
@@ -11,7 +16,9 @@ xml=$(basename $txt .txt).xml
 tex=$(basename $txt .txt).tex
 pdf=$(basename $txt .txt).pdf
 
+msg "Converting from txt to xml"
 asciidoc --doctype=article -b docbook $txt
+msg "Converting from xml to tex"
 out=$(dblatex -d -t pdf -p /etc/asciidoc/dblatex/asciidoc-dblatex.xsl -s /etc/asciidoc/dblatex/asciidoc-dblatex.sty \
 	$xml 2>&1|sed -n 's/ .*//;$ p')
 rm $xml
@@ -49,7 +56,9 @@ sed -i '/\\label/d' $tex
 sed -i 's/lstlisting/verbatim/' $tex
 sed -i 's/\[firstnumber=.*,\]//' $tex
 ln -s ~/git/vmexam/tex/Makefile .
-make
+touch $(basename $txt .txt).d
+msg "Converting from tex to pdf"
+make -s
 mv $pdf ..
 cd ..
 rm -r $(basename $out)
