@@ -1,6 +1,12 @@
 #!/bin/sh -e
 
 txt=$1
+
+if [ -z "$1" ]; then
+	echo "usage: $0 input.txt"
+	exit 1
+fi
+
 xml=$(basename $txt .xml).xml
 tex=$(basename $txt .txt).tex
 pdf=$(basename $txt .txt).pdf
