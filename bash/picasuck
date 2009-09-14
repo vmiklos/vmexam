@@ -1,11 +1,12 @@
 #!/bin/sh
 
-# example: picasuck macrisc3 5358800752754168177
+# example: picasuck macrisc3 5358800752754168177 [authkey]
 
 user=$1
 albumid=$2
+[ -n "$3" ] && authkey="?authkey=$3"
 
-for i in $(lynx -source -dump "http://picasaweb.google.com/data/feed/base/user/$user/albumid/$albumid"|xmllint --format - |grep media:content |sed 's/.*url="\([^"]*\)".*/\1/')
+for i in $(lynx -source -dump "http://picasaweb.google.com/data/feed/base/user/$user/albumid/$albumid$authkey"|xmllint --format - |grep media:content |sed 's/.*url="\([^"]*\)".*/\1/')
 do
 	wget $i
 done
