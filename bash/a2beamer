@@ -75,15 +75,10 @@ sed -i '/\\label/d' $tex
 # fix listings
 sed -i 's/lstlisting/verbatim/' $tex
 sed -i 's/\[firstnumber=.*,\]//' $tex
-# fix images. hardwiring 0.5 is ugly, but really, the image will look
-# crap with higher ratios
-sed -i 's|\\imgexists.*\\includegraphics\[width.*true\]{\(.*\).png}}}}|\\includegraphics[scale=0.5]{\1.eps}|' $tex
-if ls ../*.png &>/dev/null; then
-	msg "Converting images from png to eps"
-	for i in ../*.png
-	do
-		png2eps $i > $(basename $i .png).eps 2>/dev/null
-	done
+# fix images
+sed -i 's|\\imgexists.*\\includegraphics\[width.*\]{.*.pdf}}}}|\\includegraphics|' $tex
+if ls ../*.eps &>/dev/null; then
+	cp ../*.eps .
 fi
 ln -s ~/git/vmexam/tex/Makefile .
 touch $(basename $txt .txt).d
