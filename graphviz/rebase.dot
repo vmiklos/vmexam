@@ -1,0 +1,12 @@
+digraph {
+rankdir=LR;
+A_ [label="A'"]
+B_ [label="B'"]
+C_ [label="C'"]
+     G -> A_ -> B_ -> C_
+D -> E -> F -> G
+
+node [style=filled,color=".7 .3 1.0"];
+C_ -> topic [dir=back]
+G -> master [dir=back]
+}

@@ -1,0 +1,15 @@
+= Title
+
+== First slide
+
+* Here is your situation:
++
+image:base.eps[width="33%"]
+
+* Now if you rebase topic to master, you'll get:
++
+image:rebase.eps[width="33%"]
+
+* And if you merge master to topic, you'll get:
++
+image:merge.eps[width="33%"]
