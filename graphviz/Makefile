@@ -1,6 +1,6 @@
 all: test.pdf
 
-test.pdf: base.dot rebase.dot merge.dot base.eps rebase.eps merge.eps
+test.pdf: base.eps rebase.eps merge.eps
 
 %.eps: %.dot
 	dot -Teps -o $@ $<
