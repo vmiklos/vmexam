@@ -76,7 +76,7 @@ sed -i '/\\label/d' $tex
 sed -i 's/lstlisting/verbatim/' $tex
 sed -i 's/\[firstnumber=.*,\]//' $tex
 # fix images
-sed -i 's|\\imgexists.*\\includegraphics\[width.*\]{.*.pdf}}}}|\\includegraphics|' $tex
+sed -i 's|\\imgexists.*\\includegraphics\[width\(.*\)\\.*\]{.*.pdf}}}}|\\includegraphics[scale\1]|' $tex
 if ls ../*.eps &>/dev/null; then
 	cp ../*.eps .
 fi
