@@ -4,4 +4,4 @@
 
 * Let's see:
 +
-image:test.eps[]
+image:test.eps[width="100%"]
