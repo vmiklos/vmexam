@@ -12,4 +12,4 @@ all: test.pdf
 .SECONDARY:
 
 # this could be auto-generated
-test.txt: test.eps
+test.pdf: test.eps
