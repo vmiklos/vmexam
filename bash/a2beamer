@@ -59,6 +59,7 @@ sed -i '1i \
 \\usepackage[latin1]{inputenc}\
 \\usepackage{times}\
 \\usepackage[T1]{fontenc}\
+\\setbeamertemplate{footline}[page number]\
 \\begin{document}\
 ' $tex
 # drop old first page(s)
