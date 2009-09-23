@@ -1,12 +1,25 @@
 #!/bin/sh
 
-# example: picasuck macrisc3 5358800752754168177 [authkey]
+if [ -z "$1" -o -z "$2" ]; then
+	echo "usage: $0 user albumid [authkey]"
+	exit 1
+fi
 
 user=$1
 albumid=$2
 [ -n "$3" ] && authkey="?authkey=$3"
 
-for i in $(lynx -source -dump "http://picasaweb.google.com/data/feed/base/user/$user/albumid/$albumid$authkey"|xmllint --format - |grep media:content |sed 's/.*url="\([^"]*\)".*/\1/')
+xml=`mktemp`
+lynx -source -dump "http://picasaweb.google.com/data/feed/base/user/$user/albumid/$albumid$authkey" \
+	|xmllint --format - >$xml
+c=2
+for i in $(grep media:content $xml|sed 's/.*url="\([^"]*\)".*/\1/')
 do
 	wget $i
+	comment=$(grep '<title' $xml|sed -n "s|<title type=\"text\">\(.*\)</title>|\1|;$c p")
+	# strip whitespace
+	comment=${comment#"${comment%%[! ]*}"} 
+	exiv2 -M"set Exif.Photo.UserComment charset=Ascii $comment" $(basename $i) 2>/dev/null
+	c=$(($c+1))
 done
+rm -f $xml
