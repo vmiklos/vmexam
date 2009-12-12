@@ -43,13 +43,13 @@ for i in lines:
 	elif re.search("^gpg:.*aka", i):
 		continue
 
-	# spam from the sourceforge.net lists
-	elif i.startswith("This SF.Net email is sponsored by"):
+	# spam from the sourceforge.net lists (commits lists)
+	elif i.startswith("This was sent by the SourceForge.net"):
 		ignore = True
 		del o[-1]
 	elif i.startswith("http://") and ignore:
 		ignore = False
-	# next spam from sf.net
+	# next spam from sf.net (normal lists)
 	elif i == "------------------------------------------------------------------------------\n":
 		ignoresf = True
 		continue
@@ -59,10 +59,8 @@ for i in lines:
 	elif ignoresf:
 		continue
 	# spam from freemail.hu
-	elif i == "___________________________\n":
-		ignorenext = True
-	elif ignorenext:
-		ignorenext = False
+	elif i == "<!-- PATH STAT NUMBER ERROR -->\n":
+		continue
 
 	elif not ignore:
 		o.append(i)
