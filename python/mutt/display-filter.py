@@ -74,6 +74,7 @@ for i in lines:
 		l = i.split('/')[-1].split('>')[0]
 		if ym:
 			o.append("X-Sch-Url: https://lists.sch.bme.hu/wws/arcsearch_id/%s/%s/%s\n" % (l, ym, msgid))
+			continue
 	elif i.startswith("List-Archive: "):
 		continue
 
