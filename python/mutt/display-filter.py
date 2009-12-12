@@ -31,13 +31,18 @@ lines = sys.stdin.readlines()
 ignore = False
 ignorenext = False
 ignoresf = False
+ym = None
+msgid = None
 
 o = []
 
 for i in lines:
+	# add local date _as well_ if the timezone differs to our one
 	if i.startswith("Date: "):
 		date = i[6:-1]
+		ym = time.strftime("%Y-%m", rfc822.parsedate_tz(date)[:-1])
 		o.append("Date: %s\n" % improve_date(date))
+		continue
 
 	# gpg spam
 	elif re.search("^gpg:.*aka", i):
@@ -60,6 +65,15 @@ for i in lines:
 		continue
 	# spam from freemail.hu
 	elif i == "<!-- PATH STAT NUMBER ERROR -->\n":
+		continue
+
+	# sch archive permalink
+	if i.startswith("Message-id: "):
+		msgid = i[13:-2]
+	if i.startswith("List-Archive: <https://lists.sch.bme.hu/wws/arc/"):
+		l = i.split('/')[-1].split('>')[0]
+		o.append("X-Sch-Url: https://lists.sch.bme.hu/wws/arcsearch_id/%s/%s/%s\n" % (l, ym, msgid))
+	elif i.startswith("List-Archive: "):
 		continue
 
 	elif not ignore:
