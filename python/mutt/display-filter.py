@@ -28,7 +28,6 @@ def improve_date(input):
 
 lines = sys.stdin.readlines()
 
-ignore = False
 ignorenext = False
 ignoresf = False
 ym = None
@@ -53,10 +52,8 @@ for i in lines:
 
 	# spam from the sourceforge.net lists (commits lists)
 	elif i.startswith("This was sent by the SourceForge.net"):
-		ignore = True
 		del o[-1]
-	elif i.startswith("http://") and ignore:
-		ignore = False
+		continue
 	# next spam from sf.net (normal lists)
 	elif i == "------------------------------------------------------------------------------\n":
 		ignoresf = True
@@ -80,8 +77,7 @@ for i in lines:
 	elif i.startswith("List-Archive: "):
 		continue
 
-	elif not ignore:
-		o.append(i)
+	o.append(i)
 
 for i in o:
 	sys.stdout.write(i)
