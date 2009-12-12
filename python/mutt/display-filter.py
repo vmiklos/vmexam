@@ -40,7 +40,10 @@ for i in lines:
 	# add local date _as well_ if the timezone differs to our one
 	if i.startswith("Date: "):
 		date = i[6:-1]
-		ym = time.strftime("%Y-%m", rfc822.parsedate_tz(date)[:-1])
+		try:
+			ym = time.strftime("%Y-%m", rfc822.parsedate_tz(date)[:-1])
+		except TypeError:
+			pass
 		o.append("Date: %s\n" % improve_date(date))
 		continue
 
@@ -72,7 +75,8 @@ for i in lines:
 		msgid = i[13:-2]
 	if i.startswith("List-Archive: <https://lists.sch.bme.hu/wws/arc/"):
 		l = i.split('/')[-1].split('>')[0]
-		o.append("X-Sch-Url: https://lists.sch.bme.hu/wws/arcsearch_id/%s/%s/%s\n" % (l, ym, msgid))
+		if ym:
+			o.append("X-Sch-Url: https://lists.sch.bme.hu/wws/arcsearch_id/%s/%s/%s\n" % (l, ym, msgid))
 	elif i.startswith("List-Archive: "):
 		continue
 
