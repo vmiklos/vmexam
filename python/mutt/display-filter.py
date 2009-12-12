@@ -68,9 +68,9 @@ for i in lines:
 		continue
 
 	# sch archive permalink
-	if i.startswith("Message-id: "):
+	elif i.startswith("Message-id: "):
 		msgid = i[13:-2]
-	if i.startswith("List-Archive: <https://lists.sch.bme.hu/wws/arc/"):
+	elif i.startswith("List-Archive: <https://lists.sch.bme.hu/wws/arc/"):
 		l = i.split('/')[-1].split('>')[0]
 		if ym:
 			o.append("X-Sch-Url: https://lists.sch.bme.hu/wws/arcsearch_id/%s/%s/%s\n" % (l, ym, msgid))
