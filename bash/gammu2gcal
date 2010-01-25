@@ -11,7 +11,7 @@ die() {
 }
 
 msg "getting ics from the phone..."
-#echo -e 'yes\nno' |gammu --backup items.ics || die "cannot run gammu"
+echo -e 'yes\nno' |gammu --backup items.ics || die "cannot run gammu"
 msg "removing invalid UTC marks..."
 dos2unix items.ics
 sed -i '/DTSTART/s/Z$//' items.ics
