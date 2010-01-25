@@ -10,32 +10,11 @@ die() {
 	exit 1
 }
 
-# edit the settings here or copy to ~/.gammu2gcalrc
-# email address
-email="john@gmail.com"
-# password
-password="secret"
-# search within your cookies, S=calendar=foo, and you need foo here
-calendar="~22 chars"
-# search within your cookies, secid=foo and you need foo here
-secid="~27 chars"
-# settings -> import -> view frame source, the id before "selected"
-default="~24 chars"
-encoding="utf8"
-# end of settings
-
-[ -e ~/.gammu2gcalrc ] && source ~/.gammu2gcalrc
-
-loginURL="https://www.google.com/accounts/ClientLogin"
-loginPost="Email=$email&Passwd=$password&service=cl"
 msg "getting ics from the phone..."
-wd=`mktemp -d`
-echo -e 'yes\nno' |gammu --backup $wd/items.ics || die "cannot run gammu"
-echo
-msg "authenticating..."
-authToken=$(curl -k -s -f -d $loginPost $loginURL|grep "^Auth="|sed 's/Auth=//') || die "cannot authenticate"
-cookies="S=calendar=$calendar; secid=$secid; CAL=$authToken"
-fields="-F filename=@$wd/items.ics;type=application/x-crossover-ics -F ctz=Europe/Budapest -F src=default -F lef=$default -F secid=$secid"
-msg "uploading the ics..."
-curl -s -b "$cookies" -k $fields -e "http://www.google.com/calendar/render" http://www.google.com/calendar/upload_event |elinks -dump|iconv -f utf8 -t $encoding || die "cannot upload"
-rm -rf $wd
+#echo -e 'yes\nno' |gammu --backup items.ics || die "cannot run gammu"
+msg "removing invalid UTC marks..."
+dos2unix items.ics
+sed -i '/DTSTART/s/Z$//' items.ics
+sed -i '/DTEND/s/Z$//' items.ics
+sed -i '/ALARM/s/Z$//' items.ics
+unix2dos items.ics
