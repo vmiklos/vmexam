@@ -1,0 +1,14 @@
+#!/bin/bash -e
+
+echo "creating items.ics..."
+echo -e 'yes\nno' |gammu --backup items.ics
+dos2unix items.ics
+sed -i '/DTSTART/s/Z$//' items.ics
+sed -i '/DTEND/s/Z$//' items.ics
+sed -i '/ALARM/s/Z$//' items.ics
+unix2dos items.ics
+echo "uploading events..."
+curl -s -k --config ~/.curlrc.gcalsync |elinks -dump \
+	|iconv -f utf8 -t $(locale -a |grep $LC_ALL|grep -m1 '\.'|sed "s/$LC_ALL.//")
+rm -f items.ics
+echo "done."
