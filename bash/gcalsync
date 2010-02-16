@@ -1,5 +1,16 @@
 #!/bin/bash -e
 
+#
+# example ~/.curlrc.gcalsync (use firebug to get the exact cookie/form
+# values):
+#
+# user-agent = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2) Gecko/20100125 Firefox/3.6"
+# referer = "https://www.google.com/calendar/hosted/domain.com/render"
+# cookie = "S=foo; secid=bar"
+# form = "filename=@items.ics"
+# form = "src=baz"
+# url = "https://www.google.com/calendar/hosted/domain.com/upload_event"
+
 echo "creating items.ics..."
 echo -e 'yes\nno' |gammu --backup items.ics
 dos2unix items.ics
