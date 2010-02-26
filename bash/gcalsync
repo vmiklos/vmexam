@@ -14,13 +14,13 @@
 echo ":: searching for the phone..."
 if ! hcitool scan|grep -q $(grep ^port ~/.gammurc |sed 's/.*= //'); then
 	echo ":: not found, not syncing"
-	exit 0
+	exit 1
 fi
 echo ":: contacting google.com..."
 count="$((ping -c 1 www.google.com 2>/dev/null || echo ', 0 received')| grep received|sed 's/.*, \(.*\) received.*/\1/')"
 if [ "$count" -eq 0 ]; then
 	echo ":: google.com is not reachable, not syncing"
-	exit 0
+	exit 1
 fi
 echo ":: creating items.ics..."
 tmp=$(mktemp -d)
