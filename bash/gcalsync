@@ -12,19 +12,25 @@
 # url = "https://www.google.com/calendar/hosted/domain.com/upload_event"
 
 echo ":: searching for the phone..."
-if hcitool scan|grep -q $(grep ^port ~/.gammurc |sed 's/.*= //'); then
-	echo ":: creating items.ics..."
-	echo -e 'yes\nno' |gammu --backup items.ics
-	echo
-	dos2unix items.ics
-	sed -i '/DTSTART/s/Z$//' items.ics
-	sed -i '/DTEND/s/Z$//' items.ics
-	sed -i '/ALARM/s/Z$//' items.ics
-	unix2dos items.ics
-	echo ":: uploading events..."
-	curl -s -k --config ~/.curlrc.gcalsync |elinks -dump|head -n 3
-	rm -f items.ics
-	echo ":: done."
-else
+if ! hcitool scan|grep -q $(grep ^port ~/.gammurc |sed 's/.*= //'); then
 	echo ":: not found, not syncing"
+	exit 0
 fi
+echo ":: contacting google.com..."
+count="$(ping -c 1 www.google.com | grep received|sed 's/.*, \(.*\) received.*/\1/')"
+if [ "$count" -eq 0 ]; then
+	echo ":: google.com is not reachable, not syncing"
+	exit 0
+fi
+echo ":: creating items.ics..."
+echo -e 'yes\nno' |gammu --backup items.ics
+echo
+dos2unix items.ics
+sed -i '/DTSTART/s/Z$//' items.ics
+sed -i '/DTEND/s/Z$//' items.ics
+sed -i '/ALARM/s/Z$//' items.ics
+unix2dos items.ics
+echo ":: uploading events..."
+curl -s -k --config ~/.curlrc.gcalsync |elinks -dump|head -n 3
+rm -f items.ics
+echo ":: done."
