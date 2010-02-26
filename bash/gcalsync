@@ -11,15 +11,15 @@
 # form = "src=baz"
 # url = "https://www.google.com/calendar/hosted/domain.com/upload_event"
 
-echo "creating items.ics..."
+echo ":: creating items.ics..."
 echo -e 'yes\nno' |gammu --backup items.ics
+echo
 dos2unix items.ics
 sed -i '/DTSTART/s/Z$//' items.ics
 sed -i '/DTEND/s/Z$//' items.ics
 sed -i '/ALARM/s/Z$//' items.ics
 unix2dos items.ics
-echo "uploading events..."
-curl -s -k --config ~/.curlrc.gcalsync |elinks -dump \
-	|iconv -f utf8 -t $(locale -a |grep $LC_ALL|grep -m1 '\.'|sed "s/$LC_ALL.//")
+echo ":: uploading events..."
+curl -s -k --config ~/.curlrc.gcalsync |elinks -dump|head -n 3
 rm -f items.ics
-echo "done."
+echo ":: done."
