@@ -17,7 +17,7 @@ if ! hcitool scan|grep -q $(grep ^port ~/.gammurc |sed 's/.*= //'); then
 	exit 0
 fi
 echo ":: contacting google.com..."
-count="$(ping -c 1 www.google.com | grep received|sed 's/.*, \(.*\) received.*/\1/')"
+count="$((ping -c 1 www.google.com 2>/dev/null || echo ', 0 received')| grep received|sed 's/.*, \(.*\) received.*/\1/')"
 if [ "$count" -eq 0 ]; then
 	echo ":: google.com is not reachable, not syncing"
 	exit 0
