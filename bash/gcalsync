@@ -23,6 +23,8 @@ if [ "$count" -eq 0 ]; then
 	exit 0
 fi
 echo ":: creating items.ics..."
+tmp=$(mktemp -d)
+cd $tmp
 echo -e 'yes\nno' |gammu --backup items.ics
 echo
 dos2unix items.ics
@@ -31,6 +33,7 @@ sed -i '/DTEND/s/Z$//' items.ics
 sed -i '/ALARM/s/Z$//' items.ics
 unix2dos items.ics
 echo ":: uploading events..."
-curl -s -k --config ~/.curlrc.gcalsync |elinks -dump|head -n 3
-rm -f items.ics
+out=$(curl -s -k --config ~/.curlrc.gcalsync |elinks -dump|sed -n '3p')
+kdialog --title gcalsync --passivepopup "$out" 0
+rm -rf $tmp
 echo ":: done."
