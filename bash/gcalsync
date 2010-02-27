@@ -29,7 +29,7 @@ fi
 now=$(date +%s)
 
 if [ $(($now-$lastsync)) -lt 86400 ]; then
-	echo ":: already synced witin a day, not syncing"
+	echo ":: already synced witin a day ($(($now-$lastsync)) seconds ago), not syncing"
 	exit 0
 fi
 
