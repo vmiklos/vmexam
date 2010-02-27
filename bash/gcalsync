@@ -14,9 +14,9 @@
 if [ "$1" == "--daemon" ]; then
 	while :
 	do
+		sleep 1m
 		qdbus || break
 		$0 &> ~/.gcalsync-log
-		sleep 1m
 	done
 	exit 0
 fi
