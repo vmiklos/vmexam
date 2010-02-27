@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 
 #
 # example ~/.curlrc.gcalsync (use firebug to get the exact cookie/form
@@ -14,9 +14,9 @@
 if [ "$1" == "--daemon" ]; then
 	while :
 	do
-		sleep 1m
+		sleep 60
 		qdbus || break
-		$0 &> ~/.gcalsync-log
+		bash -e $0 &> ~/.gcalsync-log
 	done
 	exit 0
 fi
