@@ -11,6 +11,14 @@
 # form = "src=baz"
 # url = "https://www.google.com/calendar/hosted/domain.com/upload_event"
 
+if [ "$1" == "--daemon" ]; then
+	while :
+	do
+		$0 &> ~/.gcalsync-log
+		sleep 5m
+	done
+fi
+
 if [ -e ~/.gcalsync-lastsync ]; then
 	lastsync="$(cat ~/.gcalsync-lastsync)"
 else
