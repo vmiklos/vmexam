@@ -14,9 +14,11 @@
 if [ "$1" == "--daemon" ]; then
 	while :
 	do
+		qdbus || break
 		$0 &> ~/.gcalsync-log
-		sleep 5m
+		sleep 1m
 	done
+	exit 0
 fi
 
 if [ -e ~/.gcalsync-lastsync ]; then
