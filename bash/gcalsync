@@ -11,6 +11,12 @@
 # form = "src=baz"
 # url = "https://www.google.com/calendar/hosted/domain.com/upload_event"
 
+#
+# example ~/.kde/Autostart/gcalsync-daemon:
+# #!/bin/sh
+# 
+# gcalsync --daemon &
+
 if [ "$1" == "--daemon" ]; then
 	while :
 	do
