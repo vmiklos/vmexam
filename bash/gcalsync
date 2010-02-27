@@ -33,15 +33,16 @@ if [ $(($now-$lastsync)) -lt 86400 ]; then
 	exit 0
 fi
 
-echo ":: searching for the phone..."
-if ! hcitool scan|grep -q $(grep ^port ~/.gammurc |sed 's/.*= //'); then
-	echo ":: not found, not syncing"
-	exit 1
-fi
 echo ":: contacting google.com..."
 count="$((ping -c 1 www.google.com 2>/dev/null || echo ', 0 received')| grep received|sed 's/.*, \(.*\) received.*/\1/')"
 if [ "$count" -eq 0 ]; then
 	echo ":: google.com is not reachable, not syncing"
+	exit 1
+fi
+echo ":: searching for the phone..."
+if ! hcitool scan|grep -q $(grep ^port ~/.gammurc |sed 's/.*= //'); then
+	echo ":: not found, not syncing"
+	kdialog --title gcalsync --passivepopup "Phone not found, need to sync, but can't." 0
 	exit 1
 fi
 echo ":: creating items.ics..."
@@ -55,7 +56,7 @@ sed -i '/DTEND/s/Z$//' items.ics
 sed -i '/ALARM/s/Z$//' items.ics
 unix2dos items.ics
 echo ":: uploading events..."
-out=$(curl -s -k --config ~/.curlrc.gcalsync |elinks -dump|sed -n '3p')
+out=$(curl -s -k --config ~/.curlrc.gcalsync |elinks -dump|sed -n 's/imported/synchronised/;3p')
 kdialog --title gcalsync --passivepopup "$out" 0
 rm -rf $tmp
 echo $now > ~/.gcalsync-lastsync
