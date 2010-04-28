@@ -34,7 +34,7 @@ else
 fi
 now=$(date +%s)
 
-if [ $(($now-$lastsync)) -lt 86400 ]; then
+if [ "$1" != "--dlonly" -a $(($now-$lastsync)) -lt 86400 ]; then
 	echo ":: already synced witin a day ($(($now-$lastsync)) seconds ago), not syncing"
 	exit 0
 fi
@@ -61,6 +61,10 @@ sed -i '/DTSTART/s/Z$//' items.ics
 sed -i '/DTEND/s/Z$//' items.ics
 sed -i '/ALARM/s/Z$//' items.ics
 unix2dos items.ics
+if [ "$1" == "--dlonly" ]; then
+	echo $tmp
+	exit 0
+fi
 echo ":: uploading events..."
 out=$(curl -s -k --config ~/.curlrc.gcalsync |elinks -dump|sed -n 's/imported/synchronised/;3p')
 kdialog --title gcalsync --passivepopup "$out" 0
