@@ -63,6 +63,8 @@ sed -i '/ALARM/s/Z$//' items.ics
 unix2dos items.ics
 if [ "$1" == "--dlonly" ]; then
 	echo $tmp
+	echo "now feel free to run 'curl -s -k --config ~/.curlrc.gcalsync |elinks -dump' manually"
+	echo "if the output looks strange, try to update cookies and droi in ~/.curlrc.gcalsync"
 	exit 0
 fi
 echo ":: uploading events..."
