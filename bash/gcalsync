@@ -22,13 +22,14 @@ if [ "$1" == "--daemon" ]; then
 	do
 		sleep 60
 		qdbus || break
-		bash -e $0 &> ~/.gcalsync-log
+		[ -d  ~/.gcalsync ] && mkdir ~/.gcalsync
+		bash -e $0 &> ~/.gcalsync/log
 	done
 	exit 0
 fi
 
-if [ -e ~/.gcalsync-lastsync ]; then
-	lastsync="$(cat ~/.gcalsync-lastsync)"
+if [ -e ~/.gcalsync/lastsync ]; then
+	lastsync="$(cat ~/.gcalsync/lastsync)"
 else
 	lastsync=0
 fi
@@ -71,5 +72,5 @@ echo ":: uploading events..."
 out=$(curl -s -k --config ~/.curlrc.gcalsync |elinks -dump|sed -n 's/imported/synchronised/;3p')
 kdialog --title gcalsync --passivepopup "$out" 0
 rm -rf $tmp
-echo $now > ~/.gcalsync-lastsync
+echo $now > ~/.gcalsync/lastsync
 echo ":: done."
