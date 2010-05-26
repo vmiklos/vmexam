@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# example ~/.curlrc.gcalsync (use firebug to get the exact cookie/form
+# example ~/gcalsync/curlrc (use firebug to get the exact cookie/form
 # values):
 #
 # user-agent = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2) Gecko/20100125 Firefox/3.6"
@@ -53,8 +53,12 @@ if ! hcitool scan|grep -q $(grep ^port ~/.gammurc |sed 's/.*= //'); then
 	exit 1
 fi
 echo ":: creating items.ics..."
-tmp=$(mktemp -d)
-cd $tmp
+if [ ! -d ~/.gcalsync/git ]; then
+	mkdir ~/.gcalsync/git
+	cd ~/.gcalsync/git
+	git init
+fi
+cd ~/.gcalsync/git
 echo -e 'yes\nno' |gammu --backup items.ics
 echo
 dos2unix items.ics
@@ -63,14 +67,20 @@ sed -i '/DTEND/s/Z$//' items.ics
 sed -i '/ALARM/s/Z$//' items.ics
 unix2dos items.ics
 if [ "$1" == "--dlonly" ]; then
-	echo $tmp
-	echo "now feel free to run 'curl -s -k --config ~/.curlrc.gcalsync |elinks -dump' manually"
-	echo "if the output looks strange, try to update cookies and droi in ~/.curlrc.gcalsync"
+	echo ~/.gcalsync/git
+	echo "now feel free to run 'curl -s -k --config ~/.gcalsync/curlrc |elinks -dump' manually"
+	echo "if the output looks strange, try to update cookies and droi in ~/.gcalsync/curlrc"
 	exit 0
 fi
 echo ":: uploading events..."
-out=$(curl -s -k --config ~/.curlrc.gcalsync |elinks -dump|sed -n 's/imported/synchronised/;3p')
-kdialog --title gcalsync --passivepopup "$out" 0
-rm -rf $tmp
+git update-index -q --refresh
+if [ -z "$(git diff-index --name-only HEAD --)" ]; then
+	kdialog --title gcalsync --passivepopup "Not synchronising, no changes."
+else
+	git add items.ics
+	git commit -m "$(date +%Y-%m-%d)"
+	out=$(curl -s -k --config ~/.gcalsync/curlrc |elinks -dump|sed -n 's/imported/synchronised/;3p')
+	kdialog --title gcalsync --passivepopup "$out" 0
+fi
 echo $now > ~/.gcalsync/lastsync
 echo ":: done."
