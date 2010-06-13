@@ -35,7 +35,7 @@ else
 fi
 now=$(date +%s)
 
-if [ "$1" != "--dlonly" -a $(($now-$lastsync)) -lt 86400 ]; then
+if [ $(($now-$lastsync)) -lt 86400 ]; then
 	echo ":: already synced witin a day ($(($now-$lastsync)) seconds ago), not syncing"
 	exit 0
 fi
@@ -66,12 +66,6 @@ sed -i '/DTSTART/s/Z$//' items.ics
 sed -i '/DTEND/s/Z$//' items.ics
 sed -i '/ALARM/s/Z$//' items.ics
 unix2dos items.ics
-if [ "$1" == "--dlonly" ]; then
-	echo ~/.gcalsync/git
-	echo "now feel free to run 'curl -s -k --config ~/.gcalsync/curlrc |elinks -dump' manually"
-	echo "if the output looks strange, try to update cookies and droi in ~/.gcalsync/curlrc"
-	exit 0
-fi
 echo ":: uploading events..."
 git update-index -q --refresh
 if [ -z "$(git diff-index --name-only HEAD --)" ]; then
