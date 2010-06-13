@@ -1,8 +1,15 @@
 #!/bin/sh
 
 if [ -z "$*" ]; then
-	echo "usage: $0 out.pdf *.jpg"
+	echo "usage: $0 [--landscape] out.pdf *.jpg"
 	exit 1
+fi
+
+if [ "$1" == "--landscape" ]; then
+	shift
+	# landscape a4, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Use.htm#Known_paper_sizes
+	pnmtopsopts="-width 11.7 -height 8.3"
+	gsopts="-dDEVICEWIDTHPOINTS=842 -dDEVICEHEIGHTPOINTS=595"
 fi
 
 outlist=""
@@ -13,13 +20,13 @@ for i in "$@"
 do
 	echo "processing input file '$i'..."
 	convert "$i" $c.pnm
-	pnmtops -noturn $c.pnm >$c.ps
+	pnmtops -noturn $pnmtopsopts $c.pnm >$c.ps
 	rm $c.pnm
 	outlist="$outlist $c.ps"
 	c=$(($c+1))
 done
 
 echo -n "merging the output..."
-gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile="$out" $outlist
+gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite $gsopts -sOutputFile="$out" $outlist
 rm $outlist
 echo " done."
