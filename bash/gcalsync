@@ -59,6 +59,7 @@ if [ ! -d ~/.gcalsync/git ]; then
 	git init
 fi
 cd ~/.gcalsync/git
+(echo no; yes yes) |gammu --backup backup.gammu
 echo -e 'yes\nno' |gammu --backup items.ics
 echo
 dos2unix items.ics
@@ -71,7 +72,7 @@ git update-index -q --refresh
 if [ -z "$(git diff-index --name-only HEAD --)" ]; then
 	kdialog --title gcalsync --passivepopup "Not synchronising, no changes."
 else
-	git add items.ics
+	git add items.ics backup.gammu
 	git commit -m "$(date +%Y-%m-%d)"
 	out=$(curl -s -k --config ~/.gcalsync/curlrc |elinks -dump|sed -n 's/imported/synchronised/;3p')
 	kdialog --title gcalsync --passivepopup "$out" 0
