@@ -1,26 +1,28 @@
 #!/bin/sh
 
-if [ -z "$1" -o -z "$2" ]; then
-	echo "usage: $0 user albumid [authkey]"
+if [ -z "$1" ]; then
+	echo "usage: $0 <url>"
+	echo
+	echo "example: $0 http://picasaweb.google.com/username/An_album"
 	exit 1
 fi
 
-user=$1
-albumid=$2
-[ -n "$3" ] && authkey="?authkey=$3"
-
-xml=`mktemp`
-lynx -source -dump "http://picasaweb.google.com/data/feed/base/user/$user/albumid/$albumid$authkey" \
-	|xmllint --format - >$xml
-c=2
-for i in $(grep media:content $xml|sed 's/.*url="\([^"]*\)".*/\1/')
+albumname=$(echo $1|sed 's|.*/||')
+url="$(lynx -source -dump "$1" |grep -m1 albumid/ |sed 's/.*href="\([^"]\+\)".*/\1/;s/\&amp;/\&/g')"
+if [ -e $albumname ]; then
+	echo "'$albumname' already exists, please rename or delete it."
+	exit 1
+fi
+mkdir $albumname
+cd $albumname
+lynx -source -dump $url |xmllint --format - >feed.xml
+c=3
+for i in $(grep media:content feed.xml|sed 's/.*url="\([^"]*\)".*/\1/')
 do
 	wget $i
-	comment=$(grep '<title' $xml|sed -n "s|<title type=\"text\">\(.*\)</title>|\1|;$c p")
+	comment=$(grep '<title' feed.xml|sed -n "s|<title>\(.*\)</title>|\1|;$c p")
 	# strip whitespace
-	comment=${comment#"${comment%%[! ]*}"} 
-	exiv2 -M"set Exif.Photo.UserComment charset=Ascii $comment" $(basename $i) 2>/dev/null
-	exiv2 -M"set Exif.Image.ImageDescription $comment" $(basename $i) 2>/dev/null
+	comment=${comment#"${comment%%[! ]*}"}
+	echo -e "$(basename $i)\t$comment" >> captions.txt
 	c=$(($c+1))
 done
-rm -f $xml
