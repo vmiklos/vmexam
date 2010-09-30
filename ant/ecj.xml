@@ -1,5 +1,0 @@
-<project default="compile">
-	<target name="compile">
-		<javac srcdir="." compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
-	</target>
-</project>
