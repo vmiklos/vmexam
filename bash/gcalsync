@@ -74,7 +74,7 @@ if [ -z "$(git diff-index --name-only HEAD --)" ]; then
 else
 	git add items.ics backup.gammu
 	git commit -m "$(date +%Y-%m-%d)"
-	out=$(curl -s -k --config ~/.gcalsync/curlrc |elinks -dump|sed -n 's/imported/synchronised/;3p')
+	out=$(curl -4 -s -k --config ~/.gcalsync/curlrc |elinks -dump|sed -n 's/imported/synchronised/;3p')
 	kdialog --title gcalsync --passivepopup "$out" 0
 fi
 echo $now > ~/.gcalsync/lastsync
