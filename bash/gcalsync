@@ -6,7 +6,6 @@
 #
 # user-agent = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2) Gecko/20100125 Firefox/3.6"
 # referer = "https://www.google.com/calendar/hosted/domain.com/render"
-# cookie = "S=foo; secid=bar"
 # form = "filename=@items.ics"
 # form = "src=baz"
 # url = "https://www.google.com/calendar/hosted/domain.com/upload_event"
@@ -16,6 +15,9 @@
 # #!/bin/sh
 # 
 # gcalsync --daemon &
+
+# you should also install the Cookie Exporter Firefox extension and export
+# cookies to ~/.mozilla/firefox/cookies.txt
 
 if [ "$1" == "--daemon" ]; then
 	while :
@@ -74,7 +76,7 @@ if [ -z "$(git diff-index --name-only HEAD --)" ]; then
 else
 	git add items.ics backup.gammu
 	git commit -m "$(date +%Y-%m-%d)"
-	out=$(curl -4 -s -k --config ~/.gcalsync/curlrc |elinks -dump|sed -n 's/imported/synchronised/;3p')
+	out=$(curl -4 -s -k --config ~/.gcalsync/curlrc -b ~/.mozilla/firefox/cookies.txt|elinks -dump|sed -n 's/imported/synchronised/;3p')
 	kdialog --title gcalsync --passivepopup "$out" 0
 fi
 echo $now > ~/.gcalsync/lastsync
