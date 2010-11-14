@@ -220,9 +220,9 @@ void onDisplay() {
 		glTranslatef(50, 50, 0);
 		matrix_dirty = 1;
 	}
-	for (int i = 0; i < ARRAY_SIZE(points); i++) {
+	for (unsigned int i = 0; i < ARRAY_SIZE(points); i++) {
 		glBegin(GL_LINE_STRIP);
-		for (int j = 0; j < ARRAY_SIZE(points[i]); j++) {
+		for (unsigned int j = 0; j < ARRAY_SIZE(points[i]); j++) {
 			if (matrix_state == MANUAL) {
 				Vector v = m * *points[i][j];
 				glVertex2d(v.x, v.y);

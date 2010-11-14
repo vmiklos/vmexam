@@ -32,6 +32,7 @@
 
 #ifdef DEBUG
 #include <iostream>
+#include <stdio.h>
 #endif
 #include <vector>
 using namespace std;
