@@ -1,0 +1,13 @@
+#!/bin/sh
+
+tex=$(pwd)/$1
+pdf=$(basename $1 .tex).pdf
+png=$(basename $1 .tex).png
+tmp=$(mktemp -d)
+cd $tmp
+cp $tex .
+pdflatex $tex >/dev/null
+convert -density 600x600 $pdf -quality 90 -resize 800x600 $png
+cd - >/dev/null
+cp $tmp/$png .
+rm -rf $tmp
