@@ -67,8 +67,8 @@ def handler(req):
 	<div class="header">
 	<a href="http://frugalware.org/">frugalware</a> |
 	<a href="http://vmiklos.hu/blog">blog</a> |
-	<a href="http://blogs.frugalware.org/vmiklos">fwblog</a> |
-	<a href="http://bugs.frugalware.org/?dev=vmiklos&order=lastedit&sort=desc">my tasks</a> |
+	<a href="https://bugs.freedesktop.org/buglist.cgi?query_format=advanced&emailtype2=substring&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&email2=vmiklos%40frugalware.org&emailassigned_to2=1">my fdo tasks</a> |
+	<a href="http://bugs.frugalware.org/?dev=vmiklos&order=lastedit&sort=desc">my fw tasks</a> |
 	<a href="http://bugs.frugalware.org/?string=[SEC]&order=lastedit&sort=desc">sec tasks</a> |
 	<a href="http://bugs.frugalware.org/?do=roadmap">roadmap</a> |
 	<a href="http://bugs.frugalware.org/?sev[]=5">critical bugs</a> |
@@ -79,12 +79,12 @@ def handler(req):
 	<div class="dummybox"></div>
 	<div id="main">
 	""")
-	out.append(dumpfeed("http://rss.slashdot.org/Slashdot/slashdot"))
-	out.append(dumpfeed("http://frugalware.org/~vmiklos/rss/irc/irc.py"))
-	out.append(dumpfeed("http://qdb.hu/latest/rss"))
-	out.append(dumpfeed("http://bash.hu/rss"))
-	out.append(dumpfeed("http://magerquark.com/feeds/bash.org/Latest.ashx"))
-	out.append(dumpfeed("http://frugalware.org/~vmiklos/rss/legalja/legalja.py"))
+	#out.append(dumpfeed("http://rss.slashdot.org/Slashdot/slashdot"))
+	#out.append(dumpfeed("http://frugalware.org/~vmiklos/rss/irc/irc.py"))
+	#out.append(dumpfeed("http://qdb.hu/latest/rss"))
+	#out.append(dumpfeed("http://bash.hu/rss"))
+	#out.append(dumpfeed("http://magerquark.com/feeds/bash.org/Latest.ashx"))
+	#out.append(dumpfeed("http://frugalware.org/~vmiklos/rss/legalja/legalja.py"))
 	out.append("""
 	</div>
 	</body>
