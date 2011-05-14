@@ -67,6 +67,7 @@ def handler(req):
 	<div class="header">
 	<a href="http://frugalware.org/">frugalware</a> |
 	<a href="http://vmiklos.hu/blog">blog</a> |
+	<a href="https://bugs.freedesktop.org/buglist.cgi?emailreporter2=1&query_format=advanced&emailtype2=substring&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&email2=vmiklos%40frugalware.org">reported fdo tasks</a> |
 	<a href="https://bugs.freedesktop.org/buglist.cgi?query_format=advanced&emailtype2=substring&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&email2=vmiklos%40frugalware.org&emailassigned_to2=1">my fdo tasks</a> |
 	<a href="http://bugs.frugalware.org/?dev=vmiklos&order=lastedit&sort=desc">my fw tasks</a> |
 	<a href="http://bugs.frugalware.org/?string=[SEC]&order=lastedit&sort=desc">sec tasks</a> |
