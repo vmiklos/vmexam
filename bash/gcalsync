@@ -76,6 +76,7 @@ if [ -z "$(git diff-index --name-only HEAD --)" ]; then
 else
 	git add items.ics backup.gammu
 	git commit -m "$(date +%Y-%m-%d)"
+	git push
 	out=$(curl -4 -s -k --config ~/.gcalsync/curlrc -b ~/.mozilla/firefox/cookies.txt|elinks -dump|sed -n 's/imported/synchronised/;3p')
 	kdialog --title gcalsync --passivepopup "$out" 0
 fi
