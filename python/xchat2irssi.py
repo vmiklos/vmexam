@@ -80,10 +80,14 @@ class x2ilogs:
 				dateformat = time.strftime("%Y%m%d",logtime)
 				logname = "%s/%s/%s_%s.log" % (self.odir, network, chan, dateformat)
 				try:
-					os.mkdir("%s/%s" % (self.odir, network))
-				except OSError:
-					pass
+					if not os.path.isdir("%s/%s" % (self.odir, network)):
+						os.makedirs("%s/%s" % (self.odir, network))
+				except (OSError, IOError), e:
+					print e
+					sys.exit()
+
 				fo = open(logname, 'a')
+
 				line = line.replace("**** BEGIN LOGGING AT", "--- Log opened")
 			elif line[:22] == "**** ENDING LOGGING AT":
 				line = line.replace("AT:", "AT")
