@@ -5,10 +5,10 @@
 Usage: python xchat2irssi.py [options]
 
 Options:
-  -f ..., --from=...      encoding of the xchat logs [utf-8]
-  -t ..., --to=...        encoding of the irssi logs [iso-8859-2]
-  -i ..., --input=...     directory where the xchat logs are located [~/.xchat2/xchatlogs]
-  -o ..., --output=...    directory where the irssi logs will be located [~/.irssi/logs]
+  -f ..., --from=...      encoding of the xchat logs [Defaults to utf-8]
+  -t ..., --to=...        encoding of the irssi logs [Defaults to iso-8859-2]
+  -i ..., --input=...     directory where the xchat logs are located [Defaults to ~/.xchat2/xchatlogs]
+  -o ..., --output=...    directory where the irssi logs will be located [Defaults to ~/.irssi/logs]
 
 Limitations (because xchat does not log them):
   - On quit, the hostname is not displayed.
