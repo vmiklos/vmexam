@@ -33,7 +33,13 @@ class x2ilogs:
 		self.odir = os.path.join(os.environ['HOME'], ".irssi/logs")
 
 	def convertfile(self, fnorig, fn):
-		fi = open('%s/%s' % (self.idir, fnorig))
+		try:
+			fi = open('%s/%s' % (self.idir, fnorig))
+		except IOError, e:
+			print e
+			print "Is your directory structure correct?"
+			sys.exit()
+
 		linenum = 1
 		fo = None
 		while True:
