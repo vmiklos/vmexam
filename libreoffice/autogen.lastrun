@@ -1,0 +1,8 @@
+--with-java-target-version=1.5
+--with-system-lucene
+--with-max-jobs=4
+--with-jdk-home=/usr/lib/jvm/java-6-openjdk
+--with-system-dicts
+--with-external-dict-dir=/usr/share/myspell
+--without-myspell-dicts
+--without-help
