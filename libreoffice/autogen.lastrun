@@ -1,8 +1,12 @@
+# that allows to build in <20mins
+--with-max-jobs=4
+# java workarounds
 --with-java-target-version=1.5
 --with-system-lucene
---with-max-jobs=4
 --with-jdk-home=/usr/lib/jvm/java-6-openjdk
+# these allow to build without dictionaries repo, but still have spellchecking
 --with-system-dicts
 --with-external-dict-dir=/usr/share/myspell
 --without-myspell-dicts
+# avoid help repo
 --without-help
