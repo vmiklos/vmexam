@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# a simple script to convert any video to webm format which can be
+# played by web browsers
+
+ffmpeg -i $1 -f webm -vcodec libvpx -acodec libvorbis -crf 22 `basename $1`.webm
