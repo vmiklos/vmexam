@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# alias cpm="sudo ~/bin/cpm"
+
+ulimit -l 51200
+if [ "$1" != "--quiet" ]; then
+	su - vmiklos -c "cpm $@"
+else
+	shift
+	su - vmiklos -c "cpm $@" |grep "$@" |sed 's/.* //'
+fi
