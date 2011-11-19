@@ -4,8 +4,8 @@
 
 ulimit -l 51200
 if [ "$1" != "--quiet" ]; then
-	su - vmiklos -c "cpm $@"
+	sudo -u vmiklos cpm "$@"
 else
 	shift
-	su - vmiklos -c "cpm $@" |grep "$@" |sed 's/.* //'
+	sudo -u vmiklos cpm "$@" |grep "$@" |sed 's/.* //'
 fi
