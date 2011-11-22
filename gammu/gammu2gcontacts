@@ -48,7 +48,7 @@ def fromutf16(s):
 	ret = []
 	for i in range(length):
 		part = s[pos*4:pos*4+4]
-		ret.append(eval("'\\x%s\\x%s'.decode('utf-16')" % (part[2:], part[:2])))
+		ret.append(unichr(int("0x"+part[:2]+part[2:], 16)))
 		pos += 1
 	return "".join(ret)
 
