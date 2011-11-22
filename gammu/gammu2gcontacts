@@ -42,15 +42,16 @@ class Contact:
 	def header():
 		return ",".join(['"%s"' % i for i in Contact.props])
 
-def fromutf16(s):
-	length = len(s) / 4
-	pos = 0
-	ret = []
-	for i in range(length):
-		part = s[pos*4:pos*4+4]
-		ret.append(unichr(int("0x"+part[:2]+part[2:], 16)))
-		pos += 1
-	return "".join(ret)
+	@staticmethod
+	def fromutf16(s):
+		length = len(s) / 4
+		pos = 0
+		ret = []
+		for i in range(length):
+			part = s[pos*4:pos*4+4]
+			ret.append(unichr(int("0x"+part[:2]+part[2:], 16)))
+			pos += 1
+		return "".join(ret)
 
 config = ConfigParser.ConfigParser()
 config.read("backup.gammu")
@@ -73,7 +74,7 @@ for i in config.sections():
 			elif j.startswith("entry") and j.endswith("textunicode"):
 				if not t:
 					print "warning, text without type!"
-				v = fromutf16(config.get(i, j))
+				v = Contact.fromutf16(config.get(i, j))
 				if t == "LastName":
 					c["Family Name"] = v
 				elif t in ("Name", "FirstName"):
