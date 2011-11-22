@@ -33,6 +33,11 @@ class Contact:
 			ret.append(self.attrs.get(i, ''))
 		return '"'+'","'.join(ret)+'"'
 
+	def __setitem__(self, k, v):
+		if hasattr(self.attrs, k):
+			print "warning, attribute '%s' is already set!" % k
+		self.attrs[k] = v
+
 	@staticmethod
 	def header():
 		return '"'+'","'.join(Contact.props)+'"'
@@ -70,35 +75,33 @@ for i in config.sections():
 					print "warning, text without type!"
 				v = fromutf16(config.get(i, j))
 				if t == "LastName":
-					c.attrs["Family Name"] = v
+					c["Family Name"] = v
 				elif t == "Name" or t == "FirstName":
-					if hasattr(c.attrs, 'Name'):
-						print "warning, name is already set!"
-					c.attrs["Name"] = v
+					c["Name"] = v
 				elif t == "Note":
-					c.attrs["Notes"] = v
+					c["Notes"] = v
 				elif t == "NumberGeneral":
 					phonecounter += 1
-					c.attrs["Phone %d - Type" % phonecounter] = "Other"
-					c.attrs["Phone %d - Value" % phonecounter] = v
+					c["Phone %d - Type" % phonecounter] = "Other"
+					c["Phone %d - Value" % phonecounter] = v
 				elif t == "NumberHome":
 					phonecounter += 1
-					c.attrs["Phone %d - Type" % phonecounter] = "Home"
-					c.attrs["Phone %d - Value" % phonecounter] = v
+					c["Phone %d - Type" % phonecounter] = "Home"
+					c["Phone %d - Value" % phonecounter] = v
 				elif t == "NumberMobile":
 					phonecounter += 1
-					c.attrs["Phone %d - Type" % phonecounter] = "Mobile"
-					c.attrs["Phone %d - Value" % phonecounter] = v
+					c["Phone %d - Type" % phonecounter] = "Mobile"
+					c["Phone %d - Value" % phonecounter] = v
 				elif t == "NumberWork":
 					phonecounter += 1
-					c.attrs["Phone %d - Type" % phonecounter] = "Work"
-					c.attrs["Phone %d - Value" % phonecounter] = v
+					c["Phone %d - Type" % phonecounter] = "Work"
+					c["Phone %d - Value" % phonecounter] = v
 				elif t == "Email":
-					c.attrs["E-mail 1 - Type"] = "Other"
-					c.attrs["E-mail 1 - Value"] = v
+					c["E-mail 1 - Type"] = "Other"
+					c["E-mail 1 - Value"] = v
 				elif t == "Custom1":
-					c.attrs["Address 1 - Type"] = "Home"
-					c.attrs["Address 1 - Extended Address"] = v
+					c["Address 1 - Type"] = "Home"
+					c["Address 1 - Extended Address"] = v
 				else:
 					print "warning, unknown entry type '%s'" % t
 				t = None
