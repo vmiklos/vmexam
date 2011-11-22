@@ -54,7 +54,7 @@ contacts = []
 for i in config.sections():
 	if i == "Backup":
 		pass
-	elif i.startswith("PhonePBK"):
+	elif i.startswith("PhonePBK") or i.startswith("SIMPBK"):
 		c = Contact()
 		t = None
 		phonecounter = 0
@@ -107,8 +107,6 @@ for i in config.sections():
 			else:
 				print "warning, unknown option type '%s'" % j
 		contacts.append(c)
-	elif i.startswith("SIMPBK"):
-		pass
 	elif i.startswith("Calendar"):
 		pass
 	elif i.startswith("Note"):
