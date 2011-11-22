@@ -76,7 +76,7 @@ for i in config.sections():
 				v = fromutf16(config.get(i, j))
 				if t == "LastName":
 					c["Family Name"] = v
-				elif t == "Name" or t == "FirstName":
+				elif t in ("Name", "FirstName"):
 					c["Name"] = v
 				elif t == "Note":
 					c["Notes"] = v
@@ -129,8 +129,7 @@ for i in config.sections():
 	else:
 		print "warning, unknown section type '%s'" % i
 
-sock = codecs.open("google.csv", mode="w", encoding='utf-16')
-print >>sock, Contact.header()
-for i in contacts:
-	print >>sock, i.__str__()
-sock.close()
+with codecs.open("google.csv", mode="w", encoding='utf-16') as sock:
+	print >>sock, Contact.header()
+	for i in contacts:
+		print >>sock, i.__str__()
