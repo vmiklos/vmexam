@@ -40,7 +40,7 @@ class Contact:
 
 	@staticmethod
 	def header():
-		return '"'+'","'.join(Contact.props)+'"'
+		return ",".join(['"%s"' % i for i in Contact.props])
 
 def fromutf16(s):
 	length = len(s) / 4
