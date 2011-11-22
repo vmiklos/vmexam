@@ -31,7 +31,7 @@ class Contact:
 		ret = []
 		for i in Contact.props:
 			ret.append(self.attrs.get(i, ''))
-		return '"'+'","'.join(ret)+'"'
+		return ",".join(['"%s"' % i for i in ret])
 
 	def __setitem__(self, k, v):
 		if hasattr(self.attrs, k):
