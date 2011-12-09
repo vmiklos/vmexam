@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ -z "$1" -o -z "$2" ]; then
+	echo "usage: $0 <zip1> <zip2>"
+	exit 1
+fi
+
+workdir=$(mktemp -d)
+CWD=$PWD
+cd $workdir
+mkdir a
+cd a
+unzip -qqo $CWD/$1
+cd ..
+mkdir b
+cd b
+unzip -qqo $CWD/$2
+cd ..
+diff -Naur a b
+cd $CWD
+rm -rf $workdir
