@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+# Dump script which just tries to uncomment each include to see if it causes a
+# build failure.
+#
+# Example: find-unneeded-includes 'make -sr build -j4' source/filter/ww8/rtfsdrexport.cxx
+
 import sys, os
 
 def comment_line(lines, linenum):
