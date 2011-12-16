@@ -57,6 +57,7 @@ config = ConfigParser.ConfigParser()
 config.read("backup.gammu")
 
 contacts = []
+notes = []
 for i in config.sections():
 	if i == "Backup":
 		pass
@@ -114,7 +115,10 @@ for i in config.sections():
 	elif i.startswith("Calendar"):
 		pass
 	elif i.startswith("Note"):
-		pass
+		for j in config.options(i):
+			if j.endswith("textunicode"):
+				v = Contact.fromutf16(config.get(i, j))
+				notes.append(v)
 	elif i.startswith("Caller"):
 		pass
 	elif i.startswith("SMSC"):
@@ -134,3 +138,7 @@ with codecs.open("google.csv", mode="w", encoding='utf-16') as sock:
 	print >>sock, Contact.header()
 	for i in contacts:
 		print >>sock, i.__str__()
+
+with codecs.open("notes.txt", mode="w", encoding='utf-16') as sock:
+	for i in notes:
+		print >>sock, i
