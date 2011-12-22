@@ -1,0 +1,15 @@
+= LO hacking notes
+
+== 2011-12-22
+
+- cmdline to incrementally rebuild with debug:
+
+----
+make -sr dbglevel=2 -j4
+----
+
+- cmdline to get SAL_INFO / SAL_WARN output:
+
+----
+SAL_LOG=+INFO.writerfilter+WARN.writerfilter ./soffice.bin --nologo /home/vmiklos/git/libreoffice/lo-test-files/writer/bugs/fdo40937/Crashing.rtf 2>&1 |tee out
+----
