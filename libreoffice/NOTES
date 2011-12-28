@@ -14,7 +14,7 @@ make -sr dbglevel=2 -j4
 SAL_LOG=+INFO.writerfilter+WARN.writerfilter ./soffice.bin --nologo /home/vmiklos/git/libreoffice/lo-test-files/writer/bugs/fdo40937/Crashing.rtf 2>&1 |tee out
 ----
 
-== 2011-12-27
+== 2011-12-28
 
 typical konsole tabs:
 
@@ -24,3 +24,9 @@ typical konsole tabs:
 - run
 - test
 - run33
+
+onegit master build with empty ccache but ccache enabled on my t520:
+
+----
+real    93m35.371s
+----
