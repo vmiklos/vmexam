@@ -30,3 +30,11 @@ onegit master build with empty ccache but ccache enabled on my t520:
 ----
 real    93m35.371s
 ----
+
+== 2012-01-01
+
+Export filter -> exporter calls:
+
+- doc: SwWW8Writer::WriteStorage
+- docx: DocxExportFilter::exportDocument
+- rtf: RtfExportFilter::filter
