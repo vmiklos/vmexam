@@ -44,3 +44,16 @@ Export filter -> exporter calls:
 - doc: SwWW8Writer::WriteStorage
 - docx: DocxExportFilter::exportDocument
 - rtf: RtfExportFilter::filter
+
+== 2012-01-11
+
+Localized string howto: add the string to src/hrc, then:
+
+----
+#include <tools/resmgr.hxx>
+#include <vcl/svapp.hxx>
+... include of the hrc ...
+
+static ResMgr* pResMgr = ResMgr::CreateResMgr("module", Application::GetSettings().GetUILocale());
+OUString sFooBar(ResId::toString(ResId(RID_MODULESTR_FOO_BAR, *pResMgr)));
+----
