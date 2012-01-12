@@ -22,5 +22,6 @@ sub firstName : lvalue {
 package main;
 
 my $person = new Person();
+# $person->{firstName} could be used to avoid the accessor method
 $person->firstName = "fooo";
 print $person->firstName . "\n";

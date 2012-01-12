@@ -55,4 +55,6 @@ references:
 
 (but: arr ref: @$, as the ref itself is always $)
 
+overloading: perldoc overload
+
 vim: ft=

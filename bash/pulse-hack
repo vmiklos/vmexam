@@ -1,0 +1,7 @@
+#!/bin/bash
+
+setup-pulseaudio --disable
+killall pulseaudio
+rmmod snd_hda_intel
+modprobe snd_hda_intel
+setup-pulseaudio --enable
