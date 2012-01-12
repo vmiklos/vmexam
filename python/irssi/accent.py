@@ -2,7 +2,7 @@
 # -*- coding: iso-8859-2 -*-
 
 """
-	strip accents from each message
+	strip latin2 accents from each message
 
 	type /py load accent to load it
 
@@ -24,7 +24,7 @@ stripped_out = False
 
 def unaccent(s):
 	ret = []
-	fro = "ÁÉÍÓÖŐÚÜŰáéíóöőúüű"
+	fro = "??????????????????"
 	to = "AEIOOOUUUaeiooouuu"
 	for i in s:
 		if i in fro:
