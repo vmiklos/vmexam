@@ -1,0 +1,58 @@
+@array
+%hash
+$scalar
+$array[0] = 1;
+$hash{'foo'} = [0, 1, 2]
+array ref: []
+hash ref: {}
+
+regex:
+a .* greedy
+a .*? non-greedy
+backrefs: () es $1, $2
+(?:foo) - cluster (make groups) without capture (avoid unnecessary variable generation)
+- there can be modifiers between ? and :
+
+lookaround:
+- ?= positive lookahead
+- ?! negative lookahead
+- ?<= positive lookbehind
+- ?<! negative lookbehind
+
+3 data types: scalar, array, hash
+
+if ($s =~ m/foo/) {
+        print "haha\n";
+}
+
+$s =~ s/foo/bar/; # in-place sub
+
+$a = "foo";
+($b = $a) =~ s/foo/bar/; # like qt's replaced
+
+$string =~ s/\Q$from\E/$to/; # guard against evil user data in $from
+
+eq for strings, == for numbers
+
+use vs require: use compile-time, require run-time
+
+functions:
+- parameters are always passed as references
+- wantarray: undef if the result is ignored, otherwise can be used for list/scalar test
+- static var: {} scope around the function and no explicit statis is necessary (but in case this is a non-module, a BEGIN is recommended)
+- prototype: only type, without names
+
+list handling: grep { $_ expr } @list (or keys %hash, etc)
+hash management: 'each' gives you key/value pairs
+complex data: Data::Dumper + eval
+
+references:
+- $ref = \$val;
+- $val = $$ref;
+- (0, 1) is a list, [0, 1] is a reference to a list
+- writing to the first line of a 2d array: push @{$arr[0]}, "foo", "bar"; (since the outer array has references only)
+- writing full line to a 2d array: $aoa[0] = [ @arr ]; (this way @arr is copied but it's a reference, so works in a for loop)
+
+(but: arr ref: @$, as the ref itself is always $)
+
+vim: ft=
