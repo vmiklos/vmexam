@@ -1,0 +1,3 @@
+osc build openSUSE_12.1
+osc vc
+osc commit
