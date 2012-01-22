@@ -2,6 +2,7 @@
 
 setup-pulseaudio --disable
 killall pulseaudio
+sleep 1
 rmmod snd_hda_intel
 modprobe snd_hda_intel
 setup-pulseaudio --enable
