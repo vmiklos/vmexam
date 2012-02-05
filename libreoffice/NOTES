@@ -57,3 +57,15 @@ Localized string howto: add the string to src/hrc, then:
 static ResMgr* pResMgr = ResMgr::CreateResMgr("module", Application::GetSettings().GetUILocale());
 OUString sFooBar(ResId::toString(ResId(RID_MODULESTR_FOO_BAR, *pResMgr)));
 ----
+
+== 2011-02-04
+
+bibisect:
+
+SAL_USE_VCLPLUGIN="gen" opt/program/soffice.bin
+
+good: 65fd30f5cb4cdd37995a33420ed8273c0a29bf00
+bad: 4c30602f43475389f81b1d981ce8ee9a3410b9d9
+
+-> d5f5b9bb5dc47417fcd9cc494b8d2dcd4a7c620e first bad -> a57304a53832adf0c8a32b0c53d9be5b55507ab1 in core.git
+-> d0ae9578f865b45dd01b822d5d6be45b5872f842 last good -> 97453f1eabb473d0691e41153eff2ac92e88a302 in core.git
