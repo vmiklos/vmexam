@@ -1,6 +1,5 @@
-# use icecc and cache its result
---enable-icecream
---enable-ccache
+# that allows to build in <20mins
+--with-max-jobs=4
 # these allow to build without dictionaries repo, but still have spellchecking
 --with-system-dicts
 --with-external-dict-dir=/usr/share/myspell
