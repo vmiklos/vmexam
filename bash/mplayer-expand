@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec /usr/bin/mplayer -vf expand=0:-100:0:0 "$@"
