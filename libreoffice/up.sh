@@ -2,7 +2,6 @@ time sh -c 'git pull -r && \
 	./autogen.sh && \
 	make clean && \
 	make && \
-	rm -rf $(readlink install) && \
 	make dev-install && \
 	make tags && \
 	(for i in oox writerfilter sw; do cd $i; make clean; make -sr dbglevel=2 -j4; cd -; done) && \
