@@ -69,3 +69,21 @@ bad: 4c30602f43475389f81b1d981ce8ee9a3410b9d9
 
 -> d5f5b9bb5dc47417fcd9cc494b8d2dcd4a7c620e first bad -> a57304a53832adf0c8a32b0c53d9be5b55507ab1 in core.git
 -> d0ae9578f865b45dd01b822d5d6be45b5872f842 last good -> 97453f1eabb473d0691e41153eff2ac92e88a302 in core.git
+
+== 2011-03-28
+
+To run a single unit test in gdb:
+
+----
+GDBCPPUNITTRACE="gdb --args" make -sr dbglevel=2 /home/vmiklos/git/libreoffice/master/workdir/unxlngx6.pro/CppunitTest/sw_subsequent_ooxmltok.test
+----
+
+== 2011-03-29
+
+Installing all build-deps on openSUSE:
+
+----
+zypper in libreoffice-sdk # this will pull in openjdk instead of gcj
+zypper si -d libreoffice
+zypper in doxygen ctags
+----
