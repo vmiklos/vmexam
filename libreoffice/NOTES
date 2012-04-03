@@ -23,7 +23,7 @@ typical konsole tabs:
 - hack
 - run
 - test
-- run33
+- push
 
 onegit master build with empty ccache but ccache enabled on my t520:
 
@@ -86,4 +86,12 @@ Installing all build-deps on openSUSE:
 zypper in libreoffice-sdk # this will pull in openjdk instead of gcj
 zypper si -d libreoffice
 zypper in doxygen ctags
+----
+
+== 2011-04-03
+
+Magic line to load http://bernard.marcelly.perso.sfr.fr/index2.html[xray] when it's already installed:
+
+----
+GlobalScope.BasicLibraries.LoadLibrary("XrayTool")
 ----
