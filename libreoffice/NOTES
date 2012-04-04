@@ -95,3 +95,40 @@ Magic line to load http://bernard.marcelly.perso.sfr.fr/index2.html[xray] when i
 ----
 GlobalScope.BasicLibraries.LoadLibrary("XrayTool")
 ----
+
+== 2011-04-04
+
+- samples to insert set / get fields:
+
+----
+Sub insertSetField()
+oDoc = ThisComponent 
+oMasters = oDoc.TextFieldMasters
+sMasterFieldName = "com.sun.star.text.FieldMaster.SetExpression.foo"
+if oMasters.hasByName(sMasterFieldName) then
+    oMaster = oMasters.getByName(sMasterFieldName)
+else
+    oMaster = oDoc.createInstance("com.sun.star.text.FieldMaster.SetExpression")
+    oMaster.Name = "foo"
+    oMaster.SubType = 3
+end if
+oField = oDoc.createInstance("com.sun.star.text.TextField.SetExpression") 
+oField.Content = "bar"
+oField.attachTextFieldMaster(oMaster)
+oField.SubType = 3
+oField.IsVisible = False
+oText = oDoc.Text 
+oCurs = oDoc.getCurrentController().getViewCursor()
+oText.insertTextContent(oCurs, oField, False) 
+End Sub
+
+Sub insertGetField()
+oDoc = ThisComponent 
+oField = oDoc.createInstance("com.sun.star.text.TextField.GetExpression") 
+oField.Content = "foo"
+oField.SubType = 3
+oText = oDoc.Text 
+oCurs = oDoc.getCurrentController().getViewCursor()
+oText.insertTextContent(oCurs, oField, False) 
+End Sub
+----
