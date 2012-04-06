@@ -7,7 +7,7 @@ virt-install \
 	--os-variant=virtio26 \
 	--connect=qemu:///system \
 	--network network=default \
-	--cdrom=/home/vmiklos/virt/frugalware-current/frugalware-current-i686-net.iso \
+	--cdrom=/home/vmiklos/virt/frugalware-current/frugalware-current-x86_64-net.iso \
 	--disk path=/home/vmiklos/virt/frugalware-current/frugalware-current.img,size=40 \
 	--accelerate \
 	--vnc \
