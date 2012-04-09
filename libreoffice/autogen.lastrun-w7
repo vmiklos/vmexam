@@ -1,0 +1,8 @@
+--disable-mozilla
+--disable-odk
+--without-junit
+--with-ant-home=/cygdrive/c/lo/extra/ant
+--with-help=no
+--disable-xmlsec
+--without-myspell-dicts
+--without-junit
