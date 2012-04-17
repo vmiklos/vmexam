@@ -1,0 +1,59 @@
+#!/bin/bash
+
+if [ -e ~/.googlesmsrc ]; then
+	source ~/.googlesmsrc
+	text="$1"
+else
+	email=$1
+	password=$2
+	text=$3
+fi
+
+### error handling
+
+function error() {
+	case $1 in
+		0)
+			echo "Usage: $0 [email] [password] [text]"
+			;;
+		1)
+			echo "Error: cannot authenticate" >/dev/stderr
+			;;
+		2)
+			echo "Error: cannot create event" >/dev/stderr
+			;;
+	esac
+	exit 1
+}
+
+if [ -z "$email" -o -z "$password" -o -z "$text" ]; then error 0; fi
+
+### authentication
+
+loginURL="https://www.google.com/accounts/ClientLogin"
+loginPost="Email=$email&Passwd=$password&source=msd-client-1&service=cl"
+
+authToken=$(curl -k -s -f -d $loginPost $loginURL|grep "^Auth=") || error 1;
+authHeader="Authorization: GoogleLogin $authToken"
+
+### creating calendar event
+
+postURL="http://www.google.com/calendar/feeds/default/private/full"
+postHeader="Content-Type: application/atom+xml"
+
+remind=$(date -d '+6 min' +%Y-%m-%dT%H:%M:%S)
+
+entry="<entry xmlns='http://www.w3.org/2005/Atom' 
+xmlns:gd='http://schemas.google.com/g/2005'>
+<category scheme='http://schemas.google.com/g/2005#kind' 
+term='http://schemas.google.com/g/2005#event'></category>
+<title type='text'>$text</title>
+<gd:when startTime='$remind' endTime='$remind'>
+<gd:reminder minutes='5' method='sms' />
+</gd:when>
+</entry>"
+
+redirURL=$(curl -k -s -f -i -H "$authHeader" -H "$postHeader" -d "$entry" $postURL|grep ^Location|cut -c 11-) || error 2 
+if [ -n "$redirURL" ]; then
+	response=$(curl -k -s -f -H "$authHeader" -H "$postHeader" -d "$entry" $redirURL) || error 2
+fi
