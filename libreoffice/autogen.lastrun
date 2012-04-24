@@ -3,3 +3,5 @@
 # avoid dictionaries / help repos
 --without-myspell-dicts
 --without-help
+# needs of a sw hacker
+--enable-symbols=oox/ writerfilter/ sw/
