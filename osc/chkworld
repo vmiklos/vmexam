@@ -1,0 +1,22 @@
+#!/bin/bash
+
+get_osc_version()
+{
+	osc cat home:vmiklos $1 $1.spec|grep ^Version|sed 's/Version:\s\+//'
+}
+
+for i in $(osc list home:vmiklos)
+do
+	downstream=$(get_osc_version $i)
+	case $i in
+		cpm)
+			upstream=$(lynx -dump http://sourceforge.net/api/file/index/project-id/62803/mtime/desc/limit/20/rss | egrep '/cpm-.*.tar.gz' | sed -e 's|.*cpm-||;s|.tar.gz.*||' | sort | tac | head -n 1)
+			;;
+		foo2zjs)
+			upstream=$(lynx -dump http://foo2zjs.rkkda.com/Changelog|head -n 1|cut -d ' ' -f 1|sed y/-/_/)
+			;;
+	esac
+	if [ "$upstream" != "$downstream" ]; then
+		echo "$i: $downstream != $upstream"
+	fi
+done
