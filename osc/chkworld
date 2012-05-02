@@ -1,22 +1,54 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-get_osc_version()
-{
-	osc cat home:vmiklos $1 $1.spec|grep ^Version|sed 's/Version:\s\+//'
-}
+import csv, os, re, sys
 
-for i in $(osc list home:vmiklos)
-do
-	downstream=$(get_osc_version $i)
-	case $i in
-		cpm)
-			upstream=$(lynx -dump http://sourceforge.net/api/file/index/project-id/62803/mtime/desc/limit/20/rss | egrep '/cpm-.*.tar.gz' | sed -e 's|.*cpm-||;s|.tar.gz.*||' | sort | tac | head -n 1)
-			;;
-		foo2zjs)
-			upstream=$(lynx -dump http://foo2zjs.rkkda.com/Changelog|head -n 1|cut -d ' ' -f 1|sed y/-/_/)
-			;;
-	esac
-	if [ "$upstream" != "$downstream" ]; then
-		echo "$i: $downstream != $upstream"
-	fi
-done
+up2dates = {
+		"cpm": "lynx -dump http://sourceforge.net/api/file/index/project-id/62803/mtime/desc/limit/20/rss | egrep '/cpm-.*.tar.gz' | sed -e 's|.*cpm-||;s|.tar.gz.*||' | sort | tac | head -n 1",
+		"foo2zjs": "lynx -dump http://foo2zjs.rkkda.com/Changelog|head -n 1|cut -d ' ' -f 1|sed y/-/_/",
+		}
+
+def read_from_pipe(cmd):
+	sock = os.popen(cmd)
+	buf = sock.read()
+	sock.close()
+	return buf.strip()
+
+def get_osc_version(pkg):
+	spec = read_from_pipe("osc cat home:vmiklos %s %s.spec" % (pkg, pkg))
+	line = filter(lambda x: x.startswith("Version"), spec.split('\n'))[0]
+	return re.sub('Version:\s+', '', line)
+
+def list_outdated(project):
+	for i in read_from_pipe("osc list %s" % project).split('\n'):
+		downstream = get_osc_version(i)
+		upstream = read_from_pipe(up2dates[i])
+		if upstream != downstream or verbose:
+			print "%s: %s != %s" % (i, downstream, upstream)
+
+def list_failed(project):
+	sock = os.popen("osc pr -c %s" % project)
+
+	reader = csv.reader(sock, delimiter=';')
+	table = {}
+	i = 0
+	for row in reader:
+		j = 0
+		for cell in row:
+			if not i in table.keys():
+				table[i] = {}
+			table[i][j] = cell
+			j += 1
+		i += 1
+	sock.close()
+
+	for i in range(1, len(table.keys())):
+		for j in range(1, len(table[i].keys())):
+			if table[i][j] != "succeeded" or verbose:
+				print "%s: %s on %s" % (table[i][0], table[i][j], table[0][j])
+
+def check_project(project):
+	list_outdated(project)
+	list_failed(project)
+
+verbose = "-v" in sys.argv
+check_project("home:vmiklos")
