@@ -132,3 +132,25 @@ oCurs = oDoc.getCurrentController().getViewCursor()
 oText.insertTextContent(oCurs, oField, False) 
 End Sub
 ----
+
+== 2012-05-05
+
+Experimenting with gdb pretty-printers:
+
+To run once:
+
+----
+gdb --args ./soffice.bin --nologo /home/vmiklos/git/libreoffice/master/sw/qa/extras/ooxmltok/data/n751017.docx
+b DomainMapper_Impl.cxx:3093
+print xFieldProperties
+----
+
+To reload without restart:
+
+----
+python import libreoffice.cppu
+python p = libreoffice.cppu.BeansXPropertySetPrinter("com::sun::star::beans::XPropertySet", gdb.parse_and_eval("*xFieldProperties.get()")); print p.to_string()
+python reload(libreoffice.cppu)
+----
+
+The XPropretySet pretty-printer is blocked by this: http://sourceware.org/bugzilla/show_bug.cgi?id=13326
