@@ -13,14 +13,25 @@ def read_from_pipe(cmd):
 	sock.close()
 	return buf.strip()
 
-def get_osc_version(pkg):
-	spec = read_from_pipe("osc cat home:vmiklos %s %s.spec" % (pkg, pkg))
-	line = filter(lambda x: x.startswith("Version"), spec.split('\n'))[0]
+def get_osc_version(project, pkg):
+	read = False
+	tries = 0
+	line = ""
+	while not read and tries < 3:
+		try:
+			tries += 1
+			spec = read_from_pipe("osc cat %s %s %s.spec 2>/dev/null" % (project, pkg, pkg))
+			line = filter(lambda x: x.startswith("Version"), spec.split('\n'))[0]
+			read = True
+		except IndexError:
+			pass
+	if not len(line):
+		print "WARNING: empty output from 'osc cat home:%s %s %s.spec'" % (project, pkg, pkg)
 	return re.sub('Version:\s+', '', line)
 
 def list_outdated(project):
 	for i in read_from_pipe("osc list %s" % project).split('\n'):
-		downstream = get_osc_version(i)
+		downstream = get_osc_version(project, i)
 		upstream = read_from_pipe(up2dates[i])
 		if upstream != downstream or verbose:
 			print "%s: %s != %s" % (i, downstream, upstream)
