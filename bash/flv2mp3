@@ -1,0 +1,6 @@
+#!/bin/bash
+
+mplayer -novideo -ao pcm:fast "$1"
+lame -f audiodump.wav
+mv audiodump.wav.mp3 "$1.mp3"
+rm -f audiodump.wav
