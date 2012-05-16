@@ -4,4 +4,4 @@
 --without-myspell-dicts
 --without-help
 # needs of a sw hacker
---enable-symbols=oox/ writerfilter/ sw/
+--enable-debug=oox/ writerfilter/ sw/
