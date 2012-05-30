@@ -5,3 +5,6 @@
 --without-help
 # needs of a sw hacker
 --enable-debug=oox/ writerfilter/ sw/
+# avoid building the whole mozilla
+--with-system-mozilla=libxul
+--with-openldap
