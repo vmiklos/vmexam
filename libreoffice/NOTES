@@ -154,3 +154,12 @@ python reload(libreoffice.cppu)
 ----
 
 The XPropretySet pretty-printer is blocked by this: http://sourceware.org/bugzilla/show_bug.cgi?id=13326
+
+== 2012-06-25
+
+How to trigger SwXTextDefaults::supportsService() from basic:
+
+----
+o = ThisComponent.createInstance("com.sun.star.text.Defaults")
+xray o.supportsService("com.sun.star.style.CharacterProperties")
+----
