@@ -163,3 +163,27 @@ How to trigger SwXTextDefaults::supportsService() from basic:
 o = ThisComponent.createInstance("com.sun.star.text.Defaults")
 xray o.supportsService("com.sun.star.style.CharacterProperties")
 ----
+
+== 2012-07-21
+
+Simple Calc macro:
+
+----
+' Does the following transformation:
+' A1: 11, B1: 11, A2: 11, B2: 11 -> A1: 11, B1: 12, A2: 13, B2: 14
+' Works if starting point is not A1, or prefix is not "1"
+contents = ThisComponent.CurrentSelection.String
+contents = left(contents, len(contents)-1)
+document   = ThisComponent.CurrentController.Frame
+dispatcher = createUnoService("com.sun.star.frame.DispatchHelper")
+dim args(0) as new com.sun.star.beans.PropertyValue
+dispatcher.executeDispatch(document, ".uno:GoRight", "", 0, args())
+ThisComponent.CurrentSelection.String = contents & "2"
+dispatcher.executeDispatch(document, ".uno:GoLeft", "", 0, args())
+dispatcher.executeDispatch(document, ".uno:GoDown", "", 0, args())
+ThisComponent.CurrentSelection.String = contents & "3"
+dispatcher.executeDispatch(document, ".uno:GoRight", "", 0, args())
+ThisComponent.CurrentSelection.String = contents & "4"
+dispatcher.executeDispatch(document, ".uno:GoLeft", "", 0, args())
+dispatcher.executeDispatch(document, ".uno:GoUp", "", 0, args())
+----
