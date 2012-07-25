@@ -1,0 +1,16 @@
+#!/bin/bash
+
+file=$(mktemp)
+cat > $file
+kind=$(file -i $file |sed 's/.*: \(.*\); .*/\1/')
+
+if [ "$kind" == "text/rtf" ]; then
+	# http://cgit.freedesktop.org/~vmiklos/lo-test-files
+	~/git/libreoffice/lo-test-files/writer/prettyprint.py $file
+elif [ "$kind" == "application/xml" ]; then
+	xmllint --format --recover $file 2>/dev/null
+else
+	echo "unknown type: $kind"
+fi
+
+rm -f $file
