@@ -6,3 +6,5 @@
 --disable-xmlsec
 --without-myspell-dicts
 --without-junit
+--disable-postgresql-sdbc
+--disable-cairo-canvas
