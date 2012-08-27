@@ -44,7 +44,7 @@ out=$(dblatex -d -t pdf -p /etc/asciidoc/dblatex/asciidoc-dblatex.xsl -s /etc/as
 rm $xml
 mv $out .
 cd $(basename $out)
-rm *_tmp.tex
+rm -f *_tmp.tex
 # drop old header
 sed -i '0,/secnumdepth/ d' $tex
 # insert new one
@@ -84,7 +84,10 @@ fi
 ln -s ~/git/vmexam/tex/Makefile .
 touch $(basename $txt .txt).d
 msg "Converting from tex to pdf"
-make -s
+if ! make &>/dev/null; then
+	touch *.tex
+	make
+fi
 mv $pdf ..
 cd ..
 rm -r $(basename $out)
