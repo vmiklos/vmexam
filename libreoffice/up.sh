@@ -1,8 +1,10 @@
-time sh -c 'git pull -r && \
+withfan=""
+[ "`type -p withfan`" ] && withfan="withfan"
+time sh -c "git pull -r && \
 	./autogen.sh && \
 	make clean && \
-	make && \
+	$withfan make && \
 	make dev-install && \
 	make tags && \
 	make subsequentcheck && \
-	git rev-parse HEAD > last-success' 2>&1 |tee log
+	git rev-parse HEAD > last-success" 2>&1 |tee log

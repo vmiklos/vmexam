@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# simple wrapper that sets the fan to the max level while executing a command
+
+cleanup()
+{
+	sudo sh -c 'echo "level auto" > /proc/acpi/ibm/fan'
+}
+sudo sh -c 'echo "level 7" > /proc/acpi/ibm/fan'
+trap "cleanup" EXIT
+"$@"
