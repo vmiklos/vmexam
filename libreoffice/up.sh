@@ -1,9 +1,8 @@
-withfan=""
-[ "`type -p withfan`" ] && withfan="withfan"
 time sh -c "git pull -r && \
 	./autogen.sh && \
+	echo 'export MAKEFLAGS=$MAKEFLAGS' >> config_host.mk && \
 	make clean && \
-	$withfan make && \
+	make && \
 	make dev-install && \
 	make tags && \
 	make subsequentcheck && \
