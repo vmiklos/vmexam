@@ -1,6 +1,5 @@
 time sh -c "git pull -r && \
 	./autogen.sh && \
-	echo 'export MAKEFLAGS=$MAKEFLAGS' >> config_host.mk && \
 	make clean && \
 	make && \
 	make dev-install && \
