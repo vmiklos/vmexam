@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# crontab entry: 0 * * * * ~/upd-rss &>/dev/null
+
+URL="http://vmiklos.hu/blog/libreoffice.rss"
+
+if wget -O ~/public_html/index.rss.new "$URL"; then
+	mv -f ~/public_html/index.rss.new ~/public_html/index.rss
+else
+	rm -f ~/public_html/index.rss.new
+fi
