@@ -105,7 +105,7 @@ def get_track(url, room):
 		def start_a(self, attrs):
 			if self.seenH4:
 				for k, v in attrs:
-					if k == "href" and not v.endswith("-break"):
+					if k == "href" and not (v.endswith("-break") or v == "lunch"):
 						self.talks.append(v)
 				self.seenH4 = False
 
@@ -132,25 +132,95 @@ def get_track(url, room):
 		get_event("%s/%s" % (url, i), parser.track)
 	print '</room>'
 
-def get_schedule():
+def get_schedule(url):
+	class HTMLParser(SGMLParser):
+		def checkTrackRoom(self):
+			# if there is a track and a room already, record it
+			if self.track and self.room:
+				self.tracks.append((self.track, self.room, self.fro))
+				self.track = None
+				self.room = None
+				self.fro = None
+
+		def reset(self):
+			SGMLParser.reset(self)
+			self.seenTbody = False
+			self.seenH4 = False
+			self.track = None
+			self.room = None
+			self.tracks = []
+			self.spanLevel = 0
+			self.inFrom = False
+			self.fro = None
+
+		def start_tbody(self, attrs):
+			self.seenTbody = True
+
+		def start_h4(self, attrs):
+			if self.seenTbody:
+				self.checkTrackRoom()
+				self.seenH4 = True
+
+		def start_span(self, attrs):
+			if self.seenH4:
+				self.spanLevel += 1
+			elif self.room:
+				self.inFrom = True
+
+		def end_span(self):
+			if self.seenH4:
+				self.spanLevel -= 1
+				if self.spanLevel == 0:
+					self.seenH4 = False
+
+		def start_a(self, attrs):
+			if self.seenH4:
+				for k, v in attrs:
+					if k == "href":
+						self.track = v
+
+		def start_div(self, attrs):
+			for k, v in attrs:
+				if k == "class" and v == "sponsorships":
+					self.checkTrackRoom()
+
+		def handle_data(self, text):
+			if self.spanLevel == 2:
+				self.room = text
+			elif self.inFrom:
+				self.fro = text.split('.')[0]
+				self.inFrom = False
+	
+	sock = urllib.urlopen(url)
+	page = sock.read()
+	sock.close()
+
+	parser = HTMLParser()
+	parser.reset()
+	parser.feed(page)
+	parser.close()
+	days = sorted(set(map(lambda x: x[2], parser.tracks)))
+
 	print '<?xml version="1.0"?>'
 	print '<schedule>'
 	print '<conference>'
 	print '<title>LibreOffice Conference 2012</title>'
 	print '<city>Berlin</city>'
-	print '<start>2012-10-17</start>'
-	print '<end>2012-10-17</end>'
-	print '<days>1</days>'
+	print '<start>2012-10-%s</start>' % days[0]
+	print '<end>2012-10-%s</end>' % days[-1]
+	print '<days>%s</days>' % len(days)
 	print '<release>1.0</release>'
 	print '<timeslot_duration>00:15</timeslot_duration>'
 	print '</conference>'
 
-	print '<day date="2012-10-17" index="1">'
-	get_track("http://conference.libreoffice.org/program/wednesday-premier-track", "Aula")
-	get_track("http://conference.libreoffice.org/program/wednesday-secondary-track", "Eichensaal")
-	get_track("http://conference.libreoffice.org/program/wednesday-third-track", "Konferenzraum 2")
-	print '</day>'
+	daycount = 1
+	for i in days:
+		print '<day date="2012-10-%s" index="%s">' % (i, daycount)
+		daycount += 1
+		for j in filter(lambda x: x[2] == i, parser.tracks):
+			get_track("%s/%s" % (url, j[0]), j[1])
+		print '</day>'
 
 	print '</schedule>'
 
-get_schedule()
+get_schedule("http://conference.libreoffice.org/program")
