@@ -9,3 +9,9 @@ if wget -O ~/public_html/index.rss.new "$URL"; then
 else
 	rm -f ~/public_html/index.rss.new
 fi
+
+if python ~/vmexam/python/locon2012/crawler.py > ~/public_html/2012/libocon2012-schedule.xml.new; then
+	mv -f ~/public_html/2012/libocon2012-schedule.xml.new ~/public_html/2012/libocon2012-schedule.xml
+else
+	rm -f ~/public_html/2012/libocon2012-schedule.xml.new
+fi
