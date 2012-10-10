@@ -1,6 +1,7 @@
 from sgmllib import SGMLParser
 import urllib
 import re
+import time
 
 def to_h_m(text):
 	n = int(text)
@@ -209,7 +210,7 @@ def get_schedule(url):
 	print '<start>2012-10-%s</start>' % days[0]
 	print '<end>2012-10-%s</end>' % days[-1]
 	print '<days>%s</days>' % len(days)
-	print '<release>1.0</release>'
+	print '<release>1.%s</release>' % time.strftime("%Y%d%m.%H%M")
 	print '<timeslot_duration>00:15</timeslot_duration>'
 	print '</conference>'
 
