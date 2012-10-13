@@ -32,8 +32,9 @@ if [ -z "$email" -o -z "$password" -o -z "$text" ]; then error 0; fi
 
 loginURL="https://www.google.com/accounts/ClientLogin"
 loginPost="Email=$email&Passwd=$password&source=msd-client-1&service=cl"
+curl="curl -4"
 
-authToken=$(curl -k -s -f -d $loginPost $loginURL|grep "^Auth=") || error 1;
+authToken=$($curl -k -s -f -d $loginPost $loginURL|grep "^Auth=") || error 1;
 authHeader="Authorization: GoogleLogin $authToken"
 
 ### creating calendar event
@@ -53,7 +54,4 @@ term='http://schemas.google.com/g/2005#event'></category>
 </gd:when>
 </entry>"
 
-redirURL=$(curl -k -s -f -i -H "$authHeader" -H "$postHeader" -d "$entry" $postURL|grep ^Location|cut -c 11-) || error 2 
-if [ -n "$redirURL" ]; then
-	response=$(curl -k -s -f -H "$authHeader" -H "$postHeader" -d "$entry" $redirURL) || error 2
-fi
+$curl -k -s -f -i -H "$authHeader" -H "$postHeader" -d "$entry" $postURL >/dev/null || error 2 
