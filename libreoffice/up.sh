@@ -3,6 +3,6 @@ time sh -c "git pull -r && \
 	make clean && \
 	make && \
 	make dev-install && \
+	sh ~/git/vmexam/libreoffice/daily.sh && \
 	make tags && \
-	make subsequentcheck && \
-	git rev-parse HEAD > last-success" 2>&1 |tee log
+	make subsequentcheck" 2>&1 |tee log
