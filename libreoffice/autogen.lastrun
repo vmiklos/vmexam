@@ -4,4 +4,5 @@
 --without-myspell-dicts
 --without-help
 # needs of a sw hacker
---enable-debug=oox/ writerfilter/ xmloff/ sw/
+--enable-debug
+--enable-selective-debuginfo=oox/ writerfilter/ xmloff/ sw/
