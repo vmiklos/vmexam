@@ -1,5 +1,3 @@
-# that allows to build in <20mins
---with-max-jobs=4
 # avoid dictionaries / help repos
 --without-myspell-dicts
 --without-help
