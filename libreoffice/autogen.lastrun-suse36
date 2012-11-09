@@ -1,0 +1,5 @@
+--with-max-jobs=4
+--without-myspell-dicts
+--without-help
+--disable-mozilla
+--disable-mono
