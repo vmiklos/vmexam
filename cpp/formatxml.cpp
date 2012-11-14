@@ -255,18 +255,7 @@ int main( int argc, char* argv[] )
         }
     QTextStream in( &fin );
     QFile fout;
-    if( !isatty( 1 ))
-        fout.open( stdout, QIODevice::WriteOnly );
-    else
-        {
-        QString fname( QString( argv[ 1 ] ) + ".format.xml" );
-        fout.setFileName( fname );
-        if( !fout.open( QIODevice::WriteOnly ))
-            {
-            QTextStream( stderr ) << "Cannot write to " << fname << endl;
-            return 4;
-            }
-        }
+    fout.open( stdout, QIODevice::WriteOnly );
     QTextStream out( &fout );
     in.setCodec( "UTF-8" );
     out.setCodec( "UTF-8" );
