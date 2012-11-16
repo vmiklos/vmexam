@@ -1,10 +1,10 @@
 --disable-mozilla
 --disable-odk
 --without-junit
---with-ant-home=/cygdrive/c/lo/extra/ant
+--with-ant-home=c:/lo/extra/ant
+--with-mozilla-build=c:/mozilla-build
 --with-help=no
---disable-xmlsec
 --without-myspell-dicts
---without-junit
 --disable-postgresql-sdbc
 --disable-cairo-canvas
+--disable-directx
