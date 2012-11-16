@@ -8,7 +8,8 @@ if [ "$kind" == "text/rtf" ]; then
 	# http://cgit.freedesktop.org/~vmiklos/lo-test-files
 	~/git/libreoffice/lo-test-files/writer/prettyprint.py $file
 elif [ "$kind" == "application/xml" ]; then
-	xmllint --format --recover $file 2>/dev/null
+	#xmllint --format --recover $file 2>/dev/null
+	~/git/vmexam/cpp/formatxml $file
 else
 	echo "unknown type: $kind"
 fi
