@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+"""
+This is a really simple mail(1)-like script that supports authentication, if
+you need something simpler than msmtp or postfix. Sample config:
+
+[pymail]
+server = smtp.server.hu:25
+user = user@server.hu # set SMTP username here
+password = s3cr3t # set SMTP password here
+# vim: ft=conf
+"""
+
+import smtplib
+from ConfigParser import ConfigParser, NoOptionError
+import os
+import sys
+import getopt
+import fileinput
+
+config = ConfigParser()
+config.read(os.path.join(os.environ['HOME'], '.pymailrc'))
+config.server = config.get('pymail', 'server').split('#')[0].strip()
+config.user = config.get('pymail', 'user').split('#')[0].strip()
+config.password = config.get('pymail', 'password').split('#')[0].strip()
+
+try:
+	opts, args = getopt.getopt(sys.argv[1:], "r:s:")
+except getopt.GetoptError:
+	print "usage: pmail -r <from> -s <subject> <to>"
+	sys.exit(1)
+for opt, arg in opts:
+	if opt == "-r":
+		fro = arg
+	elif opt == "-s":
+		subject = arg
+to = args[0]
+
+msg = "From: %s \nTo: %s\nSubject: %s\n\n" \
+		% (fro, to, subject)
+for i in fileinput.input("-"):
+	msg += i
+
+smtpserver = smtplib.SMTP(config.server)
+smtpserver.ehlo()
+#smtpserver.starttls()
+smtpserver.ehlo()
+smtpserver.login(config.user, config.password)
+smtpserver.sendmail(fro, to, msg)
