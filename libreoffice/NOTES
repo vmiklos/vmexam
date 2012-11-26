@@ -187,3 +187,54 @@ ThisComponent.CurrentSelection.String = contents & "4"
 dispatcher.executeDispatch(document, ".uno:GoLeft", "", 0, args())
 dispatcher.executeDispatch(document, ".uno:GoUp", "", 0, args())
 ----
+
+== 2012-11-23
+
+- learned today:
+  - single line spacing: 15%
+  - utf8 can store more than utf16
+
+== 2012-11-24:
+
+- gdb tricks
+  - "command" command
+  - dmapper: print m_pImpl->m_xBodyText._pInterface->m_pImpl->m_pDoc->GetNodes()
+  - rtftok: print m_rImport->m_pMapperStream->m_pImpl->m_xBodyText._pInterface->m_pImpl->m_pDoc->GetNodes()
+  - rtf filter: print (*pStream)->m_pImpl->m_xBodyText._pInterface->m_pImpl->m_pDoc->GetNodes()
+  - text range: print xTextRange._pInterface->m_pImpl->m_pMark->m_pPos1
+  - cursors: print print *m_aTextAppendStack.top().xCursor._pInterface->m_pImpl->GetRegisteredIn()
+  - soffice.bin: /home/vmiklos/git/libreoffice/master/sw/source/core/bastyp/index.cxx:236: virtual SwIndexReg::~SwIndexReg(): Assertion !m_pFirst && !m_pLast failed.
+
+set logging on
+b /home/vmiklos/git/libreoffice/master/sw/source/core/bastyp/index.cxx:48
+b /home/vmiklos/git/libreoffice/master/sw/source/core/bastyp/index.cxx:56
+b /home/vmiklos/git/libreoffice/master/sw/source/core/bastyp/index.cxx:65
+command 1 2 3
+print this
+bt 5
+c
+end
+set pagination off
+r
+frame 4
+print m_pFirst
+print m_pLast
+
+- rtf speedup:
+
+before:
+./soffice.bin --nologo /home/vmiklos/git/libreoffice/lo-test-files/writer/bugs/fdo44736/lorem421pages_format_parag_and_text.rtf
+debug, finished in 20686 ms
+
+after:
+debug, finished in 12021 ms
+
+== 2011-11-25
+
+- icecream client thing:
+
+zypper -p http://download.opensuse.org/repositories/home:/llunak:/clang/openSUSE_12.2/ in icecream-0.9.7-64.1s.x86_64 # to be fair with others, and be a server as well
+http://en.opensuse.org/Icecream#Firewall
+CCACHE_PREFIX="icecc" make -sr -j30
+
+- mso-dumper: Word can't open comment.rtf's cleaned up version, but Writer can ;)
