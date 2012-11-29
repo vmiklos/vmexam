@@ -3,4 +3,3 @@
 --with-android-ndk=/home/vmiklos/git/libreoffice/android/android-ndk-r8b
 --with-android-ndk-toolchain-version=4.6
 --with-android-sdk=/home/vmiklos/git/libreoffice/android/android-sdk-linux
---with-java-target-version=1.5
