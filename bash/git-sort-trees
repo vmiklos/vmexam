@@ -1,0 +1,37 @@
+#!/bin/sh -e
+
+# The problem: I store LibreOffice daily builds in a git repo, but sometimes I
+# don't create a daily build (think of weekends), and when bisecting later in
+# that time-range, I create daily builds after-the-fact. Now it's no longer
+# possible to bibisect in the repo, as newer commits refer to older states.
+#
+# The solution: given that each commit message is in a YYYY-MM-DD form, it's
+# possible to sort the trees based on their current commit message. It's cheap:
+# we can keep all the trees and blobs, we just need to create new commit
+# objects in the right order (read: right parents).
+#
+# In case something would go wrong, the branch is backed up.
+
+if [ -z "$1" ]; then
+	echo "usage: $0 <path/to/git/repo>"
+	exit 1
+fi
+cd $1
+parent=""
+IFS="
+"
+for i in $(git log --pretty=oneline|sort -k 2)
+do
+	oldcommit="${i%% *}"
+	msg="${i##* }"
+	echo "$msg"
+	tree=$(git rev-parse $oldcommit^{tree})
+	if [ -n "$parent" ]; then
+		newcommit=$(echo $msg | git commit-tree $tree -p $parent)
+	else
+		newcommit=$(echo $msg | git commit-tree $tree)
+	fi
+	parent="$newcommit"
+done
+git update-ref refs/heads/master-backup refs/heads/master
+git update-ref refs/heads/master $newcommit
