@@ -25,11 +25,12 @@ do
 	oldcommit="${i%% *}"
 	msg="${i##* }"
 	echo "$msg"
+	msg="$(git show -s --pretty=format:%B $oldcommit)"
 	tree=$(git rev-parse $oldcommit^{tree})
 	if [ -n "$parent" ]; then
-		newcommit=$(echo $msg | git commit-tree $tree -p $parent)
+		newcommit=$(echo "$msg" | git commit-tree $tree -p $parent)
 	else
-		newcommit=$(echo $msg | git commit-tree $tree)
+		newcommit=$(echo "$msg" | git commit-tree $tree)
 	fi
 	parent="$newcommit"
 done
