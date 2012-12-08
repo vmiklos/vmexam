@@ -43,7 +43,7 @@ for i in fileinput.input("-"):
 
 smtpserver = smtplib.SMTP(config.server)
 smtpserver.ehlo()
-#smtpserver.starttls()
+smtpserver.starttls()
 smtpserver.ehlo()
 smtpserver.login(config.user, config.password)
 smtpserver.sendmail(fro, to, msg)
