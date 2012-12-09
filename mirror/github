@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+import json
+import urllib
+import os
+
+def system(cmd):
+	os.system("%s 2>&1 |tee -a mirror.log" % cmd)
+
+os.chdir(os.path.dirname(__file__))
+sock = urllib.urlopen('https://api.github.com/users/%s/repos' % os.environ['USER'])
+repos = json.load(sock)
+for i in repos:
+	if os.path.exists("%s.git" % i['name']):
+		system("echo Updating existing repo %s" % i['name'])
+		os.chdir("%s.git" % i['name'])
+		system("git fetch -q origin && git remote prune origin")
+		os.chdir("..")
+	else:
+		system("echo Mirroring new repo %s" % i['name'])
+		system("git clone --mirror %s" % i['git_url'])
