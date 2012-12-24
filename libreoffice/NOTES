@@ -238,3 +238,7 @@ http://en.opensuse.org/Icecream#Firewall
 CCACHE_PREFIX="icecc" make -sr -j30
 
 - mso-dumper: Word can't open comment.rtf's cleaned up version, but Writer can ;)
+
+== 2012-12-24
+
+- fdo#57678: test.rtf.wordbug - next Word bug..

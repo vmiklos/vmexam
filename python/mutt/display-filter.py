@@ -50,23 +50,6 @@ for i in lines:
 	elif re.search("^gpg:.*aka", i):
 		continue
 
-	# spam from the sourceforge.net lists (commits lists)
-	elif i.startswith("This was sent by the SourceForge.net"):
-		del o[-1]
-		continue
-	# next spam from sf.net (normal lists)
-	elif i == "------------------------------------------------------------------------------\n":
-		ignoresf = True
-		continue
-	elif ignoresf and "http://p.sf.net/sfu/" in i:
-		ignoresf = False
-		continue
-	elif ignoresf:
-		continue
-	# spam from freemail.hu
-	elif i == "<!-- PATH STAT NUMBER ERROR -->\n":
-		continue
-
 	# sch archive permalink
 	elif i.startswith("Message-id: "):
 		msgid = i[13:-2]
