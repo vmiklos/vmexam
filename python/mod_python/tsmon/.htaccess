@@ -1,2 +1,0 @@
-AddHandler mod_python .py
-PythonHandler tsmon

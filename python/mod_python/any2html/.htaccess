@@ -1,5 +1,0 @@
-AddHandler mod_python .py
-PythonHandler any2html
-RewriteEngine on
-RewriteCond %{REQUEST_URI} !^/~vmiklos/any2html/any2html.py
-RewriteRule (.*) /~vmiklos/any2html/any2html.py/$1
