@@ -1,4 +1,3 @@
-git bzr clone
-git bzr clone http://code.bitlbee.org/bitlbee bitlbee
+git bzr clone http://code.bitlbee.org/bitlbee bitlbee # Or: git bzr import http://code.bitlbee.org/bitlbee/ master
 git bzr pull
 git bzr push --overwrite bzr+ssh://people.freedesktop.org/home/vmiklos/public_html/bzr/bitlbee
