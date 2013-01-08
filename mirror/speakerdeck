@@ -1,0 +1,13 @@
+#!/bin/bash
+
+cd $(dirname $0)
+for i in $(curl -k -s https://speakerdeck.com/$USER |lynx -stdin -dump | grep $USER/|sed 's|.*/||'|sort -u)
+do
+	if [ ! -d $i ]; then
+		url=$(curl -k -s https://speakerdeck.com/$USER/$i | grep 'Download PDF'|sed 's/.*href="\([^"]*\)".*/\1/')
+		mkdir $i
+		cd $i
+		wget $url
+		cd -
+	fi
+done
