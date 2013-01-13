@@ -10,3 +10,11 @@ git bzr sync
 git checkout vmiklos
 git rebase bzr/master
 hack hack hack, push
+
+testcase coverage:
+
+./configure --debug=1 --gcov=1 --skype=1
+make -j4
+make -C protocols/skype test
+make -o check lcov
+file:///home/vmiklos/git/bitlbee/coverage/protocols/skype/skype.c.gcov.html
