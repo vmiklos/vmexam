@@ -4,6 +4,7 @@ import csv, os, re, sys
 
 up2dates = {
 		"cpm": "lynx -dump http://sourceforge.net/api/file/index/project-id/62803/mtime/desc/limit/20/rss | egrep '/cpm-.*.tar.gz' | sed -e 's|.*cpm-||;s|.tar.gz.*||' | sort | tac | head -n 1",
+		"lcov": "lynx -dump http://ltp.sourceforge.net/coverage/lcov.php|grep lcov-.*tar.gz$ |sed -e 's|.*lcov-||;s|.tar.gz.*||;q'",
 		"foo2zjs": "lynx -dump http://foo2zjs.rkkda.com/Changelog|head -n 1|cut -d ' ' -f 1|sed y/-/_/",
 		}
 
@@ -29,14 +30,16 @@ def get_osc_version(project, pkg):
 		print "WARNING: empty output from 'osc cat home:%s %s %s.spec'" % (project, pkg, pkg)
 	return re.sub('Version:\s+', '', line)
 
-def list_outdated(project):
-	for i in read_from_pipe("osc list %s" % project).split('\n'):
+def list_outdated(project, packages):
+	if not packages:
+		packages = read_from_pipe("osc list %s" % project).split('\n')
+	for i in packages:
 		downstream = get_osc_version(project, i)
 		upstream = read_from_pipe(up2dates[i])
 		if upstream != downstream or verbose:
 			print "%s: %s != %s" % (i, downstream, upstream)
 
-def list_failed(project):
+def list_failed(project, packages):
 	sock = os.popen("osc pr -c %s" % project)
 
 	reader = csv.reader(sock, delimiter=';')
@@ -55,11 +58,13 @@ def list_failed(project):
 	for i in range(1, len(table.keys())):
 		for j in range(1, len(table[i].keys())):
 			if table[i][j] != "succeeded" or verbose:
-				print "%s: %s on %s" % (table[i][0], table[i][j], table[0][j])
+				if (not packages) or table[i][0] in packages:
+					print "%s: %s on %s" % (table[i][0], table[i][j], table[0][j])
 
-def check_project(project):
-	list_outdated(project)
-	list_failed(project)
+def check_project(project, packages = None):
+	list_outdated(project, packages)
+	list_failed(project, packages)
 
 verbose = "-v" in sys.argv
 check_project("home:vmiklos")
+check_project("devel:tools", ["lcov"])
