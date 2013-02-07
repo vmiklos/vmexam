@@ -1,2 +1,6 @@
 # add translations repo
 --with-lang=en-US hu pt-BR
+# dictionaries repo
+--with-myspell-dicts
+# help repo
+--with-help
