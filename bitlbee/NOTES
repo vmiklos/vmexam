@@ -17,5 +17,5 @@ testcase coverage:
 ./configure --debug=1 --gcov=1 --skype=1
 make -j4
 make -C protocols/skype test
-make -o check lcov
+make lcov
 file:///home/vmiklos/git/bitlbee/coverage/bitlbee/protocols/skype/skype.c.gcov.html
