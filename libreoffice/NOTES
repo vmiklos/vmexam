@@ -242,3 +242,8 @@ CCACHE_PREFIX="icecc" make -sr -j30
 == 2012-12-24
 
 - fdo#57678: test.rtf.wordbug - next Word bug..
+
+== 2013-02-18
+
+- converting to Microsoft-style docx: ./soffice.bin --headless --convert-to docx:'MS Word 2007 XML'
+- converting to odt: ./soffice.bin --headless --convert-to odt:writer8
