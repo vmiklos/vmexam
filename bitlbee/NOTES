@@ -2,6 +2,7 @@ python-fastimport: python setup.py install --prefix=$HOME/.local
 
 git bzr clone http://code.bitlbee.org/bitlbee bitlbee
 cd bitlbee
+git remote add github git@github.com:vmiklos/bitlbee.git
 git checkout -b vmiklos
 hack hack hack
 git bzr push --overwrite bzr+ssh://people.freedesktop.org/home/vmiklos/public_html/bzr/bitlbee
