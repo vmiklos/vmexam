@@ -1,0 +1,7 @@
+android create project -n hspbpAndroidWorkshop -t android-14 -p . -k hu.vmiklos.hspbp.android.workshop -a Main
+AlertDialog: can contain a complete view, then no dedicated Activity is needed
+AsyncTask: net communication, etc.
+dex2jar
+jdgui: .class -> .java
+"variadic genericity"
+adsdroid
