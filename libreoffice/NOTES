@@ -80,12 +80,11 @@ GDBCPPUNITTRACE="gdb --args" make -sr dbglevel=2 /home/vmiklos/git/libreoffice/m
 
 == 2011-03-29
 
-Installing all build-deps on openSUSE:
+Installing all build-deps on openSUSE 12.2:
 
 ----
-zypper in libreoffice-sdk # this will pull in openjdk instead of gcj
 zypper si -d libreoffice
-zypper in doxygen ctags
+zypper in git doxygen ctags krb5-devel java-1_7_0-openjdk-devel
 ----
 
 == 2011-04-03
