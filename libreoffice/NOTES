@@ -75,7 +75,7 @@ bad: 4c30602f43475389f81b1d981ce8ee9a3410b9d9
 To run a single unit test in gdb:
 
 ----
-GDBCPPUNITTRACE="gdb --args" make -sr dbglevel=2 /home/vmiklos/git/libreoffice/master/workdir/unxlngx6.pro/CppunitTest/sw_subsequent_ooxmlimport.test
+GDBCPPUNITTRACE="gdb --args" make -sr /home/vmiklos/git/libreoffice/master/workdir/unxlngx6/CppunitTest/sw_ooxmlimport.test
 ----
 
 == 2011-03-29
