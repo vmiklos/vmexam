@@ -1,10 +1,5 @@
---disable-mozilla
---disable-odk
---without-junit
+--with-junit=c:/lo/extra/junit.jar
 --with-ant-home=c:/lo/extra/ant
---with-mozilla-build=c:/mozilla-build
---with-help=no
+--with-nss-build-tools=c:/mozilla-build
+--without-help
 --without-myspell-dicts
---disable-postgresql-sdbc
---disable-cairo-canvas
---disable-directx
