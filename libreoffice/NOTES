@@ -246,3 +246,23 @@ CCACHE_PREFIX="icecc" make -sr -j30
 
 - converting to Microsoft-style docx: ./soffice.bin --headless --convert-to docx:'MS Word 2007 XML'
 - converting to odt: ./soffice.bin --headless --convert-to odt:writer8
+
+== 2013-04-02
+
+How to detect missing includes:
+
+- GCC: use
+
+----
+make CPPFLAGS="-Wundef"
+----
+
+in a partial build.
+
+- MSVC: insert
+
+----
+#pragma warning (default : 4668)
+----
+
+at the top of the file and recompile.
