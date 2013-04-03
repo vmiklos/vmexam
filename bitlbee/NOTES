@@ -14,6 +14,16 @@ git checkout vmiklos
 git rebase bzr/master
 hack hack hack, push
 
+with git-remote-bzr:
+git clone bzr::http://code.bitlbee.org/bitlbee bitlbee
+cd bitlbee
+git remote add github git@github.com:vmiklos/bitlbee.git
+git remote add people bzr::bzr+ssh://people.freedesktop.org/home/vmiklos/public_html/bzr/bitlbee/trunk
+git config user.email vmiklos@vmiklos.hu
+hack hack hack
+# ssh people.freedesktop.org: rm -rf bitlbee; bzr init-repo bitlbee; bzr init bitlbee/trunk
+git push people master
+
 testcase coverage:
 
 ./configure --debug=1 --gcov=1 --skype=1
