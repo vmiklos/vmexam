@@ -16,14 +16,14 @@ import sys
 # - possible to extend
 
 conv = {
-        'inch': 91440, # EMU / inch
-        'point': 91440/72, # EMU / point
-        'twip': 91440/72/20, # EMU / twip
+        'inch': 914400, # "there are 914,400 EMUs per inch"
+        'point': 914400/72, # EMU / point
+        'twip': 914400/72/20, # EMU / twip
 
-        'm': 10000*360, # EMU / m
-        'cm': 100*360, # EMU / cm
-        'mm': 10*360, # EMU / cm
-        'mm100': 360/10, # EMU / cm
+        'm': 360*100000, # EMU / m
+        'cm': 360*1000, # EMU is defined as 1/360,000 of a centimeter
+        'mm': 360*100, # EMU / mm
+        'mm100': 360, # EMU / mm100
 
         'emu': 1, # EMU / EMU
     }
