@@ -15,15 +15,16 @@ git rebase bzr/master
 hack hack hack, push
 
 with git-remote-bzr:
-git clone bzr::http://code.bitlbee.org/bitlbee bitlbee
-cd bitlbee
+git clone bzr::http://code.bitlbee.org/bitlbee bitlbee-native
+cd bitlbee-native
 git remote add github git@github.com:vmiklos/bitlbee.git
-git remote add people bzr::bzr+ssh://people.freedesktop.org/home/vmiklos/public_html/bzr/bitlbee/trunk
+git remote add people bzr::bzr+ssh://people.freedesktop.org/home/vmiklos/public_html/bzr/bitlbee-native
 git config user.email vmiklos@vmiklos.hu
 hack hack hack
-# ssh people.freedesktop.org: rm -rf bitlbee; bzr init-repo bitlbee; bzr init bitlbee/trunk
+# ssh people.freedesktop.org: rm -rf bitlbee-native; bzr branch --no-tree http://code.bitlbee.org/bitlbee bitlbee-native
+git fetch people
 git push people master
-# ask for merge: bzr merge http://people.freedesktop.org/~vmiklos/bzr/bitlbee-native/trunk
+# ask for merge: bzr merge http://people.freedesktop.org/~vmiklos/bzr/bitlbee-native
 
 testcase coverage:
 
