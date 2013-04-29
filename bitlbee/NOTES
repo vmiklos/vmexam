@@ -23,6 +23,7 @@ git config user.email vmiklos@vmiklos.hu
 hack hack hack
 # ssh people.freedesktop.org: rm -rf bitlbee; bzr init-repo bitlbee; bzr init bitlbee/trunk
 git push people master
+# ask for merge: bzr merge http://people.freedesktop.org/~vmiklos/bzr/bitlbee-native/trunk
 
 testcase coverage:
 
