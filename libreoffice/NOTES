@@ -266,3 +266,23 @@ in a partial build.
 ----
 
 at the top of the file and recompile.
+
+== 2013-06-27
+
+Android notes:
+
+- to run the emulator:
+
+----
+~/git/libreoffice/android/android-sdk-linux/tools$ LD_LIBRARY_PATH=$(pwd)/lib ./emulator-arm -avd myavd-lo -partition-size 500
+----
+
+- upload pkg:
+
+----
+~/git/android/android-sdks/platform-tools/adb install master~2013-06-27_00.05.44_LibreOffice4Android-debug.apk
+----
+
+- current master seems to be broken at runtime, let's try with `master~2013-02-28_07.22.59_LibreOffice4Android-debug.apk` -> works!
+
+- built e440724eb7febe0072d79683d1a6f3b586575a3f -> also works!
