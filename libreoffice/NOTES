@@ -280,7 +280,7 @@ Android notes:
 - upload pkg:
 
 ----
-~/git/android/android-sdks/platform-tools/adb install master~2013-06-27_00.05.44_LibreOffice4Android-debug.apk
+~/git/libreoffice/android/android-sdk-linux/platform-tools/adb install master~2013-06-27_00.05.44_LibreOffice4Android-debug.apk
 ----
 
 - current master seems to be broken at runtime, let's try with `master~2013-02-28_07.22.59_LibreOffice4Android-debug.apk` -> works!
