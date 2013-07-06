@@ -1,0 +1,13 @@
+#!/bin/bash -ex
+
+# See http://www.mplayerhq.hu/DOCS/HTML/en/menc-feat-vcd-dvd.html
+# Assuming PAL DVD and a movie where 16:9 is a better approximation than 4:3.
+
+mencoder -oac lavc -ovc lavc -of mpeg -mpegopts format=dvd:tsaf -vf expand=:::::16/9,scale=720:576,harddup -srate 48000 -af lavcresample=48000 -lavcopts vcodec=mpeg2video:vrc_buf_size=1835:vrc_maxrate=9800:vbitrate=5000:keyint=15:vstrict=0:acodec=ac3:abitrate=192:aspect=16/9:threads=2 -lavdopts threads=2 -ofps 25 -o $1.mpg $1
+
+# http://www.salixos.org/wiki/index.php/How_to_create_a_video_DVD_from_the_command_line
+# Again, assuming PAL
+
+dvdauthor -o $1-dvd/ -t $1.mpg
+VIDEO_FORMAT=PAL dvdauthor -o $1-dvd/ -T
+mkisofs -dvd-video -o $1.iso $1-dvd/
