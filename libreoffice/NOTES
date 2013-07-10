@@ -205,9 +205,9 @@ dispatcher.executeDispatch(document, ".uno:GoUp", "", 0, args())
   - soffice.bin: /home/vmiklos/git/libreoffice/master/sw/source/core/bastyp/index.cxx:236: virtual SwIndexReg::~SwIndexReg(): Assertion !m_pFirst && !m_pLast failed.
 
 set logging on
-b /home/vmiklos/git/libreoffice/master/sw/source/core/bastyp/index.cxx:48
+b /home/vmiklos/git/libreoffice/master/sw/source/core/bastyp/index.cxx:39
+b /home/vmiklos/git/libreoffice/master/sw/source/core/bastyp/index.cxx:47
 b /home/vmiklos/git/libreoffice/master/sw/source/core/bastyp/index.cxx:56
-b /home/vmiklos/git/libreoffice/master/sw/source/core/bastyp/index.cxx:65
 command 1 2 3
 print this
 bt 5
