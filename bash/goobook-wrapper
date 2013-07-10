@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# http://atechnologyjobisnoexcuse.com/2010/04/google-contacts-in-mutt-and-vim/
+
+~/.local/bin/goobook query "$@" | sed -e '/^$/d' -e 's/\(.*\) \(.*\)\t.*/\1 \2/' -e 's/\(^\<.*\)\t\(.*\)/"\2" \<\1\>/'
