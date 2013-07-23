@@ -1,0 +1,39 @@
+WORKDIR = workdir
+
+ifneq ($(OS),Windows_NT)
+LO_HOME = /home/vmiklos/git/libreoffice/lo41/opt/libreoffice4.1
+
+# It should not be necessary to touch anything below this on Linux.
+
+DEFINES = -DLINUX -DCPPU_ENV=gcc3
+INCLUDES = -I$(LO_HOME)/sdk/include -I$(WORKDIR)
+LIBS = -L$(LO_HOME)/sdk/lib -L$(LO_HOME)/ure/lib -Wl,-rpath,$(LO_HOME)/ure/lib -luno_cppuhelpergcc3 -luno_cppu -luno_salhelpergcc3 -luno_sal -lreg -lunoidl -lxmlreader -lstore
+
+test: test.cxx $(WORKDIR)/com/sun/star/uno/Exception.hpp Makefile
+	g++ -Wall -o test $(DEFINES) $(INCLUDES) $(LIBS) test.cxx
+
+$(WORKDIR)/com/sun/star/uno/Exception.hpp:
+	$(LO_HOME)/sdk/bin/cppumaker -Gc -O./$(WORKDIR) $(LO_HOME)/ure/share/misc/types.rdb $(LO_HOME)/program/types/offapi.rdb
+
+run: test
+	./test -env:URE_MORE_TYPES="file://$(LO_HOME)/program/types/offapi.rdb" "file://$(PWD)/test1.odt"
+else
+LO_HOME = C:/PROGRA~1/LIBREO~1
+COMPATH = C:/PROGRA~1/MICROS~2.0/VC
+WINDOWS_SDK_HOME = C:/PROGRA~1/MICROS~2/Windows/v7.1
+CXXFLAGS = -DWIN32 -DCPPU_ENV=msci -nologo $(WD) -EHa -I$(COMPATH)/include -I$(LO_HOME)/sdk/include -I$(WORKDIR)
+LDFLAGS = -nologo -LIBPATH:$(COMPATH)/lib -LIBPATH:$(WINDOWS_SDK_HOME)/lib
+LIBS = $(LO_HOME)/sdk/lib/icppuhelper.lib $(LO_HOME)/sdk/lib/icppu.lib $(LO_HOME)/sdk/lib/isalhelper.lib $(LO_HOME)/sdk/lib/isal.lib
+
+test.exe: test.o
+	$(COMPATH)/bin/link.exe $(LDFLAGS) $(LIBS) test.o -out:test.exe
+
+test.o: test.cxx $(WORKDIR)/com/sun/star/uno/Exception.hpp Makefile
+	$(COMPATH)/bin/cl.exe $(CXXFLAGS) -c test.cxx -Fotest.o
+
+$(WORKDIR)/com/sun/star/uno/Exception.hpp:
+	cppumaker -Gc -O./$(WORKDIR) $(LO_HOME)/URE/misc/types.rdb $(LO_HOME)/program/types/offapi.rdb
+endif
+
+clean:
+	rm -rf $(WORKDIR) test test.exe test.o

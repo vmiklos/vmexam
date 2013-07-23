@@ -1,0 +1,15 @@
+To run the code on Linux:
+
+- Set the SDK path in Makefile, 'make'.
+- Run './soffice "--accept=socket,host=localhost,port=2083;urp;StarOffice.ServiceManager"':
+  This starts LibreOffice in server mode.
+- Run 'make run' to run the client code.
+
+Same on Windows:
+
+- Run cmd.exe, invoke 'setsdkenv_windows.bat' form the SDK, plain 'cppumaker' should output its usage if the SDK env is OK.
+- Tweak the paths in Makefile as necessary, 'make'.
+- Run 'soffice.exe "--accept=socket,host=localhost,port=2083;urp;StarOffice.ServiceManager"':
+  This starts LibreOffice in server mode.
+- Run 'test.exe -env:URE_MORE_TYPES="file:///c/progra~1/libreo~1/program/types/offapi.rdb" "file:///z:/libreoffice/lo-test-filters/test1.odt"'
+  This runs the client code (Replace the z:/ URL with the URL of the current directory).
