@@ -50,6 +50,7 @@ SAL_IMPLEMENT_MAIN_WITH_ARGS(argc, argv)
         exit(1);
     }
     xPropertySet->getPropertyValue("DefaultContext") >>= xComponentContext;
+    xMultiComponentFactory = xComponentContext->getServiceManager();
 
     // Load the document: create the frame::Desktop service and load the document.
     uno::Reference<frame::XComponentLoader> xComponentLoader(xMultiComponentFactory->createInstanceWithContext("com.sun.star.frame.Desktop", xComponentContext), uno::UNO_QUERY);
@@ -57,9 +58,6 @@ SAL_IMPLEMENT_MAIN_WITH_ARGS(argc, argv)
     uno::Reference<lang::XComponent> xComponent = xComponentLoader->loadComponentFromURL(sDocUrl, "_blank", 0,uno::Sequence<beans::PropertyValue>());
     sal_uInt32 nEndTime = osl_getGlobalTimer();
     SAL_DEBUG("loadComponentFromURL() finished in " << nEndTime - nStartTime << " ms");
-
-    // Release UNO.
-    uno::Reference<lang::XComponent>(xMultiComponentFactory, uno::UNO_QUERY)->dispose();
     return 0;
 }
 
