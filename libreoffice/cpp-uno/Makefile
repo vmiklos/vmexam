@@ -1,4 +1,6 @@
 WORKDIR = workdir
+SP :=
+SP +=
 
 ifneq ($(OS),Windows_NT)
 LO_HOME = /opt/libreoffice
@@ -17,9 +19,10 @@ $(WORKDIR)/com/sun/star/uno/Exception.hpp:
 	$(LO_HOME)/sdk/bin/cppumaker -Gc $(if $(findstring 4.0,$(OO_SDK_NAME)),-BUCR) -O./$(WORKDIR) $(LO_HOME)/ure/share/misc/types.rdb $(LO_HOME)/program/types/offapi.rdb
 
 run: test
-	./test -env:URE_MORE_TYPES="file://$(LO_HOME)/program/types/offapi.rdb" "file://$(PWD)/test1.odt"
+	./test -env:URE_MORE_TYPES="file://$(LO_HOME)/program/types/offapi.rdb" "file://$(LO_HOME)/sdk/examples/cpp/DocumentLoader/test.odt"
 else
 LO_HOME = $(OFFICE_HOME)
+LO_URL = $(subst $(SP),%20,$(subst $(strip \ ),/,$(LO_HOME)))
 COMPATH = C:/PROGRA~1/MICROS~2.0/VC
 WINDOWS_SDK_HOME = C:/PROGRA~1/MICROS~2/Windows/v7.1
 CXXFLAGS = -DWIN32 -DWNT -DCPPU_ENV=msci -nologo $(WD) -EHa -I$(COMPATH)/include "-I$(LO_HOME)/sdk/include" -I$(WORKDIR)
@@ -34,6 +37,9 @@ test.o: test.cxx $(WORKDIR)/com/sun/star/uno/Exception.hpp Makefile
 
 $(WORKDIR)/com/sun/star/uno/Exception.hpp:
 	cppumaker -Gc $(if $(findstring 4.0,$(OO_SDK_NAME)),-BUCR) -O./$(WORKDIR) "$(LO_HOME)/URE/misc/types.rdb" "$(LO_HOME)/program/types/offapi.rdb"
+
+run: test.exe
+	./test.exe -env:URE_MORE_TYPES="file:///$(LO_URL)/program/types/offapi.rdb" "file:///$(LO_URL)/sdk/examples/cpp/DocumentLoader/test.odt"
 endif
 
 clean:

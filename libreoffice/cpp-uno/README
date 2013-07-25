@@ -11,5 +11,4 @@ Same on Windows:
 - Tweak the paths in Makefile as necessary, 'make'.
 - Run 'soffice.exe "--accept=socket,host=localhost,port=2083;urp;StarOffice.ServiceManager"':
   This starts LibreOffice in server mode.
-- Run 'test.exe -env:URE_MORE_TYPES="file:///c/progra~1/libreo~1/program/types/offapi.rdb" "file:///z:/libreoffice/lo-test-filters/test1.odt"'
-  This runs the client code (Replace the z:/ URL with the URL of the current directory).
+- Run 'make run' to run the client code.
