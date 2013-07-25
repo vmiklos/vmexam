@@ -19,12 +19,12 @@ $(WORKDIR)/com/sun/star/uno/Exception.hpp:
 run: test
 	./test -env:URE_MORE_TYPES="file://$(LO_HOME)/program/types/offapi.rdb" "file://$(PWD)/test1.odt"
 else
-LO_HOME = C:/PROGRA~1/LIBREO~1
+LO_HOME = $(OFFICE_HOME)
 COMPATH = C:/PROGRA~1/MICROS~2.0/VC
 WINDOWS_SDK_HOME = C:/PROGRA~1/MICROS~2/Windows/v7.1
-CXXFLAGS = -DWIN32 -DCPPU_ENV=msci -nologo $(WD) -EHa -I$(COMPATH)/include -I$(LO_HOME)/sdk/include -I$(WORKDIR)
+CXXFLAGS = -DWIN32 -DWNT -DCPPU_ENV=msci -nologo $(WD) -EHa -I$(COMPATH)/include "-I$(LO_HOME)/sdk/include" -I$(WORKDIR)
 LDFLAGS = -nologo -LIBPATH:$(COMPATH)/lib -LIBPATH:$(WINDOWS_SDK_HOME)/lib
-LIBS = $(LO_HOME)/sdk/lib/icppuhelper.lib $(LO_HOME)/sdk/lib/icppu.lib $(LO_HOME)/sdk/lib/isalhelper.lib $(LO_HOME)/sdk/lib/isal.lib
+LIBS = "$(LO_HOME)/sdk/lib/icppuhelper.lib" "$(LO_HOME)/sdk/lib/icppu.lib" "$(LO_HOME)/sdk/lib/isalhelper.lib" "$(LO_HOME)/sdk/lib/isal.lib"
 
 test.exe: test.o
 	$(COMPATH)/bin/link.exe $(LDFLAGS) $(LIBS) test.o -out:test.exe
@@ -33,7 +33,7 @@ test.o: test.cxx $(WORKDIR)/com/sun/star/uno/Exception.hpp Makefile
 	$(COMPATH)/bin/cl.exe $(CXXFLAGS) -c test.cxx -Fotest.o
 
 $(WORKDIR)/com/sun/star/uno/Exception.hpp:
-	cppumaker -Gc -O./$(WORKDIR) $(LO_HOME)/URE/misc/types.rdb $(LO_HOME)/program/types/offapi.rdb
+	cppumaker -Gc $(if $(findstring 4.0,$(OO_SDK_NAME)),-BUCR) -O./$(WORKDIR) "$(LO_HOME)/URE/misc/types.rdb" "$(LO_HOME)/program/types/offapi.rdb"
 endif
 
 clean:
