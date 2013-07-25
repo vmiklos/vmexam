@@ -1,19 +1,20 @@
 WORKDIR = workdir
 
 ifneq ($(OS),Windows_NT)
-LO_HOME = /home/vmiklos/git/libreoffice/lo41/opt/libreoffice4.1
-
-# It should not be necessary to touch anything below this on Linux.
-
-DEFINES = -DLINUX -DCPPU_ENV=gcc3
+LO_HOME = /opt/libreoffice
+OO_SDK_NAME = libreoffice$(shell grep ProductKey $(LO_HOME)/program/bootstraprc|sed 's/ProductKey=LibreOffice //')_sdk
+DEFINES = -DLINUX -DUNX -DCPPU_ENV=gcc3
 INCLUDES = -I$(LO_HOME)/sdk/include -I$(WORKDIR)
-LIBS = -L$(LO_HOME)/sdk/lib -L$(LO_HOME)/ure/lib -Wl,-rpath,$(LO_HOME)/ure/lib -luno_cppuhelpergcc3 -luno_cppu -luno_salhelpergcc3 -luno_sal -lreg -lunoidl -lxmlreader -lstore
+LIBS = -L$(LO_HOME)/sdk/lib -L$(LO_HOME)/ure/lib -Wl,-rpath,$(LO_HOME)/ure/lib -luno_cppuhelpergcc3 -luno_cppu -luno_salhelpergcc3 -luno_sal -lxmlreader
+ifneq ($(findstring 4.0,$(OO_SDK_NAME)),4.0)
+LIBS += -lreg -lunoidl -lstore
+endif
 
 test: test.cxx $(WORKDIR)/com/sun/star/uno/Exception.hpp Makefile
 	g++ -Wall -o test $(DEFINES) $(INCLUDES) $(LIBS) test.cxx
 
 $(WORKDIR)/com/sun/star/uno/Exception.hpp:
-	$(LO_HOME)/sdk/bin/cppumaker -Gc -O./$(WORKDIR) $(LO_HOME)/ure/share/misc/types.rdb $(LO_HOME)/program/types/offapi.rdb
+	$(LO_HOME)/sdk/bin/cppumaker -Gc $(if $(findstring 4.0,$(OO_SDK_NAME)),-BUCR) -O./$(WORKDIR) $(LO_HOME)/ure/share/misc/types.rdb $(LO_HOME)/program/types/offapi.rdb
 
 run: test
 	./test -env:URE_MORE_TYPES="file://$(LO_HOME)/program/types/offapi.rdb" "file://$(PWD)/test1.odt"

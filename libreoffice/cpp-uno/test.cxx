@@ -5,7 +5,8 @@
 
 #include <com/sun/star/beans/XPropertySet.hpp>
 #include <com/sun/star/bridge/XUnoUrlResolver.hpp>
-#include <com/sun/star/frame/Desktop.hpp>
+#include <com/sun/star/lang/XMultiComponentFactory.hpp>
+#include <com/sun/star/frame/XComponentLoader.hpp>
 
 using namespace com::sun::star;
 using ::rtl::OUString;
@@ -51,7 +52,7 @@ SAL_IMPLEMENT_MAIN_WITH_ARGS(argc, argv)
     xPropertySet->getPropertyValue("DefaultContext") >>= xComponentContext;
 
     // Load the document: create the frame::Desktop service and load the document.
-    uno::Reference<frame::XDesktop2> xComponentLoader = frame::Desktop::create(xComponentContext);
+    uno::Reference<frame::XComponentLoader> xComponentLoader(xMultiComponentFactory->createInstanceWithContext("com.sun.star.frame.Desktop", xComponentContext), uno::UNO_QUERY);
     sal_uInt32 nStartTime = osl_getGlobalTimer();
     uno::Reference<lang::XComponent> xComponent = xComponentLoader->loadComponentFromURL(sDocUrl, "_blank", 0,uno::Sequence<beans::PropertyValue>());
     sal_uInt32 nEndTime = osl_getGlobalTimer();
