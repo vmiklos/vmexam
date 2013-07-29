@@ -13,14 +13,15 @@
 # In case something would go wrong, the branch is backed up.
 
 if [ -z "$1" ]; then
-	echo "usage: $0 <path/to/git/repo>"
+	echo "usage: $0 <path/to/git/repo> [<commits>]"
+	echo "by default, all commits are included"
 	exit 1
 fi
 cd $1
 parent=""
 IFS="
 "
-for i in $(git log --pretty=oneline|sort -k 2)
+for i in $(git log --pretty=oneline $2 |sort -k 2)
 do
 	oldcommit="${i%% *}"
 	msg="${i##* }"
