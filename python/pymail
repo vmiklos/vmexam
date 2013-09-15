@@ -27,7 +27,7 @@ config.password = config.get('pymail', 'password').split('#')[0].strip()
 try:
 	opts, args = getopt.getopt(sys.argv[1:], "r:s:")
 except getopt.GetoptError:
-	print "usage: pmail -r <from> -s <subject> <to>"
+	print "usage: pymail -r <from> -s <subject> <to>"
 	sys.exit(1)
 for opt, arg in opts:
 	if opt == "-r":
