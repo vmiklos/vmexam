@@ -205,10 +205,10 @@ def get_schedule(url):
 	print '<?xml version="1.0"?>'
 	print '<schedule>'
 	print '<conference>'
-	print '<title>LibreOffice Conference 2012</title>'
-	print '<city>Berlin</city>'
-	print '<start>2012-10-%s</start>' % days[0]
-	print '<end>2012-10-%s</end>' % days[-1]
+	print '<title>LibreOffice Conference 2013</title>'
+	print '<city>Milan</city>'
+	print '<start>2013-09-%s</start>' % days[0]
+	print '<end>2013-09-%s</end>' % days[-1]
 	print '<days>%s</days>' % len(days)
 	print '<release>1.%s</release>' % time.strftime("%Y%d%m.%H%M")
 	print '<timeslot_duration>00:15</timeslot_duration>'
@@ -216,7 +216,7 @@ def get_schedule(url):
 
 	daycount = 1
 	for i in days:
-		print '<day date="2012-10-%s" index="%s">' % (i, daycount)
+		print '<day date="2013-09-%s" index="%s">' % (i, daycount)
 		daycount += 1
 		for j in filter(lambda x: x[2] == i, parser.tracks):
 			get_track("%s/%s" % (url, j[0]), j[1])
@@ -224,4 +224,4 @@ def get_schedule(url):
 
 	print '</schedule>'
 
-get_schedule("http://conference.libreoffice.org/program")
+get_schedule("http://conference.libreoffice.org/2013/en/program")
