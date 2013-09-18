@@ -1,7 +1,7 @@
 time sh -c "git pull -r && \
 	./autogen.sh && \
 	make clean && \
-	make dev-install && \
+	make &&
 	sh ~/git/vmexam/libreoffice/daily.sh && \
 	make tags && \
 	(cd instdir/* && ln -s $HOME/.config/libreofficedev/4/user) && \
