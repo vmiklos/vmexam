@@ -4,6 +4,7 @@
 #
 # To use, substitute your username and password below
 
+cd $(dirname $0)
 user=$(grep ^user ~/.deliciousrc|sed 's/.* = //')
 password=$(grep ^password ~/.deliciousrc|sed 's/.* = //')
 curl -s -k --user $user:$password 'https://api.del.icio.us/v1/posts/all' |xmllint --format - >delicious-bookmarks.xml
