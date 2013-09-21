@@ -1,35 +1,10 @@
-#! /usr/bin/env python
+#!/bin/bash
 
-# Based on https://gist.github.com/1431352
-
-# The Delicious API only returns 1000 bookmarks at a time.
-# The web export returns them all in a single file.
-# This script uses the latter to back up your bookmarks.
+# This script backs up your bookmarks.
 #
-# To use:
-# 1. Install requests: http://python-requests.org
-# 2. Substitute your username and password below
-# 3. Run and enjoy!
+# To use, substitute your username and password below
 
-import requests
-import os
-from ConfigParser import ConfigParser, NoOptionError
-
-config = ConfigParser()
-config.read(os.path.join(os.environ['HOME'], '.deliciousrc'))
-username = config.get('delicious', 'user').split('#')[0].strip()
-password = config.get('delicious', 'password').split('#')[0].strip()
-
-data = {"action": "login", "username": username, "password": password}
-response = requests.post("http://delicious.com/login", data=data)
-cookies = response.cookies
-
-data = {"include_notes": "yes", "include_tags": "yes"}
-response = requests.post("http://export.delicious.com/settings/bookmarks/export", data=data, cookies=cookies)
-
-os.chdir(os.path.dirname(__file__))
-sock = open("delicious-bookmarks.html", "w")
-sock.write(unicode(response.content, errors="ignore").encode("utf-8"))
-sock.close()
-if os.path.exists(".git"):
-	os.system('git add delicious-bookmarks.html && git commit -m "$(date +%Y-%m-%d)"')
+user=$(grep ^user ~/.deliciousrc|sed 's/.* = //')
+password=$(grep ^password ~/.deliciousrc|sed 's/.* = //')
+curl -s -k --user $user:$password 'https://api.del.icio.us/v1/posts/all' |xmllint --format - >delicious-bookmarks.xml
+git add delicious-bookmarks.xml && git commit -m "$(date +%Y-%m-%d)"
