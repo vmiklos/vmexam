@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+# invokes picasuck for all public albums of a user
+
+cd $(dirname $0)
+albums=$(curl -s "https://picasaweb.google.com/data/feed/base/user/$1?alt=rss&kind=album&hl=en_US&access=public"|xmllint --format -|grep '<title>'|grep -v 'Photo Gallery'|sed 's|.*<title>\(.*\)</title>|\1|')
+for i in $albums
+do
+	[ -d $i ] && continue
+	~/git/vmexam/bash/picasuck https://picasaweb.google.com/$1/$i
+done
