@@ -8,14 +8,14 @@ if [ -z "$1" ]; then
 fi
 
 albumname=$(echo $1|sed 's|.*/||')
-url="$(lynx -source -dump "$1" |grep -m1 albumid/ |sed 's/.*href="\([^"]\+\)".*/\1/;s/\&amp;/\&/g')"
+url="$(curl -s "$1" |grep -m1 albumid/ |sed 's/.*href="\([^"]\+\)".*/\1/;s/\&amp;/\&/g')"
 if [ -e $albumname ]; then
 	echo "'$albumname' already exists, please rename or delete it."
 	exit 1
 fi
 mkdir $albumname
 cd $albumname
-lynx -source -dump $url |xmllint --format - >feed.xml
+curl -s $url |xmllint --format - >feed.xml
 c=3
 for i in $(grep media:content feed.xml|sed 's/.*url="\([^"]*\)".*/\1/')
 do
