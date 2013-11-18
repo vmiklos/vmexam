@@ -1,0 +1,41 @@
+= SWIG hacking notes
+
+== 2013-11-18
+
+- How to run a single example:
+
+----
+cd Examples/php/pointer
+make SWIG_LIB=$(pwd)/../../../Lib SWIG=$(pwd)/../../../swig check
+----
+
+- Call time pass by ref removal in PHP 5.5:
+
+http://stackoverflow.com/questions/8971261/php-5-4-call-time-pass-by-reference-easy-fix-available
+
+- To just run one example:
+
+----
+php -n -q -d extension_dir=. -d safe_mode=Off runme.php
+----
+
+- Details about the arginfo struct:
+
+Slide 28 from
+http://somabo.de/talks/200903_montreal_php_extension_writing.pdf
+
+- Arginfo usage example: ext/zip/php_zip.c from php.git (branch PHP-5.5)
+
+- Compile manually:
+
+----
+gcc -c -fpic  example.c example_wrap.c  -I/usr/include/php -I/usr/include/php/main -I/usr/include/php/TSRM -I/usr/include/php/Zend -I/usr/include/php/ext -I/usr/include/php/ext/date/lib
+gcc -shared  example.o  example_wrap.o  -o example.so
+----
+
+- Running the tests:
+
+----
+make check-php-test-suite
+make check-php-examples
+----
