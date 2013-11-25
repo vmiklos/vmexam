@@ -1,5 +1,5 @@
 virt-install \
-	--name=frugalware-current \
+	--name=frugalware \
 	--arch=x86_64 \
 	--vcpus=1 \
 	--ram=1024 \
@@ -7,8 +7,8 @@ virt-install \
 	--os-variant=virtio26 \
 	--connect=qemu:///system \
 	--network network=default \
-	--cdrom=/home/vmiklos/virt/frugalware-current/frugalware-current-x86_64-net.iso \
-	--disk path=/home/vmiklos/virt/frugalware-current/frugalware-current.img,size=40 \
+	--cdrom=/home/vmiklos/virt/frugalware/frugalware.iso \
+	--disk path=/home/vmiklos/virt/frugalware/frugalware.img,size=20 \
 	--accelerate \
 	--vnc \
 	--noautoconsole
