@@ -300,3 +300,11 @@ I/DocumentLoader(  808): debug, width is 480, height is 762
 ----
 ~/git/libreoffice/android/android-sdk-linux/platform-tools/adb forward tcp:1970 localabstract:android.sdk.controller
 ----
+
+== 2013-11-28
+
+- Find largest test docs:
+
+make -sr CppunitTest_sw_ooxmlexport <- edit cmdline to print stdout to 'out', and only stderr to normal log
+grep -v ^File out > out.csv
+sort -n -t, -k2 out.csv > sorted
