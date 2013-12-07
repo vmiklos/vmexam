@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# See https://bugzilla.novell.com/show_bug.cgi?id=848834#c9 for details, fixes
+# hangout on openSUSE 13.1.
+
+mv /opt/google/talkplugin/GoogleTalkPlugin /opt/google/talkplugin/GoogleTalkPlugin.bin
+echo '#!/bin/bash' > /opt/google/talkplugin/GoogleTalkPlugin
+echo 'LD_PRELOAD=/usr/lib64/libudev.so.0:$LD_PRELOAD /opt/google/talkplugin/GoogleTalkPlugin.bin "$@"' >> /opt/google/talkplugin/GoogleTalkPlugin
+chmod +x /opt/google/talkplugin/GoogleTalkPlugin
