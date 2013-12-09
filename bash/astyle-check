@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# This script can be symlinked as a pre-commit hook in a git repo.
+# Additionally, it also supports passing in filenames as cmdline parameters, like e.g. pep8 does.
+
+new=$(mktemp)
+function finish
+{
+	rm -rf "$new"
+}
+trap finish EXIT
+
+files="$@"
+if [ -z "$files" ]; then
+	files="$(git diff --name-only --cached)"
+fi
+for file in $files
+do
+	if ! echo $file |grep -q '\(cxx\|hxx\)$'; then
+		continue
+	fi
+	astyle --options=$HOME/.astyle.options < $file > $new
+	if ! diff -u $file $new; then
+		echo "You had some style errors."
+		exit 1
+	fi
+done
