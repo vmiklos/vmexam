@@ -1,0 +1,12 @@
+#!/bin/sh -e
+
+# For each file in the repo, find the author that created them, ignoring file
+# renames.
+
+IFS="
+"
+for i in $(git ls-files)
+do
+	author="$(git log --follow "$i"|grep ^Author|tail -n 1|sed 's/Author: //')"
+	echo "$i;$author"
+done
