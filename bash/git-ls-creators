@@ -2,11 +2,19 @@
 
 # For each file in the repo, find the author that created them, ignoring file
 # renames.
+# If the output is saved as $cache, incremental output is much faster.
+
+cache=creators.csv
 
 IFS="
 "
 for i in $(git ls-files)
 do
-	author="$(git log --follow "$i"|grep ^Author|tail -n 1|sed 's/Author: //')"
+	if [ -e $cache ]; then
+		author="$(grep "^$i;" $cache|sed "s|^$i;||")"
+	fi
+	if [ -z "$author" ]; then
+		author="$(git log --follow "$i"|grep ^Author|tail -n 1|sed 's/Author: //')"
+	fi
 	echo "$i;$author"
 done
