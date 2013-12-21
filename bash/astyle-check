@@ -10,6 +10,12 @@ function finish
 }
 trap finish EXIT
 
+fix=
+if [ "$1" == "--fix" ]; then
+	fix=1
+	shift
+fi
+
 files="$@"
 if [ -z "$files" ]; then
 	files="$(git diff --name-only --cached)"
@@ -21,7 +27,12 @@ do
 	fi
 	astyle --options=$HOME/.astyle.options < $file > $new
 	if ! diff -u $file $new; then
-		echo "You had some style errors."
+		if [ -n "$fix" ]; then
+			cat $new > $file
+			echo "Fixed the above errors."
+		else
+			echo "You had some style errors."
+		fi
 		exit 1
 	fi
 done
