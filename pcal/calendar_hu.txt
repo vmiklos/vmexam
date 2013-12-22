@@ -1,0 +1,32 @@
+# National holidays in Hungary of Dec 2010.
+#
+# Created by Ferenc Kruzslicz and Miklos Vajna
+# A bit of copy-and-paste from the Finnish settings
+#
+# add an asterisk (*) to the date to specify a non-work holiday
+
+opt -a hu               # set hungarian language
+opt -F Monday           # weeks start with Monday
+opt -z 1                # time zone should be GMT+1
+opt -n Helvetica/18     # larger event text so that it becomes readable
+opt -s 1:0:0            # Sun + holidays are red
+opt -b sat              # Sat is black
+
+# Predefined holidays were used wherever it was possible
+opt -A			# dates below are American-style
+year *			# following entries apply to every year
+# http://hu.wikipedia.org/wiki/Magyarorsz%C3%A1gi_%C3%BCnnepek_%C3%A9s_eml%C3%A9knapok_list%C3%A1ja
+Jan 01*
+Mar 15*
+Easter*	              Húsvét
+day after Easter*	      Húsvéthétfõ
+May 01*
+7th Sunday after Easter     Pünkösd
+8th Monday after Easter*    Pünkösdhétfõ
+Aug 20*
+Oct 23*
+Nov 01*
+Christmas*
+day after Christmas*
+
+all Monday in all       %w. hét
