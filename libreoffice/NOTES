@@ -306,5 +306,19 @@ I/DocumentLoader(  808): debug, width is 480, height is 762
 - Find largest test docs:
 
 make -sr CppunitTest_sw_ooxmlexport <- edit cmdline to print stdout to 'out', and only stderr to normal log
-grep -v ^File out > out.csv
+grep -v '^File' out > out.csv
 sort -n -t, -k2 out.csv > sorted
+
+== 2013-12-27
+
+\clmgf is: cell merge group first
+\clmrg: is cell merge resume group
+
+API to merge cells:
+
+oCursor = ThisComponent.TextTables(0).createCursorByCellName("A1")
+oCursor.gotoCellByName("B1", True)
+oCursor.mergeRange()
+
+From position to cell name:
+ThisComponent.TextTables(0).getCellByPosition(0, 0).CellName
