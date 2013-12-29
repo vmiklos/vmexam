@@ -322,3 +322,12 @@ oCursor.mergeRange()
 
 From position to cell name:
 ThisComponent.TextTables(0).getCellByPosition(0, 0).CellName
+
+== 2013-12-29
+
+fdo#41109
+
+dhgt: small -> further back
+shpz: 0 -> back, N -> top
+
+if they are conflicting, shpz has priority
