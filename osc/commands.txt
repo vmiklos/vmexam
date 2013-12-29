@@ -1,4 +1,4 @@
-osc build openSUSE_12.3
+osc build openSUSE_13.1
 osc vc
 osc commit
 
