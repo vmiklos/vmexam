@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# See
+# https://www.suse.com/releasenotes/i386/openSUSE/13.1/RELEASE-NOTES.en.html#sec.131.skype
+# for details, fixes skype on openSUSE 13.1.
+
+skype=$(type -p skype)
+mv ${skype} ${skype}.bin
+echo '#!/bin/bash' > ${skype}
+echo "PULSE_LATENCY_MSEC=30 ${skype}.bin \"\$@\"" >> ${skype}
+chmod +x ${skype}
