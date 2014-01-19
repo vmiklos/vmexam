@@ -1,4 +1,6 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+#include <iostream>
+
 #include <cppuhelper/bootstrap.hxx>
 #include <rtl/process.h>
 #include <sal/main.h>
@@ -18,8 +20,8 @@ SAL_IMPLEMENT_MAIN_WITH_ARGS(argc, argv)
     sal_Int32 nCount(rtl_getAppCommandArgCount());
     if (nCount < 1)
     {
-        SAL_DEBUG("usage: test -env:URE_MORE_TYPES=<office_types_rdb_url> <file_url> [<uno_connection_url>]");
-        SAL_DEBUG("example: test -env:URE_MORE_TYPES=\"file:///.../program/offapi.rdb\" \"file:///e:/temp/test.odt\"");
+        std::cerr << "usage: test -env:URE_MORE_TYPES=<office_types_rdb_url> <file_url> [<uno_connection_url>]" << std::endl;
+        std::cerr << "example: test -env:URE_MORE_TYPES=\"file:///.../program/offapi.rdb\" \"file:///e:/temp/test.odt\"" << std::endl;
         exit(1);
     }
     rtl_getAppCommandArg(0, &sDocUrl.pData);
@@ -34,7 +36,7 @@ SAL_IMPLEMENT_MAIN_WITH_ARGS(argc, argv)
     }
     catch (uno::Exception& e)
     {
-        SAL_DEBUG("cppu::defaultBootstrap_InitialComponentContext() failed: '" << e.Message << "'");
+        std::cerr << "cppu::defaultBootstrap_InitialComponentContext() failed: '" << e.Message << "'" << std::endl;
         exit(1);
     }
     uno::Reference<lang::XMultiComponentFactory> xMultiComponentFactory(xComponentContext->getServiceManager());
@@ -46,7 +48,7 @@ SAL_IMPLEMENT_MAIN_WITH_ARGS(argc, argv)
     }
     catch (uno::Exception& e)
     {
-        SAL_DEBUG("cannot establish a connection using '" << sConnectionString << "': " << e.Message);
+        std::cerr << "cannot establish a connection using '" << sConnectionString << "': " << e.Message << std::endl;
         exit(1);
     }
     xPropertySet->getPropertyValue("DefaultContext") >>= xComponentContext;
@@ -57,7 +59,7 @@ SAL_IMPLEMENT_MAIN_WITH_ARGS(argc, argv)
     sal_uInt32 nStartTime = osl_getGlobalTimer();
     uno::Reference<lang::XComponent> xComponent = xComponentLoader->loadComponentFromURL(sDocUrl, "_blank", 0,uno::Sequence<beans::PropertyValue>());
     sal_uInt32 nEndTime = osl_getGlobalTimer();
-    SAL_DEBUG("loadComponentFromURL() finished in " << nEndTime - nStartTime << " ms");
+    std::cout << "loadComponentFromURL() finished in " << nEndTime - nStartTime << " ms" << std::endl;
     return 0;
 }
 
