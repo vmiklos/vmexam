@@ -331,3 +331,11 @@ dhgt: small -> further back
 shpz: 0 -> back, N -> top
 
 if they are conflicting, shpz has priority
+
+== 2014-02-07
+
+How to get only the stdout of a unit test:
+
+----
+make CppunitTest_sw_ooxmlexport gb_CppunitTest__interactive=t 2>/dev/null
+----
