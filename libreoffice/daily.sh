@@ -17,3 +17,5 @@ git log -10 > $daily_dir/build-info.txt
 cd $daily_dir
 git add -A
 git commit -m "$date"
+# this takes around 2 minutes, to https://bitbucket.org/vmiklos/lo-daily
+git push
