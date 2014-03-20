@@ -337,5 +337,7 @@ if they are conflicting, shpz has priority
 How to get only the stdout of a unit test:
 
 ----
-make CppunitTest_sw_ooxmlexport gb_CppunitTest__interactive=t 2>/dev/null
+make CppunitTest_sw_ooxmlexport gb_CppunitTest__interactive=t 2>/dev/null |tee out
+grep -v File out > out2
+sort -t ',' -nk 2 out2
 ----
