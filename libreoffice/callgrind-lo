@@ -1,0 +1,5 @@
+# Based on Michael Meeks's howto-callgrind-ooo
+
+export OOO_EXIT_POST_STARTUP=1
+export OOO_DISABLE_RECOVERY=1
+valgrind --tool=callgrind ./soffice.bin --nologo "$@"
