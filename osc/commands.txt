@@ -7,3 +7,5 @@ zypper --root /var/chroot/opensuse-factory addrepo http://download.opensuse.org/
 zypper --root /var/chroot/opensuse-factory install -t pattern base
 
 zyp-file: https://github.com/benthaman/zyp-file
+
+downgrade after broken update: zypper in --oldpackage --from repo-oss pkg1 [ pkg2 ... ]
