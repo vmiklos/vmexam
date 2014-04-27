@@ -4,7 +4,7 @@ osc commit
 
 zypper factory bootstrap:
 zypper --root /var/chroot/opensuse-factory addrepo http://download.opensuse.org/factory/repo/oss/ repo-oss
-zypper --root /var/chroot/opensuse-factory install -t pattern base
+zypper --root /var/chroot/opensuse-factory install patterns-openSUSE-base
 
 zyp-file: https://github.com/benthaman/zyp-file
 
