@@ -19,7 +19,9 @@ curl -s $url |xmllint --format - >feed.xml
 c=3
 for i in $(grep media:content feed.xml|sed 's/.*url="\([^"]*\)".*/\1/')
 do
-	wget $i
+	base=$(echo $i|sed 's|\(.*\)/[^/]\+$|\1|')
+	file=$(echo $i|sed 's|.*/\([^/]\+\)$|\1|')
+	wget $base/s0/$file
 	comment=$(grep '<title' feed.xml|sed -n "s|<title>\(.*\)</title>|\1|;$c p")
 	# strip whitespace
 	comment=${comment#"${comment%%[! ]*}"}
