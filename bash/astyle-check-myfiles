@@ -6,7 +6,7 @@ cdup=$(git rev-parse --show-cdup)
 
 [ -n "$cdup" ] && cd $cdup
 
-for file in $(grep ';OK$' .git/myfiles.cache|sed 's/;.*//')
+for file in $(cat .git/myfiles.cache)
 do
 	astyle-check $file || exit 1
 done
