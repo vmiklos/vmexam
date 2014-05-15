@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+#
+# Example ~/.otrsrc:
+#
+# [https://localhost/otrs/rpc.pl]
+# soap_user = mycompany
+# soap_password = secret
+# prefix = bug#
+#
+
+#
+# Usage: ./otrs-id-lookup bug#12345
+#
+
+import ConfigParser
+import os
+import base64
+import urllib2
+import sys
+from xml.dom import minidom
+
+config = ConfigParser.RawConfigParser()
+config.read(os.path.expanduser('~/.otrsrc'))
+url = config.sections()[0]
+user = config.get(url, "soap_user")
+password = config.get(url, "soap_password")
+prefix = config.get(url, "prefix")
+number = sys.argv[1].replace(prefix, '')
+
+headers = {}
+headers['Authorization'] = 'Basic ' + base64.encodestring('%s:%s' % (user, password)).strip()
+headers['SOAPAction'] = '"Core#Dispatch"'
+headers['Content-Type'] = 'text/xml; charset=utf-8'
+
+body = """<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <SOAP-ENV:Body>
+    <ns1:Dispatch>
+      <param0 xsi:type="xsd:string">%s</param0>
+      <param1 xsi:type="xsd:string">%s</param1>
+      <param2 xsi:type="xsd:string">TicketObject</param2>
+      <param3 xsi:type="xsd:string">TicketIDLookup</param3>
+      <param4 xsi:type="xsd:string">TicketNumber</param4>
+      <param5 xsi:type="xsd:string">%s</param5>
+    </ns1:Dispatch>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>""" % (user, password, number)
+
+req = urllib2.Request(url, data=body, headers=headers)
+response = urllib2.urlopen(req)
+doc = minidom.parseString(response.read())
+# root -> soap:Envelope -> soap:Body -> DispatchResponse -> s-gensym3
+id = doc.childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].toxml().encode('utf-8')
+print "%s/index.pl?Action=AgentTicketZoom;TicketID=%s" % (url.replace('/rpc.pl', ''), id)
