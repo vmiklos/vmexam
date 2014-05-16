@@ -13,6 +13,7 @@ import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
+
 class Otrs(callbacks.Plugin):
     threaded = True
 
@@ -74,15 +75,13 @@ class Otrs(callbacks.Plugin):
         (recipients, text) = msg.args
         ticket_number = re.sub(".*%s([0-9]+).*" % self.prefix, r"\1", text)
         irc.reply(self._ticket_id(ticket_number), prefixNick=False)
-    
-    
+
     def doPrivmsg(self, irc, msg):
         (recipients, text) = msg.args
         if re.match(".*%s[0-9].*" % self.prefix, text):
             self._lookup_otrs(irc, msg)
         else:
             pass
-
 
 
 Class = Otrs

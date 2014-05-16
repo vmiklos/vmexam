@@ -7,6 +7,7 @@
 
 import supybot.conf as conf
 
+
 def configure(advanced):
     conf.registerPlugin('Otrs', True)
 
