@@ -341,5 +341,6 @@ Update myfiles.cache for astyle-check-myfiles:
 ----
 ~/git/vmexam/bash/git-ls-creators |tee creators-new.csv
 mv creators-new.csv creators.csv
-egrep "(cxx|hxx);.*$USER" creators.csv |sed 's/;.*//' > ~/myfiles
+egrep "(cxx|hxx);.*$USER" creators.csv |sed 's/;.*//' > ~/myfiles-new
+git diff --no-index myfiles.txt myfiles-new | grep ^+[^+] | grep -v sw/qa
 ----
