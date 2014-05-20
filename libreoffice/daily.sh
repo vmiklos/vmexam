@@ -9,6 +9,8 @@ daily_dir=$HOME/git/libreoffice/daily
 cd $daily_dir
 branch=$(git symbolic-ref -q HEAD)
 [ "${branch##*/}" == "master" ] || git checkout master
+# in case yesterday's build was done on an other machine
+git pull -r
 cd -
 
 rm -rf $daily_dir/opt
