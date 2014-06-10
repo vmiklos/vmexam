@@ -1,9 +1,0 @@
---enable-debug
---enable-dbgutil
---enable-compiler-plugins
---without-myspell-dicts
---without-help
-CC=clang
-CXX=clang++
-CFLAGS=-O0 -g0
-CXXFLAGS=-O0 -g0
