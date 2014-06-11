@@ -1,0 +1,8 @@
+#!/bin/sh
+
+work=$(mktemp -d)
+
+git grep '<xsl:template name='|sed 's/.*<xsl:template name="\(.*\)">/\1/' |sort > $work/all-templates
+git grep '<xsl:call-template name='|sed 's/.*<xsl:call-template name="\(.*\)".*/\1/'|sort -u > $work/used-templates
+diff -u $work/all-templates $work/used-templates
+rm -f $work/all-templates $work/used-templates
