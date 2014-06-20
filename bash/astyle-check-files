@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Runs astyle-check on each file, which is tracked as an "indented file".
+
+cdup=$(git rev-parse --show-cdup)
+
+[ -n "$cdup" ] && cd $cdup
+
+for file in $(cat .git/indented-files.cache)
+do
+	astyle-check $file || exit 1
+done
