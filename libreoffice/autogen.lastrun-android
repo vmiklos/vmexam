@@ -1,5 +1,0 @@
---with-distro=LibreOfficeAndroid
---build=x86_64-unknown-linux-gnu
---with-android-ndk=/home/vmiklos/git/libreoffice/android/android-ndk-r8e
---with-android-ndk-toolchain-version=4.7
---with-android-sdk=/home/vmiklos/git/libreoffice/android/android-sdk-linux

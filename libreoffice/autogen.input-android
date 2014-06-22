@@ -1,0 +1,8 @@
+--build=x86_64-unknown-linux-gnu
+--enable-werror
+--with-android-ndk=/home/vmiklos/git/libreoffice/master-android/android-ndk-r9d
+--with-android-ndk-toolchain-version=4.8
+--with-android-sdk=/home/vmiklos/git/libreoffice/master-android/android-sdk-linux
+--with-build-platform-configure-options=--with-system-jpeg=no
+--with-distro=LibreOfficeAndroid
+--disable-python
