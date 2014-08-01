@@ -8,5 +8,13 @@ cdup=$(git rev-parse --show-cdup)
 
 for file in $(cat .git/indented-files.cache)
 do
-	astyle-check $file || exit 1
+	case $file in
+	*.cxx|*.hxx)
+		astyle-check $file || exit 1
+		;;
+	*)
+		echo "unexpected extension"
+		exit 1
+	;;
+	esac
 done
