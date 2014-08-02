@@ -12,8 +12,11 @@ do
 	*.cxx|*.hxx)
 		astyle-check $file || exit 1
 		;;
+	*.py)
+		pep8 $file || exit 1
+		;;
 	*)
-		echo "unexpected extension"
+		echo "unexpected extension for file: $file"
 		exit 1
 	;;
 	esac
