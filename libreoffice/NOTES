@@ -336,11 +336,21 @@ sort -t ',' -nk 2 out2
 
 == 2014-05-16
 
-Update myfiles.cache for astyle-check-myfiles:
+Update indented-files.txt for style-check-files:
 
 ----
 ~/git/vmexam/bash/git-ls-creators |tee creators-new.csv
 mv creators-new.csv creators.csv
-egrep "(cxx|hxx);.*$USER" creators.csv |sed 's/;.*//' > ~/myfiles-new
-git diff --no-index myfiles.txt myfiles-new | grep ^+[^+] | grep -v sw/qa
+egrep "(cxx|hxx|py);.*$USER" creators.csv |sed 's/;.*//' > ~/indented-files-new
+git diff --no-index indented-files.txt indended-files-new | grep ^+[^+] | grep -v sw/qa
 ----
+
+== 2014-08-02
+
+Detecting unused imports and variables with pylint:
+
+----
+for i in *.py; do pylint -r n $i; done > out
+----
+
+and then search for 'used'.
