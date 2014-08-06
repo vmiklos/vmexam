@@ -44,8 +44,6 @@ writerfilter/source/ooxml/factory_ns.py
 writerfilter/source/ooxml/factoryimpl.py
 writerfilter/source/ooxml/factoryimpl_ns.py
 writerfilter/source/ooxml/factoryinc.py
-writerfilter/source/ooxml/fasttokens.py
-writerfilter/source/ooxml/gperffasttokenhandler.py
 writerfilter/source/ooxml/modelpreprocess.py
 writerfilter/source/ooxml/namespaceids.py
 writerfilter/source/ooxml/qnametostr.py
