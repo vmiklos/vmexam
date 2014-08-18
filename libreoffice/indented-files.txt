@@ -45,7 +45,6 @@ writerfilter/source/ooxml/factoryimpl.py
 writerfilter/source/ooxml/factoryimpl_ns.py
 writerfilter/source/ooxml/factoryinc.py
 writerfilter/source/ooxml/modelpreprocess.py
-writerfilter/source/ooxml/namespaceids.py
 writerfilter/source/ooxml/qnametostr.py
 writerfilter/source/ooxml/resourceids.py
 writerfilter/source/rtftok/rtfcharsets.cxx
