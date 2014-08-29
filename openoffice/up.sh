@@ -1,6 +1,6 @@
 time sh -c "git pull -r && \
 	autoconf && \
-	./configure --disable-epm --enable-category-b --with-package-format=archive
+	./configure --disable-epm --enable-category-b
 	make -f Makefile clean && \
 	rm -rf install && \
 	make -f Makefile && \
