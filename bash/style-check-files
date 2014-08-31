@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Runs astyle-check on each file, which is tracked as an "indented file".
+# Runs astyle-check/pep8/etc on each file, which is tracked as an "indented file".
 
 cdup=$(git rev-parse --show-cdup)
 
@@ -14,6 +14,13 @@ do
 		;;
 	*.py)
 		pep8 $file || exit 1
+
+		lint=$(pylint $file 2>/dev/null | egrep -i 'unused|indent')
+		if [ -n "$lint" ]; then
+			echo "$file"
+			echo "$lint"
+			exit 1
+		fi
 		;;
 	*)
 		echo "unexpected extension for file: $file"
