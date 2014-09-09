@@ -19,6 +19,6 @@ git log -10 > $daily_dir/build-info.txt
 cd $daily_dir
 git add -A
 git commit -m "$date"
-if git config remote.origin.url | grep -q bitbucket; then
+if git config remote.origin.url | grep -q dev-downloads; then
 	git push
 fi
