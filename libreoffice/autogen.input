@@ -1,4 +1,5 @@
 --enable-dbgutil
 --enable-werror
+--with-export-validation
 --with-gdrive-client-id=457862564325.apps.googleusercontent.com
 --with-gdrive-client-secret=GYWrDtzyZQZ0_g5YoBCC6F0I
