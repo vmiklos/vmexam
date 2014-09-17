@@ -1,8 +1,8 @@
 time sh -c "git pull -r && \
 	./autogen.sh && \
 	make clean && \
-	make &&
+	make build-nocheck &&
 	sh ~/git/vmexam/libreoffice/daily.sh && \
 	make tags && \
 	(cd instdir && ln -s $HOME/.config/libreofficedev/4/user) && \
-	make subsequentcheck" 2>&1 |tee log
+	make check" 2>&1 |tee log
