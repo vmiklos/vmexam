@@ -1,4 +1,5 @@
 # git clone git://git.apache.org/openoffice.git
+# tested in a Ubuntu 10.04 chroot, build breaks with a non-ancient toolchain
 time sh -c "git pull -r && \
 	autoconf && \
 	./configure --disable-epm
