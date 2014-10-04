@@ -354,3 +354,9 @@ for i in *.py; do pylint -r n $i; done > out
 ----
 
 and then search for 'used'.
+
+== 2014-10-04
+
+How ODF import decides between editeng and a Writer TextFrame:
+
+xmloff/source/text/XMLTextFrameContext.cxx, XMLTextFrameContext::XMLTextFrameContext()
