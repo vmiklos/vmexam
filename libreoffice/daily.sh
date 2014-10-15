@@ -16,9 +16,10 @@ cd -
 rm -rf $daily_dir/opt
 make cmd cmd="ooinstall --strip $daily_dir/opt"
 git log -10 > $daily_dir/build-info.txt
+commit=$(git rev-parse HEAD)
 cd $daily_dir
 git add -A
-git commit -m "$date"
+git commit -m "$date: source-hash-$commit"
 if git config remote.origin.url | grep -q dev-downloads; then
 	git push
 fi
