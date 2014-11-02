@@ -4,6 +4,7 @@
 # build failure.
 
 import sys, os
+import includetools
 
 def comment_line(lines, linenum):
 	lines[linenum] = "//%s" % lines[linenum]
@@ -31,6 +32,9 @@ sock.close()
 
 for i, line in enumerate(lines):
 	if not line.startswith("#include"):
+		continue
+	what = line.strip().replace("#include ", "")
+	if what in includetools.stdCppHeaders:
 		continue
 	lines = comment_line(lines, i)
 	if os.system(buildcmd) != 0:
