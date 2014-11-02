@@ -5,6 +5,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
+import os
+
+
 stdCppHeaders = [
     "<cstdlib>",
     "<csignal>",
@@ -113,5 +116,19 @@ stdCppHeaders = [
     "<wchar.h>",
     "<wctype.h>"
 ]
+
+
+def stripDirs(s):
+    return os.path.basename(s)
+
+
+def stripExt(s):
+    return '.'.join(s.split('.')[:-1])
+
+
+def isOwnHeader(iface, impl):
+    ifaceName = stripExt(stripDirs(iface.strip('"<>')))
+    implName = stripExt(stripDirs(impl))
+    return ifaceName == implName
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:

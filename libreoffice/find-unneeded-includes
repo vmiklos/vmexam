@@ -30,7 +30,7 @@ def uncomment_line(lines, linenum):
 try:
     buildcmd = sys.argv[1]
 except IndexError:
-    print """Example: find-unneeded-includes 'make -sr build -j8' source/filter/ww8/rtfsdrexport.cxx"""
+    print("""Example: find-unneeded-includes 'make -sr build -j8' source/filter/ww8/rtfsdrexport.cxx""")
     sys.exit(1)
 srcfile = sys.argv[2]
 
@@ -42,7 +42,7 @@ for i, line in enumerate(lines):
     if not line.startswith("#include"):
         continue
     what = line.strip().replace("#include ", "")
-    if what in includetools.stdCppHeaders:
+    if (what in includetools.stdCppHeaders) or (includetools.isOwnHeader(what, srcfile)):
         continue
     lines = comment_line(lines, i)
     if os.system(buildcmd) != 0:
