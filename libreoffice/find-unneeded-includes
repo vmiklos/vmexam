@@ -31,6 +31,8 @@ try:
     buildcmd = sys.argv[1]
 except IndexError:
     print("""Example: find-unneeded-includes 'make -sr build -j8' source/filter/ww8/rtfsdrexport.cxx""")
+    # More complex example would be:
+    # 'for i in $(grep cxx$ .git/indented-files.cache|grep -v qa); do ~/git/vmexam/libreoffice/find-unneeded-includes "make $(echo $i|sed 's|\([^/]\+\)/.*|\1|').build" $i; done'
     sys.exit(1)
 srcfile = sys.argv[2]
 
