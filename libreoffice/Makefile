@@ -1,2 +1,2 @@
 check:
-	pep8 includetools.py
+	pep8 --ignore=E501 includetools.py find-unneeded-includes
