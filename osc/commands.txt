@@ -1,11 +1,30 @@
+= openSUSE notes
+
+== osc
+
 osc build openSUSE_13.1
 osc vc
 osc commit
 
-zypper factory bootstrap:
+== zypper
+
+- zypper factory bootstrap:
+
 zypper --root /var/chroot/opensuse-factory addrepo http://download.opensuse.org/factory/repo/oss/ repo-oss
 zypper --root /var/chroot/opensuse-factory install patterns-openSUSE-base
 
-zyp-file: https://github.com/benthaman/zyp-file
+- zyp-file: https://github.com/benthaman/zyp-file
 
-downgrade after broken update: zypper in --oldpackage --from repo-oss pkg1 [ pkg2 ... ]
+- downgrade after broken update: zypper in --oldpackage --from repo-oss pkg1 [ pkg2 ... ]
+
+== Upgrade notes
+
+=== openSUSE 13.1 -> 13.2
+
+- virt-manager is broken by default
+
+https://bugzilla.suse.com/show_bug.cgi?id=901869
+
+TL;DR: zypper in typelib-1_0-Gtk-3_0 typelib-1_0-SpiceClientGtk-3_0 typelib-1_0-GtkVnc-2_0
+
+// vim: ft=asciidoc paste
