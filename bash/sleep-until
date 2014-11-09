@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+# sleep-until: sleeps until the next occurrence of a specific timestamp.
+#
+# Examples: if it's 11h, then "sleep-until 21:00" sleeps 10 hours.
+#           if it's 22h, then "sleep-until 21:00" usually sleeps 23 hours, unless there is a DST change, in which case it may 22 or 24 hours.
+#
+# Yes, this is a workaround of "date --date=" not accepting "next 21:00".
+#
+
+if [ -z "$1" ]; then
+    echo "usage: sleep-until <time>"
+    echo
+    echo "example: sleep-until 21:00"
+    exit 1
+else
+    t="$1"
+fi
+
+if [ $(($(date -d "$t" +%s) - $(date +%s))) -lt 0 ]; then
+    s="tomorrow $t"
+else
+    s="today $t"
+fi
+
+diff=$(($(date -d "$s" +%s) - $(date +%s)))
+
+echo "Sleeping for $((diff/3600))h$((diff/60%60))m$((diff%60))s"
+sleep $diff
+
+# vim:set shiftwidth=4 expandtab:
