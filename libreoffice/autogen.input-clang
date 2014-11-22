@@ -2,3 +2,4 @@ CC=clang
 CXX=clang++
 --enable-dbgutil
 --enable-werror
+--with-export-validation
