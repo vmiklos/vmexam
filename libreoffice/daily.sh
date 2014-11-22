@@ -14,7 +14,7 @@ git pull -r
 cd -
 
 rm -rf $daily_dir/opt
-make cmd cmd="ooinstall --strip $daily_dir/opt"
+make cmd cmd="solenv/bin/ooinstall --strip $daily_dir/opt"
 git log -10 > $daily_dir/build-info.txt
 commit=$(git rev-parse HEAD)
 cd $daily_dir
