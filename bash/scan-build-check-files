@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Runs scan-build on each file, which is tracked as an "indented file".
+
+cdup=$(git rev-parse --show-cdup)
+
+[ -n "$cdup" ] && cd $cdup
+
+rm -rf scan-build
+mkdir scan-build
+touch $(cat .git/indented-files.cache)
+scan-build --use-cc=clang --use-c++=clang++ -o $(pwd)/scan-build make build-nocheck
