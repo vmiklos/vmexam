@@ -1,0 +1,9 @@
+This is kind of my C++ "daily WTF".
+
+The question is always the same: "what will be the output"?
+
+0: You would expect that the output is a compile error, but given that
+Tmp::foo() is never called, the compiler won't say that calling run() on an
+int* is an error.
+
+(See <http://stackoverflow.com/questions/183108/is-object-code-generated-for-unused-template-class-methods>.)
