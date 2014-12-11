@@ -27,4 +27,8 @@ https://bugzilla.suse.com/show_bug.cgi?id=901869
 
 TL;DR: zypper in typelib-1_0-Gtk-3_0 typelib-1_0-SpiceClientGtk-3_0 typelib-1_0-GtkVnc-2_0
 
+- STL container pretty-printers do not work by default in gdb anymore (debuginfo uninstalled on upgrade?):
+
+Can be fixed with: 'zypper in libstdc++6-debuginfo'
+
 // vim: ft=asciidoc paste
