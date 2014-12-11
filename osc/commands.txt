@@ -31,4 +31,10 @@ TL;DR: zypper in typelib-1_0-Gtk-3_0 typelib-1_0-SpiceClientGtk-3_0 typelib-1_0-
 
 Can be fixed with: 'zypper in libstdc++6-debuginfo'
 
+- virt-resize is broken by default
+
+https://bugzilla.novell.com/show_bug.cgi?id=908632
+
+TL;DR: zypper -p http://download.opensuse.org/repositories/Virtualization/openSUSE_13.2/ in guestfs-data-1.26.9-163.1.x86_64
+
 // vim: ft=asciidoc paste
