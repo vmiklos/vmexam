@@ -31,6 +31,7 @@ sw/source/filter/ww8/rtfsdrexport.hxx
 sw/source/filter/ww8/rtfstringbuffer.cxx
 sw/source/filter/ww8/rtfstringbuffer.hxx
 sw/source/filter/ww8/sprmids.hxx
+writerfilter/inc/dmapper/DomainMapperFactory.hxx
 writerfilter/inc/rtftok/RTFDocument.hxx
 writerfilter/qa/cppunittests/rtftok/testrtftok.cxx
 writerfilter/source/dmapper/LatentStyleHandler.cxx
@@ -40,6 +41,7 @@ writerfilter/source/dmapper/SdtHelper.hxx
 writerfilter/source/dmapper/TableManager.cxx
 writerfilter/source/dmapper/TablePositionHandler.cxx
 writerfilter/source/dmapper/TablePositionHandler.hxx
+writerfilter/source/dmapper/domainmapperfactory.cxx
 writerfilter/source/filter/RtfFilter.cxx
 writerfilter/source/ooxml/factory_ns.py
 writerfilter/source/ooxml/factoryimpl.py
