@@ -6,4 +6,3 @@
 --with-android-sdk=/home/vmiklos/git/libreoffice/master-android/external/android-sdk-linux
 --with-build-platform-configure-options=--with-system-jpeg=no
 --with-distro=LibreOfficeAndroid
---disable-python
