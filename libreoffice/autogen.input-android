@@ -4,5 +4,4 @@
 --with-android-ndk=/home/vmiklos/git/libreoffice/master-android/external/android-ndk-r10d
 --with-android-ndk-toolchain-version=4.8
 --with-android-sdk=/home/vmiklos/git/libreoffice/master-android/external/android-sdk-linux
---with-build-platform-configure-options=--with-system-jpeg=no
 --with-distro=LibreOfficeAndroid
