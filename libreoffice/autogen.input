@@ -3,3 +3,5 @@
 --with-export-validation
 --with-gdrive-client-id=457862564325.apps.googleusercontent.com
 --with-gdrive-client-secret=GYWrDtzyZQZ0_g5YoBCC6F0I
+--with-onedrive-client-id=0000000040138EA7
+--with-onedrive-client-secret=jxr5qYTYaQnEuz32HEbvwFyShD4CxmsJ
