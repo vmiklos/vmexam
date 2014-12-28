@@ -1,0 +1,13 @@
+# Notes about hacking Android itself.
+
+# https://source.android.com/source/downloading.html
+# no git clone, have to use repo instead
+
+# https://source.android.com/source/building-running.html
+. build/envsetup.sh
+lunch aosp_arm-eng
+make -j$(getconf _NPROCESSORS_ONLN)
+
+# http://stackoverflow.com/questions/16947016/solvedaosp-build-and-sd-card
+mksdcard -l SdCard 1G MySd.img
+emulator -sdcard MySd.img
