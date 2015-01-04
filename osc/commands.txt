@@ -2,9 +2,16 @@
 
 == osc
 
-osc build openSUSE_13.1
+- Updating a package in OBS:
+
+osc build openSUSE_13.2
 osc vc
 osc commit
+
+- Updating its git mirror:
+
+cd $HOME/git/opensuse-packages
+bsgit fetch home:vmiklos/cpm
 
 == zypper
 
@@ -16,6 +23,10 @@ zypper --root /var/chroot/opensuse-factory install patterns-openSUSE-base
 - zyp-file: https://github.com/benthaman/zyp-file
 
 - downgrade after broken update: zypper in --oldpackage --from repo-oss pkg1 [ pkg2 ... ]
+
+- upgrade to some package from a custom repo:
+
+zypper -p http://download.opensuse.org/repositories/KDE:/Extra/openSUSE_13.1/ in gtk2-engine-oxygen-1.4.4-11.1.x86_64 gtk2-theme-oxygen-1.4.4-11.1.x86_64
 
 == Upgrade notes
 
