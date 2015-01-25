@@ -1,0 +1,14 @@
+SGD is Super Grub2 Disk, http://www.supergrubdisk.org/super-grub2-disk/
+
+I had to deal with a machine with broken RAID1 support in its BIOS, the
+workaround was to create a third drive that didn't do anything other than
+loading Grub2 itself and reading the config file from the mirror.
+
+The sgd_custom.cfg in this dir has to be dropped to the menus/ directory of
+the SGD source code, then ./supergrub-meta-mkrescue can produce a
+super_grub2_disk_hybrid_<version>.iso that can be copied to the third (boot)
+drive.
+
+Additionally, the custom config enables serial support in Grub2.
+
+Tested SGD version: 2.00s2.
