@@ -1,0 +1,14 @@
+= Vim notes
+
+Random vim notes...
+
+== Folding
+
+Without any additional markup, all C blocks are unfolded. You can change this
+temporarily with:
+
+- zc (fold close) folds the current block
+- zo (fold open) opens the current fold
+- za (fold auto) toggles between the two automatically
+
+http://vim.wikia.com/wiki/Syntax-based_folding
