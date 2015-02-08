@@ -1,0 +1,11 @@
+CC=/opt/rh/devtoolset-2/root/usr/bin/gcc
+CXX=/opt/rh/devtoolset-2/root/usr/bin/g++
+--with-distro=LibreOfficeLinux
+# no idea how to build a recent version of this on RHEL5 which has old python
+--without-doxygen
+# seems the devtoolset g++ is incompatible with the system C++ libs or something like that
+--disable-kde
+# no help.git
+--without-help
+# no dictionaries.git
+--without-myspell-dicts
