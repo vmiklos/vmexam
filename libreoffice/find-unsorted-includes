@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Dumb script which just tries to sort your includes. The ideal order is:
+#
+# 1. Own header (foo.hxx for foo.cxx).
+# 2. C system headers.
+# 3. C++ system headers.
+# 4. External libraries' .hxx files.
+# 5. Internal .hxx files.
+#
+# For now just make sure that if there is an own header, it's the first.
+
+import sys
+import os
+import includetools
+
+args = sys.argv[1:]
+try:
+    srcfile = args[0]
+except IndexError:
+    print("""Example: find-unsorted-includes source/filter/ww8/rtfsdrexport.cxx""")
+    # More complex example would be:
+    # 'for i in $(grep cxx$ .git/indented-files.cache|grep -v qa); do ~/git/vmexam/libreoffice/find-unsorted-includes $i; done'
+    sys.exit(1)
+
+sock = open(srcfile)
+lines = sock.readlines()
+sock.close()
+
+firstInclude = True
+for i, line in enumerate(lines):
+    if not line.startswith("#include"):
+        continue
+    what = line.strip().replace("#include ", "")
+    if includetools.isOwnHeader(what, srcfile) and not firstInclude:
+        print("""%s:%s: own header is not the first one""" % (srcfile, (i + 1)))
+        sys.exit(1)
+    if firstInclude:
+        firstInclude = False
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:

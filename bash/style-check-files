@@ -11,6 +11,7 @@ do
 	case $file in
 	*.cxx|*.hxx)
 		astyle-check $file || exit 1
+		find-unsorted-includes $file || exit 1
 		;;
 	*.py)
 		pep8 $file || exit 1
