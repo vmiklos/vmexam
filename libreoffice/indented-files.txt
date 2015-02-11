@@ -16,6 +16,7 @@ sw/inc/textboxhelper.hxx
 sw/qa/extras/rtfexport/rtfexport.cxx
 sw/qa/extras/rtfimport/rtfimport.cxx
 sw/source/core/doc/textboxhelper.cxx
+sw/source/filter/rtf/swparrtf.cxx
 sw/source/filter/ww8/docxsdrexport.cxx
 sw/source/filter/ww8/docxsdrexport.hxx
 sw/source/filter/ww8/docxtablestyleexport.cxx
