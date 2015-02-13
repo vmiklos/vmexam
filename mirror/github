@@ -9,9 +9,8 @@ def system(cmd):
     os.system("%s 2>&1 |tee -a mirror.log" % cmd)
 
 os.chdir(os.path.dirname(__file__))
-sock = urllib.urlopen('https://api.github.com/users/%s/repos' % os.environ['USER'])
+sock = urllib.urlopen('https://api.github.com/users/%s/repos?per_page=100' % os.environ['USER'])
 repos = json.load(sock)
-repos.append({'name': '%s.github.com' % os.environ['USER'], 'git_url': 'git://github.com/%s/%s.github.com.git' % (os.environ['USER'], os.environ['USER'])})
 for i in repos:
     if os.path.exists("%s.git" % i['name']):
         system("echo Updating existing repo %s" % i['name'])
