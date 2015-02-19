@@ -48,4 +48,12 @@ https://bugzilla.novell.com/show_bug.cgi?id=908632
 
 TL;DR: zypper -p http://download.opensuse.org/repositories/Virtualization/openSUSE_13.2/ in guestfs-data-1.26.9-163.1.x86_64
 
+=== openSUSE 13.2 -> openSUSE Factory
+
+- cpm fails to build
+
+https://bugzilla.novell.com/show_bug.cgi?id=918553
+
+Fixed in <24 hours. :-)
+
 // vim: ft=asciidoc paste
