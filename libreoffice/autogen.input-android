@@ -1,3 +1,5 @@
+# No --enable-dbgutil due to slow linking, but then otherwise non-debug and debug versions wouldn't overwrite each other.
+--with-android-package-name=org.libreoffice
 --enable-werror
 --with-android-ndk=/home/vmiklos/git/libreoffice/master-android/external/android-ndk-r10d
 --with-android-sdk=/home/vmiklos/git/libreoffice/master-android/external/android-sdk-linux
