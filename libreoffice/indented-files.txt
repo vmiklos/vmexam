@@ -45,7 +45,7 @@ writerfilter/source/dmapper/TablePositionHandler.cxx
 writerfilter/source/dmapper/TablePositionHandler.hxx
 writerfilter/source/dmapper/domainmapperfactory.cxx
 writerfilter/source/filter/RtfFilter.cxx
-writerfilter/source/filter/RtfFilter.hxx
+writerfilter/source/filter/WriterFilter.cxx
 writerfilter/source/ooxml/factory_ns.py
 writerfilter/source/ooxml/factoryimpl.py
 writerfilter/source/ooxml/factoryimpl_ns.py
