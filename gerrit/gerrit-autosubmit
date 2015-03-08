@@ -9,10 +9,14 @@ import json
 import os
 import subprocess
 
-server = "logerrit"
-project = "core"
-# server = "opensuse-gerrit"
-# project = "test"
+def get_config(key):
+    sock = subprocess.Popen(["git", "config", "-f", ".gitreview", key], stdout=subprocess.PIPE)
+    ret = sock.stdout.readline().strip()
+    sock.stdout.close()
+    return ret
+
+server = get_config("gerrit.host")
+project = get_config("gerrit.project")
 
 sock = subprocess.Popen(["ssh", server, "gerrit", "stream-events"], stdout=subprocess.PIPE, bufsize=1)
 
