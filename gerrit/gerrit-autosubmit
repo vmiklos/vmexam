@@ -5,16 +5,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-#
-# The planned workflow is:
-# 1) Push patch to gerrit.
-# 2) Mark as code-review-+2
-# 3) Wait for build-verification.
-# 4) Submit if 3) succeeded.
-#
-# This script is supposed to be running all the time, then can automate step 4).
-#
-
 import json
 import os
 import subprocess
