@@ -11,7 +11,10 @@ osc commit
 - Updating its git mirror:
 
 cd $HOME/git/opensuse-packages
-bsgit fetch home:vmiklos/cpm
+git checkout gtimelog
+$HOME/git/bsgit/bsgit.py fetch home:vmiklos/gtimelog
+git merge remotes/api.opensuse.org/home/vmiklos/gtimelog
+git push origin
 
 == zypper
 
