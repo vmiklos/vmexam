@@ -9,6 +9,7 @@ import json
 import os
 import subprocess
 
+
 def get_config(key):
     sock = subprocess.Popen(["git", "config", "-f", ".gitreview", key], stdout=subprocess.PIPE)
     ret = sock.stdout.readline().strip()
