@@ -17,6 +17,7 @@ def get_config(key):
 
 server = get_config("gerrit.host")
 project = get_config("gerrit.project")
+branch = get_config("gerrit.defaultbranch")
 
 sock = subprocess.Popen(["ssh", server, "gerrit", "stream-events"], stdout=subprocess.PIPE, bufsize=1)
 
@@ -29,7 +30,7 @@ for line in iter(sock.stdout.readline, b''):
         continue
     if event['change']['project'] != project:
         continue
-    if event['change']['branch'] != "master":
+    if event['change']['branch'] != branch:
         continue
     if 'approvals' not in event.keys():
         continue
