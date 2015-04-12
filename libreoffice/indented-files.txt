@@ -8,6 +8,7 @@ oox/source/shape/WpgContext.cxx
 oox/source/shape/WpgContext.hxx
 oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
+sd/qa/unit/tiledrendering/tiledrendering.cxx
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
 starmath/source/wordexportbase.cxx
