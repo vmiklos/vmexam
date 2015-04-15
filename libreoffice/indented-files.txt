@@ -11,11 +11,13 @@ oox/source/shape/WpsContext.hxx
 sd/qa/unit/tiledrendering/tiledrendering.cxx
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
+starmath/source/unofilter.cxx
 starmath/source/wordexportbase.cxx
 svl/source/items/grabbagitem.cxx
 sw/inc/textboxhelper.hxx
 sw/qa/extras/rtfexport/rtfexport.cxx
 sw/qa/extras/rtfimport/rtfimport.cxx
+sw/qa/extras/tiledrendering/tiledrendering.cxx
 sw/source/core/doc/textboxhelper.cxx
 sw/source/filter/rtf/swparrtf.cxx
 sw/source/filter/ww8/docxsdrexport.cxx
