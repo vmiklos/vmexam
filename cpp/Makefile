@@ -1,2 +1,2 @@
 json: json.cc Makefile
-	g++ -o json json.cc
+	g++ -std=c++11 -o json json.cc

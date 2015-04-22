@@ -13,7 +13,15 @@ int main()
     aTree.put(boost::property_tree::ptree::path_type("SearchItem.Backward/value", '/'), false);
     std::stringstream aStream;
     boost::property_tree::write_json(aStream, aTree);
-    std::cout << "debug, json is '" << aStream.str() << "'";
+    std::cout << "json is " << aStream.str() << std::endl;
+
+    for (const std::pair<std::string, boost::property_tree::ptree>& rPair : aTree)
+    {
+        const std::string& rType = rPair.second.get<std::string>("type");
+        const std::string& rValue = rPair.second.get<std::string>("value");
+        std::cout << "key is " << rPair.first << ", type is " << rType << ", value is " << rValue << std::endl;
+    }
+
     return 0;
 }
 
