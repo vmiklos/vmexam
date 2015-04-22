@@ -2,7 +2,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
-// Example on how to produce JSON using Boost.PropertyTree.
+// Example on how to read/write JSON using Boost.PropertyTree.
 
 int main()
 {
@@ -14,6 +14,8 @@ int main()
     std::stringstream aStream;
     boost::property_tree::write_json(aStream, aTree);
     std::cout << "json is " << aStream.str() << std::endl;
+
+    boost::property_tree::read_json(aStream, aTree);
 
     for (const std::pair<std::string, boost::property_tree::ptree>& rPair : aTree)
     {
