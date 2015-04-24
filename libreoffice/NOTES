@@ -366,3 +366,5 @@ xmloff/source/text/XMLTextFrameContext.cxx, XMLTextFrameContext::XMLTextFrameCon
 Clang AST dump:
 
 clang++ -Xclang -ast-dump -fsyntax-only test.cc
+
+https://kevinaboos.wordpress.com/2013/07/23/clang-tutorial-part-ii-libtooling-example/
