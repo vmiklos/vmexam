@@ -360,3 +360,9 @@ and then search for 'used'.
 How ODF import decides between editeng and a Writer TextFrame:
 
 xmloff/source/text/XMLTextFrameContext.cxx, XMLTextFrameContext::XMLTextFrameContext()
+
+== 2015-04-24
+
+Clang AST dump:
+
+clang++ -Xclang -ast-dump -fsyntax-only test.cc
