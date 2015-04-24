@@ -1,0 +1,3 @@
+Example usage:
+
+	./rename -old-name=foo -new-name=bar test.c --
