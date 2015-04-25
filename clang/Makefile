@@ -3,5 +3,6 @@ CLANGWARNS=-Werror -Wall -Wno-missing-braces -Wnon-virtual-dtor -Wendif-labels -
 # TODO check if all of these are necessary
 CLANGLIBS=$(shell llvm-config --libs) -lclangAnalysis -lclangARCMigrate -lclangASTMatchers -lclangAST -lclangBasic -lclangCodeGen -lclangDriver -lclangDynamicASTMatchers -lclangEdit -lclangFormat -lclangFrontend -lclangFrontendTool -lclangIndex -lclangLex -lclangParse -lclangRewriteFrontend -lclangRewrite -lclangSema -lclangSerialization -lclangStaticAnalyzerCheckers -lclangStaticAnalyzerCore -lclangStaticAnalyzerFrontend -lclangTooling
 
-rename: rename.cxx Makefile
-	clang++ -g $(CLANGWARNS) $(CLANGDEFS) -std=c++11 $(CLANGLIBS) -o rename rename.cxx
+bin/rename: rename.cxx Makefile
+	@mkdir -p bin
+	clang++ -g $(CLANGWARNS) $(CLANGDEFS) -std=c++11 $(CLANGLIBS) -o bin/rename rename.cxx

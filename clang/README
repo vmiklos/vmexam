@@ -1,3 +1,7 @@
 Example usage:
 
-	./rename -old-name=foo -new-name=bar test.c --
+	bin/rename -old-name=foo -new-name=bar test.c --
+
+If you get missing includes:
+
+	ln -s /usr/lib64
