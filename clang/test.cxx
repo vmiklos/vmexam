@@ -1,5 +1,3 @@
-#include <iostream>
-
 class C
 {
 public:
@@ -14,7 +12,7 @@ int main(void)
 {
     C aC;
     aC.nX = 1;
-    std::cerr << aC.nX << std::endl;
+    int y = aC.nX;
     return 0;
 }
 
