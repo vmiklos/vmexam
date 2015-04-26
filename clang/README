@@ -1,6 +1,7 @@
 Example usage:
 
-	bin/rename -old-name=foo -new-name=bar test.c --
+	bin/rename -type=function -old-name=foo -new-name=bar test.c --
+	bin/rename -type=field -old-name=C::nX -new-name=m_nX test.cxx --
 
 If you get missing includes:
 
