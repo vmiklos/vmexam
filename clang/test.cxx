@@ -2,8 +2,10 @@ class C
 {
 public:
     int nX;
+    int nY;
     C()
-        : nX(0)
+        : nX(0),
+        nY(0)
     {
     }
 };
