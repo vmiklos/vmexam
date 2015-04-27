@@ -81,6 +81,13 @@ public:
         return true;
     }
 
+    /*
+     * class C
+     * {
+     * public:
+     *     int nX; <- Handles this declaration.
+     * };
+     */
     bool VisitFieldDecl(clang::FieldDecl* pDecl)
     {
         if (mrRewriter.getType() == RenameType::Field)
@@ -89,6 +96,30 @@ public:
             std::string aName = pDecl->getQualifiedNameAsString();
             if (aName == mrRewriter.getOldName())
                 mrRewriter.ReplaceText(pDecl->getLocation(), pDecl->getNameAsString().length(), mrRewriter.getNewName());
+        }
+        return true;
+    }
+
+    /*
+     * C::C()
+     *     : nX(0) <- Handles this initializer.
+     * {
+     * }
+     */
+    bool VisitCXXConstructorDecl(clang::CXXConstructorDecl* pDecl)
+    {
+        if (mrRewriter.getType() == RenameType::Field)
+        {
+            for (clang::CXXConstructorDecl::init_const_iterator it = pDecl->init_begin(); it != pDecl->init_end(); ++it)
+            {
+                const clang::CXXCtorInitializer* pInitializer = *it;
+                if (const clang::FieldDecl* pFieldDecl = pInitializer->getAnyMember())
+                {
+                    std::string aName = pFieldDecl->getQualifiedNameAsString();
+                    if (aName == mrRewriter.getOldName())
+                        mrRewriter.ReplaceText(pInitializer->getSourceLocation(), pFieldDecl->getNameAsString().length(), mrRewriter.getNewName());
+                }
+            }
         }
         return true;
     }
