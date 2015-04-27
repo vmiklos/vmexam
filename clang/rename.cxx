@@ -7,27 +7,16 @@
 #include <clang/Tooling/CommonOptionsParser.h>
 #include <clang/Tooling/Tooling.h>
 
-enum class RenameType
-{
-    Function,
-    Field
-};
-
 class RenameRewriter : public clang::Rewriter
 {
     std::string maOldName;
     std::string maNewName;
-    RenameType meType;
 
 public:
-    RenameRewriter(const std::string& rOldName, const std::string& rNewName, const std::string& rType)
+    RenameRewriter(const std::string& rOldName, const std::string& rNewName)
         : maOldName(rOldName),
         maNewName(rNewName)
     {
-        if (rType == "function")
-            meType = RenameType::Function;
-        else if (rType == "field")
-            meType = RenameType::Field;
     }
 
     const std::string& getOldName()
@@ -38,11 +27,6 @@ public:
     const std::string& getNewName()
     {
         return maNewName;
-    }
-
-    RenameType getType()
-    {
-        return meType;
     }
 };
 
@@ -56,31 +40,6 @@ public:
     {
     }
 
-    bool VisitFunctionDecl(clang::FunctionDecl* pDecl)
-    {
-        if (mrRewriter.getType() == RenameType::Function)
-        {
-            std::string aName = pDecl->getNameInfo().getName().getAsString();
-            if (aName == mrRewriter.getOldName())
-                mrRewriter.ReplaceText(pDecl->getLocation(), aName.length(), mrRewriter.getNewName());
-        }
-        return true;
-    }
-
-    bool VisitCallExpr(clang::CallExpr* pExpr)
-    {
-        if (mrRewriter.getType() == RenameType::Function)
-        {
-            const clang::FunctionDecl* pDecl = pExpr->getDirectCallee();
-            if (!pDecl)
-                return true;
-            std::string aName = pDecl->getNameInfo().getName().getAsString();
-            if (aName == mrRewriter.getOldName())
-                mrRewriter.ReplaceText(pExpr->getLocStart(), aName.length(), mrRewriter.getNewName());
-        }
-        return true;
-    }
-
     /*
      * class C
      * {
@@ -90,13 +49,10 @@ public:
      */
     bool VisitFieldDecl(clang::FieldDecl* pDecl)
     {
-        if (mrRewriter.getType() == RenameType::Field)
-        {
-            // Qualified name includes "C::" as a prefix, normal name does not.
-            std::string aName = pDecl->getQualifiedNameAsString();
-            if (aName == mrRewriter.getOldName())
-                mrRewriter.ReplaceText(pDecl->getLocation(), pDecl->getNameAsString().length(), mrRewriter.getNewName());
-        }
+        // Qualified name includes "C::" as a prefix, normal name does not.
+        std::string aName = pDecl->getQualifiedNameAsString();
+        if (aName == mrRewriter.getOldName())
+            mrRewriter.ReplaceText(pDecl->getLocation(), pDecl->getNameAsString().length(), mrRewriter.getNewName());
         return true;
     }
 
@@ -108,17 +64,14 @@ public:
      */
     bool VisitCXXConstructorDecl(clang::CXXConstructorDecl* pDecl)
     {
-        if (mrRewriter.getType() == RenameType::Field)
+        for (clang::CXXConstructorDecl::init_const_iterator it = pDecl->init_begin(); it != pDecl->init_end(); ++it)
         {
-            for (clang::CXXConstructorDecl::init_const_iterator it = pDecl->init_begin(); it != pDecl->init_end(); ++it)
+            const clang::CXXCtorInitializer* pInitializer = *it;
+            if (const clang::FieldDecl* pFieldDecl = pInitializer->getAnyMember())
             {
-                const clang::CXXCtorInitializer* pInitializer = *it;
-                if (const clang::FieldDecl* pFieldDecl = pInitializer->getAnyMember())
-                {
-                    std::string aName = pFieldDecl->getQualifiedNameAsString();
-                    if (aName == mrRewriter.getOldName())
-                        mrRewriter.ReplaceText(pInitializer->getSourceLocation(), pFieldDecl->getNameAsString().length(), mrRewriter.getNewName());
-                }
+                std::string aName = pFieldDecl->getQualifiedNameAsString();
+                if (aName == mrRewriter.getOldName())
+                    mrRewriter.ReplaceText(pInitializer->getSourceLocation(), pFieldDecl->getNameAsString().length(), mrRewriter.getNewName());
             }
         }
         return true;
@@ -169,9 +122,6 @@ int main(int argc, const char** argv)
     llvm::cl::opt<std::string> aNewName("new-name",
                                         llvm::cl::desc("New name"),
                                         llvm::cl::cat(aCategory));
-    llvm::cl::opt<std::string> aType("type",
-                                     llvm::cl::desc("Type (default: function, other possible value: field"),
-                                     llvm::cl::cat(aCategory));
     clang::tooling::CommonOptionsParser aParser(argc, argv, aCategory);
     if (aOldName.empty())
     {
@@ -186,7 +136,7 @@ int main(int argc, const char** argv)
 
     clang::tooling::ClangTool aTool(aParser.getCompilations(), aParser.getSourcePathList());
 
-    RenameRewriter aRewriter(aOldName, aNewName, aType);
+    RenameRewriter aRewriter(aOldName, aNewName);
     RenameFrontendAction aAction(aRewriter);
     std::unique_ptr<clang::tooling::FrontendActionFactory> pFactory = clang::tooling::newFrontendActionFactory(&aAction);
     return aTool.run(pFactory.get());
