@@ -76,6 +76,22 @@ public:
         }
         return true;
     }
+
+    /*
+     * C aC;
+     * aC.nX = 1; <- Handles e.g. this...
+     * int y = aC.nX; <- ...and this.
+     */
+    bool VisitMemberExpr(clang::MemberExpr* pExpr)
+    {
+        if (clang::ValueDecl* pDecl = pExpr->getMemberDecl())
+        {
+            std::string aName = pDecl->getQualifiedNameAsString();
+            if (aName == mrRewriter.getOldName())
+                mrRewriter.ReplaceText(pExpr->getMemberLoc(), pDecl->getNameAsString().length(), mrRewriter.getNewName());
+        }
+        return true;
+    }
 };
 
 class RenameASTConsumer : public clang::ASTConsumer
