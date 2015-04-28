@@ -1,14 +1,10 @@
-class C
+#include "test.hxx"
+
+C::C()
+    : nX(0),
+      nY(0)
 {
-public:
-    int nX;
-    int nY;
-    C()
-        : nX(0),
-        nY(0)
-    {
-    }
-};
+}
 
 int main(void)
 {
