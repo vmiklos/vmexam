@@ -106,10 +106,15 @@ public:
 
     virtual void HandleTranslationUnit(clang::ASTContext& rContext)
     {
+        if (rContext.getDiagnostics().hasErrorOccurred())
+            return;
+
         RenameVisitor aVisitor(mrRewriter);
         mrRewriter.setSourceMgr(rContext.getSourceManager(), rContext.getLangOpts());
         aVisitor.TraverseDecl(rContext.getTranslationUnitDecl());
-        mrRewriter.getEditBuffer(rContext.getSourceManager().getMainFileID()).write(llvm::errs());
+
+        for (clang::Rewriter::buffer_iterator it = mrRewriter.buffer_begin(); it != mrRewriter.buffer_end(); ++it)
+            mrRewriter.getEditBuffer(it->first).write(llvm::errs());
     }
 };
 
