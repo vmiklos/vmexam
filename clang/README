@@ -5,3 +5,7 @@ Example usage:
 If you get missing includes:
 
 	ln -s /usr/lib64
+
+Once the rewriting is done, you can overwrite the original files with the .new ones with:
+
+	for i in $(find . -name "*.new"); do mv -f $i ${i%%.new}; done

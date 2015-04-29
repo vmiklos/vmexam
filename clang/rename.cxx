@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 
 #include <clang/AST/ASTConsumer.h>
 #include <clang/AST/ASTContext.h>
@@ -11,11 +12,13 @@ class RenameRewriter : public clang::Rewriter
 {
     std::string maOldName;
     std::string maNewName;
+    bool mbDump;
 
 public:
-    RenameRewriter(const std::string& rOldName, const std::string& rNewName)
+    RenameRewriter(const std::string& rOldName, const std::string& rNewName, bool bDump)
         : maOldName(rOldName),
-        maNewName(rNewName)
+        maNewName(rNewName),
+        mbDump(bDump)
     {
     }
 
@@ -27,6 +30,11 @@ public:
     const std::string& getNewName()
     {
         return maNewName;
+    }
+
+    bool getDump()
+    {
+        return mbDump;
     }
 };
 
@@ -98,6 +106,14 @@ class RenameASTConsumer : public clang::ASTConsumer
 {
     RenameRewriter& mrRewriter;
 
+    std::string getNewName(const clang::FileEntry& rEntry)
+    {
+        std::stringstream ss;
+        ss << rEntry.getName();
+        ss << ".new";
+        return ss.str();
+    }
+
 public:
     RenameASTConsumer(RenameRewriter& rRewriter)
         : mrRewriter(rRewriter)
@@ -114,7 +130,21 @@ public:
         aVisitor.TraverseDecl(rContext.getTranslationUnitDecl());
 
         for (clang::Rewriter::buffer_iterator it = mrRewriter.buffer_begin(); it != mrRewriter.buffer_end(); ++it)
-            mrRewriter.getEditBuffer(it->first).write(llvm::errs());
+        {
+            if (mrRewriter.getDump())
+                it->second.write(llvm::errs());
+            else
+            {
+                const clang::FileEntry* pEntry = rContext.getSourceManager().getFileEntryForID(it->first);
+                if (!pEntry)
+                    continue;
+                std::string aNewName = getNewName(*pEntry);
+                std::string aError;
+                std::unique_ptr<llvm::raw_fd_ostream> pStream(new llvm::raw_fd_ostream(aNewName.c_str(), aError, llvm::sys::fs::F_None));
+                if (aError.empty())
+                    it->second.write(*pStream);
+            }
+        }
     }
 };
 
@@ -138,11 +168,14 @@ int main(int argc, const char** argv)
 {
     llvm::cl::OptionCategory aCategory("rename options");
     llvm::cl::opt<std::string> aOldName("old-name",
-                                        llvm::cl::desc("Old name"),
+                                        llvm::cl::desc("Old, qualified name (Class::member)."),
                                         llvm::cl::cat(aCategory));
     llvm::cl::opt<std::string> aNewName("new-name",
-                                        llvm::cl::desc("New name"),
+                                        llvm::cl::desc("New, non-qualified name (without Class::)."),
                                         llvm::cl::cat(aCategory));
+    llvm::cl::opt<bool> bDump("dump",
+                              llvm::cl::desc("Dump output on the console instead of writing to .new files."),
+                              llvm::cl::cat(aCategory));
     clang::tooling::CommonOptionsParser aParser(argc, argv, aCategory);
     if (aOldName.empty())
     {
@@ -157,7 +190,7 @@ int main(int argc, const char** argv)
 
     clang::tooling::ClangTool aTool(aParser.getCompilations(), aParser.getSourcePathList());
 
-    RenameRewriter aRewriter(aOldName, aNewName);
+    RenameRewriter aRewriter(aOldName, aNewName, bDump);
     RenameFrontendAction aAction(aRewriter);
     std::unique_ptr<clang::tooling::FrontendActionFactory> pFactory = clang::tooling::newFrontendActionFactory(&aAction);
     return aTool.run(pFactory.get());
