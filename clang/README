@@ -1,11 +1,25 @@
 Example usage:
 
-	bin/rename -old-name=C::nX -new-name=m_nX test.cxx --
+----
+bin/rename -old-name=C::nX -new-name=m_nX test.cxx --
+----
 
 If you get missing includes:
 
-	ln -s /usr/lib64
+----
+ln -s /usr/lib64
+----
+
+LibreOffice integration example (provided that rename-wrapper is in your PATH):
+
+----
+make -sr -j8 COMPILER_EXTERNAL_TOOL=1 FORCE_COMPILE_ALL=1 CCACHE_PREFIX=rename-wrapper RENAME_ARGS="-old-name=writerfilter::rtftok::RTFValue::m_sValue -new-name=m_aValue"
+----
 
 Once the rewriting is done, you can overwrite the original files with the .new ones with:
 
-	for i in $(find . -name "*.new"); do mv -f $i ${i%%.new}; done
+----
+for i in $(find . -name "*.new"); do mv -f $i ${i%%.new}; done
+----
+
+// vim: ft=asciidoc

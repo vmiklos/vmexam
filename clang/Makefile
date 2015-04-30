@@ -3,7 +3,6 @@ CLANGWARNS=-Werror -Wall -Wno-missing-braces -Wnon-virtual-dtor -Wendif-labels -
 CLANGLIBS = -lLLVMSupport -lclangAST -lclangBasic -lclangFrontend -lclangRewrite -lclangTooling
 
 bin/rename: rename.cxx Makefile
-	@mkdir -p bin
 	clang++ -g $(CLANGWARNS) $(CLANGDEFS) -std=c++11 $(CLANGLIBS) -o bin/rename rename.cxx
 
 # vim: set noet sw=4 ts=4:

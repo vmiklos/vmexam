@@ -1,0 +1,21 @@
+#!/bin/bash
+
+mydir=$(dirname $0)
+if [ -h $0 ]; then
+    mydir=$(dirname $(readlink -f $0))
+fi
+
+c=
+for i in "$@"
+do
+    if [ "$i" = "-c" ]; then
+        c=1
+    elif [ -n "$c" ]; then
+        file=$i
+        break
+    fi
+done
+
+exec $mydir/rename $RENAME_ARGS $file -- "$@"
+
+# vi:set shiftwidth=4 expandtab:
