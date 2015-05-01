@@ -10,26 +10,20 @@
 
 class RenameRewriter : public clang::Rewriter
 {
-    std::string maOldName;
-    std::string maNewName;
+    /// Old names -> new names map.
+    std::map<std::string, std::string> maNameMap;
     bool mbDump;
 
 public:
-    RenameRewriter(const std::string& rOldName, const std::string& rNewName, bool bDump)
-        : maOldName(rOldName),
-        maNewName(rNewName),
+    RenameRewriter(const std::map<std::string, std::string>& rNameMap, bool bDump)
+        : maNameMap(rNameMap),
         mbDump(bDump)
     {
     }
 
-    const std::string& getOldName()
+    const std::map<std::string, std::string>& getNameMap()
     {
-        return maOldName;
-    }
-
-    const std::string& getNewName()
-    {
-        return maNewName;
+        return maNameMap;
     }
 
     bool getDump()
@@ -59,8 +53,9 @@ public:
     {
         // Qualified name includes "C::" as a prefix, normal name does not.
         std::string aName = pDecl->getQualifiedNameAsString();
-        if (aName == mrRewriter.getOldName())
-            mrRewriter.ReplaceText(pDecl->getLocation(), pDecl->getNameAsString().length(), mrRewriter.getNewName());
+        const std::map<std::string, std::string>::const_iterator it = mrRewriter.getNameMap().find(aName);
+        if (it != mrRewriter.getNameMap().end())
+            mrRewriter.ReplaceText(pDecl->getLocation(), pDecl->getNameAsString().length(), it->second);
         return true;
     }
 
@@ -72,14 +67,15 @@ public:
      */
     bool VisitCXXConstructorDecl(clang::CXXConstructorDecl* pDecl)
     {
-        for (clang::CXXConstructorDecl::init_const_iterator it = pDecl->init_begin(); it != pDecl->init_end(); ++it)
+        for (clang::CXXConstructorDecl::init_const_iterator itInit = pDecl->init_begin(); itInit != pDecl->init_end(); ++itInit)
         {
-            const clang::CXXCtorInitializer* pInitializer = *it;
+            const clang::CXXCtorInitializer* pInitializer = *itInit;
             if (const clang::FieldDecl* pFieldDecl = pInitializer->getAnyMember())
             {
                 std::string aName = pFieldDecl->getQualifiedNameAsString();
-                if (aName == mrRewriter.getOldName())
-                    mrRewriter.ReplaceText(pInitializer->getSourceLocation(), pFieldDecl->getNameAsString().length(), mrRewriter.getNewName());
+                const std::map<std::string, std::string>::const_iterator it = mrRewriter.getNameMap().find(aName);
+                if (it != mrRewriter.getNameMap().end())
+                    mrRewriter.ReplaceText(pInitializer->getSourceLocation(), pFieldDecl->getNameAsString().length(), it->second);
             }
         }
         return true;
@@ -95,8 +91,9 @@ public:
         if (clang::ValueDecl* pDecl = pExpr->getMemberDecl())
         {
             std::string aName = pDecl->getQualifiedNameAsString();
-            if (aName == mrRewriter.getOldName())
-                mrRewriter.ReplaceText(pExpr->getMemberLoc(), pDecl->getNameAsString().length(), mrRewriter.getNewName());
+            const std::map<std::string, std::string>::const_iterator it = mrRewriter.getNameMap().find(aName);
+            if (it != mrRewriter.getNameMap().end())
+                mrRewriter.ReplaceText(pExpr->getMemberLoc(), pDecl->getNameAsString().length(), it->second);
         }
         return true;
     }
@@ -190,7 +187,9 @@ int main(int argc, const char** argv)
 
     clang::tooling::ClangTool aTool(aParser.getCompilations(), aParser.getSourcePathList());
 
-    RenameRewriter aRewriter(aOldName, aNewName, bDump);
+    std::map<std::string, std::string> aNameMap;
+    aNameMap[aOldName] = aNewName;
+    RenameRewriter aRewriter(aNameMap, bDump);
     RenameFrontendAction aAction(aRewriter);
     std::unique_ptr<clang::tooling::FrontendActionFactory> pFactory = clang::tooling::newFrontendActionFactory(&aAction);
     return aTool.run(pFactory.get());

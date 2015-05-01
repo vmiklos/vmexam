@@ -21,7 +21,7 @@ Cons:
 Example usage:
 
 ----
-bin/rename -old-name=C::nX -new-name=m_nX test.cxx --
+bin/rename -dump -old-name=C::nX -new-name=m_nX test.cxx --
 ----
 
 If you get missing includes:
