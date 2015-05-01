@@ -7,11 +7,19 @@ C::C()
 {
 }
 
+int foo(int x)
+{
+    return x;
+}
+
+#define FOO(a) foo(a)
+
 int main(void)
 {
     C aC;
     aC.nX = 1;
     int y = aC.nX;
+    FOO(aC.nX);
     return 0;
 }
 

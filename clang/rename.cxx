@@ -94,7 +94,17 @@ public:
             std::string aName = pDecl->getQualifiedNameAsString();
             const std::map<std::string, std::string>::const_iterator it = mrRewriter.getNameMap().find(aName);
             if (it != mrRewriter.getNameMap().end())
-                mrRewriter.ReplaceText(pExpr->getMemberLoc(), pDecl->getNameAsString().length(), it->second);
+            {
+                clang::SourceLocation aLocation = pExpr->getMemberLoc();
+                if (pExpr->getMemberLoc().isMacroID())
+                    /*
+                     * int foo(int x);
+                     * #define FOO(a) foo(a)
+                     * FOO(aC.nX); <- Handles this.
+                     */
+                    aLocation = mrRewriter.getSourceMgr().getImmediateSpellingLoc(aLocation);
+                mrRewriter.ReplaceText(aLocation, pDecl->getNameAsString().length(), it->second);
+            }
         }
         return true;
     }
