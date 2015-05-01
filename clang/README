@@ -32,10 +32,20 @@ ln -s /usr/lib64
 
 == Build system integration
 
-LibreOffice integration example (provided that rename-wrapper is in your PATH):
+LibreOffice integration example with csv handling, provided that:
+
+- rename-wrapper is in your PATH
+- rename.csv is something like in your HOME:
 
 ----
-make -sr -j8 COMPILER_EXTERNAL_TOOL=1 FORCE_COMPILE_ALL=1 CCACHE_PREFIX=rename-wrapper RENAME_ARGS="-old-name=writerfilter::rtftok::RTFValue::m_sValue -new-name=m_aValue"
+C::nX,m_nX
+C::nY,m_nY
+----
+
+Then run:
+
+----
+make -sr -j8 COMPILER_EXTERNAL_TOOL=1 FORCE_COMPILE_ALL=1 CCACHE_PREFIX=rename-wrapper RENAME_ARGS="-csv=$HOME/rename.csv"
 ----
 
 Once the rewriting is done, you can overwrite the original files with the .new ones with:

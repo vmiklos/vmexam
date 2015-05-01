@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <sstream>
 
@@ -161,6 +162,38 @@ public:
     }
 };
 
+/// Parses rCsv and puts the first two column of it into rNameMap.
+static void parseCsv(const std::string& rCsv, std::map<std::string, std::string>& rNameMap)
+{
+    std::ifstream aStream(rCsv);
+    if (!aStream.is_open())
+    {
+        std::cerr << "parseCsv: failed to open " << rCsv << std::endl;
+        return;
+    }
+
+    std::string aLine;
+    while (std::getline(aStream, aLine))
+    {
+        std::stringstream ss(aLine);
+        std::string aOldName;
+        if (!std::getline(ss, aOldName, ','))
+        {
+            std::cerr << "parseCsv: first std::getline() failed for line '" << aLine << "'" << std::endl;
+            return;
+        }
+        std::string aNewName;
+        if (!std::getline(ss, aNewName, ','))
+        {
+            std::cerr << "parseCsv: second std::getline() failed for line '" << aLine << "'" << std::endl;
+            return;
+        }
+        rNameMap[aOldName] = aNewName;
+    }
+
+    aStream.close();
+}
+
 int main(int argc, const char** argv)
 {
     llvm::cl::OptionCategory aCategory("rename options");
@@ -170,25 +203,27 @@ int main(int argc, const char** argv)
     llvm::cl::opt<std::string> aNewName("new-name",
                                         llvm::cl::desc("New, non-qualified name (without Class::)."),
                                         llvm::cl::cat(aCategory));
+    llvm::cl::opt<std::string> aCsv("csv",
+                                    llvm::cl::desc("Path to a CSV file, containing multiple renames -- seprator must be a comma (,)."),
+                                    llvm::cl::cat(aCategory));
     llvm::cl::opt<bool> bDump("dump",
                               llvm::cl::desc("Dump output on the console instead of writing to .new files."),
                               llvm::cl::cat(aCategory));
     clang::tooling::CommonOptionsParser aParser(argc, argv, aCategory);
-    if (aOldName.empty())
+
+    std::map<std::string, std::string> aNameMap;
+    if (!aOldName.empty() && !aNewName.empty())
+        aNameMap[aOldName] = aNewName;
+    else if (!aCsv.empty())
+        parseCsv(aCsv, aNameMap);
+    else
     {
-        std::cerr << "no old name provided." << std::endl;
-        return 1;
-    }
-    else if (aNewName.empty())
-    {
-        std::cerr << "no new name provided." << std::endl;
+        std::cerr << "either -old-name + -new-name or -csv is required." << std::endl;
         return 1;
     }
 
     clang::tooling::ClangTool aTool(aParser.getCompilations(), aParser.getSourcePathList());
 
-    std::map<std::string, std::string> aNameMap;
-    aNameMap[aOldName] = aNewName;
     RenameRewriter aRewriter(aNameMap, bDump);
     RenameFrontendAction aAction(aRewriter);
     std::unique_ptr<clang::tooling::FrontendActionFactory> pFactory = clang::tooling::newFrontendActionFactory(&aAction);
