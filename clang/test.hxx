@@ -3,6 +3,7 @@ class C
 public:
     int nX;
     int nY;
+    int nZ;
     C();
 };
 
