@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <set>
 #include <sstream>
 
 #include <clang/AST/ASTConsumer.h>
@@ -36,6 +37,10 @@ public:
 class RenameVisitor : public clang::RecursiveASTVisitor<RenameVisitor>
 {
     RenameRewriter& mrRewriter;
+    // A set of handled locations, so in case a location would be handled
+    // multiple times due to macro usage, we only do the rewrite once.
+    // Otherwise an A -> BA replacement would be done twice.
+    std::set<clang::SourceLocation> maHandledLocations;
 
 public:
     explicit RenameVisitor(RenameRewriter& rRewriter)
@@ -103,7 +108,11 @@ public:
                      * FOO(aC.nX); <- Handles this.
                      */
                     aLocation = mrRewriter.getSourceMgr().getImmediateSpellingLoc(aLocation);
-                mrRewriter.ReplaceText(aLocation, pDecl->getNameAsString().length(), it->second);
+                if (maHandledLocations.find(aLocation) == maHandledLocations.end())
+                {
+                    mrRewriter.ReplaceText(aLocation, pDecl->getNameAsString().length(), it->second);
+                    maHandledLocations.insert(aLocation);
+                }
             }
         }
         return true;
