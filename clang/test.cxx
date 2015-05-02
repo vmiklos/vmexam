@@ -3,8 +3,14 @@
 C::C()
     : nX(0),
       nY(0),
-      nZ(0)
+      nZ(0),
+      pX(0)
 {
+}
+
+C::~C()
+{
+    DELETEZ( pX );
 }
 
 int foo(int x)
