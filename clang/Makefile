@@ -4,6 +4,6 @@ CLANGFLAGS = $(CLANGDEFS) $(CLANGWARNS) -g -std=c++11
 CLANGLIBS = -lLLVMSupport -lclangAST -lclangBasic -lclangFrontend -lclangRewrite -lclangTooling
 
 bin/rename: rename.cxx Makefile
-	clang++ $(CLANGFLAGS) $(CLANGLIBS) -o $@ rename.cxx
+	clang++ $(CLANGFLAGS) $(CLANGLIBS) -o $@ $<
 
 # vim: set noet sw=4 ts=4:
