@@ -6,4 +6,7 @@ CLANGLIBS = -lLLVMSupport -lclangAST -lclangBasic -lclangFrontend -lclangRewrite
 bin/rename: rename.cxx Makefile
 	clang++ $(CLANGFLAGS) $(CLANGLIBS) -o $@ $<
 
+bin/find-unprefixed-members: find-unprefixed-members.cxx Makefile
+	clang++ $(CLANGFLAGS) $(CLANGLIBS) -o $@ $<
+
 # vim: set noet sw=4 ts=4:

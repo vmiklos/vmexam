@@ -54,4 +54,14 @@ Once the rewriting is done, you can overwrite the original files with the .new o
 for i in $(find . -name "*.new"); do mv -f $i ${i%%.new}; done
 ----
 
+== Generating the CSV input
+
+For large classes, generating the CSV input may make sense if the rename logic
+can be automated. E.g. making sure that all members have the `m_` prefix can
+be done with this command:
+
+----
+bin/find-unprefixed-members -class-name=ns::C test.cxx --
+----
+
 // vim: ft=asciidoc
