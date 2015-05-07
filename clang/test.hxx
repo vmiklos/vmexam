@@ -1,9 +1,7 @@
 class C
 {
 public:
-    int nX;
-    int nY;
-    int nZ;
+    int nX, nY, nZ;
     int* pX;
     C();
     ~C();
@@ -14,22 +12,15 @@ namespace ns
 class C
 {
 public:
-    int nX;
-    int mnY;
-    int m_nZ;
+    int nX, mnY, m_nZ;
 
-    C()
-    {
-    }
+    C() { }
 };
 }
 
 #define DELETEZ( p )    ( delete p,p = 0 )
 
-void sal_detail_logFormat(char const * /*area*/, char const * /*where*/, char const * /*format*/, ...)
-{
-}
-
+void sal_detail_logFormat(char const * /*area*/, char const * /*where*/, char const * /*format*/, ...) { }
 #define SAL_DETAIL_LOG_FORMAT(condition, area, ...) \
     do { \
         if (condition) { \
