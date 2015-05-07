@@ -26,6 +26,7 @@ int main(void)
     aC.nX = 1;
     int y = aC.nX;
     FOO(aC.nX);
+    OSL_ENSURE(aC.nX, "test");
     return 0;
 }
 
