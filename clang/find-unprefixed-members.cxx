@@ -62,12 +62,9 @@ public:
         if (m_rContext.match(pRecord->getQualifiedNameAsString()))
         {
             std::string aName = pDecl->getNameAsString();
-            if (aName.find("m_") != 0)
+            if (aName.find("m") != 0)
             {
-                if (aName.find("m") == 0)
-                    aName.insert(1, "_");
-                else
-                    aName.insert(0, "m_");
+                aName.insert(0, "m_");
                 std::cout << pRecord->getQualifiedNameAsString() << "::" << pDecl->getNameAsString() << "," << aName << std::endl;
                 m_bFound = true;
             }
