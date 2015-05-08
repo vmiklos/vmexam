@@ -1,0 +1,23 @@
+== Generating the CSV input
+
+For large classes, generating the CSV input may make sense if the rename logic
+can be automated. E.g. making sure that all members have the `m_` prefix can
+be done with this command:
+
+----
+bin/find-unprefixed-members -class-name=ns::C test.cxx --
+----
+
+Or the build system equivalent -- first touch one file that includes the class, then:
+
+----
+make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper RENAME_ARGS="-class-name=ClassName"
+----
+
+Prefix example:
+
+----
+make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper RENAME_ARGS="-class-prefix=Sw"
+----
+
+// vim: ft=asciidoc
