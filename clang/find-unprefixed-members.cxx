@@ -10,14 +10,35 @@
 #include <clang/Tooling/CommonOptionsParser.h>
 #include <clang/Tooling/Tooling.h>
 
-class Visitor : public clang::RecursiveASTVisitor<Visitor>
+class Context
 {
     std::string m_aClassName;
+    std::string m_aClassPrefix;
+
+public:
+    Context(const std::string& rClassName, const std::string& rClassPrefix)
+        : m_aClassName(rClassName),
+          m_aClassPrefix(rClassPrefix)
+    {
+    }
+
+    bool match(const std::string& rName) const
+    {
+        if (m_aClassName == "")
+            return rName.find(m_aClassPrefix) == 0;
+        else
+            return rName == m_aClassName;
+    }
+};
+
+class Visitor : public clang::RecursiveASTVisitor<Visitor>
+{
+    const Context m_rContext;
     bool m_bFound;
 
 public:
-    Visitor(const std::string& rClassName)
-        : m_aClassName(rClassName),
+    Visitor(const Context& rContext)
+        : m_rContext(rContext),
           m_bFound(false)
     {
     }
@@ -38,7 +59,7 @@ public:
     {
         clang::RecordDecl* pRecord = pDecl->getParent();
 
-        if (pRecord->getQualifiedNameAsString() == m_aClassName)
+        if (m_rContext.match(pRecord->getQualifiedNameAsString()))
         {
             std::string aName = pDecl->getNameAsString();
             if (aName.find("m_") != 0)
@@ -59,11 +80,11 @@ public:
 
 class ASTConsumer : public clang::ASTConsumer
 {
-    std::string m_aClassName;
+    const Context& m_rContext;
 
 public:
-    ASTConsumer(const std::string& rClassName)
-        : m_aClassName(rClassName)
+    ASTConsumer(const Context& rContext)
+        : m_rContext(rContext)
     {
     }
 
@@ -72,7 +93,7 @@ public:
         if (rContext.getDiagnostics().hasErrorOccurred())
             return;
 
-        Visitor aVisitor(m_aClassName);
+        Visitor aVisitor(m_rContext);
         aVisitor.TraverseDecl(rContext.getTranslationUnitDecl());
         if (aVisitor.getFound())
             exit(1);
@@ -81,17 +102,17 @@ public:
 
 class FrontendAction
 {
-    std::string m_aClassName;
+    const Context& m_rContext;
 
 public:
-    FrontendAction(const std::string& rClassName)
-        : m_aClassName(rClassName)
+    FrontendAction(const Context& rContext)
+        : m_rContext(rContext)
     {
     }
 
     clang::ASTConsumer* newASTConsumer()
     {
-        return new ASTConsumer(m_aClassName);
+        return new ASTConsumer(m_rContext);
     }
 };
 
@@ -101,17 +122,21 @@ int main(int argc, const char** argv)
     llvm::cl::opt<std::string> aClassName("class-name",
                                           llvm::cl::desc("Qualified name (namespace::Class)."),
                                           llvm::cl::cat(aCategory));
+    llvm::cl::opt<std::string> aClassPrefix("class-prefix",
+                                            llvm::cl::desc("Qualified name prefix (e.g. namespace::Cl)."),
+                                            llvm::cl::cat(aCategory));
     clang::tooling::CommonOptionsParser aParser(argc, argv, aCategory);
 
-    if (aClassName.empty())
+    if (aClassName.empty() && aClassPrefix.empty())
     {
-        std::cerr << "-class-name is required." << std::endl;
+        std::cerr << "-class-name or -class-prefix is required." << std::endl;
         return 1;
     }
 
     clang::tooling::ClangTool aTool(aParser.getCompilations(), aParser.getSourcePathList());
 
-    FrontendAction aAction(aClassName);
+    Context aContext(aClassName, aClassPrefix);
+    FrontendAction aAction(aContext);
     std::unique_ptr<clang::tooling::FrontendActionFactory> pFactory = clang::tooling::newFrontendActionFactory(&aAction);
     return aTool.run(pFactory.get());
 }
