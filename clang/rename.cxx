@@ -107,7 +107,7 @@ public:
                      * #define FOO(a) foo(a)
                      * FOO(aC.nX); <- Handles this.
                      */
-                    aLocation = mrRewriter.getSourceMgr().getImmediateSpellingLoc(aLocation);
+                    aLocation = mrRewriter.getSourceMgr().getSpellingLoc(aLocation);
                 if (maHandledLocations.find(aLocation) == maHandledLocations.end())
                 {
                     mrRewriter.ReplaceText(aLocation, pDecl->getNameAsString().length(), it->second);
