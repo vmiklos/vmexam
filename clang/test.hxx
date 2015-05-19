@@ -6,6 +6,8 @@ public:
     static const int aS[];
     C();
     ~C();
+
+    static const int* getS() { return aS; }
 };
 
 namespace ns
