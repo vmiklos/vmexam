@@ -73,6 +73,33 @@ public:
         return true;
     }
 
+    /*
+     * class C
+     * {
+     * public:
+     *     static const int aS[]; <- Handles e.g. this declaration;
+     * };
+     */
+    bool VisitVarDecl(clang::VarDecl* pDecl)
+    {
+        if (!pDecl->getQualifier())
+            return true;
+
+        clang::RecordDecl* pRecord = pDecl->getQualifier()->getAsType()->getAsCXXRecordDecl();
+
+        if (m_rContext.match(pRecord->getQualifiedNameAsString()))
+        {
+            std::string aName = pDecl->getNameAsString();
+            if (aName.find("m") != 0)
+            {
+                aName.insert(0, "m_");
+                std::cout << pRecord->getQualifiedNameAsString() << "::" << pDecl->getNameAsString() << "," << aName << std::endl;
+                m_bFound = true;
+            }
+        }
+
+        return true;
+    }
 };
 
 class ASTConsumer : public clang::ASTConsumer
