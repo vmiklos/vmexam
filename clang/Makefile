@@ -9,4 +9,7 @@ bin/rename: rename.cxx Makefile
 bin/find-unprefixed-members: find-unprefixed-members.cxx Makefile
 	clang++ $(CLANGFLAGS) $(CLANGLIBS) -o $@ $<
 
+test: Makefile
+	clang++ -o test test.cxx
+
 # vim: set noet sw=4 ts=4:

@@ -66,6 +66,22 @@ public:
     }
 
     /*
+     * class C
+     * {
+     * public:
+     *     static const int aS[]; <- Handles e.g. this declaration;
+     * };
+     */
+    bool VisitVarDecl(clang::VarDecl* pDecl)
+    {
+        std::string aName = pDecl->getQualifiedNameAsString();
+        const std::map<std::string, std::string>::const_iterator it = mrRewriter.getNameMap().find(aName);
+        if (it != mrRewriter.getNameMap().end())
+            mrRewriter.ReplaceText(pDecl->getLocation(), pDecl->getNameAsString().length(), it->second);
+        return true;
+    }
+
+    /*
      * C::C()
      *     : nX(0) <- Handles this initializer.
      * {
