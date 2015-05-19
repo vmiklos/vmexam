@@ -3,6 +3,7 @@ class C
 public:
     int nX, nY, nZ;
     int* pX;
+    static const int aS[];
     C();
     ~C();
 };

@@ -1,5 +1,9 @@
 #include "test.hxx"
 
+const int C::aS[] = {
+    0
+};
+
 C::C()
     : nX(0),
       nY(0),
