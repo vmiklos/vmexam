@@ -133,6 +133,40 @@ public:
         }
         return true;
     }
+
+    /*
+     * class C
+     * {
+     * public:
+     *     static const int aS[];
+     *     static const int* getS() { return aS; } <- Handles this.
+     * };
+     */
+    bool VisitDeclRefExpr(clang::DeclRefExpr* pExpr)
+    {
+        if (clang::ValueDecl* pDecl = pExpr->getDecl())
+        {
+            std::string aName = pDecl->getQualifiedNameAsString();
+            const std::map<std::string, std::string>::const_iterator it = mrRewriter.getNameMap().find(aName);
+            if (it != mrRewriter.getNameMap().end())
+            {
+                clang::SourceLocation aLocation = pExpr->getLocation();
+                if (aLocation.isMacroID())
+                    /*
+                     * int foo(int x);
+                     * #define FOO(a) foo(a)
+                     * FOO(aC.nX); <- Handles this.
+                     */
+                    aLocation = mrRewriter.getSourceMgr().getSpellingLoc(aLocation);
+                if (maHandledLocations.find(aLocation) == maHandledLocations.end())
+                {
+                    mrRewriter.ReplaceText(aLocation, pDecl->getNameAsString().length(), it->second);
+                    maHandledLocations.insert(aLocation);
+                }
+            }
+        }
+        return true;
+    }
 };
 
 class RenameASTConsumer : public clang::ASTConsumer
