@@ -1,5 +1,6 @@
 cppcanvas/qa/extras/emfplus/emfplus.cxx
 filter/source/msfilter/rtfutil.cxx
+include/comphelper/propertyvalue.hxx
 include/svl/grabbagitem.hxx
 oox/source/drawingml/customshapepresetdata.cxx
 oox/source/shape/LockedCanvasContext.cxx
