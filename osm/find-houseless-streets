@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+import sys
+
+def main():
+    sock = open("out/streets.csv")
+    first = True
+    streets = []
+    for line in sock.readlines():
+        if first:
+            first = False
+            continue
+        cols = line.strip().split("\t")
+        streets.append(cols[1])
+    streets = sorted(set(streets))
+    sock.close()
+
+    sock = open("out/street-housenumbers.csv")
+    first = True
+    streetsWithHouses = []
+    for line in sock.readlines():
+        if first:
+            first = False
+            continue
+        cols = line.strip().split("\t")
+        if len(cols[1]): # FIXME data to fix in OSM
+            streetsWithHouses.append(cols[1])
+    streetsWithHouses = sorted(set(streetsWithHouses))
+    sock.close()
+
+    streetsWithoutHouses = [street for street in streets if street not in streetsWithHouses]
+    # FIXME data to fix, too?
+    # assert len(streets) == len(streetsWithHouses) + len(streetsWithoutHouses)
+
+    # for street in streetsWithHouses:
+    #     print(street)
+
+    if "-s" in sys.argv:
+        print("%s streets in total." % len(streets))
+        print("%s streets have at least one house number." % len(streetsWithHouses))
+        print("%s streets have no house number." % len(streetsWithoutHouses))
+        print("Coverage is %s%%." % round(float(len(streetsWithHouses)) * 100 / len(streets)))
+    else:
+        for street in streetsWithoutHouses:
+            print(street)
+
+if __name__ == "__main__":
+    main()
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
