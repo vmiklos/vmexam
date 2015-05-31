@@ -1,0 +1,2 @@
+[out:csv(::id, name)]  [timeout:425];
+area[name="Sasad"];way(area)[highway][name];out;
