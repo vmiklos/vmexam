@@ -29,15 +29,16 @@ def main():
             continue
         cols = line.strip().split("\t")
         if len(cols[1]):
-            streetsWithHouses.append(cols[1])
+            # Ignore house numbers outside this area (ideally we shouldn't even get these).
+            if cols[1] in streets:
+                streetsWithHouses.append(cols[1])
         else:
             print("WARNING: '%s': house number without addr:street, please fix!" % cols[2])
     streetsWithHouses = sorted(set(streetsWithHouses))
     sock.close()
 
     streetsWithoutHouses = [street for street in streets if street not in streetsWithHouses]
-    # FIXME data to fix?
-    # assert len(streets) == len(streetsWithHouses) + len(streetsWithoutHouses)
+    assert len(streets) == len(streetsWithHouses) + len(streetsWithoutHouses)
 
     # for street in streetsWithHouses:
     #     print(street)
