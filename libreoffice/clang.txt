@@ -1,3 +1,5 @@
+= LO clang notes
+
 == Generating the CSV input
 
 For large classes, generating the CSV input may make sense if the rename logic
@@ -18,6 +20,20 @@ Prefix example:
 
 ----
 make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper RENAME_ARGS="-class-prefix=Sw"
+----
+
+== Frequently used commandlines
+
+Detect unprefixed members:
+
+----
+make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper RENAME_ARGS="-class-name=SdrDragView"
+----
+
+Rename them:
+
+----
+make build-nocheck COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=rename-wrapper RENAME_ARGS="-csv=$HOME/rename.csv"
 ----
 
 // vim: ft=asciidoc
