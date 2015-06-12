@@ -1,8 +1,0 @@
-The planned workflow is:
-1) Push patch to gerrit.
-2) Mark as code-review-+2
-3) Wait for build-verification.
-4) Submit if 3) succeeded.
-
-1) and 2) is handled by git-breview.
-gerrit-autosubmit is supposed to be running all the time, then can automate 4).
