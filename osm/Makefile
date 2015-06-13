@@ -3,4 +3,4 @@ update-house-numbers:
 	./overpass-query region-street-housenumbers.txt > out/street-housenumbers.csv
 
 check:
-	pep8 --ignore=E501 overpass-query
+	pep8 --ignore=E501 find-houseless-streets overpass-query
