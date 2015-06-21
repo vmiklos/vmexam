@@ -71,11 +71,9 @@ for i in config.sections():
 			elif j.startswith("entry") and j.endswith("type"):
 				t = config.get(i, j)
 			elif j.startswith("entry") and j.endswith("text"):
-				pass
-			elif j.startswith("entry") and j.endswith("textunicode"):
 				if not t:
 					print "warning, text without type!"
-				v = Contact.fromutf16(config.get(i, j))
+				v = config.get(i, j).decode('utf-8').strip('"')
 				if t == "LastName":
 					c["Family Name"] = v
 				elif t in ("Name", "FirstName"):
@@ -104,6 +102,8 @@ for i in config.sections():
 				elif t == "Custom1":
 					c["Address 1 - Type"] = "Home"
 					c["Address 1 - Extended Address"] = v
+                                elif t == "NumberMessaging":
+                                    assert(len(v) == 0)
 				else:
 					print "warning, unknown entry type '%s'" % t
 				t = None
