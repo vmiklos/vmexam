@@ -31,6 +31,26 @@ zypper --root /var/chroot/opensuse-factory install patterns-openSUSE-base
 
 zypper -p http://download.opensuse.org/repositories/KDE:/Extra/openSUSE_13.1/ in gtk2-engine-oxygen-1.4.4-11.1.x86_64 gtk2-theme-oxygen-1.4.4-11.1.x86_64
 
+== cubox-i
+
+- attach screen:
+
+screen /dev/ttyUSB0 115200
+
+- re-generate boot.scr (in /boot):
+
+mkimage -C none -A arm -T script -d boot.script boot.scr
+
+- raid1 root:
+
+edit /etc/dracut.conf.d/01-dist.conf, comment out hostonly=
+
+- special dracut problem because the kernel version ends with "-i", just run:
+
+dracut --force
+
+without any parameters, and it'll work.
+
 == Upgrade notes
 
 === openSUSE 13.1 -> 13.2
