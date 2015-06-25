@@ -5,6 +5,7 @@
 - Updating a package in OBS:
 
 osc build openSUSE_13.2
+(for ARM: osc build --alternative-project=openSUSE:13.2 ports)
 osc vc
 osc commit
 
