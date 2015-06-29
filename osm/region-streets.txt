@@ -1,2 +1,6 @@
 [out:csv(::id, name)]  [timeout:425];
-area[name="Sasad"];way(area)[highway][name];out;
+//area[name="Sasad"];
+area(3602714372);
+way(area)[highway]["bridge"!="yes"];
+out;
+// vim: ft=javascript

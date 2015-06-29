@@ -17,6 +17,8 @@ def main():
             first = False
             continue
         cols = line.strip().split("\t")
+        if len(cols) < 2:
+            continue
         streets.append(cols[1])
     streets = sorted(set(streets))
     sock.close()
