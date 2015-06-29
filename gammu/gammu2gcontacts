@@ -27,6 +27,9 @@ class Contact:
             print "warning, attribute '%s' is already set!" % k
         self.attrs[k] = v
 
+    def __getitem__(self, k):
+        return self.attrs[k]
+
     @staticmethod
     def header():
         return ",".join(['"%s"' % i for i in Contact.props])
@@ -65,8 +68,12 @@ for i in config.sections():
                 v = config.get(i, j).decode('utf-8').strip('"')
                 if t == "LastName":
                     c["Family Name"] = v
-                elif t in ("Name", "FirstName"):
+                elif t == "Name":
                     c["Name"] = v
+                    c["Family Name"] = v
+                elif t == "FirstName":
+                    c["Given Name"] = v
+                    c["Name"] = "%s %s" % (c["Family Name"], c["Given Name"])
                 elif t == "Note":
                     c["Notes"] = v
                 elif t == "NumberGeneral":
