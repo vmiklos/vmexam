@@ -8,3 +8,6 @@ git clean -x -d -f
 CFLAGS="-g -O2" ./configure --prefix=$(pwd)/install
 make -j8
 make install
+# enable e.g. STL pretty-printers
+cd install/share/gdb
+ln -s /usr/share/gdb/auto-load
