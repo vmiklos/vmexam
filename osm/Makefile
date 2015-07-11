@@ -1,6 +1,12 @@
+download: update-streets update-house-numbers
+
+update-streets:
+	@mkdir -p workdir
+	./overpass-query region-streets.txt > workdir/streets.csv
+
 update-house-numbers:
-	@mkdir -p out
-	./overpass-query region-street-housenumbers.txt > out/street-housenumbers.csv
+	@mkdir -p workdir
+	./overpass-query region-street-housenumbers.txt > workdir/street-housenumbers.csv
 
 check:
 	pep8 --ignore=E501 find-houseless-streets overpass-query

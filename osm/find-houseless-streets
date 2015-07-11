@@ -9,7 +9,7 @@ import sys
 
 
 def main():
-    sock = open("out/streets.csv")
+    sock = open("workdir/streets.csv")
     first = True
     streets = []
     for line in sock.readlines():
@@ -23,7 +23,7 @@ def main():
     streets = sorted(set(streets))
     sock.close()
 
-    sock = open("out/street-housenumbers.csv")
+    sock = open("workdir/street-housenumbers.csv")
     first = True
     streetsWithHouses = []
     for line in sock.readlines():
