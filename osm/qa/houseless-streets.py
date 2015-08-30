@@ -5,17 +5,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
+import os
 import sys
 import unittest
 
 
-class Test(unittest.TestCase):
-    def test_none(self):
-        """This test makes sure that there are no streets without house numbers
-        in the downloaded area."""
-        sock = open("../workdir/streets.csv")
+class Finder:
+    def __init__(self):
+        sock = open("workdir/streets.csv")
         first = True
-        streets = []
+        self.streets = []
         for line in sock.readlines():
             if first:
                 first = False
@@ -23,13 +22,14 @@ class Test(unittest.TestCase):
             cols = line.strip().split("\t")
             if len(cols) < 2:
                 continue
-            streets.append(cols[1])
-        streets = sorted(set(streets))
+            self.streets.append(cols[1])
+        self.streets = sorted(set(self.streets))
         sock.close()
 
-        sock = open("../workdir/street-housenumbers.csv")
+        sock = open("workdir/street-housenumbers.csv")
         first = True
-        streetsWithHouses = []
+        self.streetsWithHouses = []
+        self.warnings = []
         for line in sock.readlines():
             if first:
                 first = False
@@ -37,19 +37,34 @@ class Test(unittest.TestCase):
             cols = line.strip().split("\t")
             if len(cols[1]):
                 # Ignore house numbers outside this area (ideally we shouldn't even get these).
-                if cols[1] in streets:
-                    streetsWithHouses.append(cols[1])
+                if cols[1] in self.streets:
+                    self.streetsWithHouses.append(cols[1])
             else:
-                self.fail("'%s': house number without addr:street, please fix!" % cols[2])
-        streetsWithHouses = sorted(set(streetsWithHouses))
+                self.warnings.append("WARNING: '%s': house number without addr:street, please fix!" % cols[2])
+        self.streetsWithHouses = sorted(set(self.streetsWithHouses))
         sock.close()
 
-        streetsWithoutHouses = [street for street in streets if street not in streetsWithHouses]
-        self.assertEqual(len(streets), len(streetsWithHouses) + len(streetsWithoutHouses))
+        self.streetsWithoutHouses = [street for street in self.streets if street not in self.streetsWithHouses]
+        assert len(self.streets) == len(self.streetsWithHouses) + len(self.streetsWithoutHouses)
 
-        self.assertEqual([], streetsWithoutHouses)
+
+class Test(unittest.TestCase):
+    def test_none(self):
+        """This test makes sure that there are no streets without house numbers
+        in the downloaded area."""
+        finder = Finder()
+
+        self.assertEqual([], finder.warnings)
+        self.assertEqual([], finder.streetsWithoutHouses)
 
 if __name__ == '__main__':
-    unittest.main()
+    if "-s" in sys.argv:
+        finder = Finder()
+        print("%s streets in total." % len(finder.streets))
+        print("%s streets have at least one house number." % len(finder.streetsWithHouses))
+        print("%s streets have no house number." % len(finder.streetsWithoutHouses))
+        print("Coverage is %s%%." % round(float(len(finder.streetsWithHouses)) * 100 / len(finder.streets)))
+    else:
+        unittest.main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:

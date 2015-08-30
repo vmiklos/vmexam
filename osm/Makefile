@@ -9,4 +9,4 @@ update-house-numbers:
 	./overpass-query region-street-housenumbers.txt > workdir/street-housenumbers.csv
 
 check:
-	pep8 find-houseless-streets overpass-query qa/houseless-streets.py
+	pep8 overpass-query qa/houseless-streets.py
