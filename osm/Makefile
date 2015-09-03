@@ -1,4 +1,4 @@
-download: update-streets update-house-numbers
+download: update-streets update-house-numbers update-osmose-$(USER)
 
 update-streets:
 	@mkdir -p workdir
