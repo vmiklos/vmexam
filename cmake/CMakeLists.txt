@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.11)
 project(Hello)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if (CMAKE_SYSTEM_NAME MATCHES ".*Linux")
     find_program(CCACHE "ccache")
     if (CCACHE)
