@@ -10,7 +10,7 @@ cd $daily_dir
 branch=$(git symbolic-ref -q HEAD)
 [ "${branch##*/}" == "master" ] || git checkout master
 # in case yesterday's build was done on an other machine
-git pull -r
+timeout 1h git pull -r
 cd -
 
 rm -rf $daily_dir/opt
@@ -21,5 +21,5 @@ cd $daily_dir
 git add -A
 git commit -m "$date: source-hash-$commit"
 if git config remote.origin.url | grep -q dev-downloads; then
-	git push
+	timeout 1h git push
 fi
