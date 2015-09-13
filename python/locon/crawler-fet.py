@@ -183,10 +183,10 @@ class Schedule:
         print('<?xml version="1.0"?>')
         print('<schedule>')
         print('<conference>')
-        print('<title>LibreOffice Conference 2014</title>')
-        print('<city>Bern</city>')
-        print('<start>2014-09-03</start>')
-        print('<end>2014-09-05</end>')
+        print('<title>LibreOffice Conference 2015</title>')
+        print('<city>Aarhus</city>')
+        print('<start>2015-09-23</start>')
+        print('<end>2015-09-25</end>')
         print('<days>3</days>')
         print('<release>1.%s</release>' % time.strftime("%Y%m%d.%H%M"))
         print('<timeslot_duration>00:10</timeslot_duration>')
@@ -194,7 +194,7 @@ class Schedule:
 
         eventId = 0
         for day in sorted(set([i.startDay for i in self.events])):
-            print('<day date="2014-09-0%s" index="%s">' % (3 + day, day))
+            print('<day date="2015-09-0%s" index="%s">' % (3 + day, day))
             for room in sorted(set([i.room for i in self.events if i.startDay == day])):
                 print('<room name="%s">' % cgi.escape(room))
                 for event in [i for i in self.events if i.startDay == day and i.room == room]:
