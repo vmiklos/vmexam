@@ -1,2 +1,3 @@
+SUBDIRS = gammu osm
 check:
-	pep8 gammu/gammu2gcontacts
+	for i in $(SUBDIRS); do $(MAKE) -C $$i check || exit 1; done
