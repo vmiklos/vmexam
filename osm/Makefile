@@ -15,3 +15,4 @@ update-osmose-$(USER):
 check: download
 	pep8 overpass-query qa/houseless-streets.py qa/osmose.py
 	qa/osmose.py
+	qa/houseless-streets.py
