@@ -16,3 +16,6 @@ check: download
 	pep8 overpass-query qa/houseless-streets.py qa/osmose.py
 	qa/osmose.py
 	qa/houseless-streets.py
+
+find-suspicious-steets:
+	./find-suspicious-streets |sort -r -t $$'\t' -n -k 2

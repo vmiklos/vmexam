@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+# Usage:
+# ./find-suspicious-streets |sort -r -t $'\t' -n -k 2 > out
+# What it does:
+# Tries to find streets which do have at least one house number, but suspicious
+# as lots of house numbers are supposed to be missing.
+
+
+def simplify(s):
+    s = s.replace('Á', 'A').replace('á', 'a')
+    s = s.replace('É', 'E').replace('é', 'e')
+    s = s.replace('Í', 'I').replace('í', 'i')
+    s = s.replace('Ó', 'O').replace('ó', 'o')
+    s = s.replace('Ö', 'O').replace('ö', 'o')
+    s = s.replace('Ő', 'O').replace('ő', 'o')
+    s = s.replace('Ú', 'U').replace('ú', 'u')
+    s = s.replace('Ü', 'U').replace('ü', 'u')
+    s = s.replace('Ű', 'U').replace('ű', 'u')
+    s = s.replace(' ', '_').lower()
+    return s
+
+
+def getHouseNumbersFromCsv(streetName):
+    houseNumbers = []
+    streetHouseNumbersSock = open("workdir/street-housenumbers.csv")
+    first = True
+    for line in streetHouseNumbersSock.readlines():
+        if first:
+            first = False
+            continue
+        tokens = line.strip().split('\t')
+        if len(tokens) < 3:
+            continue
+        if tokens[1] != streetName:
+            continue
+        houseNumbers.append(tokens[2])
+    streetHouseNumbersSock.close()
+    return sorted(set(houseNumbers))
+
+
+def getHouseNumbersFromLst(streetName):
+    houseNumbers = []
+    lstStreetName = simplify(streetName)
+    prefix = lstStreetName + "_"
+    sock = open("workdir/street-housenumbers-reference.lst")
+    for line in sock.readlines():
+        line = line.strip()
+        if line.startswith(prefix):
+            houseNumbers.append(line.replace(prefix, ''))
+    sock.close()
+    return sorted(set(houseNumbers))
+
+
+def getOnlyInFirst(first, second):
+    ret = []
+    for i in first:
+        if i not in second:
+            ret.append(i)
+    return ret
+
+streetsSock = open("workdir/streets.csv")
+streetNames = []
+firstStreet = True
+for streetLine in streetsSock.readlines():
+    if firstStreet:
+        firstStreet = False
+        continue
+    streetTokens = streetLine.strip().split('\t')
+    if len(streetTokens) > 1:
+        streetNames.append(streetTokens[1])
+streetsSock.close()
+streetNames = sorted(set(streetNames))
+
+# These streets are checked manually already or known to be only partly in the area -> ignore.
+blacklist = ["Budaörsi út", "Beregszász út", "Brassó út", "Törökbálinti út"]
+
+for streetName in streetNames:
+    if streetName in blacklist:
+        continue
+    referenceHouseNumbers = getHouseNumbersFromLst(streetName)
+    osmHouseNumbers = getHouseNumbersFromCsv(streetName)
+    onlyInReference = getOnlyInFirst(referenceHouseNumbers, osmHouseNumbers)
+    print("%s\t%s" % (streetName, len(onlyInReference)))
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
