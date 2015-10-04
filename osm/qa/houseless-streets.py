@@ -22,7 +22,9 @@ class Finder:
             cols = line.strip().split("\t")
             if len(cols) < 2:
                 continue
-            self.streets.append(cols[1])
+            # No idea why this shows up, manually checking it seems it's outside the area _and_ it has house numbers, too.
+            if cols[1] != "Barackmag utca":
+                self.streets.append(cols[1])
         self.streets = sorted(set(self.streets))
         sock.close()
 
