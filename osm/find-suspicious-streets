@@ -78,7 +78,14 @@ streetsSock.close()
 streetNames = sorted(set(streetNames))
 
 # These streets are checked manually already or known to be only partly in the area -> ignore.
-blacklist = ["Budaörsi út", "Beregszász út", "Brassó út", "Törökbálinti út"]
+blacklist = [
+    "Budaörsi út",
+    "Beregszász út",
+    "Brassó út",
+    "Törökbálinti út",
+    "Sasadi út",
+    "Dayka Gábor utca",
+]
 
 for streetName in streetNames:
     if streetName in blacklist:
