@@ -1,3 +1,7 @@
-SUBDIRS = gammu osm
-check:
-	for i in $(SUBDIRS); do $(MAKE) -C $$i check || exit 1; done
+check: check-gammu check-osm
+
+check-gammu:
+	cd gammu && $(MAKE) check
+
+check-osm:
+	cd osm && $(MAKE) check
