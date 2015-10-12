@@ -22,18 +22,30 @@ class GContacts(object):
 
         self.storage = oauth2client.file.Storage(os.path.join(configPath, "oauth2client.json"))
         if self.storage.get() is None or self.storage.get().invalid:
-            auth_uri = self.flow.step1_get_authorize_url()
-            print("URL: " + auth_uri)
-            auth_code = raw_input("Code: ")
-            credential = self.flow.step2_exchange(auth_code)
-            self.storage.locked_put(credential)
+            self.updateCredentials()
+        self.updateToken()
 
+    def updateCredentials(self):
+        auth_uri = self.flow.step1_get_authorize_url()
+        print("URL: " + auth_uri)
+        auth_code = raw_input("Code: ")
+        credential = self.flow.step2_exchange(auth_code)
+        self.storage.locked_put(credential)
+        self.updateToken()
+
+    def updateToken(self):
         self.oauth2Token = gdata.gauth.OAuth2Token(self.flow.client_id, self.flow.client_secret, self.flow.scope, self.flow.user_agent, self.flow.auth_uri, self.flow.token_uri,
                                                    self.storage.get().access_token, self.storage.get().refresh_token, self.flow.revoke_uri)
-
     def update(self):
         contactsClient = gdata.contacts.client.ContactsClient(auth_token=self.oauth2Token, source=self.__class__.__name__)
-        contacts = contactsClient.GetContacts()
+
+        while True:
+            try:
+                contacts = contactsClient.GetContacts()
+                break
+            except gdata.client.Unauthorized:
+                self.updateCredentials()
+
         singlePage = True
         while contacts is not None:
             for contact in contacts.entry:
