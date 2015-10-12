@@ -6,6 +6,7 @@
 #
 
 from __future__ import print_function
+from xml.dom import minidom
 import gdata
 import gdata.contacts.client
 import getopt
@@ -35,7 +36,21 @@ class GContacts(object):
                                                    self.storage.get().access_token, self.storage.get().refresh_token, self.flow.revoke_uri)
 
     def select(self, args):
-        print("GContacts.select: TODO, " + str(args))
+        def getName(entryNode):
+            nameNodes = [i for i in entryNode.childNodes if i.localName == "name"]
+            for nameNode in nameNodes:
+                fullNameNodes = [i for i in nameNode.childNodes if i.localName == "fullName"]
+                for fullNameNode in fullNameNodes:
+                    return fullNameNode.childNodes[0].wholeText
+
+        pattern = args[0]
+        contacts = minidom.parse(self.contactsXmlPath)
+        feedNode = [i for i in contacts.childNodes if i.localName == "feed"][0]
+        contactNodes = [i for i in feedNode.childNodes if i.localName == "entry"]
+        for contactNode in contactNodes:
+            name = getName(contactNode)
+            if pattern in name:
+                print(name)
 
     def update(self):
         scopeList = ["https://www.google.com/m8/feeds", "https://www.googleapis.com/auth/contacts"]
