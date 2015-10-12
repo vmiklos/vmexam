@@ -43,14 +43,21 @@ class GContacts(object):
                 for fullNameNode in fullNameNodes:
                     return fullNameNode.childNodes[0].wholeText
 
+        def getEmail(entryNode):
+            emailNodes = [i for i in entryNode.childNodes if i.localName == "email"]
+            for emailNode in emailNodes:
+                if emailNode.hasAttribute("address"):
+                    return emailNode.getAttribute("address")
+
         pattern = args[0]
         contacts = minidom.parse(self.contactsXmlPath)
         feedNode = [i for i in contacts.childNodes if i.localName == "feed"][0]
         contactNodes = [i for i in feedNode.childNodes if i.localName == "entry"]
         for contactNode in contactNodes:
             name = getName(contactNode)
-            if pattern in name:
-                print(name)
+            email = getEmail(contactNode)
+            if pattern in name and email:
+                print('"%s" <%s>' % (name, email))
 
     def update(self):
         scopeList = ["https://www.google.com/m8/feeds", "https://www.googleapis.com/auth/contacts"]
