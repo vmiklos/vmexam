@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+import gdata
+import gdata.contacts.client
+import oauth2client
+import oauth2client.file
+import os
+
+
+class GContacts(object):
+    def __init__(self):
+        configPath = os.path.expanduser("~/.gcontacts")
+        clientSecretsPath = os.path.join(configPath, "client_secrets.json")
+        scopeList = ["https://www.google.com/m8/feeds", "https://www.googleapis.com/auth/contacts"]
+        self.flow = oauth2client.client.flow_from_clientsecrets(clientSecretsPath, scopeList, redirect_uri="urn:ietf:wg:oauth:2.0:oob")
+        self.flow.user_agent = self.__class__.__name__
+
+        self.storage = oauth2client.file.Storage(os.path.join(configPath, "oauth2client.json"))
+        if self.storage.get() is None or self.storage.get().invalid:
+            auth_uri = self.flow.step1_get_authorize_url()
+            print("URL: " + auth_uri)
+            auth_code = raw_input("Code: ")
+            credential = self.flow.step2_exchange(auth_code)
+            self.storage.locked_put(credential)
+
+        self.oauth2Token = gdata.gauth.OAuth2Token(self.flow.client_id, self.flow.client_secret, self.flow.scope, self.flow.user_agent, self.flow.auth_uri, self.flow.token_uri,
+                                                   self.storage.get().access_token, self.storage.get().refresh_token, self.flow.revoke_uri)
+
+    def update(self):
+        contactsClient = gdata.contacts.client.ContactsClient(auth_token=self.oauth2Token, source=self.__class__.__name__)
+        contacts = contactsClient.GetContacts()
+        singlePage = True
+        while contacts is not None:
+            for contact in contacts.entry:
+                if contact.name:
+                    print("debug, contact.name is " + contact.name.ToString())
+            nextLink = contacts.GetNextLink()
+            if nextLink and not singlePage:
+                contacts = contactsCient.GetContacts(uri=nextLink.href)
+            else:
+                contacts = None
+
+contacts = GContacts()
+contacts.update()
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:

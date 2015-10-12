@@ -1,0 +1,7 @@
+This is intended to be a drop-in replacement for goocaa[1].
+
+The only problem with goocaa is that it uses the ClientLogin API, which was
+shut down[2] on April 20, 2015.
+
+[1] https://github.com/novel/goocaa
+[2] http://googledevelopers.blogspot.hu/2015/02/reminder-clientlogin-shutdown-scheduled.html
