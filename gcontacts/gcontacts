@@ -5,8 +5,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
+from __future__ import print_function
 import gdata
 import gdata.contacts.client
+import getopt
 import oauth2client
 import oauth2client.file
 import os
@@ -31,6 +33,9 @@ class GContacts(object):
     def updateToken(self):
         self.oauth2Token = gdata.gauth.OAuth2Token(self.flow.client_id, self.flow.client_secret, self.flow.scope, self.flow.user_agent, self.flow.auth_uri, self.flow.token_uri,
                                                    self.storage.get().access_token, self.storage.get().refresh_token, self.flow.revoke_uri)
+
+    def select(self, args):
+        print("GContacts.select: TODO, " + str(args))
 
     def update(self):
         scopeList = ["https://www.google.com/m8/feeds", "https://www.googleapis.com/auth/contacts"]
@@ -77,7 +82,42 @@ class GContacts(object):
                 sock.write("""</ns0:feed>\n""")
         sock.close()
 
-contacts = GContacts()
-contacts.update()
+
+def main(argv):
+
+    def usage():
+        print("""Usage:
+gcontacts [ -u | --update ]
+gcontacts <pattern>""")
+        sys.exit(1)
+
+    try:
+        opts, args = getopt.getopt(argv, "p:tuq", ["profile=", "require-title", "update", "quiet"])
+    except getopt.GetoptError:
+        usage()
+    update = False
+    optIndex = 0
+    for opt, arg in opts:
+        if opt in ("-u", "--update"):
+            update = True
+        elif opt in ("-t", "--require-title"):
+            pass
+        elif opt in ("-q", "--quiet"):
+            pass
+        elif opt in ("-p", "--profile"):
+            pass
+        optIndex += 1
+    pattern = argv[optIndex:]
+
+    contacts = GContacts()
+    if update:
+        contacts.update()
+    else:
+        if not len(pattern):
+            usage()
+        contacts.select(argv[optIndex:])
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
