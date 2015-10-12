@@ -16,20 +16,9 @@ import sys
 class GContacts(object):
     def __init__(self):
         configPath = os.path.expanduser("~/.gcontacts")
-        clientSecretsPath = os.path.join(configPath, "client_secrets.json")
-        scopeList = ["https://www.google.com/m8/feeds", "https://www.googleapis.com/auth/contacts"]
-        try:
-            self.flow = oauth2client.client.flow_from_clientsecrets(clientSecretsPath, scopeList, redirect_uri="urn:ietf:wg:oauth:2.0:oob")
-        except oauth2client.clientsecrets.InvalidClientSecretsError:
-            print("~/.gcontacts/client_secrets.json is missing, get a client ID from <https://console.developers.google.com/project/_/apiui/credential>.")
-            sys.exit(1)
-        self.flow.user_agent = self.__class__.__name__
-
-        self.storage = oauth2client.file.Storage(os.path.join(configPath, "oauth2client.json"))
-        if self.storage.get() is None or self.storage.get().invalid:
-            self.updateCredentials()
-        self.updateToken()
+        self.clientSecretsPath = os.path.join(configPath, "client_secrets.json")
         self.contactsXmlPath = os.path.join(configPath, "contacts.xml")
+        self.oauth2ClientJsonPath = os.path.join(configPath, "oauth2client.json")
 
     def updateCredentials(self):
         auth_uri = self.flow.step1_get_authorize_url()
@@ -44,6 +33,18 @@ class GContacts(object):
                                                    self.storage.get().access_token, self.storage.get().refresh_token, self.flow.revoke_uri)
 
     def update(self):
+        scopeList = ["https://www.google.com/m8/feeds", "https://www.googleapis.com/auth/contacts"]
+        try:
+            self.flow = oauth2client.client.flow_from_clientsecrets(self.clientSecretsPath, scopeList, redirect_uri="urn:ietf:wg:oauth:2.0:oob")
+        except oauth2client.clientsecrets.InvalidClientSecretsError:
+            print("~/.gcontacts/client_secrets.json is missing, get a client ID from <https://console.developers.google.com/project/_/apiui/credential>.")
+            sys.exit(1)
+        self.flow.user_agent = self.__class__.__name__
+
+        self.storage = oauth2client.file.Storage(self.oauth2ClientJsonPath)
+        if self.storage.get() is None or self.storage.get().invalid:
+            self.updateCredentials()
+        self.updateToken()
         contactsClient = gdata.contacts.client.ContactsClient(auth_token=self.oauth2Token, source=self.__class__.__name__)
 
         while True:
