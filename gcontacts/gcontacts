@@ -47,15 +47,23 @@ class GContacts(object):
                 self.updateCredentials()
 
         singlePage = True
+        first = True
         while contacts is not None:
+            if first:
+                lines = contacts.ToString().split('\n')
+                print("""<?xml version="1.0" encoding="UTF-8"?>""")
+                print(lines[0])
+                footer = lines[-1]
             for contact in contacts.entry:
                 if contact.name:
-                    print("debug, contact.name is " + contact.name.ToString())
+                    print(contact.ToString())
             nextLink = contacts.GetNextLink()
             if nextLink and not singlePage:
                 contacts = contactsCient.GetContacts(uri=nextLink.href)
             else:
                 contacts = None
+            if contacts is None:
+                print("""</ns0:feed>""")
 
 contacts = GContacts()
 contacts.update()
