@@ -54,21 +54,23 @@ class GContacts(object):
             except gdata.client.Unauthorized:
                 self.updateCredentials()
 
-        singlePage = True
-        first = True
+        singlePage = False  # For debugging purposes.
+        count = 0
         sock = open(self.contactsXmlPath, "w")
         while contacts is not None:
-            if first:
+            if count == 0:
                 lines = contacts.ToString().split('\n')
                 sock.write("""<?xml version="1.0" encoding="UTF-8"?>\n""")
                 sock.write(lines[0] + "\n")
                 footer = lines[-1]
+            print("Downloading feed #" + str(count) + "...")
+            count += 1
             for contact in contacts.entry:
                 if contact.name:
                     sock.write(contact.ToString() + "\n")
             nextLink = contacts.GetNextLink()
             if nextLink and not singlePage:
-                contacts = contactsCient.GetContacts(uri=nextLink.href)
+                contacts = contactsClient.GetContacts(uri=nextLink.href)
             else:
                 contacts = None
             if contacts is None:
