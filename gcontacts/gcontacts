@@ -10,6 +10,7 @@ import gdata.contacts.client
 import oauth2client
 import oauth2client.file
 import os
+import sys
 
 
 class GContacts(object):
@@ -17,7 +18,11 @@ class GContacts(object):
         configPath = os.path.expanduser("~/.gcontacts")
         clientSecretsPath = os.path.join(configPath, "client_secrets.json")
         scopeList = ["https://www.google.com/m8/feeds", "https://www.googleapis.com/auth/contacts"]
-        self.flow = oauth2client.client.flow_from_clientsecrets(clientSecretsPath, scopeList, redirect_uri="urn:ietf:wg:oauth:2.0:oob")
+        try:
+            self.flow = oauth2client.client.flow_from_clientsecrets(clientSecretsPath, scopeList, redirect_uri="urn:ietf:wg:oauth:2.0:oob")
+        except oauth2client.clientsecrets.InvalidClientSecretsError:
+            print("~/.gcontacts/client_secrets.json is missing, get a client ID from <https://console.developers.google.com/project/_/apiui/credential>.")
+            sys.exit(1)
         self.flow.user_agent = self.__class__.__name__
 
         self.storage = oauth2client.file.Storage(os.path.join(configPath, "oauth2client.json"))
@@ -36,6 +41,7 @@ class GContacts(object):
     def updateToken(self):
         self.oauth2Token = gdata.gauth.OAuth2Token(self.flow.client_id, self.flow.client_secret, self.flow.scope, self.flow.user_agent, self.flow.auth_uri, self.flow.token_uri,
                                                    self.storage.get().access_token, self.storage.get().refresh_token, self.flow.revoke_uri)
+
     def update(self):
         contactsClient = gdata.contacts.client.ContactsClient(auth_token=self.oauth2Token, source=self.__class__.__name__)
 
