@@ -29,6 +29,7 @@ class GContacts(object):
         if self.storage.get() is None or self.storage.get().invalid:
             self.updateCredentials()
         self.updateToken()
+        self.contactsXmlPath = os.path.join(configPath, "contacts.xml")
 
     def updateCredentials(self):
         auth_uri = self.flow.step1_get_authorize_url()
@@ -54,22 +55,24 @@ class GContacts(object):
 
         singlePage = True
         first = True
+        sock = open(self.contactsXmlPath, "w")
         while contacts is not None:
             if first:
                 lines = contacts.ToString().split('\n')
-                print("""<?xml version="1.0" encoding="UTF-8"?>""")
-                print(lines[0])
+                sock.write("""<?xml version="1.0" encoding="UTF-8"?>\n""")
+                sock.write(lines[0] + "\n")
                 footer = lines[-1]
             for contact in contacts.entry:
                 if contact.name:
-                    print(contact.ToString())
+                    sock.write(contact.ToString() + "\n")
             nextLink = contacts.GetNextLink()
             if nextLink and not singlePage:
                 contacts = contactsCient.GetContacts(uri=nextLink.href)
             else:
                 contacts = None
             if contacts is None:
-                print("""</ns0:feed>""")
+                sock.write("""</ns0:feed>\n""")
+        sock.close()
 
 contacts = GContacts()
 contacts.update()
