@@ -104,7 +104,8 @@ class GContacts(object):
         if self.storage.get() is None or self.storage.get().invalid:
             self.updateCredentials()
         self.updateToken()
-        contactsClient = gdata.contacts.client.ContactsClient(auth_token=self.oauth2Token, source=self.__class__.__name__)
+        contactsClient = gdata.contacts.client.ContactsClient(source=self.__class__.__name__)
+        contactsClient = self.oauth2Token.authorize(contactsClient)
 
         while True:
             try:
