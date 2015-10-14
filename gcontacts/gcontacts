@@ -16,6 +16,20 @@ import os
 import sys
 
 
+class Match(object):
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
+
+    def __eq__(self, other):
+        # Intentionally ignore name here.
+        return self.email == other.email
+
+    def __hash__(self):
+        # Intentionally ignore name here.
+        return hash(self.email)
+
+
 class GContacts(object):
     def __init__(self):
         configPath = os.path.expanduser("~/.gcontacts")
@@ -66,12 +80,16 @@ class GContacts(object):
         contacts = minidom.parse(self.contactsXmlPath)
         feedNode = [i for i in contacts.childNodes if i.localName == "feed"][0]
         contactNodes = [i for i in feedNode.childNodes if i.localName == "entry"]
+        matches = []
         for contactNode in contactNodes:
             name = getName(contactNode)
             email = getEmail(contactNode)
             if match(patternString, name, email):
-                lineString = '"%s" <%s>' % (name, email)
-                print(lineString.encode('utf-8'))
+                matches.append(Match(name, email))
+        matches = sorted(set(matches))
+        for i in matches:
+            lineString = '"%s" <%s>' % (i.name, i.email)
+            print(lineString.encode('utf-8'))
 
     def update(self):
         scopeList = ["https://www.google.com/m8/feeds", "https://www.googleapis.com/auth/contacts"]
