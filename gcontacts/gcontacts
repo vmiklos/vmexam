@@ -103,12 +103,12 @@ class GContacts(object):
         self.storage = oauth2client.file.Storage(self.oauth2ClientJsonPath)
         if self.storage.get() is None or self.storage.get().invalid:
             self.updateCredentials()
-        self.updateToken()
-        contactsClient = gdata.contacts.client.ContactsClient(source=self.__class__.__name__)
-        contactsClient = self.oauth2Token.authorize(contactsClient)
 
         while True:
             try:
+                self.updateToken()
+                contactsClient = gdata.contacts.client.ContactsClient(source=self.__class__.__name__)
+                contactsClient = self.oauth2Token.authorize(contactsClient)
                 contacts = contactsClient.GetContacts()
                 break
             except gdata.client.Unauthorized:
