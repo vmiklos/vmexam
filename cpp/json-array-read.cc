@@ -12,6 +12,7 @@ int main()
 	boost::property_tree::read_json(aStream, aTree);
 	for (boost::property_tree::ptree::value_type& rValue : aTree.get_child("values"))
 	{
-		std::cerr << rValue.second.data() << std::endl;
+		std::cerr << "part is " << rValue.second.get<std::string>("part") << std::endl;
+		std::cerr << "rect is " << rValue.second.get<std::string>("rect") << std::endl;
 	}
 }

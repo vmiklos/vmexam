@@ -12,9 +12,11 @@ int main()
 	// }
 	boost::property_tree::ptree aValues;
 	boost::property_tree::ptree aChild1;
-	aChild1.put("", "foo");
+	aChild1.put("part", "1");
+	aChild1.put("rect", "x, y, w, h");
 	boost::property_tree::ptree aChild2;
-	aChild2.put("", "bar");
+	aChild2.put("part", "2");
+	aChild2.put("rect", "x2, y2, w2, h2");
 	boost::property_tree::ptree aChildren;
 	aChildren.push_back(std::make_pair("", aChild1));
 	aChildren.push_back(std::make_pair("", aChild2));
