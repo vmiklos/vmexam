@@ -8,6 +8,7 @@
 # Usage: ./get-postcode 'Brassó út' '121'
 # Returns a single number, which is the postcode.
 
+import re
 import sys
 
 
@@ -50,7 +51,33 @@ def getPostcode(street, house):
 
     return fallback
 
+def checkPostcodes():
+    sock = open("workdir/street-housenumbers.csv")
+    first = True
+    streetLines = []
+    for line in sock.readlines():
+        if first:
+            first = False
+            continue
+        print("debug, line is '%s'" % line.strip())
+        cols = line.strip().split("\t")
+        if not len(cols[2]):
+            # No house number
+            continue
+        house = cols[2]
+        if not re.match("^[0-9]+$", house):
+            # TODO Maybe try to map these to ints in the future?
+            continue
+        # OSM data
+        actual = cols[3]
+        # Reference data
+        expected = getPostcode(cols[1], house)
+
 if __name__ == "__main__":
-    print(getPostcode(sys.argv[1], sys.argv[2]))
+    if len(sys.argv) == 3:
+        print(getPostcode(sys.argv[1], sys.argv[2]))
+    else:
+        # Check for mismatches
+        checkPostcodes()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
