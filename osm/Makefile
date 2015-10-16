@@ -1,4 +1,4 @@
-download: update-streets update-house-numbers update-postcodes update-osmose-$(USER)
+download: update-streets update-house-numbers update-osmose-$(USER)
 
 update-streets:
 	@mkdir -p workdir
@@ -8,6 +8,7 @@ update-house-numbers:
 	@mkdir -p workdir
 	./overpass-query region-street-housenumbers.txt > workdir/street-housenumbers.csv
 
+# At the end this check found no problems, so this is not part of 'make check'.
 update-postcodes:
 	rm Iranyitoszam_Internet.*
 	wget https://posta.hu/static/internet/download/Iranyitoszam_Internet.XLS

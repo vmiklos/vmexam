@@ -35,7 +35,8 @@ def getPostcode(street, house, streetLines, hint=None):
                 if num2 >= houseNum and houseNum >= num1 and num1 % 2 == houseNum % 2:
                     return i[0]
             elif num2 == 0:
-                if houseNum >= num1:
+                # Within range, for the relevant side.
+                if houseNum >= num1 and num1 % 2 == houseNum % 2:
                     return i[0]
         elif num1 == -1:
             if houseNum % 2 == 1:
@@ -82,7 +83,7 @@ def checkPostcodes(referencePostCodes):
         actual = cols[3]
         # Reference data
         expected = getPostcode(cols[1], house, referencePostCodes, hint=actual)
-        if actual != expected:
+        if expected and actual != expected:
             print("%s %s: actual on OSM is '%s', expected '%s'" % (cols[1], house, actual, expected))
 
 if __name__ == "__main__":
