@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+# Usage: ./get-postcode 'Brassó út' '121'
+# Returns a single number, which is the postcode.
+
+import sys
+
+
+def getPostcode(street, house):
+    houseNum = int(house)
+    sock = open("workdir/postcodes.csv")
+    first = True
+    streetLines = []
+    for line in sock.readlines():
+        if first:
+            first = False
+            continue
+        cols = line.strip().split("\t")
+        if len(cols) < 3:
+            continue
+        if street == "%s %s" % (cols[1].strip(), cols[2].strip()):
+            streetLines.append(cols)
+
+    fallback = None
+    for i in streetLines:
+        num1 = int(i[3])
+        num2 = int(i[4])
+        if num1 == 0:
+            return i[0]
+        elif num1 > 0:
+            if num2 > 0:
+                if num2 >= houseNum and houseNum >= num1:
+                    return i[0]
+            elif num2 == 0:
+                if houseNum >= num1:
+                    return i[0]
+        elif num1 == -1:
+            if houseNum % 2 == 1:
+                return i[0]
+        elif num1 == -2:
+            if houseNum % 2 == 0:
+                return i[0]
+        elif num1 == -3:
+            fallback = i[0]
+
+    return fallback
+
+if __name__ == "__main__":
+    print(getPostcode(sys.argv[1], sys.argv[2]))
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
