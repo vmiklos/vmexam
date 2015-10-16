@@ -368,3 +368,15 @@ Clang AST dump:
 clang++ -Xclang -ast-dump -fsyntax-only test.cc
 
 https://kevinaboos.wordpress.com/2013/07/23/clang-tutorial-part-ii-libtooling-example/
+
+== 2015-10-16
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=94374
+
+Steps to reproduce on master, e.g.:
+
+1) Create a hello-world docx file using Word.
+
+2) Insert -> Object -> Document
+
+3) Read error
