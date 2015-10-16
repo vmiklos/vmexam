@@ -64,7 +64,6 @@ def checkPostcodes(referencePostCodes):
         if first:
             first = False
             continue
-        print("debug, line is '%s'" % line.strip())
         cols = line.strip().split("\t")
         if not len(cols[2]):
             # No house number
@@ -77,6 +76,8 @@ def checkPostcodes(referencePostCodes):
         actual = cols[3]
         # Reference data
         expected = getPostcode(cols[1], house, referencePostCodes)
+        if actual != expected:
+            print("%s %s: actual on OSM is '%s', expected '%s'" % (cols[1], house, actual, expected))
 
 if __name__ == "__main__":
     referencePostCodes = readReferencePostCodes()
