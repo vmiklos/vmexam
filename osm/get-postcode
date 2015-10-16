@@ -12,7 +12,7 @@ import re
 import sys
 
 
-def getPostcode(street, house, streetLines):
+def getPostcode(street, house, streetLines, hint=None):
     houseNum = int(house)
 
     fallback = None
@@ -20,13 +20,19 @@ def getPostcode(street, house, streetLines):
         if street != "%s %s" % (i[1].strip(), i[2].strip()):
             continue
 
+        if hint:
+            # TODO generalize this.
+            if hint.startswith("11") and i[5].strip() != "XI.":
+                continue
+
         num1 = int(i[3])
         num2 = int(i[4])
         if num1 == 0:
             return i[0]
         elif num1 > 0:
             if num2 > 0:
-                if num2 >= houseNum and houseNum >= num1:
+                # Within range, for the relevant side.
+                if num2 >= houseNum and houseNum >= num1 and num1 % 2 == houseNum % 2:
                     return i[0]
             elif num2 == 0:
                 if houseNum >= num1:
@@ -75,7 +81,7 @@ def checkPostcodes(referencePostCodes):
         # OSM data
         actual = cols[3]
         # Reference data
-        expected = getPostcode(cols[1], house, referencePostCodes)
+        expected = getPostcode(cols[1], house, referencePostCodes, hint=actual)
         if actual != expected:
             print("%s %s: actual on OSM is '%s', expected '%s'" % (cols[1], house, actual, expected))
 
