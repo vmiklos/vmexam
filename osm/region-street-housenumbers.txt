@@ -1,6 +1,6 @@
 // by ImreSamu
 // 2015.05.30
-[out:csv(::id, "addr:street","addr:housenumber", name)]  [timeout:425];
+[out:csv(::id, "addr:street","addr:housenumber", "addr:postcode", name)]  [timeout:425];
 // Use overpass-turbo to map the area name to its ID.
 //
 // 3602714372 = 2714372 + 3600000000 (3600000000 == relation), see js/ide.js
@@ -16,6 +16,10 @@ area(3602714372)->.searchArea;
   node["addr:housenumber"](area.searchArea);
   way["addr:housenumber"](area.searchArea);
   relation["addr:housenumber"](area.searchArea);
+
+  node["addr:postcode"](area.searchArea);
+  way["addr:postcode"](area.searchArea);
+  relation["addr:postcode"](area.searchArea);
 );
 out body;
 // vim: ft=javascript
