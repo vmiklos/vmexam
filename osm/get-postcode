@@ -12,23 +12,14 @@ import re
 import sys
 
 
-def getPostcode(street, house):
+def getPostcode(street, house, streetLines):
     houseNum = int(house)
-    sock = open("workdir/postcodes.csv")
-    first = True
-    streetLines = []
-    for line in sock.readlines():
-        if first:
-            first = False
-            continue
-        cols = line.strip().split("\t")
-        if len(cols) < 3:
-            continue
-        if street == "%s %s" % (cols[1].strip(), cols[2].strip()):
-            streetLines.append(cols)
 
     fallback = None
     for i in streetLines:
+        if street != "%s %s" % (i[1].strip(), i[2].strip()):
+            continue
+
         num1 = int(i[3])
         num2 = int(i[4])
         if num1 == 0:
@@ -51,7 +42,21 @@ def getPostcode(street, house):
 
     return fallback
 
-def checkPostcodes():
+def readReferencePostCodes():
+    sock = open("workdir/postcodes.csv")
+    first = True
+    streetLines = []
+    for line in sock.readlines():
+        if first:
+            first = False
+            continue
+        cols = line.strip().split("\t")
+        if len(cols) < 3:
+            continue
+        streetLines.append(cols)
+    return streetLines
+
+def checkPostcodes(referencePostCodes):
     sock = open("workdir/street-housenumbers.csv")
     first = True
     streetLines = []
@@ -71,13 +76,14 @@ def checkPostcodes():
         # OSM data
         actual = cols[3]
         # Reference data
-        expected = getPostcode(cols[1], house)
+        expected = getPostcode(cols[1], house, referencePostCodes)
 
 if __name__ == "__main__":
+    referencePostCodes = readReferencePostCodes()
     if len(sys.argv) == 3:
-        print(getPostcode(sys.argv[1], sys.argv[2]))
+        print(getPostcode(sys.argv[1], sys.argv[2], referencePostCodes))
     else:
         # Check for mismatches
-        checkPostcodes()
+        checkPostcodes(referencePostCodes)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
