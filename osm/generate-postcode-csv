@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+# https://posta.hu/ugyfelszolgalat/iranyitoszam_kereso publishes Hungarian
+# postcodes in XLS format, this script extracts the Budapest tab from it into a
+# CSV file.
+
+import xml.sax
+import sys
+
+
+class ContentHandler(xml.sax.handler.ContentHandler):
+    def __init__(self):
+        self.inTable = False
+        self.cells = []
+        self.inParagraph = False
+        self.content = []
+
+    def endElement(self, name):
+        if name == "table:table" and self.inTable:
+            self.inTable = False
+        elif name == "table:table-row" and self.inTable:
+            print("\t".join(self.cells))
+            self.cells = []
+        elif name == "text:p" and self.inParagraph:
+            self.inParagraph = False
+            self.cells.append("".join(self.content))
+            self.content = []
+
+    def startElement(self, name, attrs):
+        if name == "table:table":
+            for k, v in attrs.items():
+                if k == "table:name" and v == "Bp.u.":
+                    self.inTable = True
+                    return
+        if name == "text:p" and self.inTable:
+            self.inParagraph = True
+
+    def characters(self, content):
+        if self.inParagraph:
+            self.content.append(content)
+
+parser = xml.sax.make_parser()
+parser.setContentHandler(ContentHandler())
+parser.parse(sys.argv[1])
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:

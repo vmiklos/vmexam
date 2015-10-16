@@ -1,4 +1,4 @@
-download: update-streets update-house-numbers update-osmose-$(USER)
+download: update-streets update-house-numbers update-postcodes update-osmose-$(USER)
 
 update-streets:
 	@mkdir -p workdir
@@ -8,12 +8,18 @@ update-house-numbers:
 	@mkdir -p workdir
 	./overpass-query region-street-housenumbers.txt > workdir/street-housenumbers.csv
 
+update-postcodes:
+	rm Iranyitoszam_Internet.*
+	wget https://posta.hu/static/internet/download/Iranyitoszam_Internet.XLS
+	libreoffice --headless --convert-to fods Iranyitoszam_Internet.XLS
+	./generate-postcode-csv Iranyitoszam_Internet.fods > workdir/postcodes.csv
+
 update-osmose-$(USER):
 	@mkdir -p workdir
 	curl -o workdir/osmose-$(USER).rss http://osmose.openstreetmap.fr/en/byuser/$(USER).rss
 
 check: download
-	pep8 overpass-query qa/houseless-streets.py qa/osmose.py
+	pep8 overpass-query generate-postcode-csv qa/houseless-streets.py qa/osmose.py
 	qa/osmose.py
 	qa/houseless-streets.py
 
