@@ -49,6 +49,7 @@ def getPostcode(street, house, streetLines, hint=None):
 
     return fallback
 
+
 def readReferencePostCodes():
     sock = open("workdir/postcodes.csv")
     first = True
@@ -63,6 +64,7 @@ def readReferencePostCodes():
         streetLines.append(cols)
     return streetLines
 
+
 def checkPostcodes(referencePostCodes):
     sock = open("workdir/street-housenumbers.csv")
     first = True
@@ -76,14 +78,16 @@ def checkPostcodes(referencePostCodes):
             # No house number
             continue
         house = cols[2]
-        if not re.match("^[0-9]+$", house):
-            # TODO Maybe try to map these to ints in the future?
-            continue
+        try:
+            int(house)
+        except ValueError:
+            house = re.sub("([0-9]+)[^0-9].*", r"\1", house)
+            # print("%s %s: assuming '%s'" % (cols[1], cols[2], house))
         # OSM data
         actual = cols[3]
         # Reference data
         expected = getPostcode(cols[1], house, referencePostCodes, hint=actual)
-        if expected and actual != expected:
+        if actual != expected:
             print("%s %s: actual on OSM is '%s', expected '%s'" % (cols[1], house, actual, expected))
 
 if __name__ == "__main__":
