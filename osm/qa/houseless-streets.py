@@ -9,10 +9,12 @@ import os
 import sys
 import unittest
 
+suffix = ""
+
 
 class Finder:
     def __init__(self):
-        sock = open("workdir/streets.csv")
+        sock = open("workdir/streets%s.csv" % suffix)
         first = True
         self.streets = []
         for line in sock.readlines():
@@ -28,7 +30,7 @@ class Finder:
         self.streets = sorted(set(self.streets))
         sock.close()
 
-        sock = open("workdir/street-housenumbers.csv")
+        sock = open("workdir/street-housenumbers%s.csv" % suffix)
         first = True
         self.streetsWithHouses = []
         self.warnings = []
@@ -67,6 +69,9 @@ if __name__ == '__main__':
         print("%s streets have no house number." % len(finder.streetsWithoutHouses))
         print("Coverage is %s%%." % round(float(len(finder.streetsWithHouses)) * 100 / len(finder.streets)))
     else:
+        if len(sys.argv) > 1:
+            suffix = sys.argv[1]
+            sys.argv = sys.argv[:1]
         unittest.main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
