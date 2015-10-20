@@ -37,7 +37,10 @@ class GContacts(object):
         self.contactsXmlPath = os.path.join(configPath, "contacts.xml")
         self.oauth2ClientJsonPath = os.path.join(configPath, "oauth2client.json")
 
-    def updateCredentials(self):
+    def updateCredentials(self, interactive):
+        if not interactive:
+            print("Please run gcontacts interactively to update credentials.")
+            sys.exit(1)
         auth_uri = self.flow.step1_get_authorize_url()
         print("URL: " + auth_uri)
         auth_code = raw_input("Code: ")
@@ -91,7 +94,7 @@ class GContacts(object):
             lineString = '"%s" <%s>' % (i.name, i.email)
             print(lineString.encode('utf-8'))
 
-    def update(self):
+    def update(self, interactive):
         scopeList = ["https://www.google.com/m8/feeds", "https://www.googleapis.com/auth/contacts"]
         try:
             self.flow = oauth2client.client.flow_from_clientsecrets(self.clientSecretsPath, scopeList, redirect_uri="urn:ietf:wg:oauth:2.0:oob")
@@ -102,7 +105,7 @@ class GContacts(object):
 
         self.storage = oauth2client.file.Storage(self.oauth2ClientJsonPath)
         if self.storage.get() is None or self.storage.get().invalid:
-            self.updateCredentials()
+            self.updateCredentials(interactive)
 
         while True:
             try:
@@ -112,7 +115,7 @@ class GContacts(object):
                 contacts = contactsClient.GetContacts()
                 break
             except gdata.client.Unauthorized:
-                self.updateCredentials()
+                self.updateCredentials(interactive)
 
         singlePage = False  # For debugging purposes.
         count = 0
@@ -147,10 +150,11 @@ gcontacts <pattern>""")
         sys.exit(1)
 
     try:
-        opts, args = getopt.getopt(argv, "p:tuq", ["profile=", "require-title", "update", "quiet"])
+        opts, args = getopt.getopt(argv, "np:tuq", ["non-interactive", "profile=", "require-title", "update", "quiet"])
     except getopt.GetoptError:
         usage()
     update = False
+    interactive = True
     optIndex = 0
     for opt, arg in opts:
         if opt in ("-u", "--update"):
@@ -161,12 +165,14 @@ gcontacts <pattern>""")
             pass
         elif opt in ("-p", "--profile"):
             pass
+        elif opt in ("-n", "--non-interactive"):
+            interactive = False
         optIndex += 1
     pattern = argv[optIndex:]
 
     contacts = GContacts()
     if update:
-        contacts.update()
+        contacts.update(interactive)
     else:
         if not len(pattern):
             usage()
