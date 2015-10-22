@@ -2,6 +2,7 @@ cppcanvas/qa/extras/emfplus/emfplus.cxx
 filter/source/msfilter/rtfutil.cxx
 include/comphelper/propertyvalue.hxx
 include/o3tl/make_unique.hxx
+include/sfx2/lokhelper.hxx
 include/svl/grabbagitem.hxx
 oox/source/drawingml/customshapepresetdata.cxx
 oox/source/shape/LockedCanvasContext.cxx
@@ -11,6 +12,7 @@ oox/source/shape/WpgContext.hxx
 oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
 sd/qa/unit/tiledrendering/tiledrendering.cxx
+sfx2/source/view/lokhelper.cxx
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
 starmath/source/unofilter.cxx
