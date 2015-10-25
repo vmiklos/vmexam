@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+# This script backs up your Google contacts.  To use, run 'gcontacts -u' first
+# interactively.
+
+cd $(dirname $0)
+if ! ~/bin/gcontacts -u -n; then
+    echo "gcontacts failed, please run manually." |~/bin/pymail -r $(git config user.email|sed "s/.*@/$(hostname)@/") -s "gcontacts error" $(git config user.email)
+    exit
+fi
+cp ~/.gcontacts/contacts.xml contacts.xml
+git add contacts.xml && git commit -m "$(date +%Y-%m-%d)"
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
