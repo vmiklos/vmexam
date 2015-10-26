@@ -380,3 +380,26 @@ Steps to reproduce on master, e.g.:
 2) Insert -> Object -> Document
 
 3) Read error
+
+== 2015-10-22
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=59454
+
+RTF import: if section break is right before a table, it gets ignored.
+
+DOCX import doesn't seem to be affected.
+
+In writerfilter::dmapper::SectionPropertyMap::SetStart(), m_xStartingRange points to node #9, then node #10.
+
+in docx, SectionPropertyMap::CloseSectionGroup start has the same values
+in rtf, the second SectionPropertyMap::CloseSectionGroup has m_xStartingRange pointing to #18
+
+2e8aad6d45c53d554ccaf26de998ede708cfc289 fixes a similar problem for docx
+
+yes, 'ase NS_ooxml::LN_tblStart' of DomainMapper::sprmWithProps() is what makes docx work
+
+so rtftok has to know where a table starts/ends -- could work it around with
+start/end a table in RTF_ROW, but sounds ugly.
+
+better approach seems to be to keep an eye on m_nCellxMax when it does a 0 -> n
+or n -> 0 transition -> fixed.
