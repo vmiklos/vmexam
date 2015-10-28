@@ -1,0 +1,3 @@
+loolwsd/test/httpposttest.cpp
+loolwsd/test/httpwstest.cpp
+loolwsd/test/test.cpp

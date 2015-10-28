@@ -22,7 +22,7 @@ if [ -z "$files" ]; then
 fi
 for file in $files
 do
-	if ! echo $file |grep -q '\(cxx\|hxx\)$'; then
+	if ! echo $file |grep -q '\(cxx\|cpp\|hxx\)$'; then
 		continue
 	fi
 	astyle --options=$HOME/.astyle.options < $file > $new

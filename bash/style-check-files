@@ -9,7 +9,7 @@ cdup=$(git rev-parse --show-cdup)
 for file in $(cat .git/indented-files.cache)
 do
 	case $file in
-	*.cxx|*.hxx)
+	*.cxx|*.cpp|*.hxx)
 		astyle-check $file || exit 1
 		find-unsorted-includes $file || exit 1
 		# Use css:: instead.
