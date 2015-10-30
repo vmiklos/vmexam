@@ -403,3 +403,18 @@ start/end a table in RTF_ROW, but sounds ugly.
 
 better approach seems to be to keep an eye on m_nCellxMax when it does a 0 -> n
 or n -> 0 transition -> fixed.
+
+== 2015-10-30
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=89088
+
+last page is missing, gdb catch throw points out
+ShapeContextHandler::endFastElement in
+oox/source/shape/ShapeContextHandler.cxx, using >>= there fixes the bug.
+
+https://gerrit.libreoffice.org/#/c/19676/
+
+without patch: mem usage of android ODT after load according to top (RES): 254500, after typing 30 "8": 288168
+with patch:                                                                257008, after typing 30 "8": 258064
+
+// vim: ft=asciidoc
