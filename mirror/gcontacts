@@ -14,6 +14,7 @@ if ! ~/bin/gcontacts -u -n; then
     exit
 fi
 cp ~/.gcontacts/contacts.xml contacts.xml
+sed -i '/ns0:feed/s/ ns1:etag="[^"]\+"//' contacts.xml
 git add contacts.xml && git commit -m "$(date +%Y-%m-%d)"
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
