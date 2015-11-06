@@ -72,7 +72,12 @@ https://bugzilla.novell.com/show_bug.cgi?id=908632
 
 TL;DR: zypper -p http://download.opensuse.org/repositories/Virtualization/openSUSE_13.2/ in guestfs-data-1.26.9-163.1.x86_64
 
-=== openSUSE 13.2 -> openSUSE Factory
+=== openSUSE 13.2 -> openSUSE Leap 42.1
+
+- adjust repos:
+
+  * 13.2 -> Leap-13.2 in names
+  * 42.1 -> leap/42.1 in URLs
 
 - cpm fails to build
 
