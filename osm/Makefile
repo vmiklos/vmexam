@@ -9,6 +9,7 @@ update-house-numbers: region-street-housenumbers.txt workdir/region-street-house
 	./overpass-query region-street-housenumbers.txt > workdir/street-housenumbers.csv
 	./overpass-query workdir/region-street-housenumbers-gazdagret.txt > workdir/street-housenumbers-gazdagret.csv
 
+# No checker for this at the moment, so this is not part of 'make check'.
 update-addr-interpolation: region-addr-interpolation.txt
 	@mkdir -p workdir
 	./overpass-query region-addr-interpolation.txt > workdir/addr-interpolation.csv
