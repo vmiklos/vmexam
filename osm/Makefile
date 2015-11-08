@@ -24,7 +24,7 @@ check: download
 	pep8 overpass-query generate-postcode-csv qa/houseless-streets.py qa/osmose.py
 	qa/osmose.py
 	qa/houseless-streets.py
-	#qa/houseless-streets.py -gazdagret
+	qa/houseless-streets.py -gazdagret
 
 find-suspicious-steets:
 	./find-suspicious-streets |sort -r -t $$'\t' -n -k 2
