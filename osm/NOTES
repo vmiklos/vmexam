@@ -5,3 +5,11 @@ http://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_API_by_Example#List_of_
 - list of street - house number pairs in a region:
 
 https://groups.google.com/d/msg/openstreetmap-hungary/FjApwcAh154/gKSXc2j3cFMJ
+
+Ideas what to do in your region:
+
+- check for streets without house numbers at all
+- check for suspicious streets, which have house numbers, but they are incomplete (if you have a reference house number list -- geocodes are not needed)
+- check for valid postcodes
+- check for your osmose errors
+- check for addr:interpolation
