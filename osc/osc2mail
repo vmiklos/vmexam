@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+# This script runs chkworld and mails the result if there was any output.
+
+tmp=$(mktemp)
+
+~/git/vmexam/osc/chkworld &> $tmp
+
+if [ -s $tmp ]; then
+    cat $tmp |~/bin/pymail -r "$(git config user.email|sed "s/.*@/$(hostname)@/")" -s "OSC TODO for `date +%Y%m%d`" $(git config user.email)
+fi
+
+rm -f $tmp
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
