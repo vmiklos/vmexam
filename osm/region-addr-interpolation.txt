@@ -1,0 +1,13 @@
+[out:csv(::id, "addr:interpolation")]  [timeout:425];
+// Use overpass-turbo to map the area name to its ID.
+//
+// 3602714372 = 2714372 + 3600000000 (3600000000 == relation), see js/ide.js
+// in https://github.com/tyrasd/overpass-turbo
+//
+// {{geocodeArea:Sasad}}->.searchArea;
+area(3602714372)->.searchArea;
+(
+  way["addr:interpolation"](area.searchArea);
+);
+out body;
+// vim: ft=javascript

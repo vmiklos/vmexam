@@ -9,6 +9,10 @@ update-house-numbers: region-street-housenumbers.txt workdir/region-street-house
 	./overpass-query region-street-housenumbers.txt > workdir/street-housenumbers.csv
 	./overpass-query workdir/region-street-housenumbers-gazdagret.txt > workdir/street-housenumbers-gazdagret.csv
 
+update-addr-interpolation: region-addr-interpolation.txt
+	@mkdir -p workdir
+	./overpass-query region-addr-interpolation.txt > workdir/addr-interpolation.csv
+
 # At the end this check found no problems, so this is not part of 'make check'.
 update-postcodes:
 	rm Iranyitoszam_Internet.*
