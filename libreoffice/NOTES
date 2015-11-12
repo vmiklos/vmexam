@@ -417,4 +417,24 @@ https://gerrit.libreoffice.org/#/c/19676/
 without patch: mem usage of android ODT after load according to top (RES): 254500, after typing 30 "8": 288168
 with patch:                                                                257008, after typing 30 "8": 258064
 
+== 2015-11-06
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=85232 -- a vml->dml regression wrt groupshape handling
+
+- git:
+
+related vml commit: 7877638814de86202d33b5653a0f91d63341e98c
+
+- code:
+
+related VML code: oox::vml::ShapeBase::convertAndInsert
+related DML code: oox::drawingml::Shape::createAndInsert
+
+- DML import works by setting the transformation matrix once, methods to tweak it:
+
+basegfx::B2DHomMatrix::decompose to decompose
+basegfx::tools::createScaleShearXRotateTranslateB2DHomMatrix to compose
+
+- aha, root cause is missing mm100 -> twips conversion
+
 // vim: ft=asciidoc
