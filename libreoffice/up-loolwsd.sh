@@ -5,7 +5,7 @@ time sh -c "git pull -r && \
     automake --add-missing &&
     ./configure --prefix=$PWD/install --enable-debug --with-lokit-path=$HOME/git/libreoffice/master/include \
     make clean && \
-    make &&
+    make -j$(getconf _NPROCESSORS_ONLN) &&
     make tags &&
     style-check-files" 2>&1 |tee log
 

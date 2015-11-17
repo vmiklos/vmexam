@@ -11,7 +11,7 @@ time sh -c "git pull -r && \
     ./autogen.sh && \
     make clean && \
     make build-nocheck &&
-    sh ~/git/vmexam/libreoffice/daily.sh && \
+    if [ "$(git config libreoffice.bibisect)" == "true" ]; then sh ~/git/vmexam/libreoffice/daily.sh; fi && \
     make tags && \
     (cd instdir && rm -rf user && ln -s $HOME/.config/libreofficedev/master/user) && \
     make check &&
