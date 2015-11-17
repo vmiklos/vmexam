@@ -437,4 +437,10 @@ basegfx::tools::createScaleShearXRotateTranslateB2DHomMatrix to compose
 
 - aha, root cause is missing mm100 -> twips conversion
 
+== 2015-11-13
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=83300
+
+a 4.1 -> 4.2 regression
+
 // vim: ft=asciidoc
