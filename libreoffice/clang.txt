@@ -3,14 +3,16 @@
 Detect unprefixed members in a whole module:
 
 ----
-make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper RENAME_ARGS="-class-prefix=Sw" FORCE_COMPILE_ALL=1
+make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper-vmiklos RENAME_ARGS="-class-prefix=Sw" FORCE_COMPILE_ALL=1
 ----
+
+(The -vmiklos version is the same as the rename wrapper, just s/rename/find-unprefixed-members/.)
 
 Detect unprefixed members for a class:
 
 ----
-make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper RENAME_ARGS="-class-name=SdrDragView"
-make build-nocheck COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper RENAME_ARGS="-class-name=SdrDragView"
+make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper-vmiklos RENAME_ARGS="-class-name=SdrDragView"
+make build-nocheck COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper-vmiklos RENAME_ARGS="-class-name=SdrDragView"
 ----
 
 Rename them:
