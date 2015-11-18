@@ -25,7 +25,7 @@ make build-nocheck COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=rename-wrapper RENAME_
 Put output into git:
 
 ----
-for i in $(find . -name "*.new"); do mv -f $i ${i%%.new}; done
+for i in $(find . -name "*.new-prefix"); do mv -f $i ${i%%.new-prefix}; done
 ----
 
 // vim: ft=asciidoc
