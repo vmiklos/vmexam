@@ -4,10 +4,10 @@ update-streets: region-streets.txt workdir/region-streets-gazdagret.txt
 	./overpass-query region-streets.txt > workdir/streets.csv
 	./overpass-query workdir/region-streets-gazdagret.txt > workdir/streets-gazdagret.csv
 
-update-house-numbers: region-street-housenumbers.txt workdir/region-street-housenumbers-gazdagret.txt
+update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdagret.txt
 	@mkdir -p workdir
-	./overpass-query region-street-housenumbers.txt > workdir/street-housenumbers.csv
-	./overpass-query workdir/region-street-housenumbers-gazdagret.txt > workdir/street-housenumbers-gazdagret.csv
+	./overpass-query street-housenumbers.txt > workdir/street-housenumbers.csv
+	./overpass-query workdir/street-housenumbers-gazdagret.txt > workdir/street-housenumbers-gazdagret.csv
 
 update-addr-interpolation: addr-interpolation.txt
 	@mkdir -p workdir
@@ -38,6 +38,6 @@ workdir/region-streets-gazdagret.txt: region-streets.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602713748/' region-streets.txt > workdir/region-streets-gazdagret.txt
 
-workdir/region-street-housenumbers-gazdagret.txt: region-street-housenumbers.txt
+workdir/street-housenumbers-gazdagret.txt: street-housenumbers.txt
 	@mkdir -p workdir
-	sed 's/3602714372/3602713748/' region-street-housenumbers.txt > workdir/region-street-housenumbers-gazdagret.txt
+	sed 's/3602714372/3602713748/' street-housenumbers.txt > workdir/street-housenumbers-gazdagret.txt
