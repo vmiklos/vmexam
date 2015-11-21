@@ -1,8 +1,8 @@
 download: update-streets update-house-numbers update-addr-interpolation update-osmose-$(USER)
 
-update-streets: region-streets.txt workdir/region-streets-gazdagret.txt
-	./overpass-query region-streets.txt > workdir/streets.csv
-	./overpass-query workdir/region-streets-gazdagret.txt > workdir/streets-gazdagret.csv
+update-streets: streets.txt workdir/streets-gazdagret.txt
+	./overpass-query streets.txt > workdir/streets.csv
+	./overpass-query workdir/streets-gazdagret.txt > workdir/streets-gazdagret.csv
 
 update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdagret.txt
 	@mkdir -p workdir
@@ -34,9 +34,9 @@ check: download
 find-suspicious-steets:
 	./find-suspicious-streets |sort -r -t $$'\t' -n -k 2
 
-workdir/region-streets-gazdagret.txt: region-streets.txt
+workdir/streets-gazdagret.txt: streets.txt
 	@mkdir -p workdir
-	sed 's/3602714372/3602713748/' region-streets.txt > workdir/region-streets-gazdagret.txt
+	sed 's/3602714372/3602713748/' streets.txt > workdir/streets-gazdagret.txt
 
 workdir/street-housenumbers-gazdagret.txt: street-housenumbers.txt
 	@mkdir -p workdir
