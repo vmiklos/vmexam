@@ -30,7 +30,7 @@ check: download
 	qa/osmose.py
 	qa/houseless-streets.py
 	qa/houseless-streets.py -gazdagret
-	#qa/interpolated-addresses.py
+	qa/interpolated-addresses.py
 
 find-suspicious-steets:
 	./find-suspicious-streets |sort -r -t $$'\t' -n -k 2

@@ -20,6 +20,7 @@ class Test(unittest.TestCase):
                 continue
             ways.append(line.strip())
         self.assertEqual([], ways)
+        sock.close()
 
 if __name__ == '__main__':
     unittest.main()
