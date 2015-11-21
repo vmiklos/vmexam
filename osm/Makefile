@@ -1,4 +1,4 @@
-download: update-streets update-house-numbers update-osmose-$(USER)
+download: update-streets update-house-numbers update-addr-interpolation update-osmose-$(USER)
 
 update-streets: region-streets.txt workdir/region-streets-gazdagret.txt
 	./overpass-query region-streets.txt > workdir/streets.csv
@@ -9,10 +9,9 @@ update-house-numbers: region-street-housenumbers.txt workdir/region-street-house
 	./overpass-query region-street-housenumbers.txt > workdir/street-housenumbers.csv
 	./overpass-query workdir/region-street-housenumbers-gazdagret.txt > workdir/street-housenumbers-gazdagret.csv
 
-# No checker for this at the moment, so this is not part of 'make check'.
-update-addr-interpolation: region-addr-interpolation.txt
+update-addr-interpolation: addr-interpolation.txt
 	@mkdir -p workdir
-	./overpass-query region-addr-interpolation.txt > workdir/addr-interpolation.csv
+	./overpass-query addr-interpolation.txt > workdir/addr-interpolation.csv
 
 # At the end this check found no problems, so this is not part of 'make check'.
 update-postcodes:
