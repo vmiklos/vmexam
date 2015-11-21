@@ -1,0 +1,7 @@
+[out:csv(::id, name)]  [timeout:425];
+//area[name="Sasad"];
+area(3602714372);
+// generated from: highway=* and bridge!=yes and maxspeed!=*
+way(area)["highway"]["bridge"!="yes"]["maxspeed"!~".*"];
+out;
+// vim: ft=javascript

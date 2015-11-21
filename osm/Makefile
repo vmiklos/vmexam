@@ -1,8 +1,11 @@
-download: update-streets update-house-numbers update-addr-interpolation update-osmose-$(USER)
+download: update-streets update-house-numbers update-addr-interpolation update-streets-nomaxspeed update-osmose-$(USER)
 
 update-streets: streets.txt workdir/streets-gazdagret.txt
 	./overpass-query streets.txt > workdir/streets.csv
 	./overpass-query workdir/streets-gazdagret.txt > workdir/streets-gazdagret.csv
+
+update-streets-nomaxspeed: streets-nomaxspeed.txt
+	./overpass-query streets-nomaxspeed.txt > workdir/streets-nomaxspeed.csv
 
 update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdagret.txt
 	@mkdir -p workdir

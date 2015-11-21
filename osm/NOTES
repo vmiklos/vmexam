@@ -12,4 +12,5 @@ Ideas what to do in your region:
 - check for suspicious streets, which have house numbers, but they are incomplete (if you have a reference house number list -- geocodes are not needed)
 - check for valid postcodes
 - check for your osmose errors
-- check for addr:interpolation -> in progress for Sasad, then could also check Gazdagrét
+- check for addr:interpolation -> could also check Gazdagrét
+- check for missing maxspeed tags -> in progress for Sasad
