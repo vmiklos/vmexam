@@ -443,4 +443,62 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=83300
 
 a 4.1 -> 4.2 regression
 
+== 2015-11-20
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=78902
+
+a 4.2 -> 4.3 regression
+
+created minimized test document: 2,2M -> 30K
+
+bibisect-43all, last42onmaster is good, last43onmaster is bad (layout does not finish in about 10 sec)
+- [4fcd68ce4979f85fda4568f4b419a4b41d07345f] source-hash-2c4621c87ed3a7b19de195c21494c9a381e72b2e is good
+- [422186458e0b4db00c7e26b54d5b631f83bcad2a] source-hash-6948bf58ce181b17f60ef81f10205ef4dac50cc6 is skip
+- [a0b33bffff9c787dce71a13b344f06ae1453026b] source-hash-02e0be069e57e724c51f23e2e31b77657a6a1d3d is bad
+- [db29eee512d03b1dc0139b3752bbe7931b165377] source-hash-77b6c1602aaa0bd059077765e7fabb53d9e6ddeb is bad (hangs hard)
+- [0b79394752f7ecbab6ab4ecedbfab8551c6e9fbd] source-hash-381613916d42a1e18e2824b5d41028dcfe19659a is bad
+- [7c18060e3625d89e7ca6c3a75b0f609200150252] source-hash-2589d9e3e6e9fab18ff735561991a3dcdd3d8b4b is good
+- [2f040759edbb7bb8e7a41cf06bac2a2a0fb50c73] source-hash-76fe205d7e0fe0a73616453209d8094cab9ce79f is good
+- [a03a074d7d24b285022244e1939b1abbedc76d1e] source-hash-c84f0dae40b6f3e64a265efcc76b1757edbdbf45 is bad
+- [56a3b3c781fc2eb55f46641d89a866a91119a8a3] source-hash-21e6fd2b2dfdb806db320f699e434e6f2351a7b6 is bad
+
+56a3b3c781fc2eb55f46641d89a866a91119a8a3 / source-hash-21e6fd2b2dfdb806db320f699e434e6f2351a7b6 is the first bad
+2f040759edbb7bb8e7a41cf06bac2a2a0fb50c73 / source-hash-76fe205d7e0fe0a73616453209d8094cab9ce79f is still good
+
+nominally a regression from 2b78f2cd7b9e4bab0f3b3b9119238f36a1bbc7b2 (but obviously just made a previous problem visible)
+
+idea: hack SwFrm::InsertPage() so that layout finishes (disable sw page frame deletions), then compare the ww8 and ooxml import results
+
+binary doc import seems to create an sw image, while ooxml+vml import creates a draw image
+
+== 2015-11-27
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=95865
+
+4b918705f67d0837b56e56d7abac23e6eb21feb4 is supposed to be good -> indeed
+41379970e8c6b75563b7c162b4e760b9e93a5bea is suppoesd to be bad -> indeed
+bd2455d310b35d6e231627c1a89301450be0c65d is good
+bf35ea1dea48cfc5617e116c1f638f787f349855 is bad
+910c31ab55a90c87e9e16ded734fec396660e331 is bad
+6adfbe62f6bb67d7d78c1561e9af5169d7f5bb9a is bad
+5f87aafea491b111fa1d7518c746e0e1304a069a is good
+147b74beea7b5f0fb121e5495bbdfb4869786603 is good
+98785dbb95eca5443b38535cba6552e21d4e2c5b is good -> bisected
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=94043
+
+ww8 import result:
+
+SeparatorLineColor        long                          0   
+SeparatorLineIsOn         boolean                    True   
+SeparatorLineRelativeHeight long                      100   
+SeparatorLineStyle        byte                          0   
+SeparatorLineVerticalAlignment integer                  0   
+SeparatorLineWidth        long                          2  
+
+docx import result: SeparatorLineWidth is 0
+
+testcase:
+ThisComponent.TextSections.Section1.TextColumns.SeparatorLineWidth
+
 // vim: ft=asciidoc
