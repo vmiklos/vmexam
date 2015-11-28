@@ -12,7 +12,7 @@ check: download
 	pep8 --ignore=E501 $(PYTHON_FILES)
 	TDOC="workdir/rtf-regressions.atom" qa/empty-atom.py
 	TDOC="workdir/untagged-rtf-regressions.atom" qa/empty-atom.py
-	#TDOC="workdir/regressions-blame-$(USER).atom" qa/empty-atom.py
+	TDOC="workdir/regressions-blame-$(USER).atom" qa/empty-atom.py
 
 download:
 	@mkdir -p workdir
