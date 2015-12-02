@@ -51,6 +51,8 @@ writerfilter/source/dmapper/LatentStyleHandler.cxx
 writerfilter/source/dmapper/LatentStyleHandler.hxx
 writerfilter/source/dmapper/SdtHelper.cxx
 writerfilter/source/dmapper/SdtHelper.hxx
+writerfilter/source/dmapper/SmartTagHandler.cxx
+writerfilter/source/dmapper/SmartTagHandler.hxx
 writerfilter/source/dmapper/TableManager.cxx
 writerfilter/source/dmapper/TablePositionHandler.cxx
 writerfilter/source/dmapper/TablePositionHandler.hxx
