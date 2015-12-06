@@ -1,3 +1,7 @@
+= OpenStreetMap notes
+
+== Efforts
+
 - list of streets in a region:
 
 http://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_API_by_Example#List_of_Streets
@@ -14,3 +18,21 @@ Ideas what to do in your region:
 - check for your osmose errors
 - check for addr:interpolation -> could also check Gazdagrét
 - check for missing maxspeed tags -> in progress for Sasad
+
+== Historic data
+
+Overpass supports this as well, just need to include that in the first line of the query, e.g. replace:
+
+----
+[timeout:425]
+----
+
+with:
+
+----
+[timeout:425] [date:"2015-01-06T00:00:00Z"]
+----
+
+to query the non-latest version.
+
+// vim: ft=asciidoc
