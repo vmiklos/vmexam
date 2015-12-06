@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+#
+# Chart number of addr:housenumber tags in an area.
+#
+# Expected:
+#
+# 1) Each input file is an output of the street-housenumbers.txt query.
+# 2) The filename of the input file is the date of the data.
+#
+# Output is again a csv file that can be charted easily by spreadsheet
+# software.
+#
+# Example: ./chart-addr-housenumber 2015-*.csv > chart.csv
+#
+
+for i in "$@"
+do
+    key=$(basename $i .csv)
+    value=$(grep -v ^@ "$i" |wc -l)
+    echo $key$'\t'$value
+done
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
