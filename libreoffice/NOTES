@@ -501,4 +501,11 @@ docx import result: SeparatorLineWidth is 0
 testcase:
 ThisComponent.TextSections.Section1.TextColumns.SeparatorLineWidth
 
+=== 2015-12-04
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=94377
+
+RtfAttributeOutput::PostitField just writes plain text
+DocxAttributeOutput::WritePostitFields seems to do better
+
 // vim: ft=asciidoc
