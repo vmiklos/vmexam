@@ -1,0 +1,13 @@
+doc-dump.py
+emf-dump.py
+msodumper/docdirstream.py
+msodumper/docrecord.py
+msodumper/docsprm.py
+msodumper/docstream.py
+msodumper/emfrecord.py
+msodumper/msometa.py
+msodumper/vsdstream.py
+msodumper/wmfrecord.py
+test/doc/test.py
+test/vsd-test.py
+vsd-dump.py
