@@ -85,4 +85,10 @@ https://bugzilla.novell.com/show_bug.cgi?id=918553
 
 Fixed in <24 hours. :-)
 
+- wine is broken
+
+https://bugzilla.novell.com/show_bug.cgi?id=845916
+
+Workaround: sudo zypper in --oldpackage --from repo-oss libX11-6-32bit
+
 // vim: ft=asciidoc paste
