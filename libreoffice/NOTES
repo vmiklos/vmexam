@@ -508,4 +508,12 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=94377
 RtfAttributeOutput::PostitField just writes plain text
 DocxAttributeOutput::WritePostitFields seems to do better
 
+=== 2015-12-11
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=96113
+
+Similar fix: 79fb61efb847405fa47235002b52ee8efad5e339
+
+testcase: ThisComponent.DrawPage(0).BackColor should be 0x00FF00
+
 // vim: ft=asciidoc
