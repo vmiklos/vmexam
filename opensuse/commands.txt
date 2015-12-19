@@ -91,4 +91,12 @@ https://bugzilla.novell.com/show_bug.cgi?id=845916
 
 Workaround: sudo zypper in --oldpackage --from repo-oss libX11-6-32bit
 
+- KDE4 -> KDE5, retain a number of old settings:
+
+  * cursor theme: Get New Theme, DMZ
+  * desktop effects: change virtual desktop switching animation from slide to fade
+  * panel height: 35px, clock date
+  * k menu: alternatives -> launcher is the kde4 style thing
+  * kbd layout chooser in systemsettings5
+
 // vim: ft=asciidoc paste
