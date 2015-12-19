@@ -97,7 +97,9 @@ Workaround: sudo zypper in --oldpackage --from repo-oss libX11-6-32bit
   * desktop effects: change virtual desktop switching animation from slide to fade
   * panel height: 35px, clock date
   * k menu: alternatives -> launcher is the kde4 style thing
+  * k menu favorites: systemsettings -> systemsettings5, etc
   * kbd layout chooser in systemsettings5
   * disable screen lock on screensaver
+  * focus follows mouse: window management -> window behavior -> focus
 
 // vim: ft=asciidoc paste
