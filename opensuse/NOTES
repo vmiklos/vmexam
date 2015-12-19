@@ -98,5 +98,6 @@ Workaround: sudo zypper in --oldpackage --from repo-oss libX11-6-32bit
   * panel height: 35px, clock date
   * k menu: alternatives -> launcher is the kde4 style thing
   * kbd layout chooser in systemsettings5
+  * disable screen lock on screensaver
 
 // vim: ft=asciidoc paste
