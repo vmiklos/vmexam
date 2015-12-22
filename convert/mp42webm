@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+#
+# Use case is that e.g. Android phones create mp4 videos that aren't too
+# compressed, so recording is still possible realtime, but storing them in
+# some more compressed format makes a lot of sense.
+#
+
+if [ -z "$1" ]; then
+    echo "usage: mp42webm <input>"
+    exit 1
+fi
+
+ffmpeg -i "$1" -acodec libvorbis -aq 5 -ac 2 -qmax 25 -threads 2 "$(basename $1 .mp4).webm"
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
