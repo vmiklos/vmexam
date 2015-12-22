@@ -2,12 +2,20 @@
 
 == osc
 
-- Updating a package in OBS:
+- Updating a package in OBS, examples:
 
+----
+osc build --alternative-project openSUSE:Leap:42.1 --release 9999 standard
 osc build openSUSE_13.2
-(for ARM: osc build --alternative-project=openSUSE:13.2 ports)
+osc build --alternative-project=openSUSE:13.2 ports (ARM)
+----
+
+then:
+
+----
 osc vc
 osc commit
+----
 
 - Updating its git mirror:
 
@@ -77,7 +85,7 @@ TL;DR: zypper -p http://download.opensuse.org/repositories/Virtualization/openSU
 - adjust repos:
 
   * 13.2 -> Leap-13.2 in names
-  * 42.1 -> leap/42.1 in URLs
+  * 13.2 -> leap/42.1 in URLs
 
 - cpm fails to build
 
@@ -85,11 +93,11 @@ https://bugzilla.novell.com/show_bug.cgi?id=918553
 
 Fixed in <24 hours. :-)
 
-- wine is broken
+- cxoffice is broken
 
 https://bugzilla.novell.com/show_bug.cgi?id=845916
 
-Workaround: sudo zypper in --oldpackage --from repo-oss libX11-6-32bit
+Fix: cd /opt/cxoffice/lib; mkdir t; mv libxcb* t
 
 - KDE4 -> KDE5, retain a number of old settings:
 
@@ -102,5 +110,9 @@ Workaround: sudo zypper in --oldpackage --from repo-oss libX11-6-32bit
   * kbd layout fix: alt-1 and alt-7 works in bash once global keyboard shortcuts 'walk through windows of current application' (alt-~ and alt-`) are disabled
   * disable screen lock on screensaver
   * focus follows mouse: window management -> window behavior -> focus
+
+- sidebar is broken in mutt:
+
+https://build.opensuse.org/request/show/350312
 
 // vim: ft=asciidoc paste
