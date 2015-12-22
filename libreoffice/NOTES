@@ -529,4 +529,11 @@ b5a4e6974a5473c44fc239b6a9ae21f233111c2a is good
 
 978033d5ed9f93f2d5d9a1ba44acf6b37bc13bfe is the problem
 
+=== 2015-12-22
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=96674
+
+VML import has similar tweaks in ShapeType::getAbsRectangle() and
+ShapeType::getRelRectangle().
+
 // vim: ft=asciidoc
