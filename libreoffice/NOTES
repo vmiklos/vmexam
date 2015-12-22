@@ -516,4 +516,17 @@ Similar fix: 79fb61efb847405fa47235002b52ee8efad5e339
 
 testcase: ThisComponent.DrawPage(0).BackColor should be 0x00FF00
 
+=== 2015-12-18
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=93009
+
+025952f52767fb3508a6725468fe4b1e6ce4c9b1 is supposed to be good: indeed
+a6f5770b4aaaa6506a22eae0d641ad48f9b6d239 is supposed to be bad: indeed
+cfde943f59b0cf63c46cbe061fd37e53201d2363 is bad
+978033d5ed9f93f2d5d9a1ba44acf6b37bc13bfe is bad
+f1256611054701a2bba20225fb654814eecbf559 is good
+b5a4e6974a5473c44fc239b6a9ae21f233111c2a is good
+
+978033d5ed9f93f2d5d9a1ba44acf6b37bc13bfe is the problem
+
 // vim: ft=asciidoc
