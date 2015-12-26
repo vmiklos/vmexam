@@ -110,6 +110,7 @@ Fix: cd /opt/cxoffice/lib; mkdir t; mv libxcb* t
   * kbd layout fix: alt-1 and alt-7 works in bash once global keyboard shortcuts 'walk through windows of current application' (alt-~ and alt-`) are disabled
   * disable screen lock on screensaver
   * focus follows mouse: window management -> window behavior -> focus
+  * kmix: individual process control seems to be no longer implemented, using 'pavucontrol' is a workaround
 
 - sidebar is broken in mutt:
 
