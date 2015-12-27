@@ -101,6 +101,7 @@ Fix: cd /opt/cxoffice/lib; mkdir t; mv libxcb* t
 
 - KDE4 -> KDE5, retain a number of old settings:
 
+  * update /etc/sysconfig/displaymanager: kdm -> sddm
   * cursor theme: Get New Theme, DMZ
   * desktop effects: change virtual desktop switching animation from slide to fade
   * panel height: 35px, clock date
