@@ -1,0 +1,1 @@
+-Werror -Wshadow -Wno-unused-local-typedefs -Wno-unused-variable
