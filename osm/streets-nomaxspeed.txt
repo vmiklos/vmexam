@@ -2,6 +2,6 @@
 //area[name="Sasad"];
 area(3602714372);
 // generated from: highway=* and bridge!=yes and maxspeed!=*
-way(area)["highway"]["bridge"!="yes"]["maxspeed"!~".*"];
+way(area)["highway"]["highway"!="footway"]["bridge"!="yes"]["maxspeed"!~".*"];
 out;
 // vim: ft=javascript
