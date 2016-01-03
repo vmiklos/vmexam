@@ -1,12 +1,12 @@
 #!/bin/bash
 
 time sh -c "git pull -r && \
-    autoreconf &&
-    automake --add-missing &&
-    ./configure --prefix=$PWD/install --enable-debug --with-lokit-path=$HOME/git/libreoffice/master/include \
+    autoreconf && \
+    automake --add-missing && \
+    ./configure --prefix=$PWD/install --enable-debug --with-lokit-path=$HOME/git/libreoffice/master/include && \
     make clean && \
-    make -j$(getconf _NPROCESSORS_ONLN) &&
-    make tags &&
+    make -j$(getconf _NPROCESSORS_ONLN) && \
+    make tags && \
     style-check-files" 2>&1 |tee log
 
 # Self-built poco: --with-poco-includes=$HOME/git/poco/install/include -with-poco-libs=$HOME/git/poco/lib/Linux/x86_64

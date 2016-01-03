@@ -536,4 +536,29 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=96674
 VML import has similar tweaks in ShapeType::getAbsRectangle() and
 ShapeType::getRelRectangle().
 
+=== 2015-12-29
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=95213
+
+testcase:
+
+oParas = ThisComponent.Text.createEnumeration
+oPara = oParas.nextElement
+oPara = oParas.nextElement
+xray oPara.NumberingRules.getByIndex(1) ' ListLabel 4 and ListLabel 5 for CharStyleName
+
+=== 2015-12-30
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=96308
+
+probably a regression from b9c1a9b9aa41dbbb6bed0c77f4370ab6105c7fb1
+
+two problems: incorrect tab stop + tab stop is not deleted
+
+def tab stop should be 0.5cm, is 1.27cm
+
+tab stop not deleted: sort of already handled in writerfilter::dmapper::DomainMapper::sprmWithProps(), but only for the case when there is still at least one tab stop kept
+
+testcase -- get cell text: xray ThisComponent.TextTables(0).getCellByName("B1").Text
+
 // vim: ft=asciidoc
