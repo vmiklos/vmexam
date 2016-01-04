@@ -105,6 +105,7 @@ Fix: cd /opt/cxoffice/lib; mkdir t; mv libxcb* t
   * cursor theme: Get New Theme, DMZ
   * desktop effects: change virtual desktop switching animation from slide to fade
   * panel height: 35px, clock date
+  * digital clock settings -> tick 'show week numbers in Calendar'
   * k menu: alternatives -> launcher is the kde4 style thing
   * k menu favorites: systemsettings -> systemsettings5, etc
   * kbd layout chooser in systemsettings5
