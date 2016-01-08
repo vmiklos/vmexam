@@ -15,6 +15,12 @@ make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrap
 make build-nocheck COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper-vmiklos RENAME_ARGS="-class-name=SdrDragView"
 ----
 
+Example `rename.csv` for a member function rename:
+
+----
+SdrDragStat::GetPointAnz,GetPointCount
+----
+
 Rename them:
 
 ----

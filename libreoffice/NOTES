@@ -561,4 +561,27 @@ tab stop not deleted: sort of already handled in writerfilter::dmapper::DomainMa
 
 testcase -- get cell text: xray ThisComponent.TextTables(0).getCellByName("B1").Text
 
+=== 2016-11-08
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=92613 -- no idea how to reproduce this
+
+Raal says 5.0 is bad, 5.1 is good
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=93374 is a duplicate and can reproduce steps using daily-till51.git:
+- oldest is bad
+- c5625a3e1014766a488ca42e986be5dd3efbf051 is good
+- [a8d19eafb9e195a85359dd8cdc5c46c38295caa0] 2015-08-22: source-hash-79fb61efb847405fa47235002b52ee8efad5e339 is bad (good for g-b)
+- [2ad98b12d82c4ada5756881f0d6074154976e95c] 2015-10-08: source-hash-2e6feddc53830406fa04b4a0aea49bb8438dc702 is good (bad for g-b)
+- [508476d55906e21bc6c15423a8730d9d3a9f6cc8] 2015-09-14: source-hash-41007842ed9bb5d6165792a197769f72dae55a2c is bad (good for g-b)
+- [a0c244a6d24022e88db2a8b4db2e06ec62b08b49] 2015-09-26: source-hash-18c196f0190d9920673cdd9a4dbc158f08959cfd is bad (good for g-b)
+- [9b3e246c95933293fa60b1e377bf05b0e1c80a6d] 2015-10-02: source-hash-419549b095a1bb95ce23bf3fc8866e6b582e6dde is bad (good for g-b)
+- [08a963f5804d7847a6bba2961a15779e8bc06a39] 2015-10-05: source-hash-c9c61e0faab31c753f60361a2909c1e61481ac89 is bad (good for g-b)
+- [868763b62a54e99514cbf4a697363bf1e1f9f497] 2015-10-07: source-hash-f830600ece806ec365a4839e79afabe183c5e36d is good (bad for g-b)
+- [16676509e5ca93d0acbb20998fa8586870330095] 2015-10-06: source-hash-3e5b53438d7001fde1b4664b8867be3dcfae4b95 is good (bad for g-b)
+=> 16676509e5ca93d0acbb20998fa8586870330095 / 2015-10-06: source-hash-3e5b53438d7001fde1b4664b8867be3dcfae4b95 is the first good -> indeed
+=> 08a963f5804d7847a6bba2961a15779e8bc06a39 / 2015-10-05: source-hash-c9c61e0faab31c753f60361a2909c1e61481ac89 is the last bad -> indeed
+range is c9c61e0faab31c753f60361a2909c1e61481ac89..3e5b53438d7001fde1b4664b8867be3dcfae4b95
+
+fixed by 92fd894ea18672cba4cf961bdc4c0bc98f168102, tdf#94435
+
 // vim: ft=asciidoc
