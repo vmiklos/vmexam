@@ -1,9 +1,11 @@
 #!/bin/bash
 
+parallelism=$(getconf _NPROCESSORS_ONLN)
+parallelism=1
 time sh -c "git pull -r && \
     ./configure --cflags=\"$(cat configure.input)\" && \
     make clean && \
-    make -s -j$(getconf _NPROCESSORS_ONLN)" 2>&1 |tee log
+    make -s -j$parallelism CXX='ccache g++'" 2>&1 |tee log
 if grep -q Werror= log; then
     echo "Found warnings to fix."
 fi
