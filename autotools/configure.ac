@@ -5,6 +5,13 @@ AC_CONFIG_FILES([
     Makefile
     source/Makefile
 ])
+
+dnl Use ccache automatically.
+AC_PATH_PROG([CCACHE],[ccache],[not found])
+if test "$CCACHE" != "not found"; then
+    CXX="$CCACHE $CXX"
+fi
+
 AC_OUTPUT
 
 dnl vim:set shiftwidth=4 softtabstop=4 expandtab:
