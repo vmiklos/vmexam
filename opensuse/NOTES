@@ -117,5 +117,6 @@ Fix: cd /opt/cxoffice/lib; mkdir t; mv libxcb* t
 - sidebar is broken in mutt:
 
 https://build.opensuse.org/request/show/350312
+https://build.opensuse.org/request/show/353183
 
 // vim: ft=asciidoc paste
