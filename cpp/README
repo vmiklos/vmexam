@@ -7,3 +7,5 @@ Tmp::foo() is never called, the compiler won't say that calling run() on an
 int* is an error.
 
 (See <http://stackoverflow.com/questions/183108/is-object-code-generated-for-unused-template-class-methods>.)
+
+1: You would expect that the output is "foo1", but it's "oo", as +1 increments the pointer to "foo".
