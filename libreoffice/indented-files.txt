@@ -94,3 +94,4 @@ writerfilter/source/rtftok/rtftokenizer.cxx
 writerfilter/source/rtftok/rtftokenizer.hxx
 writerfilter/source/rtftok/rtfvalue.cxx
 writerfilter/source/rtftok/rtfvalue.hxx
+xmlsecurity/qa/unit/signing/signing.cxx
