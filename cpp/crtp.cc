@@ -2,7 +2,7 @@
 
 // https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern
 
-template <typename Derived>
+template <typename>
 class A
 {
 public:
