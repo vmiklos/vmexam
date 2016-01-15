@@ -3,16 +3,16 @@
 Detect unprefixed members in a whole module:
 
 ----
-make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper-vmiklos RENAME_ARGS="-class-prefix=Sw" FORCE_COMPILE_ALL=1
+make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-class-prefix=Sw" FORCE_COMPILE_ALL=1
 ----
 
-(The -vmiklos version is the same as the rename wrapper, just s/rename/find-unprefixed-members/.)
+(The '2' version is the same as the rename wrapper, just s/rename/find-unprefixed-members/.)
 
 Detect unprefixed members for a class:
 
 ----
-make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper-vmiklos RENAME_ARGS="-class-name=SdrDragView"
-make build-nocheck COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper-vmiklos RENAME_ARGS="-class-name=SdrDragView"
+make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-class-name=SdrDragView"
+make build-nocheck COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-class-name=SdrDragView"
 ----
 
 Example `rename.csv` for a member function rename:
@@ -32,6 +32,20 @@ Put output into git:
 
 ----
 for i in $(find . -name "*.new-prefix"); do mv -f $i ${i%%.new-prefix}; done
+----
+
+== online.git commands
+
+Detect:
+
+----
+make CCACHE_PREFIX=find-unprefixed-members-wrapper2 CCACHE_DISABLE=1 RENAME_ARGS="-poco -class-excluded-prefix=std::,Poco::"
+----
+
+Rename:
+
+----
+make CCACHE_PREFIX=rename-wrapper CCACHE_DISABLE=1 RENAME_ARGS="-csv=$HOME/rename.csv"
 ----
 
 // vim: ft=asciidoc
