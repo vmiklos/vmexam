@@ -39,13 +39,13 @@ for i in $(find . -name "*.new-prefix"); do mv -f $i ${i%%.new-prefix}; done
 Detect:
 
 ----
-make CCACHE_PREFIX=find-unprefixed-members-wrapper2 CCACHE_DISABLE=1 RENAME_ARGS="-poco -class-excluded-prefix=std::,Poco::"
+make -j8 CCACHE_PREFIX=find-unprefixed-members-wrapper2 CCACHE_DISABLE=1 RENAME_ARGS="-poco -class-excluded-prefix=std::,Poco::"
 ----
 
 Rename:
 
 ----
-make CCACHE_PREFIX=rename-wrapper CCACHE_DISABLE=1 RENAME_ARGS="-csv=$HOME/rename.csv"
+make -j8 CCACHE_PREFIX=rename-wrapper CCACHE_DISABLE=1 RENAME_ARGS="-csv=$HOME/rename.csv"
 ----
 
 // vim: ft=asciidoc
