@@ -6,3 +6,6 @@ json-array-read: json-array-read.cc Makefile
 
 poco: poco.cc Makefile
 	g++ -std=c++11 -o poco poco.cc -lPocoFoundation -lPocoJSON
+
+crtp: crtp.cc Makefile
+	g++ -std=c++11 -o crtp crtp.cc
