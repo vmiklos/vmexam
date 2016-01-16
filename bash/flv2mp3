@@ -1,6 +1,9 @@
 #!/bin/bash
 
+# ~/bin/youtube-dl --yes-playlist --extract-audio -o "%(autonumber)s-%(title)s.%(ext)s" <url>
+# for i in 000*; do git/vmexam/bash/flv2mp3 "$i"; done
+
 mplayer -novideo -ao pcm:fast "$1"
 lame -f audiodump.wav
-mv audiodump.wav.mp3 "$1.mp3"
+mv audiodump.mp3 "$1.mp3"
 rm -f audiodump.wav
