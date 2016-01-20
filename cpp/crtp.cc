@@ -2,7 +2,7 @@
 
 // https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern
 
-template <typename>
+template <typename Derived>
 class A
 {
 public:
@@ -14,6 +14,12 @@ public:
     void bar()
     {
         std::cerr << "A::bar" << std::endl;
+    }
+
+    void work()
+    {
+        static_cast<Derived*>(this)->foo();
+        static_cast<Derived*>(this)->bar();
     }
 };
 
@@ -29,8 +35,7 @@ public:
 int main()
 {
     B b;
-    b.foo();
-    b.bar();
+    b.work();
     return 0;
 }
 
