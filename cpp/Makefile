@@ -9,3 +9,9 @@ poco: poco.cc Makefile
 
 crtp: crtp.cc Makefile
 	g++ -std=c++11 -o crtp crtp.cc
+
+python-filter: python-filter.cxx Makefile
+	g++ -std=c++11 -o python-filter python-filter.cxx
+
+python-map: python-map.cxx Makefile
+	g++ -std=c++11 -o python-map python-map.cxx
