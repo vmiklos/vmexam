@@ -561,7 +561,7 @@ tab stop not deleted: sort of already handled in writerfilter::dmapper::DomainMa
 
 testcase -- get cell text: xray ThisComponent.TextTables(0).getCellByName("B1").Text
 
-=== 2016-11-08
+=== 2016-01-08
 
 https://bugs.documentfoundation.org/show_bug.cgi?id=92613 -- no idea how to reproduce this
 
@@ -583,5 +583,34 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=93374 is a duplicate and can
 range is c9c61e0faab31c753f60361a2909c1e61481ac89..3e5b53438d7001fde1b4664b8867be3dcfae4b95
 
 fixed by 92fd894ea18672cba4cf961bdc4c0bc98f168102, tdf#94435
+
+=== 2016-01-22
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=95376
+
+bugdoc: paragraph has:
+        <w:pStyle w:val="TGCabnumberedpara"/>
+and
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="6"/>
+para style has:
+        <w:numId w:val="8"/>
+      <w:ind w:left="340" w:firstLine="0"/>
+numbering has:
+        <w:ind w:left="3318" w:hanging="340"/>
+-> Word ignores w:firstLine for some reason?
+
+regression from tdf#92454, where:
+
+bugdoc paragraph has:
+        <w:pStyle w:val="Heading2"/>
+para style has:
+        <w:numId w:val="8"/>
+      <w:ind w:left="0" w:firstLine="0"/>
+numbering has:
+        <w:ind w:left="4330" w:hanging="360"/>
+
+-> sounds like a direct ind-from-num > ind-from-parastyle, but
+                        ind-from-parastyle > ind-from-num-from-parastyle
 
 // vim: ft=asciidoc
