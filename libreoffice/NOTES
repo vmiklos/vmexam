@@ -613,4 +613,24 @@ numbering has:
 -> sounds like a direct ind-from-num > ind-from-parastyle, but
                         ind-from-parastyle > ind-from-num-from-parastyle
 
+=== 2016-01-28
+
+- could .uno:Paste take an AnchorType param, so pasted image could be anchored e.g. as-char, not at-para?
+
+related commit: e7eca35148204d094dcdb7d8b3e4ec6c9d454159, SwWrtShell::Insert()
+SID_PASTE in sfx2/sdi/sfx.sdi, doesn't seem to take a param
+1dc60bc9e99304c58007bfd5a964ff3f78480106 added a new param to an uno command, in sfx2/sdi/sfxitems.sdi
+
+dim args1(0) as new com.sun.star.beans.PropertyValue
+args1(0).Name = "Text"
+args1(0).Value = "s"
+dispatcher.executeDispatch(document, ".uno:InsertText", "", 0, args1())
+
+SfxVoidItem SplitCell FN_TABLE_SPLIT_CELLS
+(SfxInt32Item Amount FN_TABLE_SPLIT_CELLS,SfxBoolItem Horizontal FN_PARAM_1,
+ SfxBoolItem Proportional FN_PARAM_2)
+
+SfxUInt16Item seems to be used to pass enums, e.g. FN_INSERT_DBFIELD's FN_PARAM_FIELD_TYPE
+RndStdIds is the same as text::TextContentAnchorType -> implemented
+
 // vim: ft=asciidoc
