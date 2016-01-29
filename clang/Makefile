@@ -1,3 +1,5 @@
+.PHONY : coverage
+
 CLANGDIR= $(HOME)/git/libreoffice/dev-tools/clang
 check:
 	rm -f bin lib64

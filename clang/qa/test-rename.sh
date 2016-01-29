@@ -24,4 +24,8 @@ declare_rename_test "testVarDecl" "rename-var-decl.cxx"
 bin/rename -old-name=C::aS -new-name=m_aS $test_input --
 test_assert_equal $test_expected $test_output
 
+declare_rename_test "testVarDeclClass" "rename-var-decl-class.cxx"
+bin/rename -old-name=C -new-name=D $test_input --
+test_assert_equal $test_expected $test_output
+
 # vi:set shiftwidth=4 expandtab:
