@@ -32,4 +32,8 @@ declare_rename_test "testCXXConstructorDecl" "rename-cxx-constructor-decl.cxx"
 bin/rename -old-name=C::nX -new-name=m_nX $test_input --
 test_assert_equal $test_expected $test_output
 
+declare_rename_test "testCXXConstructorDeclClass" "rename-cxx-constructor-decl-class.cxx"
+bin/rename -old-name=C -new-name=D $test_input --
+test_assert_equal $test_expected $test_output
+
 # vi:set shiftwidth=4 expandtab:
