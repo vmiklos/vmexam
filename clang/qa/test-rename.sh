@@ -44,4 +44,8 @@ declare_rename_test "testDeclRefExpr" "rename-decl-ref-expr.cxx"
 bin/rename -old-name=C::aS -new-name=m_aS $test_input --
 test_assert_equal $test_expected $test_output
 
+declare_rename_test "testCXXMethodDecl" "rename-cxx-method-decl.cxx"
+bin/rename -old-name=C::foo -new-name=bar $test_input --
+test_assert_equal $test_expected $test_output
+
 # vi:set shiftwidth=4 expandtab:
