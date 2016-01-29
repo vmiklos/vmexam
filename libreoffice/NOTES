@@ -633,4 +633,14 @@ SfxVoidItem SplitCell FN_TABLE_SPLIT_CELLS
 SfxUInt16Item seems to be used to pass enums, e.g. FN_INSERT_DBFIELD's FN_PARAM_FIELD_TYPE
 RndStdIds is the same as text::TextContentAnchorType -> implemented
 
+- https://bugs.documentfoundation.org/show_bug.cgi?id=97371
+
+good:
+<sdrObject ptr="0x2608360" symbol="17SdrObjCustomShape" name="&#x81EA;&#x9009;&#x56FE;&#x5F62; 11" title="" description="" nOrdNum="0" aOutRect="14270, 3950, 690, 411"/>
+<sdrObject ptr="0x2615880" symbol="16SwVirtFlyDrawObj" name="" title="" description="" nOrdNum="1" aOutRect="14270, 3951, 690, 375"/>
+
+bad:
+<sdrObject ptr="0x2d97610" symbol="17SdrObjCustomShape" name="&#x81EA;&#x9009;&#x56FE;&#x5F62; 11" title="" description="" nOrdNum="0" aOutRect="14270, 410, 690, 411"/>
+<sdrObject ptr="0x2d191a0" symbol="16SwVirtFlyDrawObj" name="" title="" description="" nOrdNum="1" aOutRect="14270, 3951, 690, 375"/>
+
 // vim: ft=asciidoc
