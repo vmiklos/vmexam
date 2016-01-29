@@ -1,0 +1,11 @@
+class C
+{
+public:
+    C();
+    int m_nX;
+};
+
+C::C()
+     : m_nX(0)
+{
+}
