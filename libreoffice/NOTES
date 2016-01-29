@@ -643,4 +643,30 @@ bad:
 <sdrObject ptr="0x2d97610" symbol="17SdrObjCustomShape" name="&#x81EA;&#x9009;&#x56FE;&#x5F62; 11" title="" description="" nOrdNum="0" aOutRect="14270, 410, 690, 411"/>
 <sdrObject ptr="0x2d191a0" symbol="16SwVirtFlyDrawObj" name="" title="" description="" nOrdNum="1" aOutRect="14270, 3951, 690, 375"/>
 
+=== 2016-01-29
+
+- https://bugs.documentfoundation.org/show_bug.cgi?id=96175
+
+turns out this is not the avg. custom property, rtf has a dedicated \company
+
+- davido's "how to test docx export validation failing" question:
+
+ooxmlexport2 has a whitelist, NoFillAttrInImagedata.docx is a doc that would fail otherwise
+
+    cd sw; make -sr CppunitTest_sw_ooxmlexport2 CPPUNIT_TEST_NAME="NoFillAttrInImagedata"
+
+html export numbering notes for Marc
+
+rtf export code coverage:
+- RtfExport::WriteRevTab is untested
+
+oParas = ThisComponent.Text.createEnumeration
+oPara = oParas.nextElement
+oPara = oParas.nextElement
+oRuns = oPara.createEnumeration
+oRun = oRuns.nextElement
+oRun = oRuns.nextElement
+'xray oRun.TextPortionType
+xray oRun.RedlineAuthor
+
 // vim: ft=asciidoc
