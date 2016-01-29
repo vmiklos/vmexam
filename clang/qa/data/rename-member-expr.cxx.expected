@@ -1,0 +1,12 @@
+class C
+{
+public:
+    int m_nX;
+};
+
+int main()
+{
+    C aC;
+    aC.m_nX = 1;
+    int y = aC.m_nX;
+}
