@@ -2,7 +2,7 @@
 
 test_assert_fail()
 {
-    if $1 2>/dev/null; then
+    if "$@" 2>/dev/null; then
         echo "Error: assertion failure in ${test_name}."
         exit 1
     fi
