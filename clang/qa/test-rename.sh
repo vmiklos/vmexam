@@ -52,4 +52,8 @@ declare_rename_test "testCXXConstructExpr" "rename-cxx-constructor-expr.cxx"
 bin/rename -old-name=C -new-name=D $test_input --
 test_assert_equal $test_expected $test_output
 
+declare_rename_test "testCXXStaticCastExpr" "rename-cxx-static-cast-expr.cxx"
+bin/rename -old-name=C -new-name=D $test_input --
+test_assert_equal $test_expected $test_output
+
 # vi:set shiftwidth=4 expandtab:

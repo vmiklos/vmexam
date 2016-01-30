@@ -1,0 +1,12 @@
+class D
+{
+public:
+    int getValue() const { return 0; }
+};
+
+int main()
+{
+    D* pC = 0;
+    static_cast<const D&>(*pC).getValue();
+    static_cast<const D*>(0)->getValue();
+}
