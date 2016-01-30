@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+test_assert_fail()
+{
+    if $1 2>/dev/null; then
+        echo "Error: assertion failure in ${test_name}."
+        exit 1
+    fi
+}
+
 test_assert_equal()
 {
     if ! diff -u $1 $2; then
@@ -24,6 +32,10 @@ test_assert_equal $test_expected $test_output
 declare_rename_test "testFieldDeclCsv" "rename-field-decl.cxx"
 bin/rename -csv=qa/data/rename-field-decl.csv $test_input --
 test_assert_equal $test_expected $test_output
+
+# Test that we fail on non-existing -csv parameter.
+declare_rename_test "testFieldDeclCsvFail" "rename-field-decl.cxx"
+test_assert_fail bin/rename -csv=qa/data/rename-field-decl.cvs $test_input --
 
 declare_rename_test "testVarDecl" "rename-var-decl.cxx"
 bin/rename -old-name=C::aS -new-name=m_aS $test_input --
