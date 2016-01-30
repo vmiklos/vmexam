@@ -1,8 +1,13 @@
+class A
+{
+};
+
 class C
 {
 public:
     C();
     int m_nX;
+    A m_aA;
 };
 
 C::C()

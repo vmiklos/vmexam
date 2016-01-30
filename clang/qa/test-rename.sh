@@ -58,7 +58,7 @@ bin/rename -old-name=C -new-name=D $test_input --
 test_assert_equal $test_expected $test_output
 
 declare_rename_test "testCXXConstructorDecl" "rename-cxx-constructor-decl.cxx"
-bin/rename -old-name=C::nX -new-name=m_nX $test_input --
+bin/rename -csv=qa/data/rename-cxx-constructor-decl.csv $test_input --
 test_assert_equal $test_expected $test_output
 
 declare_rename_test "testCXXConstructorDeclClass" "rename-cxx-constructor-decl-class.cxx"
