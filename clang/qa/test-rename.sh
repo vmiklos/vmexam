@@ -20,6 +20,11 @@ declare_rename_test "testFieldDecl" "rename-field-decl.cxx"
 bin/rename -old-name=C::nX -new-name=m_nX $test_input --
 test_assert_equal $test_expected $test_output
 
+# Do the same as previously, but trigger the csv parser this time.
+declare_rename_test "testFieldDeclCsv" "rename-field-decl.cxx"
+bin/rename -csv=qa/data/rename-field-decl.csv $test_input --
+test_assert_equal $test_expected $test_output
+
 declare_rename_test "testVarDecl" "rename-var-decl.cxx"
 bin/rename -old-name=C::aS -new-name=m_aS $test_input --
 test_assert_equal $test_expected $test_output
