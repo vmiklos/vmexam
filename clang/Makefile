@@ -13,3 +13,4 @@ coverage:
 	make check
 	lcov --directory $(CLANGDIR) --gcov-tool $(PWD)/qa/llvm-gcov.sh --capture --output-file clang.info
 	genhtml -o coverage clang.info
+	@echo "Now open <file://$(PWD)/coverage$(CLANGDIR)/rename.cxx.gcov.html>"
