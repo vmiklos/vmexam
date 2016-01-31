@@ -31,7 +31,7 @@ make build-nocheck COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=rename-wrapper RENAME_
 Put output into git:
 
 ----
-for i in $(find . -name "*.new-prefix"); do mv -f $i ${i%%.new-prefix}; done
+for i in $(find . -name "*.new-rename"); do mv -f $i ${i%%.new-rename}; done
 ----
 
 == online.git commands
