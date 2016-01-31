@@ -8,7 +8,7 @@ check:
 	qa/test-rename.sh
 
 coverage:
-	rm -f $(CLANGDIR)/bin/rename
+	rm -f $(CLANGDIR)/bin/rename $(CLANGDIR)/rename.cxx.gc{da,no}
 	make -C $(CLANGDIR) GCOV=y bin/rename
 	make check
 	lcov --directory $(CLANGDIR) --gcov-tool $(PWD)/qa/llvm-gcov.sh --capture --output-file clang.info
