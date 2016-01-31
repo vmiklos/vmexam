@@ -49,6 +49,12 @@ test_assert_fail bin/rename -csv=qa/data/rename-field-decl.csv-emptycol2 $test_i
 declare_rename_test "testFieldDeclCsvFailNoopt" "rename-field-decl.cxx"
 test_assert_fail bin/rename qa/data/rename-field-decl.cxx --
 
+# Test that rename dump creates no output
+declare_rename_test "testFieldDeclDump" "rename-field-decl.cxx"
+rm -f qa/data/rename-field-decl.cxx.new-rename
+bin/rename -csv=qa/data/rename-field-decl.csv -dump qa/data/rename-field-decl.cxx -- 2>/dev/null
+test_assert_fail test -f qa/data/rename-field-decl.cxx.new-rename
+
 declare_rename_test "testVarDecl" "rename-var-decl.cxx"
 bin/rename -old-name=C::aS -new-name=m_aS $test_input --
 test_assert_equal $test_expected $test_output
