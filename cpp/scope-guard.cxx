@@ -13,8 +13,7 @@ class ScopeGuard
     std::function<void ()> m_aFunc;
 
 public:
-    template <typename FuncType>
-    explicit ScopeGuard(const FuncType& rFunc)
+    explicit ScopeGuard(const std::function<void ()>& rFunc)
         : m_aFunc(rFunc)
     {
     }
