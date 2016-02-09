@@ -3,7 +3,7 @@
 time sh -c "git pull -r && \
     autoreconf && \
     automake --add-missing && \
-    ./configure --prefix=$PWD/install --enable-debug --with-lokit-path=$HOME/git/libreoffice/master/include && \
+    ./configure --prefix=$PWD/install --enable-debug --with-lokit-path=$HOME/git/libreoffice/master/include CC='ccache gcc' CXX='ccache g++' && \
     make clean && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     make tags && \
