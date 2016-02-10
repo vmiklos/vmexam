@@ -119,4 +119,8 @@ Fix: cd /opt/cxoffice/lib; mkdir t; mv libxcb* t
 https://build.opensuse.org/request/show/350312
 https://build.opensuse.org/request/show/353183
 
+- STL container pretty-printers do not work by default in gdb anymore:
+
+Can be fixed with: 'zypper in libstdc++6-devel-gcc5'
+
 // vim: ft=asciidoc paste
