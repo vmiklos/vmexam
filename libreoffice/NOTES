@@ -669,4 +669,19 @@ oRun = oRuns.nextElement
 'xray oRun.TextPortionType
 xray oRun.RedlineAuthor
 
+=== 2016-02-12
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=59699
+
+first goal: make it work for docx
+
+oox::core::FilterBase::getAbsoluteUrl(): mxImpl->maFileUrl is empty!
+
+code flow:
+- writerfilter::ooxml::OOXMLFastContextHandlerShape::OOXMLFastContextHandlerShape
+- oox::shape::ShapeContextHandler::setInputStream
+- oox::core::FilterBase::setMediaDescriptor
+
+test: xray ThisComponent.DrawPage(0).Graphic -> null object
+
 // vim: ft=asciidoc
