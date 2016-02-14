@@ -11,13 +11,11 @@ elseif(UNIX)
         set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
     endif (CCACHE)
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -std=gnu++11")
-
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG")
 endif()
 
 if (NOT MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -std=c++11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Werror")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
