@@ -94,4 +94,6 @@ writerfilter/source/rtftok/rtftokenizer.cxx
 writerfilter/source/rtftok/rtftokenizer.hxx
 writerfilter/source/rtftok/rtfvalue.cxx
 writerfilter/source/rtftok/rtfvalue.hxx
+xmlsecurity/inc/documentsignaturemanager.hxx
 xmlsecurity/qa/unit/signing/signing.cxx
+xmlsecurity/source/helper/documentsignaturemanager.cxx
