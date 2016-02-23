@@ -684,4 +684,29 @@ code flow:
 
 test: xray ThisComponent.DrawPage(0).Graphic -> null object
 
+=== 2016-02-19
+
+Still fighting <https://bugs.documentfoundation.org/show_bug.cgi?id=59699>, the
+DOCX equivalent is working, now back to the original RTF problem.
+
+'includepicture "libreoffice.png" \d '
+
+UI: 'AUTHOR  \* Upper '
+
+aMediaDesc.getUnpackedValueOrDefault("InsertMode", false)
+
+failed tests:
+
+rtfimport.cxx:858:Assertion
+Test name: testCopyPasteFootnote::Import
+equality assertion failed
+- Expected: bbb
+- Actual  : bbb
+
+rtfimport.cxx:2307:Assertion
+Test name: testTdf90260Nopar::Import
+equality assertion failed
+- Expected: 1
+- Actual  : 2
+
 // vim: ft=asciidoc
