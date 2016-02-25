@@ -1,5 +1,5 @@
 # add translations repo
---with-lang=en-US hu pt-BR
+--with-lang=en-US hu
 # dictionaries repo
 --with-myspell-dicts
 # help repo
