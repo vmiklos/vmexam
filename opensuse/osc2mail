@@ -9,7 +9,7 @@
 
 tmp=$(mktemp)
 
-~/git/vmexam/osc/chkworld &> $tmp
+~/git/vmexam/opensuse/chkworld &> $tmp
 
 if [ -s $tmp ]; then
     cat $tmp |~/bin/pymail -r "$(git config user.email|sed "s/.*@/$(hostname)@/")" -s "OSC TODO for `date +%Y%m%d`" $(git config user.email)
