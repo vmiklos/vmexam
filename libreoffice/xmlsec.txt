@@ -1,0 +1,12 @@
+= LO-specific xmlsec notes.
+
+== How to import our patches into a git branch?
+
+----
+for i in $(grep 'xmlsec_patches +=' ~/git/libreoffice/master-clang/external/libxmlsec/UnpackedTarball_xmlsec.mk|sed 's/.*+= //')
+do
+    git am ~/git/libreoffice/master-clang/external/libxmlsec/$i
+done
+----
+
+// vim: ft=asciidoc

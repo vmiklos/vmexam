@@ -709,4 +709,44 @@ equality assertion failed
 - Expected: 1
 - Actual  : 2
 
+=== 2016-03-04
+
+----
+oChart = ThisComponent.getEmbeddedObjects.getByName("myChart")
+oChartComponent = oChart.Component
+oDataSequences = oChartComponent.DataSequences
+oChart.ExtendedControlOverEmbeddedObject.changeState(1)
+oDataSequences(2).Values.setModified(true)
+----
+
+----
+REM  *****  BASIC  *****
+option explicit
+
+Sub ChartModifier
+	dim oDoc as variant: odoc = thisComponent.CurrentController
+	dim oChart as variant: oChart = oDoc.Model.getEmbeddedObjects.getByName("myChart")
+        dim oChartComponent as variant: oChartComponent = oChart.Component
+	dim oDataSequences as variant: oDataSequences = oChartComponent.DataSequences
+	dim oInternalDataProvider as variant: oInternalDataProvider = oChartComponent.DataProvider
+	dim aData as variant: aData = oInternalDataProvider.Data: rem a sequence of x|y pairs
+	dim nLoData as integer: nLoData = LBound(aData)
+	dim nUoData as integer: nUoData = UBound(aData)	
+	dim aPair(0 to 1) as double
+	dim index as integer
+	dim fX as double
+	dim fY as double
+	for index = nLoData to nUoData
+		aPair = aData(index)
+	    fX = aPair(0)
+	    fY = fX+10*rnd()
+	    aPair(1) = fY
+	    aData(index)  = aPair
+	next index
+    oInternalDataProvider.data = aData
+    oChart.ExtendedControlOverEmbeddedObject.changeState(1)
+    oDataSequences(2).Values.setModified(true)
+End Sub
+----
+
 // vim: ft=asciidoc
