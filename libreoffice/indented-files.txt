@@ -102,3 +102,5 @@ xmlsecurity/inc/certificate.hxx
 xmlsecurity/inc/documentsignaturemanager.hxx
 xmlsecurity/qa/unit/signing/signing.cxx
 xmlsecurity/source/helper/documentsignaturemanager.cxx
+xmlsecurity/source/helper/ooxmlsecexporter.cxx
+xmlsecurity/source/helper/ooxmlsecexporter.hxx
