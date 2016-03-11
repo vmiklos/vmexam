@@ -749,4 +749,13 @@ Sub ChartModifier
 End Sub
 ----
 
+=== 2016-03-11
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=98458
+
+idea: add a "SearchItem.SearchInShapes" (disabled by default)
+how to add a new option? 1dc60bc9
+
+SwView::SearchAndWrap -> m_pSrchItem
+
 // vim: ft=asciidoc

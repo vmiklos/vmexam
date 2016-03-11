@@ -3,9 +3,23 @@
 == How to import our patches into a git branch?
 
 ----
-for i in $(grep 'xmlsec_patches +=' ~/git/libreoffice/master-clang/external/libxmlsec/UnpackedTarball_xmlsec.mk|sed 's/.*+= //')
+for i in $(grep 'xmlsec_patches +=' ~/git/libreoffice/master/external/libxmlsec/UnpackedTarball_xmlsec.mk|sed 's/.*+= //')
 do
-    git am ~/git/libreoffice/master-clang/external/libxmlsec/$i
+    git am ~/git/libreoffice/master/external/libxmlsec/$i
+done
+----
+
+== How to export the patches back to core.git?
+
+Create the patches with git-format-patch, then:
+
+----
+c=0
+for i in $(grep 'xmlsec_patches +=' ~/git/libreoffice/master/external/libxmlsec/UnpackedTarball_xmlsec.mk|sed 's/.*+= //')
+do
+    c=$(($c+1))
+    prefix=$(printf "%04d" $c)
+    mv $prefix*patch ~/git/libreoffice/master/external/libxmlsec/$i
 done
 ----
 
