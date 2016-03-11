@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Script to list commits you committed (not authored) today.
+
+import os
+import sys
+import time
+
+
+def main(argv):
+    hashlen = 40
+    datelen = 10
+    today = time.strftime("%Y-%m-%d")
+
+    pretty = "format:'%H %cd %s'"
+    sock = os.popen("git log --author='%s' --date=short --pretty=%s" % (os.environ['USER'], pretty))
+    while True:
+        line = sock.readline().strip()
+        date = line[hashlen + 1:hashlen + datelen + 1]
+        if date != today:
+            break
+        print(line)
+    sock.close()
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
