@@ -14,6 +14,7 @@ oox/source/shape/WpgContext.cxx
 oox/source/shape/WpgContext.hxx
 oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
+sc/inc/clipoptions.hxx
 sd/qa/unit/tiledrendering/tiledrendering.cxx
 sfx2/source/view/classificationcontroller.cxx
 sfx2/source/view/classificationhelper.cxx
