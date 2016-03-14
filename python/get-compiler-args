@@ -36,6 +36,7 @@ def emitGbuildCompilerArgs(root, inputFile):
             # here.
             args = args.replace(' -c ' + inputFile, ' -I' + os.path.dirname(inputFile))
             print(args)
+            break
     sock.close()
 
 
