@@ -62,9 +62,9 @@ int main(int argc, char** argv)
             std::stack<std::string> aStack;
             while (true)
             {
-                CXString pString = clang_getCursorSpelling(aCursor);
-                aStack.push(clang_getCString(pString));
-                clang_disposeString(pString);
+                CXString aString = clang_getCursorSpelling(aCursor);
+                aStack.push(clang_getCString(aString));
+                clang_disposeString(aString);
 
                 aCursor = clang_getCursorSemanticParent(aCursor);
                 if (clang_getCursorKind(aCursor) == CXCursor_TranslationUnit)
