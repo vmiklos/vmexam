@@ -3,10 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
- * libclang version of
- * <http://vim.wikia.com/wiki/Show_current_function_name_in_C_programs>, i.e.
- * show the fully qualified name of the function, if the cursor is inside a
- * function definition.
+ * Code completion prototype.
  */
 
 #include <iostream>
@@ -14,6 +11,7 @@
 #include <stack>
 #include <string>
 #include <vector>
+#include <set>
 
 #include <clang-c/Index.h>
 
@@ -38,6 +36,30 @@ int main(int argc, char** argv)
 
     if (pUnit)
     {
+        unsigned nLine = std::stoi(argv[2]);
+        unsigned nColumn = std::stoi(argv[3]);
+        CXCodeCompleteResults* pResults = clang_codeCompleteAt(pUnit, aFile.c_str(), nLine, nColumn, nullptr, 0, clang_defaultCodeCompleteOptions());
+        std::set<std::string> aSet;
+        if (pResults)
+        {
+            for (unsigned i = 0; i < pResults->NumResults; ++i)
+            {
+                const CXCompletionString& rCompletionString = pResults->Results[i].CompletionString;
+                std::stringstream ss;
+                for (unsigned j = 0; j < clang_getNumCompletionChunks(rCompletionString); ++j)
+                {
+                    if (clang_getCompletionChunkKind(rCompletionString, j) != CXCompletionChunk_TypedText)
+                        continue;
+
+                    const CXString& rString = clang_getCompletionChunkText(rCompletionString, j);
+                    ss << clang_getCString(rString);
+                }
+                aSet.insert(ss.str());
+            }
+            clang_disposeCodeCompleteResults(pResults);
+        }
+        for (const std::string& rString : aSet)
+            std::cerr << rString << std::endl;
     }
 
     clang_disposeTranslationUnit(pUnit);
