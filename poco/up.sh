@@ -3,7 +3,7 @@
 parallelism=$(getconf _NPROCESSORS_ONLN)
 parallelism=1
 time sh -c "git pull -r && \
-    ./configure --cflags=\"$(cat configure.input)\" && \
+    ./configure --cflags=\"$(cat configure.input)\" --omit='Data/ODBC,Data/MySQL,MongoDB,PDF,CppParser,Data/PostgreSQL' && \
     make clean && \
     make -s -j$parallelism CXX='ccache g++'" 2>&1 |tee log
 if grep -q Werror= log; then
