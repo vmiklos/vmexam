@@ -20,7 +20,18 @@
 /// Function or member function.
 bool isFunction(CXCursorKind eKind)
 {
-    return eKind == CXCursor_FunctionDecl || eKind == CXCursor_CXXMethod;
+    switch (eKind)
+    {
+    case CXCursor_FunctionDecl:
+    case CXCursor_CXXMethod:
+    case CXCursor_Constructor:
+    case CXCursor_Destructor:
+        return true;
+    default:
+        break;
+    }
+
+    return false;
 }
 
 int main(int argc, char** argv)
