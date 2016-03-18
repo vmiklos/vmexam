@@ -758,4 +758,37 @@ how to add a new option? 1dc60bc9
 
 SwView::SearchAndWrap -> m_pSrchItem
 
+=== 2016-03-18
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=65642
+
+      <w:pgNumType w:fmt="upperLetter" w:start="1"/>
+
+PROP_PAGE_NUMBER_OFFSET
+page style's prop: NumberingType is 9 -> CHARS_UPPER_LETTER_N
+
+                <DomainMapper.sprm name="ooxml:EG_SectPrContents_pgNumType">(ooxml:EG_SectPrContents_pgNumType, OOXMLPropertySetValue(t:0x21d1160, m:0x229e970))
+                  <tablemanager.sprm>(ooxml:EG_SectPrContents_pgNumType, OOXMLPropertySetValue(t:0x21d1160, m:0x229e970))</tablemanager.sprm>
+                  <TablePropertiesHandler.sprm sprm="(ooxml:EG_SectPrContents_pgNumType, OOXMLPropertySetValue(t:0x21d1160, m:0x229e970))"/>
+                  <unhandled/>
+                  <DomainMapper.attribute name="ooxml:CT_PageNumber_fmt" value="92259"/>
+                  <DomainMapper.attribute name="ooxml:CT_PageNumber_start" value="1"/>
+                </DomainMapper.sprm>
+                <DomainMapper.sprm name="ooxml:EG_SectPrContents_cols">(ooxml:EG_SectPrContents_cols, OOXMLPropertySetValue(t:0x21d1410, m:0x21a1760))
+                  <tablemanager.sprm>(ooxml:EG_SectPrContents_cols, OOXMLPropertySetValue(t:0x21d1410, m:0x21a1760))</tablemanager.sprm>
+                  <TablePropertiesHandler.sprm sprm="(ooxml:EG_SectPrContents_cols, OOXMLPropertySetValue(t:0x21d1410, m:0x21a1760))"/>
+                  <unhandled/>
+                  <SectionColumnHandler.attribute name="ooxml:CT_Columns_space" value="708"/>
+                </DomainMapper.sprm>
+
+testcase:
+
+oPageStyle = ThisComponent.StyleFamilies.PageStyles.getByName("Converted1")
+'xray oPageStyle.NumberingType '9
+
+oParas = ThisComponent.Text.createEnumeration
+oPara = oParas.nextElement
+oPara = oParas.nextElement
+xray oPara.PageNumberOffset ' 1
+
 // vim: ft=asciidoc
