@@ -6,7 +6,7 @@ time sh -c "git pull -r && \
     ./configure --prefix=$PWD/install --enable-debug --with-lokit-path=$HOME/git/libreoffice/master/include CC='ccache gcc' CXX='ccache g++' && \
     make clean && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
-    make tags && \
+    make ctags && \
     style-check-files" 2>&1 |tee log
 
 # Self-built poco: --with-poco-includes=$HOME/git/poco/install/include --with-poco-libs=$HOME/git/poco/lib/Linux/x86_64
