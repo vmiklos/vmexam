@@ -34,7 +34,7 @@ def emitGbuildCompilerArgs(root, inputFile):
             # For some reason 'make vim-ide-integration' doesn't give -I for
             # the dir of the file itself. Luckily it's easy to work that around
             # here.
-            args = args.replace(' -c ' + inputFile, ' -I' + os.path.dirname(inputFile))
+            args = args.replace(inputFile, ' -I' + os.path.dirname(inputFile))
             print(args)
             break
     sock.close()
