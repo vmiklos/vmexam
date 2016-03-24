@@ -1,4 +1,4 @@
-FLAGS := $(shell llvm-config --cxxflags --ldflags) -lclang
+FLAGS := $(shell llvm-config --cxxflags --ldflags) -lclang -O0 -g -D_GLIBCXX_DEBUG
 
 get-completion-at: get-completion-at.cxx Makefile
 	clang++ $(FLAGS) -o get-completion-at get-completion-at.cxx

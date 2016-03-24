@@ -56,10 +56,26 @@ int main(int argc, char** argv)
     if (pUnit)
     {
         const CXFile pFile = clang_getFile(pUnit, aFile.c_str());
-        CXSourceLocation aLocation = clang_getLocation(pUnit, pFile, /*line=*/std::stoi(argv[2]), /*column=*/std::stoi(argv[3]));
-        CXCursor aCursor = clang_getCursor(pUnit, aLocation);
+        int nLine = std::stoi(argv[2]);
+        int nColumn = std::stoi(argv[3]);
 
-        CXCursorKind eKind = clang_getCursorKind(aCursor);
+        CXCursor aCursor;
+        CXCursorKind eKind;
+        while (true)
+        {
+            CXSourceLocation aLocation = clang_getLocation(pUnit, pFile, nLine, nColumn);
+            aCursor = clang_getCursor(pUnit, aLocation);
+            eKind = clang_getCursorKind(aCursor);
+            if (clang_getCursorKind(clang_getCursorSemanticParent(aCursor)) != CXCursor_InvalidFile || nColumn <= 1)
+                break;
+
+            // This happens with e.g. CXCursor_TypeRef, work it around by going
+            // back till we get a sane parent, if we can.
+            --nColumn;
+            aLocation = clang_getLocation(pUnit, pFile, nLine, nColumn);
+            aCursor = clang_getCursor(pUnit, aLocation);
+        }
+
         while (true)
         {
             if (isFunction(eKind) || eKind == CXCursor_TranslationUnit)
