@@ -30,7 +30,7 @@ def emitGbuildCompilerArgs(root, inputFile):
     commands = json.load(sock)
     for command in commands:
         if command['file'] == inputFile:
-            args = command['command'].replace('clang++  ', '')
+            args = command['command']
             # For some reason 'make vim-ide-integration' doesn't give -I for
             # the dir of the file itself. Luckily it's easy to work that around
             # here.
