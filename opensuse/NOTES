@@ -123,4 +123,10 @@ https://build.opensuse.org/request/show/353183
 
 Can be fixed with: 'zypper in libstdc++6-devel-gcc5'
 
+- (not really specific to this upgrade): SSD freezes the system from time to time:
+
+libata.force=noncq kernel param seems to improve the situation. More info:
+
+http://www.howtoeverything.net/linux/hardware/ubuntu-freeze-issue-after-ssd-upgrade
+
 // vim: ft=asciidoc paste
