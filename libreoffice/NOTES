@@ -791,4 +791,13 @@ oPara = oParas.nextElement
 oPara = oParas.nextElement
 xray oPara.PageNumberOffset ' 1
 
+=== 2016-03-25
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=98806
+
+testcase:
+
+xray ThisComponent.Bookmarks.bookmark.anchor.String ' BBB
+xray ThisComponent.Bookmarks.getByName("bookmark").getAnchor().getString() ' BBB
+
 // vim: ft=asciidoc
