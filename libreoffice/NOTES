@@ -800,4 +800,12 @@ testcase:
 xray ThisComponent.Bookmarks.bookmark.anchor.String ' BBB
 xray ThisComponent.Bookmarks.getByName("bookmark").getAnchor().getString() ' BBB
 
+=== 2016-04-01
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=84695
+
+testcase idea: enter, a -> assert text
+GetKeyCode().GetCode() == KEY_RETURN
+char code 0
+
 // vim: ft=asciidoc
