@@ -3,3 +3,17 @@ libclang slides:
 http://llvm.org/devmtg/2010-11/Gregor-libclang.pdf
 
 They provide a great overview, then you can get away with the reference.
+
+building llvm/clang:
+
+git clone http://llvm.org/git/llvm.git
+cd llvm/tools
+git clone http://llvm.org/git/clang.git
+cd clang/tools
+git clone http://llvm.org/git/clang-tools-extra.git extra
+cd ../../..
+mkdir workdir
+cd workdir
+cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=$(pwd)/../instdir -DCMAKE_BUILD_TYPE=Release ..
+make -j8
+make install
