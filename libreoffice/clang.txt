@@ -54,4 +54,10 @@ Rename:
 make -j8 CCACHE_PREFIX=rename-wrapper CCACHE_DISABLE=1 RENAME_ARGS="-csv=$HOME/rename.csv"
 ----
 
+Generate compile_commands.json for clang-rename:
+
+----
+bear make -j8 CCACHE_DISABLE=1
+----
+
 // vim: ft=asciidoc

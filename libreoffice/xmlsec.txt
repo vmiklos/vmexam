@@ -14,6 +14,7 @@ done
 Create the patches with git-format-patch, then:
 
 ----
+git format-patch -N -$(($(git rev-list HEAD|wc -l)-1))
 c=0
 for i in $(grep 'xmlsec_patches +=' ~/git/libreoffice/master/external/libxmlsec/UnpackedTarball_xmlsec.mk|sed 's/.*+= //')
 do
