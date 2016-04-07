@@ -10,4 +10,4 @@ rm -Rf ${SYSTEMPLATE} ${ROOTFORJAILS} install/var/cache/loolwsd
 ./loolwsd-systemplate-setup ${SYSTEMPLATE} ${MASTER}/$INSTDIR
 mkdir -p ${ROOTFORJAILS} install/var/cache/loolwsd
 make clean-cache
-./loolwsd --systemplate=${SYSTEMPLATE} --lotemplate=${MASTER}/$INSTDIR --childroot=${ROOTFORJAILS} --numprespawns=1
+./loolwsd --systemplate=${SYSTEMPLATE} --lotemplate=${MASTER}/$INSTDIR --childroot=${ROOTFORJAILS} --numprespawns=1 --allowlocalstorage
