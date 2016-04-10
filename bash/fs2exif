@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+# Write the filesystem timestamp into the image file. Useful when e.g. the fs
+# timestamp is sane, still Picasa considers your picture as taken in 1970...
+
+for i in "$@"
+do
+    epoch=$(stat --format=%Y "$i")
+    date="$(date --date="@$epoch" "+%Y:%m:%d %H:%M:%S")"
+    exiv2 -k -v -M"set  Exif.Photo.DateTimeOriginal $date" "$i"
+done
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
