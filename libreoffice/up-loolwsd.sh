@@ -1,8 +1,7 @@
 #!/bin/bash
 
 time sh -c "git pull -r && \
-    autoreconf && \
-    automake --add-missing && \
+    ./autogen.sh && \
     ./configure --prefix=$PWD/install --enable-debug --with-lo-path=$HOME/git/libreoffice/master/instdir --with-lokit-path=$HOME/git/libreoffice/master/include CC='ccache gcc' CXX='ccache g++' && \
     make clean && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
