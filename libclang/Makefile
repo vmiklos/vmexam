@@ -6,6 +6,9 @@ get-compiler-args: get-compiler-args.cxx Makefile
 get-completion-at: get-completion-at.cxx Makefile
 	clang++ $(FLAGS) -o get-completion-at get-completion-at.cxx
 
+get-documentation-at: get-documentation-at.cxx Makefile
+	clang++ $(FLAGS) -o get-documentation-at get-documentation-at.cxx
+
 get-current-function: get-current-function.cxx Makefile
 	clang++ $(FLAGS) -o get-current-function get-current-function.cxx
 
