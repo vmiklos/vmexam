@@ -55,7 +55,7 @@ int main(int argc, char** argv)
     if (clang_Cursor_isNull(aCanonicalCursor) || clang_isInvalid(clang_getCursorKind(aCanonicalCursor)))
         return 1;
 
-    CXString aString = clang_Cursor_getRawCommentText(aCanonicalCursor);
+    CXString aString = clang_Cursor_getBriefCommentText(aCanonicalCursor);
     std::cerr << "'" << clang_getCString(aString) << "'" << std::endl;
     clang_disposeString(aString);
 
