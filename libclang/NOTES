@@ -17,3 +17,9 @@ cd workdir
 cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=$(pwd)/../instdir -DCMAKE_BUILD_TYPE=Release ..
 make -j8
 make install
+
+libclang-vim audit effort (check if ycm behaves better):
+- ClangInspectComment() behaves the same as GetDoc()
+still needed:
+- ClangInspectFunction() -> GetParent()
+- ClangInspectType() -> GetType()
