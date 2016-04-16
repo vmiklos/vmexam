@@ -9,6 +9,9 @@ get-completion-at: get-completion-at.cxx Makefile
 get-documentation-at: get-documentation-at.cxx Makefile
 	clang++ $(FLAGS) -o get-documentation-at get-documentation-at.cxx
 
+get-declaration-at: get-declaration-at.cxx Makefile
+	clang++ $(FLAGS) -o get-declaration-at get-declaration-at.cxx
+
 get-current-function: get-current-function.cxx Makefile
 	clang++ $(FLAGS) -o get-current-function get-current-function.cxx
 
