@@ -26,10 +26,6 @@ class Test(unittest.TestCase):
         for item in feed.getElementsByTagName("entry"):
             for description in item.getElementsByTagName("title"):
                 issues.append(description.firstChild.wholeText)
-
-        # I assume I don't have to do anything there.
-        issues = [i for i in issues if "Bug 96306" not in i]
-
         self.assertEqual([], issues)
 
 if __name__ == '__main__':
