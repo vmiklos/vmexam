@@ -1,6 +1,7 @@
 cppcanvas/qa/extras/emfplus/emfplus.cxx
 desktop/source/lib/lokclipboard.cxx
 desktop/source/lib/lokclipboard.hxx
+drawinglayer/qa/unit/border.cxx
 filter/source/msfilter/rtfutil.cxx
 include/comphelper/propertyvalue.hxx
 include/o3tl/make_unique.hxx
