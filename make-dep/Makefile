@@ -1,7 +1,17 @@
+all: hello hello2
+
 hello_objects = lib.o main.o
-SRCS = $(patsubst %.o,%.cxx,$(hello_objects))
+hello: CXXFLAGS += -DFOO
 hello: $(hello_objects)
 	$(LINK.cpp) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+hello2_objects = lib2.o main2.o
+hello2: CXXFLAGS += -DBAR
+hello2: $(hello2_objects)
+	$(LINK.cpp) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+all_objects = $(hello_objects) $(hello2_objects)
+SRCS = $(patsubst %.o,%.cxx,$(all_objects))
 
 DEPDIR := .d
 $(shell mkdir -p $(DEPDIR) >/dev/null)
