@@ -60,4 +60,13 @@ Generate compile_commands.json for clang-rename:
 bear make -j8 CCACHE_DISABLE=1
 ----
 
+== clang-tidy
+
+Online:
+
+----
+for i in *.cpp; do clang-tidy $i; done
+for in in *.cpp; do clang-tidy -checks=*performance* $i; done
+----
+
 // vim: ft=asciidoc
