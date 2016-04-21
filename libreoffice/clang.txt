@@ -65,8 +65,8 @@ bear make -j8 CCACHE_DISABLE=1
 Online:
 
 ----
-for i in *.cpp; do clang-tidy $i; done
-for in in *.cpp; do clang-tidy -checks=*performance* $i; done
+clang-tidy *.cpp
+clang-tidy -checks=*performance* *.cpp
 ----
 
 // vim: ft=asciidoc
