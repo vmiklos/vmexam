@@ -18,8 +18,4 @@ cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=$(pwd)/../instdir -DCMAKE_BUILD
 make -j8
 make install
 
-libclang-vim audit effort (check if ycm behaves better):
-- ClangInspectComment() behaves the same as GetDoc()
-still needed:
-- ClangInspectFunction() -> GetParent()
-- ClangInspectType() -> GetType()
+libclang-vim audit effort: refactor to use early return now that we have RAII classes for libclang constructs
