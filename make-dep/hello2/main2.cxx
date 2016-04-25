@@ -1,12 +1,12 @@
-#include "main.hxx"
+#include "main2.hxx"
 
 #include <iostream>
 
-#include "lib.hxx"
+#include "lib2.hxx"
 
 int main()
 {
-    std::cerr << lib() << std::endl;
+    std::cerr << lib2() << std::endl;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
