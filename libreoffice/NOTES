@@ -823,4 +823,15 @@ ww8 values in twips:
 debug:27674:1: SwWW8ImplReader::SetAttributesAtGrfNode: height is 1860 (mm100: 3280), crop from bottom is 36468, result is 1035 (mm100: 1825)
 -> ThisComponent.DrawPage(0).Graphic.Size100thMM.Height gives good value (real property)
 
+=== 2016-04-23
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=90097
+
+testcase:
+
+2nd child, bad:
+6337, 1619; 6699, 1962
+2nd child, good:
+6337, 1963; 6699, 1620
+
 // vim: ft=asciidoc
