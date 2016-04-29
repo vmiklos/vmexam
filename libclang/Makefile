@@ -20,3 +20,12 @@ get-current-function: get-current-function.cxx Makefile
 
 test:
 	./get-completion-at test-completion.cxx 25 7 -std=c++1y
+
+get-diagnostics: get-diagnostics.cxx Makefile
+	clang++ $(FLAGS) -o get-diagnostics get-diagnostics.cxx
+
+test-diagnostics-expected:
+	clang++ -Wall -o test-diagnostics test-diagnostics.cxx
+
+test-diagnostics-actual:
+	./get-diagnostics test-diagnostics.cxx -Wall
