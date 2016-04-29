@@ -834,4 +834,24 @@ testcase:
 2nd child, good:
 6337, 1963; 6699, 1620
 
+=== 2016-04-29
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=95707
+
+https://en.wikipedia.org/wiki/BMP_file_format#File_structure
+
+GraphicFilter::ImportGraphic, vcl/source/filter/graphicfilter.cxx:1315
+-> GraphicFilter::ImpTestOrFindFormat
+-> ImpPeekGraphicFormat() returns false
+it wants the size at offset 14 -> tweaked, now we detect the thing as BMP
+next: import itself still fails
+-> ReadDIBBitmapEx()
+-> ImplReadDIBFileHeader()
+-> ImplReadDIBBody()
+-> ImplReadDIBInfoHeader()
+
+testcase:
+good case: GraphicURL is vnd.sun.star.GraphicObject:10000000000000C80000001D5756BDC1A6CBC66D
+bad case: vnd.sun.star.GraphicObject:0000000000000000000000000000000000000000
+
 // vim: ft=asciidoc
