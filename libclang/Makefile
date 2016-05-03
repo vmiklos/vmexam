@@ -29,3 +29,6 @@ test-diagnostics-expected:
 
 test-diagnostics-actual:
 	./get-diagnostics test-diagnostics.cxx -Wall
+
+check:
+	qa/test-rename.sh
