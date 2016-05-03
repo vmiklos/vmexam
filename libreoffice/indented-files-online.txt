@@ -1,2 +1,1 @@
-loolwsd/test/httpwstest.cpp
 loolwsd/test/test.cpp
