@@ -59,9 +59,9 @@ test_assert_equal $test_expected $test_output
 #bin/rename -csv=qa/data/rename-field-decl.csv -dump qa/data/rename-field-decl.cxx -- 2>/dev/null
 #test_assert_fail test -f qa/data/rename-field-decl.cxx.new-rename
 #
-#declare_rename_test "testVarDecl" "rename-var-decl.cxx"
-#bin/rename -old-name=C::aS -new-name=m_aS $test_input --
-#test_assert_equal $test_expected $test_output
+declare_rename_test "testVarDecl" "rename-var-decl.cxx"
+clang-rename -offset 40 -new-name m_aS $test_input -- >${test_input}.new-rename
+test_assert_equal $test_expected $test_output
 #
 #declare_rename_test "testVarDeclClass" "rename-var-decl-class.cxx"
 #bin/rename -old-name=C -new-name=D $test_input --
