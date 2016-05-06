@@ -18,4 +18,12 @@ cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=$(pwd)/../instdir -DCMAKE_BUILD
 make -j8
 make install
 
+hacking clang-rename:
+manual test:
+cd ~/git/vmexam/libclang/qa/data
+~/git/llvm/workdir/bin/clang-rename -offset 49 -new-name m_nX rename-cxx-constructor-decl.cxx --
+autotest:
+cd tools/clang/tools/extra/test/clang-rename
+~/git/llvm/workdir/bin/llvm-lit .
+
 libclang-vim audit effort: refactor to use early return now that we have RAII classes for libclang constructs

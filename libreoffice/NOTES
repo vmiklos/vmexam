@@ -854,4 +854,21 @@ testcase:
 good case: GraphicURL is vnd.sun.star.GraphicObject:10000000000000C80000001D5756BDC1A6CBC66D
 bad case: vnd.sun.star.GraphicObject:0000000000000000000000000000000000000000
 
+=== 2016-05-06
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=96275
+
+yet another "buffering text, but something is imported directly" situation
+
+testcase:
+
+oTable = ThisComponent.Text.createEnumeration.nextElement
+oParas = oTable.getCellByName("A1").createEnumeration
+oPara = oParas.nextElement
+oPara = oParas.nextElement
+oPara = oParas.nextElement
+oRuns = oPara.createEnumeration
+oRun = oRuns.nextElement
+xray oRun.TextPortionType ' should be Frame
+
 // vim: ft=asciidoc

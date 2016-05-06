@@ -78,6 +78,10 @@ writerfilter/source/rtftok/rtfcharsets.cxx
 writerfilter/source/rtftok/rtfcharsets.hxx
 writerfilter/source/rtftok/rtfcontrolwords.cxx
 writerfilter/source/rtftok/rtfcontrolwords.hxx
+writerfilter/source/rtftok/rtfdispatchdestination.cxx
+writerfilter/source/rtftok/rtfdispatchflag.cxx
+writerfilter/source/rtftok/rtfdispatchsymbol.cxx
+writerfilter/source/rtftok/rtfdispatchvalue.cxx
 writerfilter/source/rtftok/rtfdocumentfactory.cxx
 writerfilter/source/rtftok/rtfdocumentimpl.cxx
 writerfilter/source/rtftok/rtfdocumentimpl.hxx
