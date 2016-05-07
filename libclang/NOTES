@@ -29,5 +29,7 @@ cd tools/clang/tools/extra/test/clang-rename
 llvm git / review links:
 http://llvm.org/docs/GettingStarted.html#developers-work-with-git-svn
 http://llvm.org/docs/Phabricator.html#git-svn-and-arcanist
-
-libclang-vim audit effort: refactor to use early return now that we have RAII classes for libclang constructs
+the referenced 'arc' tool:
+sudo zypper in php5-curl
+git clone https://github.com/phacility/arcanist
+git clone https://github.com/phacility/libphutil
