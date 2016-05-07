@@ -68,9 +68,10 @@ clang-rename -offset 6 -new-name D $test_input -- > ${test_input}.new-rename
 test_assert_equal $test_expected $test_output
 #
 declare_rename_test "testCXXConstructorDecl" "rename-cxx-constructor-decl.cxx"
-bin/rename -csv=qa/data/rename-cxx-constructor-decl.csv $test_input --
-clang-rename -offset 49 -new-name m_nX $test_input -- > ${test_input}.new-rename
+clang-rename -offset 49 -new-name m_nX $test_input -- > tmp.cxx
+clang-rename -offset 61 -new-name m_aA tmp.cxx -- > ${test_input}.new-rename
 test_assert_equal $test_expected $test_output
+rm -f tmp.cxx
 #
 #declare_rename_test "testCXXConstructorDeclClass" "rename-cxx-constructor-decl-class.cxx"
 #bin/rename -old-name=C -new-name=D $test_input --
