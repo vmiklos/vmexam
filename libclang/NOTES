@@ -26,4 +26,8 @@ autotest:
 cd tools/clang/tools/extra/test/clang-rename
 ~/git/llvm/workdir/bin/llvm-lit .
 
+llvm git / review links:
+http://llvm.org/docs/GettingStarted.html#developers-work-with-git-svn
+http://llvm.org/docs/Phabricator.html#git-svn-and-arcanist
+
 libclang-vim audit effort: refactor to use early return now that we have RAII classes for libclang constructs
