@@ -871,4 +871,19 @@ oRuns = oPara.createEnumeration
 oRun = oRuns.nextElement
 xray oRun.TextPortionType ' should be Frame
 
+=== 2016-05-13
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=78357
+
+seems to be an RTF import problem. good on master, bad with 4.2
+4.3 is bad
+4.4 is good
+bibisect-44max.git:
+- oldest is bad
+- master is good
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=82073
+
+clcbpatraw is not handled
+
 // vim: ft=asciidoc
