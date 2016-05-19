@@ -1,11 +1,16 @@
-libclang slides:
+= LLVM notes
 
-http://llvm.org/devmtg/2010-11/Gregor-libclang.pdf
+== libclang
+
+Slides:
+
+- http://llvm.org/devmtg/2010-11/Gregor-libclang.pdf
 
 They provide a great overview, then you can get away with the reference.
 
-building llvm/clang:
+== LLVM building
 
+----
 git clone http://llvm.org/git/llvm.git
 cd llvm/tools
 git clone http://llvm.org/git/clang.git
@@ -17,19 +22,53 @@ cd workdir
 cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=$(pwd)/../instdir -DCMAKE_BUILD_TYPE=Release ..
 make -j8
 make install
+----
 
-hacking clang-rename:
-manual test:
+See also `up.sh`.
+
+== clang-rename hacking
+
+Manual test:
+
+----
 cd ~/git/vmexam/libclang/qa/data
 ~/git/llvm/workdir/bin/clang-rename -offset 49 -new-name m_nX rename-cxx-constructor-decl.cxx --
-autotest:
+----
+
+Automatic test:
+
+----
 cd tools/clang/tools/extra/test/clang-rename
 ~/git/llvm/workdir/bin/llvm-lit .
+----
 
-llvm git / review links:
-http://llvm.org/docs/GettingStarted.html#developers-work-with-git-svn
-http://llvm.org/docs/Phabricator.html#git-svn-and-arcanist
-the referenced 'arc' tool:
+Links:
+
+- http://llvm.org/docs/GettingStarted.html#developers-work-with-git-svn
+- http://llvm.org/docs/Phabricator.html#git-svn-and-arcanist
+
+Arc tool:
+
+----
 sudo zypper in php5-curl
 git clone https://github.com/phacility/arcanist
 git clone https://github.com/phacility/libphutil
+----
+
+== clang-include-fixer
+
+Links:
+
+- http://clang.llvm.org/extra/include-fixer.html
+- http://reviews.llvm.org/D20329
+
+vim integration:
+
+----
+# create find_all_symbols_db.yaml
+~/git/llvm/tools/clang/tools/extra/include-fixer/find-all-symbols/tool/run-find-all-symbols.py -binary ~/git/llvm/workdir/bin/find-all-symbols
+# run this from Vim to add a missing include
+:pyf $HOME/git/llvm/tools/clang/tools/extra/include-fixer/tool/clang-include-fixer.py
+----
+
+// vim: ft=asciidoc
