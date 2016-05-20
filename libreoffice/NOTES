@@ -886,4 +886,18 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=82073
 
 clcbpatraw is not handled
 
+=== 2016-05-20
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=74795
+
+- trpaddl not imported
+- docx has <w:left w:w="360" w:type="dxa"/> -> ooxml:CT_TblCellMar_left
+
+testcase:
+
+oParas = ThisComponent.Text.createEnumeration
+oTable = oParas.nextElement
+xray oTable.getCellByName("A1").LeftBorderDistance ' should be 635
+xray oTable.getCellByName("A2").LeftBorderDistance ' should be 0
+
 // vim: ft=asciidoc
