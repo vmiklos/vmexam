@@ -17,6 +17,7 @@ oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
 sc/inc/clipoptions.hxx
 sd/qa/unit/tiledrendering/tiledrendering.cxx
+sfx2/qa/cppunit/test_classification.cxx
 sfx2/source/view/classificationcontroller.cxx
 sfx2/source/view/classificationhelper.cxx
 sfx2/source/view/lokhelper.cxx
