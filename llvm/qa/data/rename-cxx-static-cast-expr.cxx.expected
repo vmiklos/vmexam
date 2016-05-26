@@ -1,7 +1,10 @@
 class D
 {
 public:
-    int getValue() const { return 0; }
+    int getValue() const
+    {
+        return 0;
+    }
 };
 
 int main()
