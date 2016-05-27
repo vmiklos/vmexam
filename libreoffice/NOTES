@@ -900,4 +900,12 @@ oTable = oParas.nextElement
 xray oTable.getCellByName("A1").LeftBorderDistance ' should be 635
 xray oTable.getCellByName("A2").LeftBorderDistance ' should be 0
 
+=== 2016-05-27
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=77349
+
+DOCX import creates draw images, so not affected
+DOC import has this correctly, as SwReader::Read() calls SwDoc::SetAllUniqueFlyNames()
+writerfilter::dmapper::GraphicImport_Impl::applyName
+
 // vim: ft=asciidoc
