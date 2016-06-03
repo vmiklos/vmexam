@@ -908,4 +908,17 @@ DOCX import creates draw images, so not affected
 DOC import has this correctly, as SwReader::Read() calls SwDoc::SetAllUniqueFlyNames()
 writerfilter::dmapper::GraphicImport_Impl::applyName
 
+=== 2016-06-03
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=50821
+
+width type is ignored, as it should be an attr, not an sprm
+
+testcase:
+
+oParas = ThisComponent.Text.createEnumeration
+oTable = oParas.nextElement
+oTable = oParas.nextElement
+xray oTable.getCellByName("A1").LeftBorderDistance ' should be 191, was 0
+
 // vim: ft=asciidoc
