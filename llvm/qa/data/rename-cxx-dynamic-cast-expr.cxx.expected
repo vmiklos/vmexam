@@ -1,0 +1,15 @@
+class D
+{
+public:
+    int getValue() const
+    {
+        return 0;
+    }
+};
+
+int main()
+{
+    D* pC = new D();
+    dynamic_cast<const D&>(*pC).getValue();
+    dynamic_cast<const D*>(pC)->getValue();
+}
