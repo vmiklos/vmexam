@@ -3,6 +3,7 @@ desktop/source/lib/lokclipboard.cxx
 desktop/source/lib/lokclipboard.hxx
 drawinglayer/qa/unit/border.cxx
 filter/source/msfilter/rtfutil.cxx
+framework/qa/cppunit/dispatchtest.cxx
 include/comphelper/propertyvalue.hxx
 include/o3tl/make_unique.hxx
 include/sfx2/classificationhelper.hxx
