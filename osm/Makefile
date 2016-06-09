@@ -12,9 +12,10 @@ update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdag
 	./overpass-query street-housenumbers.txt > workdir/street-housenumbers.csv
 	./overpass-query workdir/street-housenumbers-gazdagret.txt > workdir/street-housenumbers-gazdagret.csv
 
-update-addr-interpolation: addr-interpolation.txt
+update-addr-interpolation: addr-interpolation.txt workdir/street-housenumbers-gazdagret.txt
 	@mkdir -p workdir
 	./overpass-query addr-interpolation.txt > workdir/addr-interpolation.csv
+	./overpass-query workdir/addr-interpolation-gazdagret.txt > workdir/addr-interpolation-gazdagret.csv
 
 # At the end this check found no problems, so this is not part of 'make check'.
 update-postcodes:
@@ -33,6 +34,7 @@ check: download
 	qa/houseless-streets.py
 	qa/houseless-streets.py -gazdagret
 	qa/interpolated-addresses.py
+	#qa/interpolated-addresses.py -gazdagret
 	qa/streets-nomaxspeed.py
 
 find-suspicious-steets:
@@ -45,3 +47,7 @@ workdir/streets-gazdagret.txt: streets.txt
 workdir/street-housenumbers-gazdagret.txt: street-housenumbers.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602713748/' street-housenumbers.txt > workdir/street-housenumbers-gazdagret.txt
+
+workdir/addr-interpolation-gazdagret.txt: addr-interpolation.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3602713748/' addr-interpolation.txt > workdir/addr-interpolation-gazdagret.txt

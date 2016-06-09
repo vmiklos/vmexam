@@ -5,7 +5,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
+import sys
 import unittest
+
+suffix = ""
 
 
 class Test(unittest.TestCase):
@@ -14,7 +17,7 @@ class Test(unittest.TestCase):
         given area, as all addresses are described precisely instead."""
 
         ways = []
-        sock = open("workdir/addr-interpolation.csv")
+        sock = open("workdir/addr-interpolation%s.csv" % suffix)
         for line in sock.readlines():
             if line.startswith("@"):
                 continue
@@ -23,6 +26,9 @@ class Test(unittest.TestCase):
         sock.close()
 
 if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        suffix = sys.argv[1]
+        sys.argv = sys.argv[:1]
     unittest.main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
