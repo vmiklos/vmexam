@@ -33,7 +33,7 @@ check: download
 	qa/houseless-streets.py
 	qa/houseless-streets.py -gazdagret
 	qa/interpolated-addresses.py
-	#qa/streets-nomaxspeed.py
+	qa/streets-nomaxspeed.py
 
 find-suspicious-steets:
 	./find-suspicious-streets |sort -r -t $$'\t' -n -k 2
