@@ -15,17 +15,16 @@ class Test(unittest.TestCase):
 
         self.maxDiff = None
         ways = []
-        sock = open("workdir/streets-nomaxspeed.csv")
-        for line in sock.readlines():
-            if line.startswith("@"):
-                continue
-            tokens = line.strip().split('\t')
-            if len(tokens) < 2 or (not len(tokens[0])) or (not len(tokens[1])):
-                continue
-            ways.append(tokens[1])
-        ways = sorted(set(ways))
-        self.assertEqual([], ways)
-        sock.close()
+        with open("workdir/streets-nomaxspeed.csv") as sock:
+            for line in sock.readlines():
+                if line.startswith("@"):
+                    continue
+                tokens = line.strip().split('\t')
+                if len(tokens) < 2 or (not len(tokens[0])) or (not len(tokens[1])):
+                    continue
+                ways.append(tokens[1])
+            ways = sorted(set(ways))
+            self.assertEqual([], ways)
 
 if __name__ == '__main__':
     unittest.main()
