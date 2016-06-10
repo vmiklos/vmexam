@@ -16,5 +16,8 @@ python-filter: python-filter.cxx Makefile
 python-map: python-map.cxx Makefile
 	g++ -std=c++11 -o python-map python-map.cxx
 
+python-random-choice: python-random-choice.cxx Makefile
+	g++ -std=c++11 -o python-random-choice python-random-choice.cxx
+
 scope-guard: scope-guard.cxx Makefile
 	g++ -std=c++11 -o scope-guard scope-guard.cxx

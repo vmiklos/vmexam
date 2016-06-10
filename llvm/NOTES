@@ -71,4 +71,12 @@ vim integration:
 :pyf $HOME/git/llvm/tools/clang/tools/extra/include-fixer/tool/clang-include-fixer.py
 ----
 
+== PS4
+
+How to build for PS4, which has RTTI disabled by default:
+
+----
+cmake -G 'Unix Makefiles' -DCMAKE_INSTALL_PREFIX=$(pwd)/../instdir -DCMAKE_BUILD_TYPE=Release -DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-scei-ps4 ..
+----
+
 // vim: ft=asciidoc

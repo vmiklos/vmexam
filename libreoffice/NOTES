@@ -921,4 +921,59 @@ oTable = oParas.nextElement
 oTable = oParas.nextElement
 xray oTable.getCellByName("A1").LeftBorderDistance ' should be 191, was 0
 
+=== 2016-06-10
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=60375
+
+can reproduce comment 2 with lo42
+lo43: everything is fine
+
+can bibisect? daily-till43:
+- master is bad
+
+daily-till44:
+- master is good
+- oldest is bad
+- [364ba817b97ce3b1d9ce53a2b51235cdb82d6864] 2014-08-21 is good (bad for g-b)
+- [479f8e7126777715c2ce39bb89483b88696f747e] 2014-07-05 is good (bad for g-b)
+- [10b4496584ecc392a40239e3f3c7ee455d83bfb4] 2014-06-12 is bad (good for g-b)
+- [9489aec63676d47ec9aacfe2b165b601479013f6] 2014-06-23 is good (bad for g-b)
+- [35c0f684cef2fdbe270ff9d3b37169731ef61033] 2014-06-17 is good (bad for g-b)
+- [ccc4bae0e9ca921992b4a53a1b8ea70a0609be76] 2014-06-14 is good (bad for g-b)
+- [75fffefc44f42439b85484865ea2bf601953d7d1] 2014-06-13 is bad (good for g-b)
+=> ccc4bae0e9ca921992b4a53a1b8ea70a0609be76 / 2014-06-14 is the first good -> b8979cae28cc541a1cfca1b4d2f79b92308bcda0 in core.git
+=> 75fffefc44f42439b85484865ea2bf601953d7d1 / 2014-06-13 is the last  bad  -> fd8cee8c1fb34432b786d54651f33b6c961ca7fe in core.git
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=91684
+
+after ungroup, the orange shape is 2.54 x 2.54cm, should be 0.69x0.67cm
+relRight = 11634, relLeft = 10194, rel width is 1440 -- probably we count this in twips, but this is just a relative value
+
+related code is writerfilter::rtftok::RTFSdrImport::resolve()
+
+that solves the scaling, but what about the flip?
+
+orange rect:
+{\sp
+{\sn fRelFlipH}
+{\sv 1}
+}
+{\sp
+{\sn fRelFlipV}
+{\sv 0}
+}
+
+parent:
+
+{\sp
+{\sn fFlipH}
+{\sv 1}
+}
+{\sp
+{\sn fFlipV}
+{\sv 1}
+}
+
+at least here the fRelFlip* is irrelevant
+
 // vim: ft=asciidoc
