@@ -100,6 +100,15 @@ test_assert_equal $test_expected $test_output
 declare_rename_test "testCXXDynamicCastExpr" "rename-cxx-dynamic-cast-expr.cxx"
 clang-rename -offset 6 -new-name=D $test_input -- > ${test_input}.new-rename
 test_assert_equal $test_expected $test_output
+#
+declare_rename_test "testCXXReinterpretCastExpr" "rename-cxx-reinterpret-cast-expr.cxx"
+clang-rename -offset 6 -new-name=D $test_input -- > ${test_input}.new-rename
+test_assert_equal $test_expected $test_output
+#
+#declare_rename_test "testCXXConstCastExpr" "rename-cxx-const-cast-expr.cxx"
+#bin/rename -old-name=C -new-name=D $test_input --
+#test_assert_equal $test_expected $test_output
+
 
 echo "OK ($ok)"
 
