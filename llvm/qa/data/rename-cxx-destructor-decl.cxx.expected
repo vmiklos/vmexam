@@ -1,0 +1,16 @@
+class D
+{
+public:
+    D();
+    ~D();
+};
+
+D::D()
+{
+}
+
+D::~D()
+{
+}
+
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */
