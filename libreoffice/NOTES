@@ -976,4 +976,16 @@ parent:
 
 at least here the fRelFlip* is irrelevant
 
+=== 2016-06-17
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=100352
+
+SvxAutoCorrectLanguageLists::LoadAutocorrWordList: sShareAutoCorrFile already contains hu-HU
+
+LANGUAGE_HUNGARIAN
+
+SvxAutoCorrect::GetAutoCorrFileName creates hu-HU from LanguageTag, i.e. const LanguageTag& rLanguageTag,
+    OUString sRet, sExt( rLanguageTag.getBcp47() );
+Application::GetSettings().GetLanguageTag()
+
 // vim: ft=asciidoc
