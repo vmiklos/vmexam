@@ -17,7 +17,7 @@ def main(argv):
     today = time.strftime("%Y-%m-%d")
 
     pretty = "format:'%H %cd %s'"
-    sock = os.popen("git log --author='%s' --date=short --pretty=%s" % (os.environ['USER'], pretty))
+    sock = os.popen("git log --author='%s' --date=short --pretty=%s %s" % (os.environ['USER'], pretty, " ".join(argv)))
     while True:
         line = sock.readline().strip()
         date = line[hashlen + 1:hashlen + datelen + 1]
