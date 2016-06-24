@@ -1,0 +1,12 @@
+---
+MainSourceFile:     cla.cpp
+Replacements:
+  - FilePath:        cla.hpp
+    Offset:          23
+    Length:          1
+    ReplacementText: 'm_x'
+  - FilePath:        cla.cpp
+    Offset:          40
+    Length:          1
+    ReplacementText: 'm_x'
+...
