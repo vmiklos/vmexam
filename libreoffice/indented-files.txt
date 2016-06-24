@@ -52,6 +52,8 @@ sw/source/filter/ww8/rtfstringbuffer.hxx
 sw/source/filter/ww8/sprmids.hxx
 sw/source/uibase/docvw/SidebarScrollBar.cxx
 sw/source/uibase/docvw/SidebarScrollBar.hxx
+vcl/source/filter/ipdf/pdfread.cxx
+vcl/source/filter/ipdf/pdfread.hxx
 writerfilter/inc/dmapper/DomainMapperFactory.hxx
 writerfilter/inc/dmapper/GraphicZOrderHelper.hxx
 writerfilter/inc/rtftok/RTFDocument.hxx
