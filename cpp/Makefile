@@ -21,3 +21,6 @@ python-random-choice: python-random-choice.cxx Makefile
 
 scope-guard: scope-guard.cxx Makefile
 	g++ -std=c++11 -o scope-guard scope-guard.cxx
+
+async: async.cxx Makefile
+	g++ -std=c++11 -pthread -g -o async async.cxx
