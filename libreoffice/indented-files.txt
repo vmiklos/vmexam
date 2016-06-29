@@ -27,6 +27,7 @@ starmath/source/rtfexport.hxx
 starmath/source/unofilter.cxx
 starmath/source/wordexportbase.cxx
 svl/source/items/grabbagitem.cxx
+svx/qa/unit/xoutdev.cxx
 sw/inc/rdfhelper.hxx
 sw/inc/textboxhelper.hxx
 sw/qa/extras/rtfexport/rtfexport.cxx
