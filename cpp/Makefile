@@ -24,3 +24,6 @@ scope-guard: scope-guard.cxx Makefile
 
 async: async.cxx Makefile
 	g++ -std=c++11 -pthread -g -o async async.cxx
+
+asan: asan.cxx Makefile
+	clang++ -std=c++11 -o asan -g -O0 -fsanitize=address asan.cxx
