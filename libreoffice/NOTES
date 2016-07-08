@@ -988,4 +988,53 @@ SvxAutoCorrect::GetAutoCorrFileName creates hu-HU from LanguageTag, i.e. const L
     OUString sRet, sExt( rLanguageTag.getBcp47() );
 Application::GetSettings().GetLanguageTag()
 
+=== 2016-07-07
+
+Trying to fix up <https://gerrit.libreoffice.org/#/c/24403/> -- upgrade xmlsec to 1.2.21
+
+Failure happens locally in a CentOS7 chroot.
+
+Problematic test is SigningTest::testDescription. Fails with running just that single test:
+
+make -sr CppunitTest_xmlsecurity_signing CPPUNIT_TEST_NAME="SigningTest::testDescription"
+
+Last LO frame is XMLSignature_NssImpl::generate().
+
+Does the output of 'print xmlDebugDumpNode(stderr, pNode, 1)' differ in the good/bad case?
+
+Not really, the key part is the same. It seems
+xmlSecNssKeyDataX509VerifyAndExtractKey() is called in the bad case, but not in
+the good one. Does parallel debugging help?
+
+bad bt:
+
+#0  0x00007fffcc810018 in xmlSecNssKeyDataX509VerifyAndExtractKey (data=0x16d3180, key=0x16d2fe0, keyInfoCtx=0x16d2b80) at x509.c:1346
+#1  0x00007fffcc80c136 in xmlSecNssKeyDataX509XmlRead (id=0x7fffccabc2e0 <xmlSecNssKeyDataX509Klass>, key=0x16d2fe0, node=0x16d0e70, keyInfoCtx=0x16d2b80) at x509.c:715
+#2  0x00007fffcc836d24 in xmlSecKeyDataXmlRead (id=0x7fffccabc2e0 <xmlSecNssKeyDataX509Klass>, key=0x16d2fe0, node=0x16d0e70, keyInfoCtx=0x16d2b80) at keysdata.c:308
+#3  0x00007fffcc82ea85 in xmlSecKeyInfoNodeRead (keyInfoNode=0x16d0bf0, key=0x16d2fe0, keyInfoCtx=0x16d2b80) at keyinfo.c:112
+#4  0x00007fffcc835f5d in xmlSecKeysMngrGetKey (keyInfoNode=0x16d0bf0, keyInfoCtx=0x16d2b80) at keys.c:1347
+#5  0x00007fffcc84e008 in xmlSecDSigCtxProcessKeyInfoNode (dsigCtx=0x16d2b70, node=0x16d0bf0) at xmldsig.c:943
+#6  0x00007fffcc84cc81 in xmlSecDSigCtxProcessSignatureNode (dsigCtx=0x16d2b70, node=0x16c9ac0) at xmldsig.c:581
+#7  0x00007fffcc84bfd9 in xmlSecDSigCtxSign (dsigCtx=0x16d2b70, tmpl=0x16c9ac0) at xmldsig.c:321
+
+good case:
+xmlSecDSigCtxSign is called
+xmlSecDSigCtxProcessSignatureNode is called
+xmlSecDSigCtxProcessSignatureNode fails when it calls xmlSecDSigCtxProcessSignedInfoNode(), so xmlSecDSigCtxProcessKeyInfoNode() is not called
+
+bad case: xmlSecDSigCtxProcessSignedInfoNode() does not fail
+
+So, how does xmlSecDSigCtxProcessSignedInfoNode() fail in the good case?
+
+warn:xmlsecurity.xmlsec:428:1:xmlsecurity/source/xmlsec/errorcallback.cxx:43: parser.c:182: xmlSecParserPushBin() 'xml-parser' 'xmlParseChunk' 5 'size=64'
+warn:xmlsecurity.xmlsec:428:1:xmlsecurity/source/xmlsec/errorcallback.cxx:43: transforms.c:1676: xmlSecTransformPump() 'xml-parser' 'xmlSecTransformPushBin' 1 ' '
+warn:xmlsecurity.xmlsec:428:1:xmlsecurity/source/xmlsec/errorcallback.cxx:43: transforms.c:1199: xmlSecTransformCtxUriExecute() '' 'xmlSecTransformPump' 1 'uri=Thumbnails/thumbnail.png'
+warn:xmlsecurity.xmlsec:428:1:xmlsecurity/source/xmlsec/errorcallback.cxx:43: transforms.c:1319: xmlSecTransformCtxExecute() '' 'xmlSecTransformCtxUriExecute' 1 ' '
+warn:xmlsecurity.xmlsec:428:1:xmlsecurity/source/xmlsec/errorcallback.cxx:43: xmldsig.c:1571: xmlSecDSigReferenceCtxProcessNode() '' 'xmlSecTransformCtxExecute' 1 ' '
+warn:xmlsecurity.xmlsec:428:1:xmlsecurity/source/xmlsec/errorcallback.cxx:43: xmldsig.c:804: xmlSecDSigCtxProcessSignedInfoNode() '' 'xmlSecDSigReferenceCtxProcessNode' 1 'node=Reference'
+
+The 4th call to xmlSecDSigReferenceCtxProcessNode() fails, as that's Thumbnails/thumbnail.png.
+
+8f6c95a90735c4d6e13bddf84de7a5284132826c in xmlsec.git is the problematic commit, it kind of removed an early return when png was feeded as XML -> that's it
+
 // vim: ft=asciidoc
