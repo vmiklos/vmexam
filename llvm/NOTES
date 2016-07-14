@@ -55,6 +55,12 @@ git clone https://github.com/phacility/arcanist
 git clone https://github.com/phacility/libphutil
 ----
 
+Coding style:
+
+----
+clang-format -i $(git ls-files|egrep '(cpp|h)$')
+----
+
 == clang-include-fixer
 
 Links:
