@@ -85,4 +85,11 @@ How to build for PS4, which has RTTI disabled by default:
 cmake -G 'Unix Makefiles' -DCMAKE_INSTALL_PREFIX=$(pwd)/../instdir -DCMAKE_BUILD_TYPE=Release -DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-scei-ps4 ..
 ----
 
+== Notes on patches
+
+=== https://reviews.llvm.org/D21814 -- rename-at/all subcommands
+
+- how to build the docs: 'make docs-clang-tools-html'
+- where is the result: 'firefox ./tools/clang/tools/extra/docs/html/clang-rename.html'
+
 // vim: ft=asciidoc

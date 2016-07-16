@@ -1037,4 +1037,11 @@ The 4th call to xmlSecDSigReferenceCtxProcessNode() fails, as that's Thumbnails/
 
 8f6c95a90735c4d6e13bddf84de7a5284132826c in xmlsec.git is the problematic commit, it kind of removed an early return when png was feeded as XML -> that's it
 
+=== 2016-07-15
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=61901
+
+last35onmaster: font on 3rd line in Word after LO roundtrip is not liberation (nominally good)
+last36onmaster: it's times new roman (nominally bad)
+
 // vim: ft=asciidoc
