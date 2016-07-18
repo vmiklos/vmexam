@@ -1,7 +1,9 @@
 #!/bin/bash
 
 time sh -ce "git pull -r
-    cd tools/clang
+    cd projects/compiler-rt
+    git pull -r
+    cd ../../tools/clang
     git pull -r
     cd tools/extra
     git pull -r
