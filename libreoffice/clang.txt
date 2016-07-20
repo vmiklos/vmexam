@@ -68,4 +68,10 @@ Online (same set of checks as for libclang-vim, except modernize):
 for i in *.cpp; do clang-tidy $i || break; done
 ----
 
+Core:
+
+----
+for i in $(grep cxx$ .git/indented-files.cache); do clang-tidy $i || break; done
+----
+
 // vim: ft=asciidoc
