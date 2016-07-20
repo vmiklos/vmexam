@@ -12,6 +12,9 @@ get-documentation-at: get-documentation-at.cxx Makefile
 get-declaration-at: get-declaration-at.cxx Makefile
 	clang++ $(FLAGS) -o get-declaration-at get-declaration-at.cxx
 
+get-full-name: get-full-name.cxx Makefile
+	clang++ $(FLAGS) -o get-full-name get-full-name.cxx
+
 get-include-at: get-include-at.cxx Makefile
 	clang++ $(FLAGS) -o get-include-at get-include-at.cxx
 
