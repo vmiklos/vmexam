@@ -3,6 +3,7 @@ download: update-streets update-house-numbers update-addr-interpolation update-s
 update-streets: streets.txt workdir/streets-gazdagret.txt
 	./overpass-query streets.txt > workdir/streets.csv
 	./overpass-query workdir/streets-gazdagret.txt > workdir/streets-gazdagret.csv
+	./overpass-query workdir/streets-sashegy.txt > workdir/streets-sashegy.csv
 
 update-streets-nomaxspeed: streets-nomaxspeed.txt
 	./overpass-query streets-nomaxspeed.txt > workdir/streets-nomaxspeed.csv
@@ -11,6 +12,7 @@ update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdag
 	@mkdir -p workdir
 	./overpass-query street-housenumbers.txt > workdir/street-housenumbers.csv
 	./overpass-query workdir/street-housenumbers-gazdagret.txt > workdir/street-housenumbers-gazdagret.csv
+	./overpass-query workdir/street-housenumbers-sashegy.txt > workdir/street-housenumbers-sashegy.csv
 
 update-addr-interpolation: addr-interpolation.txt workdir/street-housenumbers-gazdagret.txt
 	@mkdir -p workdir
@@ -33,6 +35,7 @@ check: download
 	qa/osmose.py
 	qa/houseless-streets.py
 	qa/houseless-streets.py -gazdagret
+	#qa/houseless-streets.py -sashegy
 	qa/interpolated-addresses.py
 	qa/interpolated-addresses.py -gazdagret
 	qa/streets-nomaxspeed.py
@@ -51,3 +54,11 @@ workdir/street-housenumbers-gazdagret.txt: street-housenumbers.txt
 workdir/addr-interpolation-gazdagret.txt: addr-interpolation.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602713748/' addr-interpolation.txt > workdir/addr-interpolation-gazdagret.txt
+
+workdir/streets-sashegy.txt: streets.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3602714524/' streets.txt > workdir/streets-sashegy.txt
+
+workdir/street-housenumbers-sashegy.txt: street-housenumbers.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3602714524/' street-housenumbers.txt > workdir/street-housenumbers-sashegy.txt
