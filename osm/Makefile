@@ -34,7 +34,7 @@ check: download
 	qa/houseless-streets.py
 	qa/houseless-streets.py -gazdagret
 	qa/interpolated-addresses.py
-	#qa/interpolated-addresses.py -gazdagret
+	qa/interpolated-addresses.py -gazdagret
 	qa/streets-nomaxspeed.py
 
 find-suspicious-steets:
