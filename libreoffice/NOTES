@@ -1044,4 +1044,21 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=61901
 last35onmaster: font on 3rd line in Word after LO roundtrip is not liberation (nominally good)
 last36onmaster: it's times new roman (nominally bad)
 
+=== 2016-07-22
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=95967
+
+daily-till51.git:
+- oldest is bad
+- master^ is good
+- [a8d19eafb9e195a85359dd8cdc5c46c38295caa0] 2015-08-22: source-hash-79fb61efb847405fa47235002b52ee8efad5e339 is good (bad for g-b)
+- [c9abefa2facd9d5f2989bbc2138e55970e60c4cd] 2015-07-06: source-hash-64385c7555c6bbb089f3ab8b2a5b623cadd6ee7d is good (bad for g-b)
+- [d3328123e5e86a74111ff9f1fcdd742973bd3c80] 2015-06-12: source-hash-bb9dad2ef23829b2500c9f99154bca6a8ba7d49a is bad (good for g-b)
+- [57aaa0c171166a76dcd09e7092f5ae111d4b5ccb] 2015-06-24: source-hash-2135fe0cef7bcf7160719f1f29ad65f2b064984b is good (bad for g-b)
+- [e48eb783142c667bfdad999f0edb90f8253b0b65] 2015-06-18: source-hash-fb6dd2a73074b9695bd8ddf7ba40f1819b03024e is good (bad for g-b)
+- [b0072876f11895701d29fdd527193dfecff72a8d] 2015-06-15: source-hash-46564fd97308ce070248482ad65a311a329a2b76 is bad (good for g-b)
+- [ea66e33d42004c5689162daabde2f6feef90bf8a] 2015-06-17: source-hash-ffc1ffed11dc63a69fc2db04f12b3ea266b580fe is good (bad for g-b)
+- [34b2392f075552fecb6d070eb506df3d20b86dcc] 2015-06-16: source-hash-80ec99db4325a439a8a3f1d420d0a80f8bf9c439 is good (bad for g-b) -> first good
+- range is 46564fd97308ce070248482ad65a311a329a2b76..80ec99db4325a439a8a3f1d420d0a80f8bf9c439 -> d0bedaf9eface97d17787931457f3ffc89ac4216 -> tdf#84832
+
 // vim: ft=asciidoc
