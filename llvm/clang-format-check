@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+# Runs clang-format on the arguments and compleins if some problem is found.
+
+new=$(mktemp)
+function finish
+{
+    rm -rf "$new"
+}
+trap finish EXIT
+
+fix=
+if [ "$1" == "--fix" ]; then
+    fix=1
+    shift
+fi
+
+files="$@"
+for file in $files
+do
+    if ! echo $file |grep -q '\(cxx\|cpp\|hxx\|h\)$'; then
+        continue
+    fi
+    clang-format $file > $new
+    if ! diff -u $file $new; then
+        if [ -n "$fix" ]; then
+            cat $new > $file
+            echo "Fixed the above errors."
+        else
+            echo "You have some style errors."
+        fi
+        exit 1
+    fi
+done
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
