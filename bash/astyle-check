@@ -25,6 +25,9 @@ do
 	if ! echo $file |grep -q '\(cxx\|cpp\|hxx\)$'; then
 		continue
 	fi
+	if [ ! -e "$file" ]; then
+		continue
+	fi
 	astyle --options=$HOME/.astyle.options < $file > $new
 	if ! diff -u $file $new; then
 		if [ -n "$fix" ]; then
