@@ -1061,4 +1061,30 @@ daily-till51.git:
 - [34b2392f075552fecb6d070eb506df3d20b86dcc] 2015-06-16: source-hash-80ec99db4325a439a8a3f1d420d0a80f8bf9c439 is good (bad for g-b) -> first good
 - range is 46564fd97308ce070248482ad65a311a329a2b76..80ec99db4325a439a8a3f1d420d0a80f8bf9c439 -> d0bedaf9eface97d17787931457f3ffc89ac4216 -> tdf#84832
 
+=== 2016-08-04
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=98396
+
+Word doesn't seem to support this, a possible workaround is
+<http://superuser.com/questions/368337/keep-all-the-rows-of-an-microsoft-word-2010-on-the-same-page>.
+
+Works for me on master; reported version is 5.1.4
+
+- works with 5.2? yes
+- works with 5.1? no
+
+daily-till52.git:
+- master is good
+- 968156e2cc954d47d7ed9b35a0d114a43cc9637e (oldest's first child) is bad -> can do a reverse bisect
+- [9fdf4ea6419aee1fdfeb559f39f1fa9fc4b32448] 2016-02-25: source-hash-6851e977f71075c2f43b967a52dc1d035a75b0f2 is good (bad for g-b)
+- [a7c76c323e8a895b7a5b89af9efce5990b82132c] 2016-01-10: source-hash-33208c347182d8fe80bfbe34fe3e0b4b21a0a7a2 is good (bad for g-b)
+- [58eca217dd8f7eb12d5556eafc324fd296823301] 2015-12-18: source-hash-42645fe67cac22e9a96bc4b34c4f85c09185d9d2 is good (bad for g-b)
+- [4a3d4b936a309598fd04ea8122fb15b82f1c48c1] 2015-12-07: source-hash-2cd9ecd8644d16780443cdb6b52e208af9066105 is bad (good for g-b)
+- [25cfd733b857192061159070e7bc710570553ec9] 2015-12-12: source-hash-37d735b27477cc1b72063b0ef307a437fa5233a1 is bad (good for g-b)
+- [39ea4b3644d7f6c74e24260099de307fb4f6b221] 2015-12-15: source-hash-e0d2acfa65d81da323cbe91e6451fca70e00bdd5 is good (bad for g-b)
+- [9711326ba927faf119b83a68b79d40e1c264970b] 2015-12-14: source-hash-63feac2a3264ead8f52148644b14078a4be5a2b9 is bad (good for g-b)
+=> 39ea4b3644d7f6c74e24260099de307fb4f6b221 / 2015-12-15: source-hash-e0d2acfa65d81da323cbe91e6451fca70e00bdd5 is the first good? indeed
+=> 9711326ba927faf119b83a68b79d40e1c264970b / 2015-12-14: source-hash-63feac2a3264ead8f52148644b14078a4be5a2b9 is the last bad? indeed
+=> core.git range is 63feac2a3264ead8f52148644b14078a4be5a2b9..e0d2acfa65d81da323cbe91e6451fca70e00bdd5 -> 4ec0cc0781312d908a46dca382fae8e416753756 was the fix
+
 // vim: ft=asciidoc
