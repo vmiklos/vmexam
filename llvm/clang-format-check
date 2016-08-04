@@ -26,7 +26,7 @@ do
     if ! echo $file |grep -q '\(cxx\|cpp\|hxx\|h\)$'; then
         continue
     fi
-    clang-format $file > $new
+    ~/git/llvm/workdir/bin/clang-format $file > $new
     if ! diff -u $file $new; then
         if [ -n "$fix" ]; then
             cat $new > $file
