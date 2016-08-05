@@ -92,4 +92,8 @@ cmake -G 'Unix Makefiles' -DCMAKE_INSTALL_PREFIX=$(pwd)/../instdir -DCMAKE_BUILD
 - how to build the docs: 'make docs-clang-tools-html'
 - where is the result: 'firefox ./tools/clang/tools/extra/docs/html/clang-rename.html'
 
+=== https://reviews.llvm.org/D23198 -- yaml input
+
+- documentation on YAML foo is at `docs/YamlIO.rst` in llvm.git.
+
 // vim: ft=asciidoc

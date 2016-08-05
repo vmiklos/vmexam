@@ -12,6 +12,7 @@ time sh -ce "git pull -r
     cmake -G 'Unix Makefiles' -DCMAKE_INSTALL_PREFIX=$(pwd)/instdir -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_ASSERTIONS=ON -DLLVM_ENABLE_SPHINX=ON ..
     make -j8
     make -j8 check-clang-tools
-    make install" 2>&1 |tee log
+    make install
+    ~/git/vmexam/llvm/llvm-style-check-files" 2>&1 |tee log
 
 # vim:set shiftwidth=4 expandtab:
