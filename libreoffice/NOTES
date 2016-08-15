@@ -1087,4 +1087,18 @@ daily-till52.git:
 => 9711326ba927faf119b83a68b79d40e1c264970b / 2015-12-14: source-hash-63feac2a3264ead8f52148644b14078a4be5a2b9 is the last bad? indeed
 => core.git range is 63feac2a3264ead8f52148644b14078a4be5a2b9..e0d2acfa65d81da323cbe91e6451fca70e00bdd5 -> 4ec0cc0781312d908a46dca382fae8e416753756 was the fix
 
+=== 2016-08-10
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=100507
+
+bibisect-43all.git:
+- last40onmaster is good
+- last41onmaster is good
+- last42onmaster is good
+- last43onmaster is good
+
+bibisect-44max.git:
+- oldest is good
+- master is bad
+
 // vim: ft=asciidoc
