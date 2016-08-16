@@ -1,4 +1,4 @@
-CC=clang -fsanitize=address
-CXX=clang++ -fsanitize=address
+CC=clang -fsanitize=address -fsanitize=undefined
+CXX=clang++ -fsanitize=address -fsanitize=undefined
 --enable-dbgutil
 --disable-firebird-sdbc
