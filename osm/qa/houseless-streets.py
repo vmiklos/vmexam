@@ -26,7 +26,9 @@ class Finder:
                 continue
             # No idea why this shows up, manually checking it seems it has house numbers.
             # The 3rd doesn't seem to have odd house numbers, so not tagged, but nothing to improve, either.
-            if not (cols[1] in ("Barackmag utca", "Higany utca", "Gazdagréti út")):
+            # 4th is only a small part of the whole way in case of sashegy
+            # filtering, and this part in fact doesn't have house numbers.
+            if not (cols[1] in ("Barackmag utca", "Higany utca", "Gazdagréti út", "Harasztos út")):
                 self.streets.append(cols[1])
         self.streets = sorted(set(self.streets))
         sock.close()
