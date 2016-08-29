@@ -65,7 +65,7 @@ bear make -j8 CCACHE_DISABLE=1
 Online (same set of checks as for libclang-vim, except modernize):
 
 ----
-for i in *.cpp; do echo $i; clang-tidy -header-filter=.* $i || break; done
+for i in *.cpp; do echo $i; clang-tidy -header-filter=^$PWD.* $i || break; done
 ----
 
 Core:
