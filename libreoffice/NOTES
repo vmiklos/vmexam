@@ -1101,4 +1101,17 @@ bibisect-44max.git:
 - oldest is good
 - master is bad
 
+=== 2016-09-02
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=44986
+
+the rtf equivalent of w:gridAfter is \trwWidthA
+
+how to emulate it in the rtf tokenizer:
+
+- fake \cellx after the last \cellx
+- fake \cell after the last \cell
+
+RTF_CLBRDRT, RTF_CLBRDRL, RTF_CLBRDRB, RTF_CLBRDRR, RTF_BRDRW
+
 // vim: ft=asciidoc
