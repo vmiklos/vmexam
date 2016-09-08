@@ -1114,4 +1114,111 @@ how to emulate it in the rtf tokenizer:
 
 RTF_CLBRDRT, RTF_CLBRDRL, RTF_CLBRDRB, RTF_CLBRDRR, RTF_BRDRW
 
+=== 2016-09-07
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=78727
+
+Problem seems to be specific to shape with text anchored inside a floating
+table.
+
+Is the shape lost during SwXText::convertToTable()?
+
+----
+#0  0x00007ffff161a2f1 in SdrObjCustomShape::~SdrObjCustomShape() (this=0x5120480, __in_chrg=<optimized out>) at /home/vmiklos/git/libreoffice/master/svx/source/svdraw/svdoashp.cxx:847
+#1  0x00007ffff161a35c in SdrObjCustomShape::~SdrObjCustomShape() (this=0x5120480, __in_chrg=<optimized out>) at /home/vmiklos/git/libreoffice/master/svx/source/svdraw/svdoashp.cxx:848
+#2  0x00007ffff162b088 in SdrObject::Free(SdrObject*&) (_rpObject=@0x7fffffff6568: 0x0) at /home/vmiklos/git/libreoffice/master/svx/source/svdraw/svdobj.cxx:394
+#3  0x00007fffce3b925f in SwDrawContact::~SwDrawContact() (this=0x51206c0, __in_chrg=<optimized out>) at /home/vmiklos/git/libreoffice/master/sw/source/core/draw/dcontact.cxx:623
+#4  0x00007fffce3b92c6 in SwDrawContact::~SwDrawContact() (this=0x51206c0, __in_chrg=<optimized out>) at /home/vmiklos/git/libreoffice/master/sw/source/core/draw/dcontact.cxx:625
+#5  0x00007fffce4c4ab4 in SwDrawFrameFormat::~SwDrawFrameFormat() (this=0x50a3130, __in_chrg=<optimized out>) at /home/vmiklos/git/libreoffice/master/sw/source/core/layout/atrfrm.cxx:3335
+#6  0x00007fffce4c4b06 in SwDrawFrameFormat::~SwDrawFrameFormat() (this=0x50a3130, __in_chrg=<optimized out>) at /home/vmiklos/git/libreoffice/master/sw/source/core/layout/atrfrm.cxx:3336
+#7  0x00007fffce18c60d in SwDoc::DelFrameFormat(SwFrameFormat*, bool) (this=0x1e08aa0, pFormat=0x50a3130, bBroadcast=false)
+    at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/docfmt.cxx:739
+#8  0x00007fffce296c36 in sw::DocumentLayoutManager::DelLayoutFormat(SwFrameFormat*) (this=0x1e10030, pFormat=0x50a3130)
+    at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/DocumentLayoutManager.cxx:322
+#9  0x00007fffce170d0b in DelFlyInRange(SwNodeIndex const&, SwNodeIndex const&) (rMkNdIdx=SwNodeIndex (node 5), rPtNdIdx=SwNodeIndex (node 22))
+    at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/docedt.cxx:227
+#10 0x00007fffce170c5f in DelFlyInRange(SwNodeIndex const&, SwNodeIndex const&) (rMkNdIdx=SwNodeIndex (node 28), rPtNdIdx=SwNodeIndex (node 43))
+    at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/docedt.cxx:219
+#11 0x00007fffce26134f in sw::DocumentContentOperationsManager::DeleteRangeImplImpl(SwPaM&) (this=0x1e10ca0, rPam=SwPaM = {...})
+    at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/DocumentContentOperationsManager.cxx:3711
+#12 0x00007fffce260dc4 in sw::DocumentContentOperationsManager::DeleteRangeImpl(SwPaM&, bool) (this=0x1e10ca0, rPam=SwPaM = {...})
+    at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/DocumentContentOperationsManager.cxx:3628
+#13 0x00007fffce260cf0 in sw::DocumentContentOperationsManager::DeleteAndJoinImpl(SwPaM&, bool) (this=0x1e10ca0, rPam=SwPaM = {...}, bForceJoinNext=false)
+    at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/DocumentContentOperationsManager.cxx:3608
+#14 0x00007fffce252b76 in (anonymous namespace)::lcl_DoWithBreaks(sw::DocumentContentOperationsManager&, SwPaM&, bool (sw::DocumentContentOperationsManager::*)(sw::DocumentContentOperationsManager* const, SwPaM&, bool), bool) (rDocumentContentOperations=..., rPam=SwPaM = {...}, pFunc=
+    (bool (sw::DocumentContentOperationsManager::*)(sw::DocumentContentOperationsManager * const, SwPaM &, bool)) 0x7fffce260ca2 <sw::DocumentContentOperationsManager::DeleteAndJoinImpl(SwPaM&, bool)>, bForceJoinNext=false) at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/DocumentContentOperationsManager.cxx:512
+#15 0x00007fffce258fac in sw::DocumentContentOperationsManager::DeleteAndJoin(SwPaM&, bool) (this=0x1e10ca0, rPam=SwPaM = {...}, bForceJoinNext=false)
+    at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/DocumentContentOperationsManager.cxx:1913
+#16 0x00007fffce1b7936 in SwDoc::MakeFlyAndMove(SwPaM const&, SfxItemSet const&, SwSelBoxes const*, SwFrameFormat*) (this=0x1e08aa0, rPam=SwPaM = {...}, rSet=
+    SfxItemSet of pool 0x1e06890 with parent 0x1e10d38 and Which ranges: [(87, 129), (150, 150), (1014, 1033), (10023, 10023)] = {...}, pSelBoxes=0x0, pParent=0x0)
+    at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/doclay.cxx:454
+#17 0x00007fffce8823ca in SwXFrame::attachToRange(com::sun::star::uno::Reference<com::sun::star::text::XTextRange> const&) (this=0x51282d8, xTextRange=
+    uno::Reference to (SwXTextRange *) 0x5123548) at /home/vmiklos/git/libreoffice/master/sw/source/core/unocore/unoframe.cxx:2805
+#18 0x00007fffce884278 in SwXFrame::attach(com::sun::star::uno::Reference<com::sun::star::text::XTextRange> const&) (this=0x51282d8, xTextRange=uno::Reference to (SwXTextRange *) 0x5123548) at /home/vmiklos/git/libreoffice/master/sw/source/core/unocore/unoframe.cxx:3070
+#19 0x00007fffce886136 in SwXTextFrame::attach(com::sun::star::uno::Reference<com::sun::star::text::XTextRange> const&) (this=0x5128230, xTextRange=uno::Reference to (SwXTextRange *) 0x5123548) at /home/vmiklos/git/libreoffice/master/sw/source/core/unocore/unoframe.cxx:3314
+#20 0x00007fffce9cd4b3 in SwXText::convertToTextFrame(com::sun::star::uno::Reference<com::sun::star::text::XTextRange> const&, com::sun::star::uno::Reference<com::sun::star::text::XTextRange> const&, com::sun::star::uno::Sequence<com::sun::star::beans::PropertyValue> const&) (this=0x1fcf448, xStart=uno::Reference to (SwXTextRange *) 0x515a178, xEnd=uno::Reference to (SwXTextRange *) 0x5159808, rFrameProperties=uno::Sequence of length 20 = {...}) at /home/vmiklos/git/libreoffice/master/sw/source/core/unocore/unotext.cxx:1692
+----
+
+'SdrObjCustomShape::~SdrObjCustomShape' is is called by some delete code, but then where do we create a copy first?
+
+----
+#0  0x00007ffff161a290 in SdrObjCustomShape::SdrObjCustomShape() (this=0x52f9ac0) at /home/vmiklos/git/libreoffice/master/svx/source/svdraw/svdoashp.cxx:840
+#1  0x00007ffff1636d52 in SdrObjFactory::MakeNewObject(unsigned int, unsigned short, SdrPage*, SdrModel*) (nInvent=1917081171, nIdent=33, pPage=0x0, pModel=0x0)
+    at /home/vmiklos/git/libreoffice/master/svx/source/svdraw/svdobj.cxx:3151
+#2  0x00007ffff1627b09 in SdrObject::CloneHelper<SdrObjCustomShape>() const (this=0x511e930) at /home/vmiklos/git/libreoffice/master/include/svx/svdobj.hxx:1018
+#3  0x00007ffff1623774 in SdrObjCustomShape::Clone() const (this=0x511e930) at /home/vmiklos/git/libreoffice/master/svx/source/svdraw/svdoashp.cxx:2799
+#4  0x00007fffce1b62a7 in SwDoc::CloneSdrObj(SdrObject const&, bool, bool) (this=0x1e095c0, rObj=..., bMoveWithinDoc=true, bInsInPage=true)
+    at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/doclay.cxx:130
+#5  0x00007fffce2976bd in sw::DocumentLayoutManager::CopyLayoutFormat(SwFrameFormat const&, SwFormatAnchor const&, bool, bool) (this=0x1e13f30, rSource=..., 
+    rNewAnchor=..., bSetTextFlyAtt=false, bMakeFrames=true) at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/DocumentLayoutManager.cxx:457
+#6  0x00007fffce25ffce in sw::DocumentContentOperationsManager::CopyFlyInFlyImpl(SwNodeRange const&, int, SwNodeIndex const&, bool) const (this=0x1e131a0, rRg=..., nEndContentIndex=0, rStartIdx=SwNodeIndex (node 6), bCopyFlyAtFly=false) at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/DocumentContentOperationsManager.cxx:3455
+
+^ probably should handle textbox here
+
+#7  0x00007fffce25f0fd in sw::DocumentContentOperationsManager::CopyWithFlyInFly(SwNodeRange const&, int, SwNodeIndex const&, std::pair<SwPaM const&, SwPosition const&> const*, bool, bool, bool) const (this=0x1e131a0, rRg=..., nEndContentIndex=0, rInsPos=SwNodeIndex (node 21), pCopiedPaM=0x7fffffff6a20, bMakeNewFrames=true, bDelRedlines=false, bCopyFlyAtFly=false)
+    at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/DocumentContentOperationsManager.cxx:3205
+
+^ not really, by the time this returns, we have 5 formats as expected
+
+#8  0x00007fffce2645e0 in sw::DocumentContentOperationsManager::CopyImpl(SwPaM&, SwPosition&, bool, bool, SwPaM*) const (this=0x1e131a0, 
+    rPam=SwPaM = {...}, rPos=SwPosition (node 21, offset 0), bMakeNewFrames=true, bCopyAll=false, pCpyRange=0x0)
+    at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/DocumentContentOperationsManager.cxx:4457
+#9  0x00007fffce257c68 in sw::DocumentContentOperationsManager::CopyRange(SwPaM&, SwPosition&, bool, bool) const (this=0x1e131a0, rPam=SwPaM = {...}, rPos=SwPosition (node 21, offset 0), bCopyAll=false, bCheckPos=false) at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/DocumentContentOperationsManager.cxx:1655
+#10 0x00007fffce1b785c in SwDoc::MakeFlyAndMove(SwPaM const&, SfxItemSet const&, SwSelBoxes const*, SwFrameFormat*) (this=0x1e095c0, rPam=SwPaM = {...}, rSet=
+    SfxItemSet of pool 0x1e00500 with parent 0x1e13fb8 and Which ranges: [(87, 129), (150, 150), (1014, 1033), (10023, 10023)] = {...}, pSelBoxes=0x0, pParent=0x0)
+    at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/doclay.cxx:442
+#11 0x00007fffce882462 in SwXFrame::attachToRange(com::sun::star::uno::Reference<com::sun::star::text::XTextRange> const&) (this=0x52e2db8, xTextRange=
+    uno::Reference to (SwXTextRange *) 0x52e6c58) at /home/vmiklos/git/libreoffice/master/sw/source/core/unocore/unoframe.cxx:2805
+#12 0x00007fffce884310 in SwXFrame::attach(com::sun::star::uno::Reference<com::sun::star::text::XTextRange> const&) (this=0x52e2db8, xTextRange=uno::Reference to (SwXTextRange *) 0x52e6c58) at /home/vmiklos/git/libreoffice/master/sw/source/core/unocore/unoframe.cxx:3070
+----
+
+bad case:
+
+debug:29277:1: DocumentContentOperationsManager::CopyFlyInFlyImpl: n is 0, bAdd is 1
+debug:29277:1: DocumentContentOperationsManager::CopyFlyInFlyImpl: n is 1, bAdd is 1
+debug:29277:1: DocumentContentOperationsManager::CopyFlyInFlyImpl: calling CopyLayoutFormat()
+debug:29277:1: DocumentContentOperationsManager::CopyFlyInFlyImpl: calling CopyLayoutFormat()
+debug:29277:1: DelFlyInRange: delete
+debug:29277:1: DelFlyInRange: delete
+debug:29277:1: DelFlyInRange: delete
+debug:29277:1: DelFlyInRange: delete
+
+why does DelFlyInRange() calls delete 4 times?
+DelFlyInRange start: only 2 objects at the start, already
+
+In SwDoc::MakeFlyAndMove(), this happens:
+- first CopyRange() copies the frame formats, then
+- DeleteAndJoin() removes the old ones
+
+what is deleted?
+
+----
+(gdb) print rTmp
+$26 = SwPaM = {point = SwPosition (node 34, offset 0), mark = SwPosition (node 49, offset 0)}
+----
+
+so:
+- 37 -> delete
+- 12 -> don't delete -- but it deletes all 4! -> fixed
+
 // vim: ft=asciidoc
