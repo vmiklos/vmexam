@@ -1221,4 +1221,50 @@ so:
 - 37 -> delete
 - 12 -> don't delete -- but it deletes all 4! -> fixed
 
+=== 2016-09-10
+
+AutoCheckEnabled in extensions/source/update
+
+officecfg::Office::Common::Filter::Microsoft::Import::WinWordToWriter::get()
+
+"/org.openoffice.Office.Common/Filter/Microsoft/Import/WinWordToWriter" -> comphelper::ConfigurationProperty
+
+::get() does, where path is the above:
+
+        css::uno::Any a(detail::ConfigurationWrapper::get(context).getPropertyValue(T::path()));
+        return detail::Convert< U >::fromAny(a);
+
+get -> getPropertyValue
+isReadOnly -> isReadOnly
+
+comphelper::detail::ConfigurationWrapper is used in the lower layer
+
+css::configuration::XReadWriteAccess ->
+
+        (access_->getPropertyByHierarchicalName(path).Attributes
+         & css::beans::PropertyAttribute::READONLY)
+        != 0;
+
+css::configuration::ReadWriteAccess::create(context, "*");
+
+tdf#101976 LibreOffice crashes when user tries to change read-only Online Update setting
+
+=== 2016-09-16
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=84684
+
+ZOrder of child shapes is not OK, it seems
+Rectangle 1 has dhgt=251659264
+Pie 2 has dhgt=251659264 -> same!
+
+=== 2016-09-23
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=87914
+
+UNO property is CharCaseMap with value com::sun::star::style::CaseMap::SMALLCAPS / 4 -> SVX_CASEMAP_KAPITAELCHEN / RES_CHRATR_CASEMAP
+
+need to add: .uno:SmallCaps -> FN_SET_SMALL_CAPS
+
+icon: lc_changecasetoupper.png -> 12px height
+
 // vim: ft=asciidoc
