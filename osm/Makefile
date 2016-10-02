@@ -35,7 +35,7 @@ check: download
 	qa/osmose.py
 	qa/houseless-streets.py
 	qa/houseless-streets.py -gazdagret
-	#qa/houseless-streets.py -sashegy
+	qa/houseless-streets.py -sashegy
 	qa/interpolated-addresses.py
 	qa/interpolated-addresses.py -gazdagret
 	qa/streets-nomaxspeed.py
