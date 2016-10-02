@@ -1,5 +1,7 @@
 // by ImreSamu
 // 2015.05.30
+// Append e.g. '[date:"2015-01-06T00:00:00Z"]' after '[timeout:425]' if you
+// want to get a historical result.
 [out:csv(::id, "addr:street","addr:housenumber", "addr:postcode", name)]  [timeout:425];
 // Use overpass-turbo to map the area name to its ID.
 //
