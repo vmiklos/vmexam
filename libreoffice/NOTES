@@ -1267,4 +1267,39 @@ need to add: .uno:SmallCaps -> FN_SET_SMALL_CAPS
 
 icon: lc_changecasetoupper.png -> 12px height
 
+=== 2016-09-30
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=102360
+
+2013-12-04 is when the problematic commit was pushed, 4.2 -> 4.3 regression, hash is 798a563db133ebed3876c245459d90ef54ee7c9a
+
+1fd781e7cd33f325ec7e467ecd49e0cb6ff4762b is the cleanup commit
+
+19abfaffe74b925e4428943d14187a7008797982 is the pptx commit (2014-03-14)
+
+bad:
+style:text-position="0% 100%"
+
+good:
+style:text-position="0% 58%"
+
+problem is that CharEscapementHeight is now 100 even in Impress, while it should be 58
+
+SdImportTest::testN862510_1 now fails
+
+----
+tdf#102360 PPTX import: set CharEscapementHeight unconditionally again
+
+CharEscapementHeight was in practice always set in the drawingML import
+before commit 798a563db133ebed3876c245459d90ef54ee7c9a (drawingml
+import: don't set CharEscapementHeight unconditionally, 2013-12-04),
+after that it was only set when there was a set baseline.
+----
+
+=> doesn't seem to be a regression after all
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=100830
+
+ThisComponent.DrawPage(0).FillTransparence = 50
+
 // vim: ft=asciidoc
