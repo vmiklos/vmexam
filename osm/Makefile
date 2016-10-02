@@ -4,6 +4,7 @@ update-streets: streets.txt workdir/streets-gazdagret.txt
 	./overpass-query streets.txt > workdir/streets.csv
 	./overpass-query workdir/streets-gazdagret.txt > workdir/streets-gazdagret.csv
 	./overpass-query workdir/streets-sashegy.txt > workdir/streets-sashegy.csv
+	./overpass-query workdir/streets-nemetvolgy.txt > workdir/streets-nemetvolgy.csv
 
 update-streets-nomaxspeed: streets-nomaxspeed.txt
 	./overpass-query streets-nomaxspeed.txt > workdir/streets-nomaxspeed.csv
@@ -13,6 +14,7 @@ update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdag
 	./overpass-query street-housenumbers.txt > workdir/street-housenumbers.csv
 	./overpass-query workdir/street-housenumbers-gazdagret.txt > workdir/street-housenumbers-gazdagret.csv
 	./overpass-query workdir/street-housenumbers-sashegy.txt > workdir/street-housenumbers-sashegy.csv
+	./overpass-query workdir/street-housenumbers-nemetvolgy.txt > workdir/street-housenumbers-nemetvolgy.csv
 
 update-addr-interpolation: addr-interpolation.txt workdir/street-housenumbers-gazdagret.txt
 	@mkdir -p workdir
@@ -36,6 +38,7 @@ check: download
 	qa/houseless-streets.py
 	qa/houseless-streets.py -gazdagret
 	qa/houseless-streets.py -sashegy
+	#qa/houseless-streets.py -nemetvolgy
 	qa/interpolated-addresses.py
 	qa/interpolated-addresses.py -gazdagret
 	qa/streets-nomaxspeed.py
@@ -59,6 +62,14 @@ workdir/streets-sashegy.txt: streets.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602714524/' streets.txt > workdir/streets-sashegy.txt
 
+workdir/streets-nemetvolgy.txt: streets.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3602806940/' streets.txt > workdir/streets-nemetvolgy.txt
+
 workdir/street-housenumbers-sashegy.txt: street-housenumbers.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602714524/' street-housenumbers.txt > workdir/street-housenumbers-sashegy.txt
+
+workdir/street-housenumbers-nemetvolgy.txt: street-housenumbers.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3602806940/' street-housenumbers.txt > workdir/street-housenumbers-nemetvolgy.txt
