@@ -47,7 +47,7 @@ class Finder:
                 if cols[1] in self.streets:
                     self.streetsWithHouses.append(cols[1])
             else:
-                self.warnings.append("WARNING: '%s': house number without addr:street, please fix!" % cols[2])
+                self.warnings.append("WARNING: '%s': house number without addr:street, please fix! (id=%s)" % (cols[2], cols[0]))
         self.streetsWithHouses = sorted(set(self.streetsWithHouses))
         sock.close()
 
