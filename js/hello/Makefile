@@ -1,2 +1,2 @@
 bundle.js: main.js Makefile
-	browserify -o bundle.js main.js
+	browserify --debug -o bundle.js main.js
