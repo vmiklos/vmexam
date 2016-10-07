@@ -1,2 +1,4 @@
 var uniq = require('uniq');
-console.log(uniq([1, 1, 2]));
+var a = [ 1, 1, 2 ];
+a = uniq(a);
+console.log(a);
