@@ -112,6 +112,7 @@ xmlsecurity/inc/certificate.hxx
 xmlsecurity/inc/documentsignaturemanager.hxx
 xmlsecurity/inc/pdfio/pdfdocument.hxx
 xmlsecurity/inc/pdfsignaturehelper.hxx
+xmlsecurity/qa/unit/pdfsigning/pdfsigning.cxx
 xmlsecurity/qa/unit/signing/signing.cxx
 xmlsecurity/source/helper/documentsignaturemanager.cxx
 xmlsecurity/source/helper/ooxmlsecexporter.cxx
