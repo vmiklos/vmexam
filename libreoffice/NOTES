@@ -1302,4 +1302,68 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=100830
 
 ThisComponent.DrawPage(0).FillTransparence = 50
 
+=== 2016-10-14
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=95031
+
+auto spacing should be 0 inside numbering?
+
+seems so, ww8 import has this in SwWW8ImplReader::AppendTextNode()
+
+=== 2016-11-04
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=79329
+
+- TableManager::resolveCurrentTable() is called 2 times with nRows>0 as expected, good
+- the second table's C1 cell is the problem, there the startCell() call throws:
+
+----
+#1  0x00007fffcd9cce95 in SwXParagraph::getString() (this=0x36d2bf0) at /home/vmiklos/git/libreoffice/master/sw/source/core/unocore/unoparagraph.cxx:1386
+#2  0x00007fffca1311d1 in writerfilter::dmapper::XTextRangeToString(com::sun::star::uno::Reference<com::sun::star::text::XTextRange> const&) (textRange=uno::Reference to (SwXParagraph *) 0x36d2c68) at /home/vmiklos/git/libreoffice/master/writerfilter/source/dmapper/util.cxx:38
+#3  0x00007fffca02dc77 in writerfilter::dmapper::DomainMapperTableHandler::startCell(com::sun::star::uno::Reference<com::sun::star::text::XTextRange> const&, std::shared_ptr<writerfilter::dmapper::TablePropertyMap> const&) (this=0x20fff60, start=uno::Reference to (SwXParagraph *) 0x36d2c68, pProps=std::shared_ptr (count 3, weak 0) 0x36c69d0)
+    at /home/vmiklos/git/libreoffice/master/writerfilter/source/dmapper/DomainMapperTableHandler.cxx:1186
+#4  0x00007fffca113419 in writerfilter::dmapper::TableManager::resolveCurrentTable() (this=0x20fe860)
+----
+
+- the problem is specific to the case when the anchored floattable is at the cell start
+
+before conversion:
+
+----
+BigPtrArray of length 19 = {
+[   0] 0x1f22d00            StartNode , 
+[   1] 0x1f1cbf0              EndNode , 
+[   2] 0x1f23f20            StartNode , 
+[   3] 0x1f1b5d0              EndNode , 
+[   4] 0x1f21ee0            StartNode , 
+[   5] 0x1f1b260              EndNode , 
+[   6] 0x1f24ae0            StartNode , 
+[   7] 0x1f22570              EndNode , 
+[   8] 0x1f2afd0            StartNode , 
+[   9]  0x1f549b0            TextNode "", 
+[  10]  0x36d3b00            TextNode "A1", 
+[  11]  0x36bae20            TextNode "B1", 
+[  12]  0x21bfb80            TextNode "A1'", 
+[  13]  0x36d35b0            TextNode "B1'", 
+[  14]  0x21c0ed0            TextNode "C1'", 
+[  15]  0x217fa30            TextNode "D1'", 
+[  16]  0x217f4d0            TextNode "C1", 
+[  17]  0x2181310            TextNode "", 
+[  18] 0x1f23b20              EndNode }
+----
+
+after conversion:
+
+----
+[  24] 0x1f2afd0            StartNode , 
+[  25]  0x1f549b0            TextNode "", 
+[  26]  0x36d3b00            TextNode "A1", 
+[  27]  0x36bae20            TextNode "B1", 
+[  28]  0x217f4d0            TextNode "C1", 
+[  29]  0x2181310            TextNode "", 
+[  30] 0x1f23b20              EndNode }
+----
+
+- tried to replace the cell start/end XTextRange with XTextCursor, no joy, the C1 start still gets invalidated after the text frame conversion
+
 // vim: ft=asciidoc
