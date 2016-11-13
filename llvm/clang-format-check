@@ -23,7 +23,7 @@ fi
 files="$@"
 for file in $files
 do
-    if ! echo $file |grep -q '\(cxx\|cpp\|hxx\|h\)$'; then
+    if ! echo $file |grep -q '\(cxx\|cpp\|hxx\|h\|js\)$'; then
         continue
     fi
     ~/git/llvm/workdir/bin/clang-format $file > $new

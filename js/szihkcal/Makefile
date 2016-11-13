@@ -1,6 +1,8 @@
 -include config.mak
 
 bundle.js: main.js Makefile
+	eslint main.js
+	clang-format-check main.js
 ifneq ($(DEBUG),)
 	browserify --debug -o bundle.js main.js
 else
