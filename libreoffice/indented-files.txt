@@ -119,4 +119,4 @@ xmlsecurity/source/helper/ooxmlsecexporter.cxx
 xmlsecurity/source/helper/ooxmlsecexporter.hxx
 xmlsecurity/source/helper/pdfsignaturehelper.cxx
 xmlsecurity/source/pdfio/pdfdocument.cxx
-xmlsecurity/source/pdfio/pdfverify.cxx
+xmlsecurity/workben/pdfverify.cxx
