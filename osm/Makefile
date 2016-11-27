@@ -1,6 +1,6 @@
 download: update-streets update-house-numbers update-addr-interpolation update-streets-nomaxspeed update-osmose-$(USER)
 
-update-streets: streets.txt workdir/streets-gazdagret.txt
+update-streets: streets.txt workdir/streets-gazdagret.txt workdir/streets-sashegy.txt workdir/streets-nemetvolgy.txt
 	./overpass-query streets.txt > workdir/streets.csv
 	./overpass-query workdir/streets-gazdagret.txt > workdir/streets-gazdagret.csv
 	./overpass-query workdir/streets-sashegy.txt > workdir/streets-sashegy.csv
@@ -9,17 +9,18 @@ update-streets: streets.txt workdir/streets-gazdagret.txt
 update-streets-nomaxspeed: streets-nomaxspeed.txt
 	./overpass-query streets-nomaxspeed.txt > workdir/streets-nomaxspeed.csv
 
-update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdagret.txt
+update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdagret.txt workdir/street-housenumbers-nemetvolgy.txt
 	@mkdir -p workdir
 	./overpass-query street-housenumbers.txt > workdir/street-housenumbers.csv
 	./overpass-query workdir/street-housenumbers-gazdagret.txt > workdir/street-housenumbers-gazdagret.csv
 	./overpass-query workdir/street-housenumbers-sashegy.txt > workdir/street-housenumbers-sashegy.csv
 	./overpass-query workdir/street-housenumbers-nemetvolgy.txt > workdir/street-housenumbers-nemetvolgy.csv
 
-update-addr-interpolation: addr-interpolation.txt workdir/street-housenumbers-gazdagret.txt
+update-addr-interpolation: addr-interpolation.txt workdir/street-housenumbers-gazdagret.txt workdir/street-housenumbers-sashegy.txt
 	@mkdir -p workdir
 	./overpass-query addr-interpolation.txt > workdir/addr-interpolation.csv
 	./overpass-query workdir/addr-interpolation-gazdagret.txt > workdir/addr-interpolation-gazdagret.csv
+	./overpass-query workdir/addr-interpolation-sashegy.txt > workdir/addr-interpolation-sashegy.csv
 
 # At the end this check found no problems, so this is not part of 'make check'.
 update-postcodes:
@@ -41,6 +42,7 @@ check: download
 	qa/houseless-streets.py -nemetvolgy
 	qa/interpolated-addresses.py
 	qa/interpolated-addresses.py -gazdagret
+	#qa/interpolated-addresses.py -sashegy
 	qa/streets-nomaxspeed.py
 
 find-suspicious-steets:
@@ -57,6 +59,10 @@ workdir/street-housenumbers-gazdagret.txt: street-housenumbers.txt
 workdir/addr-interpolation-gazdagret.txt: addr-interpolation.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602713748/' addr-interpolation.txt > workdir/addr-interpolation-gazdagret.txt
+
+workdir/addr-interpolation-sashegy.txt: addr-interpolation.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3602714524/' addr-interpolation.txt > workdir/addr-interpolation-sashegy.txt
 
 workdir/streets-sashegy.txt: streets.txt
 	@mkdir -p workdir
