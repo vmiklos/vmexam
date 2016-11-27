@@ -38,7 +38,7 @@ check: download
 	qa/houseless-streets.py
 	qa/houseless-streets.py -gazdagret
 	qa/houseless-streets.py -sashegy
-	#qa/houseless-streets.py -nemetvolgy
+	qa/houseless-streets.py -nemetvolgy
 	qa/interpolated-addresses.py
 	qa/interpolated-addresses.py -gazdagret
 	qa/streets-nomaxspeed.py
