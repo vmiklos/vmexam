@@ -13,9 +13,9 @@ time sh -c "git pull -r && \
     make build-nocheck &&
     if [ \"$(git config libreoffice.bibisect)\" == "true" ]; then sh ~/git/vmexam/libreoffice/daily.sh; fi && \
     make tags && \
-    make vim-ide-integration && \
     (cd instdir && rm -rf user && ln -s $HOME/.config/libreofficedev/master/user) && \
-    make check &&
+    make check && \
+    make vim-ide-integration && \
     style-check-files" 2>&1 |tee log
 
 # vim:set shiftwidth=4 expandtab:
