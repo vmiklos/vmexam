@@ -1,1 +1,1 @@
-loolwsd/test/test.cpp
+test/test.cpp

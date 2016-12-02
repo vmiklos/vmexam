@@ -1366,4 +1366,56 @@ after conversion:
 
 - tried to replace the cell start/end XTextRange with XTextCursor, no joy, the C1 start still gets invalidated after the text frame conversion
 
+=== 2016-11-18
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=103982
+
+<wp:anchor dist*> attributes can't have negative values? yup, spec is clear on that
+
+so why do we end up with negative values there? e.g. distB="-260350"
+
+it's 0 + there is shadow.
+
+MSO vml -> dml conversion result:
+
+<wp:anchor distT="0" distB="0" distL="114300" distR="114300" ...>
+
+our result:
+
+<wp:anchor behindDoc="0" distT="0" distB="-260350" distL="114300" distR="-146050" ...>
+
+=== 2016-11-25
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=104115
+
+- bugreport claims that this is introduced by a5a836d8c43dc9cebbbf8af39bf0142de603a7c6, but checking with bibisect-50max I can't confirm that
+- my bisect result:
+
+----
+6102f070a0d9a0a066af3da7d00030aaad29df0a is the first bad commit
+commit 6102f070a0d9a0a066af3da7d00030aaad29df0a
+Author: Matthew Francis <mjay.francis@gmail.com>
+Date:   Wed May 27 17:55:56 2015 +0800
+
+    source-hash-6b084f0001fc15112bf3c40d20a0c7096c83b7fe
+    
+    commit 6b084f0001fc15112bf3c40d20a0c7096c83b7fe
+    Author:     Caolán McNamara <caolanm@redhat.com>
+    AuthorDate: Thu Jan 8 20:58:24 2015 +0000
+    Commit:     Caolán McNamara <caolanm@redhat.com>
+    CommitDate: Thu Jan 8 20:58:51 2015 +0000
+    
+        asan: global-buffer-overflow on fdo55736-1.docx
+    
+        Change-Id: If69a57aa9ff011cc670f868cb87b3a1c4d904435
+
+:040000 040000 9c7c5379e8f392bb6076fdfef9e3919386cb61e4 31dbba7551e24234c5ecb1da6356fec144bfde1a M      opt
+----
+
+- before that happened, the docx group shape simply had no children
+- so, again, not really a regression, this never worked, just this problem was hidden by an other one
+- how to fix this? the child shape is a ClosedBezierShape; we can write OpenBezierShape correctly
+  - in the working case, DrawingML::WritePolyPolygon() is invoked, and it beginst an <a:custGeom/>
+    - caller is ShapeExport::WritePolyPolygonShape()
+
 // vim: ft=asciidoc
