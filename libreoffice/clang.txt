@@ -68,10 +68,10 @@ Online (same set of checks as for libclang-vim, except modernize):
 for i in *.cpp; do echo $i; clang-tidy -header-filter=^$PWD.* $i || break; done
 ----
 
-Core:
+Core (exclude tests for now):
 
 ----
-for i in $(grep cxx$ .git/indented-files.cache); do clang-tidy $i || break; done
+for i in $(grep cxx$ .git/indented-files.cache|grep -v '/qa/'); do clang-tidy $i || break; done
 ----
 
 // vim: ft=asciidoc
