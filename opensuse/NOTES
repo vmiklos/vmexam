@@ -129,4 +129,12 @@ libata.force=noncq kernel param seems to improve the situation. More info:
 
 http://www.howtoeverything.net/linux/hardware/ubuntu-freeze-issue-after-ssd-upgrade
 
+=== openSUSE 42.1 -> openSUSE Leap 42.2
+
+- adjust repos trivially (42.1 -> 42.2)
+- mutt again prints "NBOX" for "INBOX"
+  - minimal fix is to build server:mail/mutt r114 from OBS, that's new enough
+    to be fixed, but old enough to be fully backwards-compatible; rpm is at
+    <https://people.freedesktop.org/~vmiklos/2016/mutt-1.5.24-9999.x86_64.rpm>
+
 // vim: ft=asciidoc paste
