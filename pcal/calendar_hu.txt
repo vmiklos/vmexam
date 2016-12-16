@@ -5,6 +5,7 @@
 #
 # add an asterisk (*) to the date to specify a non-work holiday
 
+opt -P a4               # A4, not letter
 opt -a hu               # set hungarian language
 opt -F Monday           # weeks start with Monday
 opt -z 1                # time zone should be GMT+1
