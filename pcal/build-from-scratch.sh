@@ -4,7 +4,7 @@ cd scratch
 src=""
 for i in $(seq -w 1 12)
 do
-	../pcal -f ../calendar_hu.txt $i 2017 > cal$i.ps
+	pcal -f ../calendar_hu.txt $i 2017 > cal$i.ps
 	ps2pdf cal$i.ps
 	convert ../pic/$i.jpg img$i.pdf
 	src="$src img$i.pdf cal$i.pdf"
