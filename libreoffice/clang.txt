@@ -21,6 +21,12 @@ Detect unprefixed members in a directory:
 make -sr COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD/source/filter/ww8/rtf"
 ----
 
+Detect unprefixed members in e.g. sw, without touching anything, this time with YAML output:
+
+----
+make -sr FORCE_COMPILE_ALL=1 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD -yaml" 2>&1 |tee ~/rename.yaml
+----
+
 Example `rename.csv` for a member function rename:
 
 ----

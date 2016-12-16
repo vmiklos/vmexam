@@ -1418,4 +1418,13 @@ Date:   Wed May 27 17:55:56 2015 +0800
   - in the working case, DrawingML::WritePolyPolygon() is invoked, and it beginst an <a:custGeom/>
     - caller is ShapeExport::WritePolyPolygonShape()
 
+=== 2016-12-02
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=104317
+
+- confirm bibisect result from daily.git:
+  - 2582dc5536e303c9f34d3b740914df759972fdf6 / 2016-06-17: source-hash-29e91d5eedd2bf20504ce9ada625d33fec19dc9e should be bad: indeed
+  - c0512e5ea20f89a047edb75df2a55fb243b2998f / 2016-06-16: source-hash-3ab13873ebb6dc4738be2e2184ee4433a2447c1d should be good: indeed -> confirmed
+- need minimal reproducer, probably the non-ASCII chars in the bugdoc are unrelated
+
 // vim: ft=asciidoc
