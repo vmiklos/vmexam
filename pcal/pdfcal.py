@@ -14,6 +14,7 @@
 
 import PyPDF2
 import io
+import locale
 import math
 import subprocess
 import time
@@ -56,7 +57,8 @@ for month in range(1, 13):
     imagePdf = PyPDF2.PdfFileReader(open("images/img" + monthString + ".pdf", "rb"))
     imagePage = imagePdf.getPage(0)
     nextYear = str(time.localtime().tm_year + 1)
-    calPdf = PyPDF2.PdfFileReader(ps2Pdf(pcal(["-f", "calendar_hu.txt", monthString, nextYear])))
+    lang = locale.getlocale()[0].split("_")[0]
+    calPdf = PyPDF2.PdfFileReader(ps2Pdf(pcal(["-f", "calendar_" + lang + ".txt", monthString, nextYear])))
     calPage = calPdf.getPage(0)
 
     # Portrait A4 page: upper half contains the image, lower half contains the
