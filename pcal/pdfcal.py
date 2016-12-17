@@ -10,13 +10,13 @@
 
 # TODO:
 # - don't expect images in .pdf (A4 landscape) format under images/
-# - don't expect month calendars in .ps (A4 landscape) under images/
-# - A5 output instead of A4 output
+# - A5 output instead of A4 output (though 'pdfnup out.pdf' is not that bad)
 
 import PyPDF2
 import io
 import math
 import subprocess
+import time
 
 
 # Converts inPs as a buffer-like object containing PS, and converts it to PDF.
@@ -32,6 +32,18 @@ def ps2Pdf(inPs):
 
     return bufPdf
 
+
+# Invokes 'pcal' with given arguments and returns its output as a buffer-like object.
+def pcal(args):
+    bufPs = io.BytesIO()
+
+    sock = subprocess.Popen(["pcal"] + args, stdout=subprocess.PIPE)
+    bufPs.write(sock.stdout.read())
+    sock.stdout.close()
+    bufPs.seek(0)
+
+    return bufPs
+
 # A4: 210 x 297 mm.
 a4Width = 595.275590551
 a4Height = 841.88976378
@@ -43,7 +55,8 @@ for month in range(1, 13):
 
     imagePdf = PyPDF2.PdfFileReader(open("images/img" + monthString + ".pdf", "rb"))
     imagePage = imagePdf.getPage(0)
-    calPdf = PyPDF2.PdfFileReader(ps2Pdf(open("images/cal" + monthString + ".ps", "rb")))
+    nextYear = str(time.localtime().tm_year + 1)
+    calPdf = PyPDF2.PdfFileReader(ps2Pdf(pcal(["-f", "calendar_hu.txt", monthString, nextYear])))
     calPage = calPdf.getPage(0)
 
     # Portrait A4 page: upper half contains the image, lower half contains the
