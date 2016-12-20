@@ -42,7 +42,7 @@ check: download
 	qa/houseless-streets.py -nemetvolgy
 	qa/interpolated-addresses.py
 	qa/interpolated-addresses.py -gazdagret
-	#qa/interpolated-addresses.py -sashegy
+	qa/interpolated-addresses.py -sashegy
 	qa/streets-nomaxspeed.py
 
 find-suspicious-steets:
