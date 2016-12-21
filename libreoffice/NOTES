@@ -1427,4 +1427,11 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=104317
   - c0512e5ea20f89a047edb75df2a55fb243b2998f / 2016-06-16: source-hash-3ab13873ebb6dc4738be2e2184ee4433a2447c1d should be good: indeed -> confirmed
 - need minimal reproducer, probably the non-ASCII chars in the bugdoc are unrelated
 
+=== 2016-02-16
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=104162
+
+- it's unusual that rRowSeq[0][0] is an empty reference, but that was probably always like this
+- can fix the regression by bailing out early in lcl_emptyRow() in that case
+
 // vim: ft=asciidoc
