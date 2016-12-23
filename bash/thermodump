@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+#
+# This is a simple script to be invoked by cron to get the temperature/humidity
+# of a sensor like
+# <https://ha.privateeyepi.com/store/index.php?route=product/product&path=66&product_id=127>
+# e.g. 2 times on an hour.
+#
+
+cd $(dirname $0)
+
+# Get just the year.
+year="$(date +%Y)"
+# Get ISO8601 date.
+dateTime="$(date -Iseconds)"
+csv="${year}.csv"
+
+if [ ! -e "${csv}" ]; then
+    echo "date-time,temperature,humidity" > ${csv}
+fi
+
+data=$(curl -s -f http://192.168.0.118/temp 2>&1)
+if [ $? != 0 ]; then
+    today="$(date +%Y%m%d)"
+    # Send email only once a day.
+    if ! grep -q "${today}" errors.log; then
+        echo "${data}" |~/bin/pymail -r "$(git config user.email|sed "s/.*@/$(hostname)@/")" -s "thermodump error for ${today}" $(git config user.email)
+        echo "${today}" >> errors.log
+    fi
+fi
+
+# Strip 'NA,' prefix.
+data=$(echo ${data}|sed 's/NA,//')
+
+echo "${dateTime},${data}" >> ${csv}
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
