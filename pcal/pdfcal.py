@@ -10,7 +10,6 @@
 
 # TODO:
 # - don't expect images in .png format under images/
-# - same margin for the image and the calendar part
 # - A5 output instead of A4 output (though 'pdfnup out.pdf' is not that bad)
 
 import PyPDF2
@@ -60,7 +59,10 @@ for month in range(1, 13):
     imagePng = open("images/" + monthString + ".png", "rb")
     # Landscape A4 for the image.
     pageSize = (a4Height, a4Width)
-    layoutFun = img2pdf.get_layout_fun(pageSize, imgsize=None, border=None, fit=None, auto_orient=False)
+    # TOP_OF_CAL_BOXES_PTS in pcal's pcaldefs.h.
+    margin = 85
+    imageSize = ((img2pdf.ImgSize.abs, a4Height - margin), (img2pdf.ImgSize.abs, a4Width - margin))
+    layoutFun = img2pdf.get_layout_fun(pageSize, imageSize, border=None, fit=None, auto_orient=False)
     imageBytes = img2pdf.convert(imagePng, layout_fun=layoutFun)
     imageBuf = io.BytesIO()
     imageBuf.write(imageBytes)
