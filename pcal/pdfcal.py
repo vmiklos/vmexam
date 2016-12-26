@@ -9,9 +9,9 @@
 # pdfcal: builds on top of pcal, adding image support.
 
 # TODO:
-# - don't expect images in .png format under images/
 # - A5 output instead of A4 output (though 'pdfnup out.pdf' is not that bad)
 
+import PIL.ImageFile
 import PyPDF2
 import img2pdf
 import io
@@ -46,6 +46,9 @@ def pcal(args):
 
     return bufPs
 
+# Don't refuse loading certain JPEG files if imagemagick is doing so.
+PIL.ImageFile.LOAD_TRUNCATED_IMAGES = True
+
 # A4: 210 x 297 mm.
 a4Width = 595.275590551
 a4Height = 841.88976378
@@ -56,14 +59,14 @@ for month in range(1, 13):
     monthString = "%02d" % month
 
     # Handle the image part.
-    imagePng = open("images/" + monthString + ".png", "rb")
+    imageJpg = open("images/" + monthString + ".jpg", "rb")
     # Landscape A4 for the image.
     pageSize = (a4Height, a4Width)
     # TOP_OF_CAL_BOXES_PTS in pcal's pcaldefs.h.
     margin = 85
     imageSize = ((img2pdf.ImgSize.abs, a4Height - margin), (img2pdf.ImgSize.abs, a4Width - margin))
     layoutFun = img2pdf.get_layout_fun(pageSize, imageSize, border=None, fit=None, auto_orient=False)
-    imageBytes = img2pdf.convert(imagePng, layout_fun=layoutFun)
+    imageBytes = img2pdf.convert(imageJpg, layout_fun=layoutFun)
     imageBuf = io.BytesIO()
     imageBuf.write(imageBytes)
     imageBuf.seek(0)
@@ -86,5 +89,7 @@ for month in range(1, 13):
     outputPdf.addPage(page)
 
 outputPdf.write(open("out.pdf", "wb"))
+# This can be optimized further by running e.g. 'gs -dNOPAUSE -dBATCH -dSAFER
+# -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -sOutputFile=smaller.pdf out.pdf'.
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
