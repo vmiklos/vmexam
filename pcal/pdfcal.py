@@ -9,10 +9,12 @@
 # pdfcal: builds on top of pcal, adding image support.
 
 # TODO:
-# - don't expect images in .pdf (A4 landscape) format under images/
+# - don't expect images in .png format under images/
+# - same margin for the image and the calendar part
 # - A5 output instead of A4 output (though 'pdfnup out.pdf' is not that bad)
 
 import PyPDF2
+import img2pdf
 import io
 import locale
 import math
@@ -54,7 +56,18 @@ outputPdf = PyPDF2.PdfFileWriter()
 for month in range(1, 13):
     monthString = "%02d" % month
 
-    imagePdf = PyPDF2.PdfFileReader(open("images/img" + monthString + ".pdf", "rb"))
+    # Handle the image part.
+    imagePng = open("images/" + monthString + ".png", "rb")
+    # Landscape A4 for the image.
+    pageSize = (a4Height, a4Width)
+    layoutFun = img2pdf.get_layout_fun(pageSize, imgsize=None, border=None, fit=None, auto_orient=False)
+    imageBytes = img2pdf.convert(imagePng, layout_fun=layoutFun)
+    imageBuf = io.BytesIO()
+    imageBuf.write(imageBytes)
+    imageBuf.seek(0)
+
+    # Handle the calendar part.
+    imagePdf = PyPDF2.PdfFileReader(imageBuf)
     imagePage = imagePdf.getPage(0)
     nextYear = str(time.localtime().tm_year + 1)
     lang = locale.getlocale()[0].split("_")[0]
