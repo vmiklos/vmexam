@@ -8,15 +8,11 @@
 
 # pdfcal: builds on top of pcal, adding image support.
 
-# TODO:
-# - A5 output instead of A4 output (though 'pdfnup out.pdf' is not that bad)
-
 import PIL.ImageFile
 import PyPDF2
 import img2pdf
 import io
 import locale
-import math
 import subprocess
 import time
 
@@ -55,6 +51,7 @@ a4Height = 841.88976378
 
 outputPdf = PyPDF2.PdfFileWriter()
 
+page = None
 for month in range(1, 13):
     monthString = "%02d" % month
 
@@ -79,14 +76,17 @@ for month in range(1, 13):
     calPdf = PyPDF2.PdfFileReader(ps2Pdf(pcal(["-f", "calendar_" + lang + ".txt", monthString, nextYear])))
     calPage = calPdf.getPage(0)
 
-    # Portrait A4 page: upper half contains the image, lower half contains the
-    # month calendar.
-    page = PyPDF2.pdf.PageObject.createBlankPage(outputPdf, width=a4Width, height=a4Height)
-    sqrt2 = 1. / math.sqrt(2)
-    page.mergeScaledTranslatedPage(imagePage, scale=sqrt2, tx=0, ty=a4Height / 2)
-    page.mergeRotatedScaledTranslatedPage(calPage, rotation=-90, scale=sqrt2, tx=0, ty=a4Height / 2)
-
-    outputPdf.addPage(page)
+    # Portrait A4 page: upper half contains first calendar and the first image,
+    # lower half contains the second calendar and the second image.
+    scale = 1. / 2
+    if month % 2 == 1:
+        page = PyPDF2.pdf.PageObject.createBlankPage(outputPdf, width=a4Width, height=a4Height)
+        page.mergeRotatedScaledTranslatedPage(imagePage, rotation=-90, scale=scale, tx=a4Width / 2, ty=a4Height)
+        page.mergeRotatedScaledTranslatedPage(calPage, rotation=180, scale=scale, tx=a4Width / 2, ty=a4Height)
+    else:
+        page.mergeRotatedScaledTranslatedPage(imagePage, rotation=-90, scale=scale, tx=a4Width / 2, ty=a4Height / 2)
+        page.mergeRotatedScaledTranslatedPage(calPage, rotation=180, scale=scale, tx=a4Width / 2, ty=a4Height / 2)
+        outputPdf.addPage(page)
 
 outputPdf.write(open("out.pdf", "wb"))
 # This can be optimized further by running e.g. 'gs -dNOPAUSE -dBATCH -dSAFER
