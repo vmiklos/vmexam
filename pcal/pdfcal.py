@@ -84,7 +84,7 @@ for month in range(1, 13):
     page = PyPDF2.pdf.PageObject.createBlankPage(outputPdf, width=a4Width, height=a4Height)
     sqrt2 = 1. / math.sqrt(2)
     page.mergeScaledTranslatedPage(imagePage, scale=sqrt2, tx=0, ty=a4Height / 2)
-    page.mergeRotatedScaledTranslatedPage(calPage, rotation=-90, scale=sqrt2, tx=0, ty=a4Height / 2, expand=True)
+    page.mergeRotatedScaledTranslatedPage(calPage, rotation=-90, scale=sqrt2, tx=0, ty=a4Height / 2)
 
     outputPdf.addPage(page)
 
