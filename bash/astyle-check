@@ -18,7 +18,8 @@ fi
 
 files="$@"
 if [ -z "$files" ]; then
-	files="$(git diff --name-only --cached)"
+	# gtktpconv uses clang-format
+	files="$(git diff --name-only --cached|grep -v gtktpconv)"
 fi
 for file in $files
 do
