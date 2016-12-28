@@ -6,13 +6,13 @@
 namespace
 {
 
-void initAmount(GtkWidget* box)
+void initAmount(GtkWidget* grid)
 {
     GtkWidget* amount = gtk_entry_new();
-    gtk_box_pack_start(GTK_BOX(box), amount, TRUE, TRUE, 2);
+    gtk_grid_attach(GTK_GRID(grid), amount, 0, 0, 1, 1);
 }
 
-void initUnit(GtkWidget* box, int active)
+void initUnit(GtkWidget* grid, int active, int top)
 {
     GtkWidget* unitCombo = gtk_combo_box_text_new();
     std::initializer_list<std::string> units = {"inch",  "point", "twip",
@@ -25,31 +25,39 @@ void initUnit(GtkWidget* box, int active)
         gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(unitCombo), nullptr,
                                   unit.c_str());
     gtk_combo_box_set_active(GTK_COMBO_BOX(unitCombo), active);
-    gtk_box_pack_start(GTK_BOX(box), unitCombo, TRUE, TRUE, 2);
+    gtk_grid_attach(GTK_GRID(grid), unitCombo, 1, top, 1, 1);
 }
 
-void initResult(GtkWidget* box)
+void initResult(GtkWidget* grid)
 {
     GtkWidget* result = gtk_label_new("");
     gtk_label_set_selectable(GTK_LABEL(result), TRUE);
-    gtk_box_pack_start(GTK_BOX(box), result, TRUE, TRUE, 2);
+    gtk_grid_attach(GTK_GRID(grid), result, 0, 1, 1, 1);
 }
 
-void initConvert(GtkWidget* box)
+void initConvert(GtkWidget* grid)
 {
     GtkWidget* convert = gtk_button_new_with_label("Convert");
-    gtk_box_pack_start(GTK_BOX(box), convert, TRUE, TRUE, 2);
+    gtk_grid_attach(GTK_GRID(grid), convert, 0, 2, 1, 1);
+}
+
+void initQuit(GtkWidget* grid)
+{
+    GtkWidget* quit = gtk_button_new_with_label("Quit");
+    g_signal_connect(quit, "clicked", G_CALLBACK(gtk_main_quit), nullptr);
+    gtk_grid_attach(GTK_GRID(grid), quit, 1, 2, 1, 1);
 }
 
 void initControls(GtkWidget* window)
 {
-    GtkWidget* box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    initAmount(box);
-    initUnit(box, 0);
-    initUnit(box, 1);
-    initResult(box);
-    initConvert(box);
-    gtk_container_add(GTK_CONTAINER(window), box);
+    GtkWidget* grid = gtk_grid_new();
+    initAmount(grid);
+    initUnit(grid, 0, 0);
+    initUnit(grid, 1, 1);
+    initResult(grid);
+    initConvert(grid);
+    initQuit(grid);
+    gtk_container_add(GTK_CONTAINER(window), grid);
 }
 
 } // anonymous namespace
