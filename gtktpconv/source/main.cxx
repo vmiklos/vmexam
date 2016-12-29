@@ -1,5 +1,6 @@
 #include <initializer_list>
 #include <map>
+#include <sstream>
 #include <string>
 
 #include <gtk/gtk.h>
@@ -89,17 +90,28 @@ void convert(GtkWidget* /*widget*/, gpointer userData)
         units[ConversionUnit::Emu] = 1;
     }
 
+    std::string text;
     // Convert to EMU.
-    double amount = std::stod(gtk_entry_get_text(conversion->_amount));
-    auto from = static_cast<ConversionUnit>(
-        gtk_combo_box_get_active(conversion->_from));
-    double emu = amount * units[from];
+    try
+    {
+        double amount = std::stod(gtk_entry_get_text(conversion->_amount));
+        auto from = static_cast<ConversionUnit>(
+            gtk_combo_box_get_active(conversion->_from));
+        double emu = amount * units[from];
 
-    auto to =
-        static_cast<ConversionUnit>(gtk_combo_box_get_active(conversion->_to));
-    double ret = emu / units[to];
+        auto to = static_cast<ConversionUnit>(
+            gtk_combo_box_get_active(conversion->_to));
+        double ret = emu / units[to];
+        text = std::to_string(ret);
+    }
+    catch (const std::invalid_argument& exception)
+    {
+        std::stringstream ss;
+        ss << "invalid argument: " << exception.what();
+        text = ss.str();
+    }
 
-    gtk_label_set_text(conversion->_result, std::to_string(ret).c_str());
+    gtk_label_set_text(conversion->_result, text.c_str());
 }
 
 void initConvert(GtkWidget* grid, Conversion& conversion)
