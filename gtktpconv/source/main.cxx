@@ -1,7 +1,23 @@
 #include <initializer_list>
+#include <map>
 #include <string>
 
 #include <gtk/gtk.h>
+
+/// List of unit types we handle.
+enum class ConversionUnit
+{
+    Inch,
+    Point,
+    Twip,
+
+    M,
+    Cm,
+    Mm,
+    Mm100,
+
+    Emu
+};
 
 /// Hold references to all data needed to perform a conversion.
 class Conversion
@@ -58,8 +74,32 @@ void initResult(GtkWidget* grid, Conversion& conversion)
 void convert(GtkWidget* /*widget*/, gpointer userData)
 {
     Conversion* conversion = static_cast<Conversion*>(userData);
-    // TODO
-    (void)conversion;
+    static std::map<ConversionUnit, double> units;
+    if (units.empty())
+    {
+        units[ConversionUnit::Inch] = 914400.0;
+        units[ConversionUnit::Point] = 914400.0 / 72;
+        units[ConversionUnit::Twip] = 914400.0 / 72 / 20;
+
+        units[ConversionUnit::M] = 360 * 100000;
+        units[ConversionUnit::Cm] = 360 * 1000;
+        units[ConversionUnit::Mm] = 360 * 100;
+        units[ConversionUnit::Mm100] = 360;
+
+        units[ConversionUnit::Emu] = 1;
+    }
+
+    // Convert to EMU.
+    double amount = std::stod(gtk_entry_get_text(conversion->_amount));
+    auto from = static_cast<ConversionUnit>(
+        gtk_combo_box_get_active(conversion->_from));
+    double emu = amount * units[from];
+
+    auto to =
+        static_cast<ConversionUnit>(gtk_combo_box_get_active(conversion->_to));
+    double ret = emu / units[to];
+
+    gtk_label_set_text(conversion->_result, std::to_string(ret).c_str());
 }
 
 void initConvert(GtkWidget* grid, Conversion& conversion)
