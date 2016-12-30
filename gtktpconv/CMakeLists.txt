@@ -1,7 +1,22 @@
 project(gtktpconv)
 cmake_minimum_required(VERSION 2.6)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+if (UNIX)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+elseif(MSVC)
+    set(GTK_BUILD "c:/gtk-build/gtk/Win32/release")
+    set(GTK3_INCLUDE_DIRS "${GTK_BUILD}/include/gtk-3.0"
+                          "${GTK_BUILD}/include/glib-2.0"
+                          "${GTK_BUILD}/include/pango-1.0"
+                          "${GTK_BUILD}/include/cairo"
+                          "${GTK_BUILD}/include/gdk-pixbuf-2.0"
+                          "${GTK_BUILD}/include/atk-1.0"
+                          "${GTK_BUILD}/lib/glib-2.0/include")
+    set(GTK3_LIBRARY_DIRS "${GTK_BUILD}/lib")
+    set(GTK3_LIBRARIES gtk-3.0
+                       glib-2.0
+                       gobject-2.0)
+endif()
 include_directories(${GTK3_INCLUDE_DIRS})
 link_directories(${GTK3_LIBRARY_DIRS})
 add_definitions(${GTK3_CFLAGS_OTHER})
