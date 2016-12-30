@@ -11,4 +11,22 @@ Commit 788356502b4426563202e1ec1e2d71ac1118b0f9 (Python 3.x print on stderr,
 python .\build.py build --msys-dir c:\msys32 --vs-install-path "c:\program files\microsoft visual studio 12.0" gtk3
 ----
 
+=== How to build the code
+
+One possible way:
+
+----
+mkdir workdir
+cd workdir
+cmake ..
+cmake --build . --config Release
+----
+
+and then pack the result:
+
+----
+cd ..
+python windows/pack.py
+----
+
 // vim: ft=asciidoc
