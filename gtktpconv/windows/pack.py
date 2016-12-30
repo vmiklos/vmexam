@@ -42,6 +42,12 @@ def main():
     ]
     for dll in dlls:
         shutil.copyfile("c:/gtk-build/gtk/Win32/release/bin/" + dll, instdir + "/" + dll)
+    sysdlls = [
+        "msvcr120.dll",
+        "msvcp120.dll",
+    ]
+    for dll in sysdlls:
+        shutil.copyfile("c:/windows/system32/" + dll, instdir + "/" + dll)
 
     with zipfile.ZipFile(instdir + ".zip", "w") as zip:
         for root, dirs, files in os.walk("gtktpconv"):
