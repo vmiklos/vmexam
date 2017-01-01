@@ -137,4 +137,14 @@ http://www.howtoeverything.net/linux/hardware/ubuntu-freeze-issue-after-ssd-upgr
     to be fixed, but old enough to be fully backwards-compatible; rpm is at
     <https://people.freedesktop.org/~vmiklos/2016/mutt-1.5.24-9999.x86_64.rpm>
 
+=== openSUSE 13.2 -> openSUSE Leap 42.2 for ARMV7
+
+- images: http://download.opensuse.org/ports/armv7hl/distribution/leap/42.2/appliances/
+  - openSUSE-Leap42.2-ARM-JeOS-cuboxi.armv7l-2016.11.25-Build1.8.raw.xz is what I used
+- boot from raid1, still need to change:
+  - /boot/boot.script, add RAID1 UUIDs + run mkimage
+  - /etc/dracut.conf.d/01-dist.conf:
+    - copy from /usr, comment out hostonly=
+    - also 'add_drivers+="ci_hdrc_imx"' is needed for some reason to see the USB raid1 HDDs + run dracut
+
 // vim: ft=asciidoc paste
