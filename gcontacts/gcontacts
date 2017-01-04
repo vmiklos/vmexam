@@ -60,11 +60,13 @@ class GContacts(object):
                 for fullNameNode in fullNameNodes:
                     return fullNameNode.childNodes[0].wholeText
 
-        def getEmail(entryNode):
+        def getEmails(entryNode):
+            emails = []
             emailNodes = [i for i in entryNode.childNodes if i.localName == "email"]
             for emailNode in emailNodes:
                 if emailNode.hasAttribute("address"):
-                    return emailNode.getAttribute("address")
+                    emails.append(emailNode.getAttribute("address"))
+            return emails
 
         def match(pattern, name, email):
             if email:
@@ -86,9 +88,10 @@ class GContacts(object):
         matches = []
         for contactNode in contactNodes:
             name = getName(contactNode)
-            email = getEmail(contactNode)
-            if match(patternString, name, email):
-                matches.append(Match(name, email))
+            emails = getEmails(contactNode)
+            for email in emails:
+                if match(patternString, name, email):
+                    matches.append(Match(name, email))
         matches = sorted(set(matches))
         for i in matches:
             lineString = '"%s" <%s>' % (i.name, i.email)
