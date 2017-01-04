@@ -128,7 +128,6 @@ class GContacts(object):
                 lines = contacts.ToString().split('\n')
                 sock.write("""<?xml version="1.0" encoding="UTF-8"?>\n""")
                 sock.write(lines[0] + "\n")
-                footer = lines[-1]
             print("Downloading feed #" + str(count) + "...")
             count += 1
             for contact in contacts.entry:
@@ -153,13 +152,13 @@ gcontacts <pattern>""")
         sys.exit(1)
 
     try:
-        opts, args = getopt.getopt(argv, "np:tuq", ["non-interactive", "profile=", "require-title", "update", "quiet"])
+        opts, dummy = getopt.getopt(argv, "np:tuq", ["non-interactive", "profile=", "require-title", "update", "quiet"])
     except getopt.GetoptError:
         usage()
     update = False
     interactive = True
     optIndex = 0
-    for opt, arg in opts:
+    for opt, dummy in opts:
         if opt in ("-u", "--update"):
             update = True
         elif opt in ("-t", "--require-title"):
