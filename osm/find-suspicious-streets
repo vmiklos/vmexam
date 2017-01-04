@@ -102,14 +102,13 @@ for streetName in streetNames:
     referenceHouseNumbers = getHouseNumbersFromLst(streetName)
     osmHouseNumbers = getHouseNumbersFromCsv(streetName)
     onlyInReference = getOnlyInFirst(referenceHouseNumbers, osmHouseNumbers)
-    length = len(onlyInReference)
-    if length > 0:
-        results.append((streetName, length))
+    results.append((streetName, onlyInReference))
 
 # Sort by length.
-results.sort(key=lambda result: result[1], reverse=True)
+results.sort(key=lambda result: len(result[1]), reverse=True)
 
 for result in results:
-    print("%s\t%s" % (result[0], result[1]))
+    if len(result[1]):
+        print("%s\t%s" % (result[0], len(result[1])))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
