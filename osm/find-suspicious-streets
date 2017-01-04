@@ -5,11 +5,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-# Usage:
-# ./find-suspicious-streets |sort -r -t $'\t' -n -k 2 > out
 # What it does:
 # Tries to find streets which do have at least one house number, but suspicious
-# as lots of house numbers are supposed to be missing.
+# as lots of house numbers are probably missing.
 
 import sys
 
@@ -96,6 +94,8 @@ blacklist = [
     "Dayka Gábor utca",
 ]
 
+results = []
+
 for streetName in streetNames:
     if streetName in blacklist:
         continue
@@ -104,6 +104,12 @@ for streetName in streetNames:
     onlyInReference = getOnlyInFirst(referenceHouseNumbers, osmHouseNumbers)
     length = len(onlyInReference)
     if length > 0:
-        print("%s\t%s" % (streetName, length))
+        results.append((streetName, length))
+
+# Sort by length.
+results.sort(key=lambda result: result[1], reverse=True)
+
+for result in results:
+    print("%s\t%s" % (result[0], result[1]))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
