@@ -11,6 +11,15 @@
 # Tries to find streets which do have at least one house number, but suspicious
 # as lots of house numbers are supposed to be missing.
 
+import sys
+
+
+def getArea():
+    if len(sys.argv) > 1:
+        return sys.argv[1]
+    else:
+        return str()
+
 
 def simplify(s):
     s = s.replace('Á', 'A').replace('á', 'a')
@@ -28,7 +37,7 @@ def simplify(s):
 
 def getHouseNumbersFromCsv(streetName):
     houseNumbers = []
-    streetHouseNumbersSock = open("workdir/street-housenumbers.csv")
+    streetHouseNumbersSock = open("workdir/street-housenumbers%s.csv" % getArea())
     first = True
     for line in streetHouseNumbersSock.readlines():
         if first:
@@ -64,7 +73,7 @@ def getOnlyInFirst(first, second):
             ret.append(i)
     return ret
 
-streetsSock = open("workdir/streets.csv")
+streetsSock = open("workdir/streets%s.csv" % getArea())
 streetNames = []
 firstStreet = True
 for streetLine in streetsSock.readlines():
@@ -93,6 +102,8 @@ for streetName in streetNames:
     referenceHouseNumbers = getHouseNumbersFromLst(streetName)
     osmHouseNumbers = getHouseNumbersFromCsv(streetName)
     onlyInReference = getOnlyInFirst(referenceHouseNumbers, osmHouseNumbers)
-    print("%s\t%s" % (streetName, len(onlyInReference)))
+    length = len(onlyInReference)
+    if length > 0:
+        print("%s\t%s" % (streetName, length))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
