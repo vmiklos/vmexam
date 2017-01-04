@@ -10,6 +10,7 @@
 # as lots of house numbers are probably missing.
 
 import sys
+import re
 
 
 def getArea():
@@ -46,6 +47,10 @@ def getHouseNumbersFromCsv(streetName):
             continue
         if tokens[1] != streetName:
             continue
+        houseNumber = tokens[2]
+        if "-" in houseNumber:
+            l = houseNumber.split("-")
+            houseNumbers += l
         houseNumbers.append(tokens[2])
     streetHouseNumbersSock.close()
     return sorted(set(houseNumbers))
@@ -59,7 +64,18 @@ def getHouseNumbersFromLst(streetName):
     for line in sock.readlines():
         line = line.strip()
         if line.startswith(prefix):
-            houseNumbers.append(line.replace(prefix, ''))
+            houseNumber = line.replace(prefix, '')
+            n = int(re.sub(r"([0-9]+).*", r"\1", houseNumber))
+            if n < 1 or n > 1000 or ("/" in houseNumber):
+                # Insane, ignore.
+                # "/" would not be insane, but "1/a" is represented as "1a",
+                # and the rest is insane.
+                continue
+            if "-" in houseNumber:
+                l = houseNumber.split("-")
+                houseNumbers += l
+            else:
+                houseNumbers.append(houseNumber)
     sock.close()
     return sorted(set(houseNumbers))
 
@@ -109,6 +125,9 @@ results.sort(key=lambda result: len(result[1]), reverse=True)
 
 for result in results:
     if len(result[1]):
+        # House number, # of onlyInReference items.
         print("%s\t%s" % (result[0], len(result[1])))
+        # onlyInReference items.
+        print(result[1])
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
