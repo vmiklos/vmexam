@@ -1451,4 +1451,17 @@ docx has this:
 
 so what RTF does matches docx, but probably the style madness is too agressive
 
+=== 2016-01-06
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=104150
+
+- why does Word ignore <w:background>?
+- recursive diff -> <w:displayBackgroundShape/> is present in settings.xml when Word respects the background color -> implemented the same
+
+<<<
+
+Problematic bugs:
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=104556 "FILEOPEN DOCX: Misplaced vertical red line (drawing object)" -- gave it a try, no luck so far
+
 // vim: ft=asciidoc
