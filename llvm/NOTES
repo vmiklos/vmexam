@@ -96,4 +96,53 @@ cmake -G 'Unix Makefiles' -DCMAKE_INSTALL_PREFIX=$(pwd)/../instdir -DCMAKE_BUILD
 
 - documentation on YAML foo is at `docs/YamlIO.rst` in llvm.git.
 
+== Bugs
+
+== 2017-01-07: bisecting a clang-tidy problem
+
+clang-tidy filter/source/msfilter/rtfutil.cxx
+crashes with this:
+
+----
+'Assume' not implemented for this NonLoc
+UNREACHABLE executed at /home/vmiklos/git/llvm/tools/clang/lib/StaticAnalyzer/Core/SimpleConstraintManager.cpp:126!
+Aborted (core dumped)
+----
+
+- good: llvm.git 86aa5b83af58146cac15e56b7f684bc0556cc86f, clang.git 325ff3614675cd2de15e8876b82adf981db7b94c, clang-tools-extra.git 0dfe4365327e0613575dc3e6e945481cd24e843f
+- bad: llvm.git 2f4b616c0b4e1dba679a147eec66519d452635d4, clang.git 806e89955b1738959415d948a51c07ee8d87ed7c, clang-tools-exrra.git f4254637b448c0ddda71aee2f00cb773ba069fc1
+- update to latest master on 2017-01-07: still bad
+- https://github.com/llvm-project/llvm-project provides a way to bisect across the 3 git repos
+
+bisect in llvm-project.git:
+- 2ab34b9ddc174ad0229c340d2e0998539d7fca4b (Add permil2ps buildvector combine test, 2016-12-10) is good
+- 699ff8840181747fb5218f787758c3c72db1a0bd (revert first commit . removing empty line in X86.h, 2016-12-21) is bad
+- [b328ab28799db3ddbda94105e41415acae0040c9] The order of the loops defines... (2016-12-15) is bad
+- [f5f6c21367b88b6c6fa1dbd074389832f2be7a43] [libFuzzer] Fix bug in detecting timeouts when input string is empty. (2016-12-13) is good
+- [8cd6c84a893a00b707ee16f2075cf31b5daebaf0] Include <cstdarg> in PrettyStackTrace.cpp, fixing the bots. (2016-12-14) is bad
+- [1aaf6823cfbeb59e44322e4e7fa4fd68d4406cb7] P0217R3: Allow by-value structured binding of arrays. (2016-12-14) is bad
+- [bfeca953922bf90cf6f1ccfb6f03bc87fa7dbeeb] Re-land "[SCEVExpander] Use llvm data structures; NFC" (2016-12-13) is good
+- [85b9e0d89632f8d569d65d941f8f7750c45233cf] [CodeGen][ObjC] Emit objc_unsafeClaimAutoreleasedReturnValue... (2016-12-13) is good
+- [5c3a94d2cacd0f8d7295a416a8abe7b12c2392b4] When emitting a multidimensional array copy... (2016-12-14) is bad
+- [f67d33b6ef0f9e4c1cd84581c2080228cf185c51] [llvm] Iterate SmallPtrSet in reverse order to... (2016-12-14) is bad
+- [5938113681837135a133a779d5f0e76c414198e2] Remove custom handling of array copies in lambda... (2016-12-14) is bad
+- [7877b3b9b158a93d0bd6a40305e7211c2dba5df6] [ARM] Fix typo in checking prefix (2016-12-14) is good
+
+----
+5938113681837135a133a779d5f0e76c414198e2 is the first bad commit
+commit 5938113681837135a133a779d5f0e76c414198e2
+Author: Richard Smith <richard-llvm@metafoo.co.uk>
+Date:   Wed Dec 14 00:03:17 2016 +0000
+
+    Remove custom handling of array copies in lambda by-value array capture and
+    copy constructors of classes with array members, instead using
+    ArrayInitLoopExpr to represent the initialization loop.
+    
+    This exposed a bug in the static analyzer where it was unable to differentiate
+    between zero-initialized and unknown array values, which has also been fixed
+    here.
+
+:040000 040000 876b416ac9168239b21cceefffc1da46d89c8424 ed30c61c2b9049285621eba3e33ac172ac5b787e M      clang
+----
+
 // vim: ft=asciidoc
