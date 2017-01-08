@@ -38,11 +38,12 @@ if (UNIX)
     # tpconv unit test.
     enable_testing()
 
-    add_executable(testtpconv qa/test.cxx)
+    add_executable(testtpconv qa/test.cxx qa/tpconvtest.cxx)
     target_include_directories(testtpconv PRIVATE ${CPPUNIT_INCLUDE_DIRS})
-    target_link_libraries(testtpconv tpconv ${CPPUNIT_LIBRARY_DIRS})
+    target_link_libraries(testtpconv tpconv ${CPPUNIT_LIBRARIES})
     add_test(tpconv testtpconv)
 
+    set(CMAKE_CTEST_COMMAND ctest -V)
     add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
     add_dependencies(check testtpconv)
 
