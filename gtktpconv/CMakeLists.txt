@@ -18,8 +18,8 @@ elseif(MSVC)
     set(GTK3_LIBRARIES gtk-3.0
                        glib-2.0
                        gobject-2.0)
+    link_directories(${GTK3_LIBRARY_DIRS})
 endif()
-link_directories(${GTK3_LIBRARY_DIRS})
 
 # tpconv library.
 add_library(tpconv source/lib.cxx)
