@@ -1,6 +1,8 @@
-= Windows build notes
+= gtktpconv
 
-== How to build Gtk3 itself
+== Windows build notes
+
+=== How to build Gtk3 itself
 
 There doesn't seem to be a ready-to-use installer, so need to build it locally.
 Commit 788356502b4426563202e1ec1e2d71ac1118b0f9 (Python 3.x print on stderr,
