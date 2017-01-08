@@ -3,6 +3,7 @@
 time sh -ce "git pull -r
     rm -rf workdir
     mkdir -p workdir
+    ln -sf workdir/compile_commands.json
     cd workdir
 
     CC=clang CXX=clang++ cmake -DCMAKE_INSTALL_PREFIX=$(pwd)/instdir -DENABLE_WERROR=ON -DCMAKE_BUILD_TYPE=Debug  ..
