@@ -19,23 +19,28 @@ elseif(MSVC)
                        glib-2.0
                        gobject-2.0)
 endif()
-include_directories(${CMAKE_SOURCE_DIR}/inc ${GTK3_INCLUDE_DIRS})
 link_directories(${GTK3_LIBRARY_DIRS})
 add_definitions(${GTK3_CFLAGS_OTHER})
 
 # tpconv library.
 add_library(tpconv source/lib.cxx)
+target_include_directories(tpconv PUBLIC ${CMAKE_SOURCE_DIR}/inc)
 
 # tpconv Gtk UI.
 add_executable(gtktpconv source/main.cxx)
+target_include_directories(gtktpconv PRIVATE ${GTK3_INCLUDE_DIRS})
 target_link_libraries(gtktpconv tpconv ${GTK3_LIBRARIES})
 
-if (NOT MSVC)
+if (UNIX)
+    # CppUnit external.
+    pkg_check_modules(CPPUNIT REQUIRED cppunit)
+
     # tpconv unit test.
     enable_testing()
 
     add_executable(testtpconv qa/test.cxx)
-    target_link_libraries(testtpconv tpconv)
+    target_include_directories(testtpconv PRIVATE ${CPPUNIT_INCLUDE_DIRS})
+    target_link_libraries(testtpconv tpconv ${CPPUNIT_LIBRARY_DIRS})
     add_test(tpconv testtpconv)
 
     add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
