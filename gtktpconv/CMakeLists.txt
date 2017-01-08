@@ -16,10 +16,9 @@ elseif(MSVC)
                           "${GTK_BUILD}/include/atk-1.0"
                           "${GTK_BUILD}/lib/glib-2.0/include")
     set(GTK3_LIBRARY_DIRS "${GTK_BUILD}/lib")
-    set(GTK3_LIBRARIES gtk-3.0
-                       glib-2.0
-                       gobject-2.0)
-    link_directories(${GTK3_LIBRARY_DIRS})
+    set(GTK3_LIBRARIES "${GTK_BUILD}/lib/gtk-3.0.lib"
+                       "${GTK_BUILD}/lib/glib-2.0.lib"
+                       "${GTK_BUILD}/lib/gobject-2.0.lib")
 endif()
 
 # tpconv library.
