@@ -20,7 +20,6 @@ elseif(MSVC)
                        gobject-2.0)
 endif()
 link_directories(${GTK3_LIBRARY_DIRS})
-add_definitions(${GTK3_CFLAGS_OTHER})
 
 # tpconv library.
 add_library(tpconv source/lib.cxx)
@@ -28,6 +27,7 @@ target_include_directories(tpconv PUBLIC ${CMAKE_SOURCE_DIR}/inc)
 
 # tpconv Gtk UI.
 add_executable(gtktpconv source/main.cxx)
+target_compile_options(gtktpconv PRIVATE ${GTK3_CFLAGS_OTHER})
 target_include_directories(gtktpconv PRIVATE ${GTK3_INCLUDE_DIRS})
 target_link_libraries(gtktpconv tpconv ${GTK3_LIBRARIES})
 
