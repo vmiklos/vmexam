@@ -20,7 +20,7 @@ endif()
 include_directories(${GTK3_INCLUDE_DIRS})
 link_directories(${GTK3_LIBRARY_DIRS})
 add_definitions(${GTK3_CFLAGS_OTHER})
-add_executable(gtktpconv source/main.cxx)
+add_executable(gtktpconv source/main.cxx source/lib.cxx)
 target_link_libraries(gtktpconv ${GTK3_LIBRARIES})
 
 # MSVC supports (a subset of) C++11 without any switches.
