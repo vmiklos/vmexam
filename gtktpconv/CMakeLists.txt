@@ -48,6 +48,24 @@ if (UNIX)
     add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
     add_dependencies(check testtpconv)
 
+    # Documentation.
+    find_program(ASCIIDOC_EXECUTABLE NAMES asciidoc)
+    set(DOC_NAMES docs/README)
+    set(DOC_FILES)
+    foreach(m IN LISTS DOC_NAMES)
+      set(mf ${CMAKE_BINARY_DIR}/${m}.html)
+      set(ms ${CMAKE_SOURCE_DIR}/${m}.txt)
+      add_custom_command(OUTPUT ${mf}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/docs
+        COMMAND ${ASCIIDOC_EXECUTABLE} -o ${mf} ${ms}
+        DEPENDS ${ms}
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Building manpage ${mf}"
+        VERBATIM)
+      list(APPEND MAN_FILES ${mf})
+    endforeach()
+    add_custom_target(man ALL DEPENDS ${MAN_FILES})
+
     # MSVC supports (a subset of) C++11 without any switches.
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
