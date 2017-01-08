@@ -1,6 +1,7 @@
 project(gtktpconv)
 cmake_minimum_required(VERSION 2.6)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+option(ENABLE_WERROR "Fail and stop if a warning is triggered." OFF)
 
 # Gtk external.
 if (UNIX)
@@ -50,7 +51,9 @@ if (UNIX)
     # MSVC supports (a subset of) C++11 without any switches.
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+    if (ENABLE_WERROR)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+    endif()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
 endif()
