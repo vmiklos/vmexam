@@ -17,13 +17,23 @@ elseif(MSVC)
                        glib-2.0
                        gobject-2.0)
 endif()
-include_directories(${GTK3_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR}/inc ${GTK3_INCLUDE_DIRS})
 link_directories(${GTK3_LIBRARY_DIRS})
 add_definitions(${GTK3_CFLAGS_OTHER})
 
 add_library(tpconv source/lib.cxx)
+
 add_executable(gtktpconv source/main.cxx)
 target_link_libraries(gtktpconv tpconv ${GTK3_LIBRARIES})
+
+enable_testing()
+
+add_executable(testtpconv qa/test.cxx)
+target_link_libraries(testtpconv tpconv)
+add_test(tpconv testtpconv)
+
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
+add_dependencies(check testtpconv)
 
 # MSVC supports (a subset of) C++11 without any switches.
 if (NOT MSVC)
