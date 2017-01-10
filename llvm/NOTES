@@ -145,4 +145,7 @@ Date:   Wed Dec 14 00:03:17 2016 +0000
 :040000 040000 876b416ac9168239b21cceefffc1da46d89c8424 ed30c61c2b9049285621eba3e33ac172ac5b787e M      clang
 ----
 
+- so this is probably a regression from r289618
+- tracked as https://llvm.org/bugs/show_bug.cgi?id=31592
+
 // vim: ft=asciidoc
