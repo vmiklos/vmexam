@@ -23,11 +23,11 @@ elseif(MSVC)
 endif()
 
 # tpconv library.
-add_library(tpconv source/lib.cxx)
-target_include_directories(tpconv PUBLIC ${CMAKE_SOURCE_DIR}/inc)
+add_library(tpconv core/source/lib.cxx)
+target_include_directories(tpconv PUBLIC "${CMAKE_SOURCE_DIR}/core/include")
 
 # tpconv Gtk UI.
-add_executable(gtktpconv source/main.cxx)
+add_executable(gtktpconv gtk/main.cxx)
 target_compile_options(gtktpconv PRIVATE ${GTK3_CFLAGS_OTHER})
 target_include_directories(gtktpconv PRIVATE ${GTK3_INCLUDE_DIRS})
 target_link_libraries(gtktpconv tpconv ${GTK3_LIBRARIES})
@@ -39,7 +39,7 @@ if (UNIX)
     # tpconv unit test.
     enable_testing()
 
-    add_executable(testtpconv qa/test.cxx qa/tpconvtest.cxx)
+    add_executable(testtpconv core/qa/test.cxx core/qa/tpconvtest.cxx)
     target_include_directories(testtpconv PRIVATE ${CPPUNIT_INCLUDE_DIRS})
     target_link_libraries(testtpconv tpconv ${CPPUNIT_LIBRARIES})
     add_test(tpconv testtpconv)
