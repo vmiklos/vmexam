@@ -10,6 +10,9 @@
 #include <string>
 
 #include <gtk/gtk.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #include "lib.hxx"
 
@@ -137,5 +140,14 @@ int main(int argc, char** argv)
 
     return 0;
 }
+
+#ifdef _WIN32
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
+{
+    int argc = 0;
+    char* argv = "";
+    return main(argc, &argv);
+}
+#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -36,7 +36,7 @@ endif()
 add_subdirectory(core)
 
 # tpconv Gtk UI.
-add_executable(gtktpconv gtk/main.cxx)
+add_executable(gtktpconv WIN32 gtk/main.cxx)
 target_compile_options(gtktpconv PRIVATE ${GTK3_CFLAGS_OTHER})
 target_include_directories(gtktpconv PRIVATE ${GTK3_INCLUDE_DIRS})
 target_link_libraries(gtktpconv tpconv ${GTK3_LIBRARIES})
