@@ -22,9 +22,18 @@ elseif(MSVC)
                        "${GTK_BUILD}/lib/gobject-2.0.lib")
 endif()
 
-# tpconv library.
-add_library(tpconv core/source/lib.cxx)
-target_include_directories(tpconv PUBLIC "${CMAKE_SOURCE_DIR}/core/include")
+if (UNIX)
+    # MSVC supports (a subset of) C++11 without any switches.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+    if (ENABLE_WERROR)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+    endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
+endif()
+
+add_subdirectory(core)
 
 # tpconv Gtk UI.
 add_executable(gtktpconv gtk/main.cxx)
@@ -65,15 +74,6 @@ if (UNIX)
       list(APPEND MAN_FILES ${mf})
     endforeach()
     add_custom_target(man ALL DEPENDS ${MAN_FILES})
-
-    # MSVC supports (a subset of) C++11 without any switches.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
-    if (ENABLE_WERROR)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
-    endif()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
 endif()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
