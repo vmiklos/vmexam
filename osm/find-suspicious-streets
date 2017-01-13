@@ -21,6 +21,7 @@ def getArea():
 
 
 def simplify(s):
+    """ Handles normalization of a street name."""
     s = s.replace('Á', 'A').replace('á', 'a')
     s = s.replace('É', 'E').replace('é', 'e')
     s = s.replace('Í', 'I').replace('í', 'i')
@@ -33,6 +34,14 @@ def simplify(s):
     s = s.replace(' ', '_').lower()
     return s
 
+
+def normalize(houseNumber):
+    """Strips down string input to bare minimum that can be interpreted as an
+    actual number. Think about a/b, a-b, and so on."""
+    n = int(re.sub(r"([0-9]+).*", r"\1", houseNumber))
+    if n < 1 or n > 1000:
+        return None
+    return str(n)
 
 def getHouseNumbersFromCsv(streetName):
     houseNumbers = []
@@ -47,11 +56,9 @@ def getHouseNumbersFromCsv(streetName):
             continue
         if tokens[1] != streetName:
             continue
-        houseNumber = tokens[2]
-        if "-" in houseNumber:
-            l = houseNumber.split("-")
-            houseNumbers += l
-        houseNumbers.append(tokens[2])
+        houseNumber = normalize(tokens[2])
+        if houseNumber:
+            houseNumbers.append(houseNumber)
     streetHouseNumbersSock.close()
     return sorted(set(houseNumbers))
 
@@ -64,17 +71,8 @@ def getHouseNumbersFromLst(streetName):
     for line in sock.readlines():
         line = line.strip()
         if line.startswith(prefix):
-            houseNumber = line.replace(prefix, '')
-            n = int(re.sub(r"([0-9]+).*", r"\1", houseNumber))
-            if n < 1 or n > 1000 or ("/" in houseNumber):
-                # Insane, ignore.
-                # "/" would not be insane, but "1/a" is represented as "1a",
-                # and the rest is insane.
-                continue
-            if "-" in houseNumber:
-                l = houseNumber.split("-")
-                houseNumbers += l
-            else:
+            houseNumber = normalize(line.replace(prefix, ''))
+            if houseNumber:
                 houseNumbers.append(houseNumber)
     sock.close()
     return sorted(set(houseNumbers))
