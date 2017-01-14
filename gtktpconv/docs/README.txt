@@ -28,7 +28,7 @@ and then pack the result:
 
 ----
 cd ..
-python windows/pack.py
+python scripts/pack.py
 ----
 
 == Android notes
