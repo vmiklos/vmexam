@@ -31,7 +31,7 @@ PARSE_EXTS=true
 
 # file types to parse. Only effective when PARSE_EXTS is true.
 # FILE_EXTS=".c .h .cpp .hpp"
-FILE_EXTS=".c .h .cpp .hpp .cc .hh .cxx .hxx .m"
+FILE_EXTS=".c .h .cpp .hpp .cc .hh .cxx .hxx .m .java"
 
 ##################################################################
 # There should be no need to change anything below this line.
