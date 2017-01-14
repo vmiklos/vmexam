@@ -31,4 +31,25 @@ cd ..
 python windows/pack.py
 ----
 
+== Android notes
+
+=== How to set up local properties
+
+Write something like to `android/local.properties`:
+
+----
+ndk.dir=/home/user/Android/Sdk/ndk-bundle
+sdk.dir=/home/user/Android/Sdk
+----
+
+=== How to build the code
+
+Plug in your Android device, then:
+
+----
+./gradlew installDebug
+----
+
+should build and install the code.
+
 // vim: ft=asciidoc
