@@ -11,3 +11,6 @@ check-osm:
 
 check-mirror:
 	cd mirror && $(MAKE) check
+
+hooks:
+	cd .git/hooks && ln -sf ../../bash/clang-format-check pre-commit

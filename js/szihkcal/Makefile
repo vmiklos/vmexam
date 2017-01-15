@@ -10,4 +10,3 @@ endif
 
 check:
 	eslint main.js
-	clang-format-check main.js

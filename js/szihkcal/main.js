@@ -24,7 +24,8 @@ var tasks = [
 ];
 
 /// Look up name as a key in the query string.
-function getParameterByName(name) {
+function getParameterByName(name)
+{
     name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
     var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
         results = regex.exec(location.search);
@@ -32,7 +33,8 @@ function getParameterByName(name) {
 }
 
 /// Formats the calendar.
-function formatcal() {
+function formatcal()
+{
     var table = document.createElement('table');
     table.className = 'month';
     document.getElementsByTagName('body')[0].appendChild(table);
@@ -66,9 +68,12 @@ function formatcal() {
             var td = document.createElement('td');
             td.className = 'day';
             tr.appendChild(td);
-            if (day == 0) {
+            if (day == 0)
+            {
                 td.appendChild(document.createTextNode(' '));
-            } else {
+            }
+            else
+            {
                 td.appendChild(document.createTextNode(day));
                 td.appendChild(document.createElement('br'));
                 var task = tasks[Math.floor(Math.random() * tasks.length)];
@@ -80,7 +85,8 @@ function formatcal() {
 
 domready(function() {
     var seed = getParameterByName('seed');
-    if (seed) {
+    if (seed)
+    {
         seedRandom(seed, {global : true});
     }
     formatcal();
