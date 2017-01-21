@@ -1458,6 +1458,16 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=104150
 - why does Word ignore <w:background>?
 - recursive diff -> <w:displayBackgroundShape/> is present in settings.xml when Word respects the background color -> implemented the same
 
+=== 2016-01-20
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=104334
+
+Regression from d635b351849b8b576c907abf22500d0fa89ab54f
+
+field code in the bugdoc is " STYLEREF 1 \s ", but \s isn't a documented parameter
+
+" STYLEREF 1 \* MERGEFORMAT " is what we can handle correctly
+
 <<<
 
 Problematic bugs:
