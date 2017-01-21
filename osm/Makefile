@@ -43,7 +43,7 @@ check: download
 	qa/houseless-streets.py -gazdagret
 	qa/houseless-streets.py -sashegy
 	qa/houseless-streets.py -nemetvolgy
-	#qa/houseless-streets.py -martonhegy
+	qa/houseless-streets.py -martonhegy
 	qa/interpolated-addresses.py
 	qa/interpolated-addresses.py -gazdagret
 	qa/interpolated-addresses.py -sashegy
