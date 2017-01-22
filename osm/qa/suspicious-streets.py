@@ -11,6 +11,7 @@
 
 import sys
 import re
+import unittest
 
 
 def getArea():
@@ -42,6 +43,7 @@ def normalize(houseNumber):
     if n < 1 or n > 1000:
         return None
     return str(n)
+
 
 def getHouseNumbersFromCsv(streetName):
     houseNumbers = []
@@ -85,47 +87,61 @@ def getOnlyInFirst(first, second):
             ret.append(i)
     return ret
 
-streetsSock = open("workdir/streets%s.csv" % getArea())
-streetNames = []
-firstStreet = True
-for streetLine in streetsSock.readlines():
-    if firstStreet:
-        firstStreet = False
-        continue
-    streetTokens = streetLine.strip().split('\t')
-    if len(streetTokens) > 1:
-        streetNames.append(streetTokens[1])
-streetsSock.close()
-streetNames = sorted(set(streetNames))
+class Finder:
+    def __init__(self):
+        streetsSock = open("workdir/streets%s.csv" % getArea())
+        streetNames = []
+        firstStreet = True
+        for streetLine in streetsSock.readlines():
+            if firstStreet:
+                firstStreet = False
+                continue
+            streetTokens = streetLine.strip().split('\t')
+            if len(streetTokens) > 1:
+                streetNames.append(streetTokens[1])
+        streetsSock.close()
+        streetNames = sorted(set(streetNames))
 
-# These streets are checked manually already or known to be only partly in the area -> ignore.
-blacklist = [
-    "Budaörsi út",
-    "Beregszász út",
-    "Brassó út",
-    "Törökbálinti út",
-    "Sasadi út",
-    "Dayka Gábor utca",
-]
+        # These streets are checked manually already or known to be only partly in the area -> ignore.
+        blacklist = [
+            "Budaörsi út",
+            "Beregszász út",
+            "Brassó út",
+            "Törökbálinti út",
+            "Sasadi út",
+            "Dayka Gábor utca",
+        ]
 
-results = []
+        results = []
 
-for streetName in streetNames:
-    if streetName in blacklist:
-        continue
-    referenceHouseNumbers = getHouseNumbersFromLst(streetName)
-    osmHouseNumbers = getHouseNumbersFromCsv(streetName)
-    onlyInReference = getOnlyInFirst(referenceHouseNumbers, osmHouseNumbers)
-    results.append((streetName, onlyInReference))
+        for streetName in streetNames:
+            if streetName in blacklist:
+                continue
+            referenceHouseNumbers = getHouseNumbersFromLst(streetName)
+            osmHouseNumbers = getHouseNumbersFromCsv(streetName)
+            onlyInReference = getOnlyInFirst(referenceHouseNumbers, osmHouseNumbers)
+            results.append((streetName, onlyInReference))
 
-# Sort by length.
-results.sort(key=lambda result: len(result[1]), reverse=True)
+        # Sort by length.
+        results.sort(key=lambda result: len(result[1]), reverse=True)
 
-for result in results:
-    if len(result[1]):
-        # House number, # of onlyInReference items.
-        print("%s\t%s" % (result[0], len(result[1])))
-        # onlyInReference items.
-        print(result[1])
+        for result in results:
+            if len(result[1]):
+                # House number, # of onlyInReference items.
+                print("%s\t%s" % (result[0], len(result[1])))
+                # onlyInReference items.
+                print(result[1])
+
+        self.suspiciousStreets = results
+
+
+class Test(unittest.TestCase):
+    def test_none(self):
+        finder = Finder()
+
+        self.assertEqual([], finder.suspiciousStreets)
+
+if __name__ == '__main__':
+    unittest.main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:

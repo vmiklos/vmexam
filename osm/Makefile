@@ -36,8 +36,10 @@ update-osmose-$(USER):
 	@mkdir -p workdir
 	curl -o workdir/osmose-$(USER).rss http://osmose.openstreetmap.fr/en/byuser/$(USER).rss
 
-check: download
-	pep8 overpass-query generate-postcode-csv find-suspicious-streets get-reference-housenumbers qa/houseless-streets.py qa/osmose.py
+check-style:
+	pep8 overpass-query generate-postcode-csv get-reference-housenumbers qa/suspicious-streets.py qa/houseless-streets.py qa/osmose.py
+
+check: check-style download
 	qa/osmose.py
 	qa/houseless-streets.py
 	qa/houseless-streets.py -gazdagret
@@ -49,9 +51,7 @@ check: download
 	qa/interpolated-addresses.py -sashegy
 	qa/interpolated-addresses.py -nemetvolgy
 	qa/streets-nomaxspeed.py
-
-find-suspicious-steets:
-	./find-suspicious-streets |sort -r -t $$'\t' -n -k 2
+	#qa/suspicious-streets.py
 
 workdir/streets-gazdagret.txt: streets.txt
 	@mkdir -p workdir
