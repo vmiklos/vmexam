@@ -87,6 +87,7 @@ def getOnlyInFirst(first, second):
             ret.append(i)
     return ret
 
+
 class Finder:
     def __init__(self):
         streetsSock = open("workdir/streets%s.csv" % getArea())
