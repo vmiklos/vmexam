@@ -36,12 +36,17 @@ def simplify(s):
     return s
 
 
-def normalize(houseNumber):
+def normalize(houseNumber, streetName):
     """Strips down string input to bare minimum that can be interpreted as an
     actual number. Think about a/b, a-b, and so on."""
     n = int(re.sub(r"([0-9]+).*", r"\1", houseNumber))
-    if n < 1 or n > 1000:
-        return None
+    normalizers = {
+        # 1 -> 15, 2 -> 24
+        "zajzon_utca": lambda n: n <= 24,
+    }
+    if streetName in normalizers.keys():
+        if not normalizers[streetName](n):
+            return None
     return str(n)
 
 
@@ -58,7 +63,7 @@ def getHouseNumbersFromCsv(streetName):
             continue
         if tokens[1] != streetName:
             continue
-        houseNumber = normalize(tokens[2])
+        houseNumber = normalize(tokens[2], simplify(streetName))
         if houseNumber:
             houseNumbers.append(houseNumber)
     streetHouseNumbersSock.close()
@@ -73,7 +78,7 @@ def getHouseNumbersFromLst(streetName):
     for line in sock.readlines():
         line = line.strip()
         if line.startswith(prefix):
-            houseNumber = normalize(line.replace(prefix, ''))
+            houseNumber = normalize(line.replace(prefix, ''), lstStreetName)
             if houseNumber:
                 houseNumbers.append(houseNumber)
     sock.close()
@@ -103,21 +108,9 @@ class Finder:
         streetsSock.close()
         streetNames = sorted(set(streetNames))
 
-        # These streets are checked manually already or known to be only partly in the area -> ignore.
-        blacklist = [
-            "Budaörsi út",
-            "Beregszász út",
-            "Brassó út",
-            "Törökbálinti út",
-            "Sasadi út",
-            "Dayka Gábor utca",
-        ]
-
         results = []
 
         for streetName in streetNames:
-            if streetName in blacklist:
-                continue
             referenceHouseNumbers = getHouseNumbersFromLst(streetName)
             osmHouseNumbers = getHouseNumbersFromCsv(streetName)
             onlyInReference = getOnlyInFirst(referenceHouseNumbers, osmHouseNumbers)
