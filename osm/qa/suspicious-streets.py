@@ -14,6 +14,33 @@ import re
 import unittest
 
 
+# A Ranges object contains an item if any of its Range objects contains it.
+class Ranges:
+    def __init__(self, items):
+        self.items = items
+
+    def __contains__(self, item):
+        for i in self.items:
+            if item in i:
+                return True
+        return False
+
+
+# A range object represents an odd or even range of integer numbers.
+class Range:
+    def __init__(self, start, end, isOdd):
+        self.start = start
+        self.end = end
+        self.isOdd = isOdd
+
+    def __contains__(self, n):
+        if self.isOdd != (n % 2 == 1):
+            return False
+        if n >= self.start and n <= self.end:
+            return True
+        return False
+
+
 def getArea():
     if len(sys.argv) > 1:
         return sys.argv[1]
@@ -43,6 +70,11 @@ def normalize(houseNumber, streetName):
     normalizers = {
         # 1 -> 15, 2 -> 24
         "zajzon_utca": lambda n: n <= 24,
+        # 1 -> 47, 51 -> 61, 2 -> 44, 50 -> 58
+        "pannonhalmi_ut": lambda n: n in Ranges([Range(1, 47, isOdd=True),
+                                                 Range(51, 61, isOdd=True),
+                                                 Range(2, 44, isOdd=False),
+                                                 Range(50, 58, isOdd=False)]),
     }
     if streetName in normalizers.keys():
         if not normalizers[streetName](n):
