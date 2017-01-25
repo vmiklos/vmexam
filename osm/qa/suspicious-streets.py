@@ -75,6 +75,10 @@ def normalize(houseNumber, streetName):
                                                  Range(51, 61, isOdd=True),
                                                  Range(2, 44, isOdd=False),
                                                  Range(50, 58, isOdd=False)]),
+        "bodajk_utca": lambda n: n in Ranges([Range(1, 37, isOdd=True),
+                                              Range(2, 32, isOdd=False)]),
+        "orseg_utca": lambda n: n in Ranges([Range(1, 29, isOdd=True),
+                                             Range(2, 40, isOdd=False)]),
     }
     if streetName in normalizers.keys():
         if not normalizers[streetName](n):
