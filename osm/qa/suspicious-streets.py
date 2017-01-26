@@ -68,9 +68,8 @@ def normalize(houseNumber, streetName):
     actual number. Think about a/b, a-b, and so on."""
     n = int(re.sub(r"([0-9]+).*", r"\1", houseNumber))
     normalizers = {
-        # 1 -> 15, 2 -> 24
+        # Source for this data: survey.
         "zajzon_utca": lambda n: n <= 24,
-        # 1 -> 47, 51 -> 61, 2 -> 44, 50 -> 58
         "pannonhalmi_ut": lambda n: n in Ranges([Range(1, 47, isOdd=True),
                                                  Range(51, 61, isOdd=True),
                                                  Range(2, 44, isOdd=False),
@@ -79,6 +78,10 @@ def normalize(houseNumber, streetName):
                                               Range(2, 32, isOdd=False)]),
         "orseg_utca": lambda n: n in Ranges([Range(1, 29, isOdd=True),
                                              Range(2, 40, isOdd=False)]),
+        "sasadi_koz": lambda n: n in Ranges([Range(1, 1, isOdd=True),
+                                             Range(2, 4, isOdd=False)]),
+        "eper_utca": lambda n: n in Ranges([Range(1, 77, isOdd=True),
+                                            Range(2, 56, isOdd=False)]),
     }
     if streetName in normalizers.keys():
         if not normalizers[streetName](n):
