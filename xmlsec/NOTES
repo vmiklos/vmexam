@@ -4,7 +4,8 @@
 
 - why? as you can't test the mscrypto backend on Linux
 
-- environment: I only tested in LO's "make cmd cmd=bash" shell, with VS2013
+- environment: I only tested with VS2013 on 32bit Windows 7
+  - I previously built LibreOffice master in this VM, under c:/lo/master
 
 - configure: cscript configure.js crypto=mscrypto xslt=no iconv=no static=no
   - then patch win32/Makefile manually, add these /I switches:
@@ -15,10 +16,14 @@
     - /I"c:/Program Files/Windows Kits/8.1/Include/shared"
 
 - make:
-  - LIB="$(ILIB);c:/lo/master/workdir/UnpackedTarball/xml2/win32/bin.msvc;c:/Program Files/Microsoft Visual Studio 12.0/VC/lib;c:/Program Files/Windows Kits/8.1/Lib/winv6.3/um/x86" nmake
+  - LIB="c:/lo/master/workdir/UnpackedTarball/xml2/win32/bin.msvc;c:/Program Files/Microsoft Visual Studio 12.0/VC/lib;c:/Program Files/Windows Kits/8.1/Lib/winv6.3/um/x86" nmake
 
 - run:
-  - once it built, you need to manually copy the missing dlls to the "binaries" directory, as pointed out by the Windows cmd.exe error messages.
+  - once it built, you need to manually copy the missing dlls to the "binaries" directory, as pointed out by the Windows cmd.exe error messages, namely:
+    - cp c:/lo/master/workdir/UnpackedTarball/xml2/win32/bin.msvc/libxml2.dll binaries/
+    - cp c:/lo/master/workdir/UnpackedTarball/icu/source/lib/icuuc56.dll binaries/
+    - cp c:/lo/master/workdir/UnpackedTarball/icu/source/lib/icuucdt56.dll binaries/
+    - cp c:/lo/master/workdir/UnpackedTarball/icu/source/lib/icudt56.dll binaries/
 
 - test:
   - cd c:/lo/xmlsec/tests/aleksey-xmldsig-01
