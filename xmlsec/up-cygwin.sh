@@ -12,7 +12,12 @@ myinc+=' /I"c:/Program Files/Windows Kits/8.1/Include/shared"'
 time sh -ce "git pull -r
     git clean -x -d -f
     export PATH='/cygdrive/c/PROGRA~1/MICROS~1.0/VC/bin:$PATH'
-    sed 's/@XMLSEC_VERSION@/1.2.23/;s/@XMLSEC_VERSION_MAJOR@/1/;s/@XMLSEC_VERSION_MINOR@/2/;s/@XMLSEC_VERSION_SUBMINOR@/23/;s/@XMLSEC_VERSION_INFO@/3:23:2/' include/xmlsec/version.h.in > include/xmlsec/version.h
+    cat include/xmlsec/version.h.in > include/xmlsec/version.h
+    sed -i 's/@XMLSEC_VERSION@/1.2.23/' include/xmlsec/version.h
+    sed -i 's/@XMLSEC_VERSION_MAJOR@/1/' include/xmlsec/version.h
+    sed -i 's/@XMLSEC_VERSION_MINOR@/2/' include/xmlsec/version.h
+    sed -i 's/@XMLSEC_VERSION_SUBMINOR@/23/' include/xmlsec/version.h
+    sed -i 's/@XMLSEC_VERSION_INFO@/3:23:2/' include/xmlsec/version.h
     cd win32
     cscript configure.js crypto=mscrypto xslt=no iconv=no static=no debug=yes
     sed -i -e 's|/I\$(INCPREFIX)|/I\$(INCPREFIX) $myinc|' Makefile
