@@ -1,0 +1,28 @@
+= xmlsec notes
+
+== Windows building / testing
+
+- why? as you can't test the mscrypto backend on Linux
+
+- environment: I only tested in LO's "make cmd cmd=bash" shell, with VS2013
+
+- configure: cscript configure.js crypto=mscrypto xslt=no iconv=no static=no
+  - then patch win32/Makefile manually, add these /I switches:
+    - /I"c:/Program Files/Microsoft Visual Studio 12.0/VC/include"
+    - /I"c:/lo/master/workdir/UnpackedTarball/xml2/include"
+    - /I"c:/lo/master/workdir/UnpackedTarball/icu/source/common"
+    - /I"c:/Program Files/Windows Kits/8.1/Include/um"
+    - /I"c:/Program Files/Windows Kits/8.1/Include/shared"
+
+- make:
+  - LIB="$(ILIB);c:/lo/master/workdir/UnpackedTarball/xml2/win32/bin.msvc;c:/Program Files/Microsoft Visual Studio 12.0/VC/lib;c:/Program Files/Windows Kits/8.1/Lib/winv6.3/um/x86" nmake
+
+- run:
+  - once it built, you need to manually copy the missing dlls to the "binaries" directory, as pointed out by the Windows cmd.exe error messages.
+
+- test:
+  - cd c:/lo/xmlsec/tests/aleksey-xmldsig-01
+  - ../../win32/binaries/xmlsec.exe verify --trusted-der ../keys/cacert.der --enabled-key-data x509 enveloping-sha256-rsa-sha256-verify.xml
+  - and so on, e.g. use --insecure instead of --trusted-...
+
+// vim: ft=asciidoc

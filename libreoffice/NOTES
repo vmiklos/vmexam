@@ -1468,6 +1468,32 @@ field code in the bugdoc is " STYLEREF 1 \s ", but \s isn't a documented paramet
 
 " STYLEREF 1 \* MERGEFORMAT " is what we can handle correctly
 
+=== 2017-01-27
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=103976
+
+Reported: regression from 9e7eb63989ef1cf4b9a0e0404b84ef890db3d8e3 -- adds w:before/afterLines handling
+
+there are no explicit paragraph settings -> table style TablewithHeaderinList1
+
+zillion styles.xml entries like:
+
+<w:spacing w:before="60" w:after="60" ...>
+
+which one is relevant? from-scratch testcase:
+
+- style:
+
+ <w:spacing w:before="60" w:after="60" w:line="260" w:lineRule="exact"/>
+
+- direct formatting:
+
+ <w:spacing w:beforeLines="0" w:beforeAutospacing="0" w:afterLines="0" w:afterAutospacing="0" w:line="220" w:lineRule="exact"/>
+
+Word's output: w:before/w:after has priority
+
+(at least) 3 attributes: beforeAutospacing, beforeLines and before
+
 <<<
 
 Problematic bugs:
