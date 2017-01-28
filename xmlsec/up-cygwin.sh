@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# FIXME debug=yes?
 # FIXME better version.h generation
 # FIXME can avoid cygdrive?
 
@@ -15,7 +14,7 @@ time sh -ce "git pull -r
     export PATH='/cygdrive/c/PROGRA~1/MICROS~1.0/VC/bin:$PATH'
     sed 's/@XMLSEC_VERSION@/1.2.23/;s/@XMLSEC_VERSION_MAJOR@/1/;s/@XMLSEC_VERSION_MINOR@/2/;s/@XMLSEC_VERSION_SUBMINOR@/23/;s/@XMLSEC_VERSION_INFO@/3:23:2/' include/xmlsec/version.h.in > include/xmlsec/version.h
     cd win32
-    cscript configure.js crypto=mscrypto xslt=no iconv=no static=no
+    cscript configure.js crypto=mscrypto xslt=no iconv=no static=no debug=yes
     sed -i -e 's|/I\$(INCPREFIX)|/I\$(INCPREFIX) $myinc|' Makefile
     LIB='c:/lo/master/workdir/UnpackedTarball/xml2/win32/bin.msvc;c:/Program Files/Microsoft Visual Studio 12.0/VC/lib;c:/Program Files/Windows Kits/8.1/Lib/winv6.3/um/x86' 'c:/Program Files/Microsoft Visual Studio 12.0/VC/bin/nmake.exe'
     cp c:/lo/master/workdir/UnpackedTarball/xml2/win32/bin.msvc/libxml2.dll binaries/
