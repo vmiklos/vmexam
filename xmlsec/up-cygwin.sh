@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # FIXME better version.h generation
-# FIXME can avoid cygdrive?
 
 myinc='/I"c:/Program Files/Microsoft Visual Studio 12.0/VC/include"'
 myinc+=' /I"c:/lo/master/workdir/UnpackedTarball/xml2/include"'
@@ -11,7 +10,7 @@ myinc+=' /I"c:/Program Files/Windows Kits/8.1/Include/shared"'
 
 time sh -ce "git pull -r
     git clean -x -d -f
-    export PATH='/cygdrive/c/PROGRA~1/MICROS~1.0/VC/bin:$PATH'
+    export PATH='$(cygpath -u 'c:/Program Files/Microsoft Visual Studio 12.0/VC/bin/'):$PATH'
     cat include/xmlsec/version.h.in > include/xmlsec/version.h
     sed -i 's/@XMLSEC_VERSION@/1.2.23/' include/xmlsec/version.h
     sed -i 's/@XMLSEC_VERSION_MAJOR@/1/' include/xmlsec/version.h
