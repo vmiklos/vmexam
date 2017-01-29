@@ -9,12 +9,13 @@ XMLSEC_VERSION_INFO=`echo $XMLSEC_VERSION | awk -F. '{ printf "%d:%d:%d", $1+$2,
 msvcdir="c:/Program Files/Microsoft Visual Studio 12.0/VC"
 xml2dir="c:/lo/master/workdir/UnpackedTarball/xml2"
 icudir="c:/lo/master/workdir/UnpackedTarball/icu"
+sdkdir="c:/Program Files/Windows Kits/8.1"
 
 myinc="/I\"$msvcdir/include\""
 myinc+=" /I\"$xml2dir/include\""
 myinc+=" /I\"$icudir/source/common\""
-myinc+=' /I"c:/Program Files/Windows Kits/8.1/Include/um"'
-myinc+=' /I"c:/Program Files/Windows Kits/8.1/Include/shared"'
+myinc+=" /I\"$sdkdir/Include/um\""
+myinc+=" /I\"$sdkdir/Include/shared\""
 
 time sh -ce "git pull -r
     git clean -x -d -f
@@ -28,7 +29,7 @@ time sh -ce "git pull -r
     cd win32
     cscript configure.js crypto=mscrypto xslt=no iconv=no static=no debug=yes
     sed -i -e 's|/I\$(INCPREFIX)|/I\$(INCPREFIX) $myinc|' Makefile
-    LIB='$xml2dir/win32/bin.msvc;$msvcdir/lib;c:/Program Files/Windows Kits/8.1/Lib/winv6.3/um/x86' '$msvcdir/bin/nmake.exe'
+    LIB='$xml2dir/win32/bin.msvc;$msvcdir/lib;$sdkdir/Lib/winv6.3/um/x86' '$msvcdir/bin/nmake.exe'
     cp $xml2dir/win32/bin.msvc/libxml2.dll binaries/
     cp $icudir/source/lib/icuuc56.dll binaries/
     cp $icudir/source/lib/icudt56.dll binaries/" 2>&1 |tee log
