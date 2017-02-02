@@ -163,7 +163,8 @@ class Finder:
             referenceHouseNumbers = getHouseNumbersFromLst(streetName)
             osmHouseNumbers = getHouseNumbersFromCsv(streetName)
             onlyInReference = getOnlyInFirst(referenceHouseNumbers, osmHouseNumbers)
-            results.append((streetName, onlyInReference))
+            if len(onlyInReference):
+                results.append((streetName, onlyInReference))
 
         # Sort by length.
         results.sort(key=lambda result: len(result[1]), reverse=True)
