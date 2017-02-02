@@ -63,38 +63,44 @@ def simplify(s):
     return s
 
 
-def normalize(houseNumber, streetName):
+def normalize(houseNumbers, streetName):
     """Strips down string input to bare minimum that can be interpreted as an
     actual number. Think about a/b, a-b, and so on."""
-    n = int(re.sub(r"([0-9]+).*", r"\1", houseNumber))
-    normalizers = {
-        # Source for this data: survey.
-        "zajzon_utca": lambda n: n <= 24,
-        "pannonhalmi_ut": lambda n: n in Ranges([Range(1, 47, isOdd=True),
-                                                 Range(51, 61, isOdd=True),
-                                                 Range(2, 44, isOdd=False),
-                                                 Range(50, 58, isOdd=False)]),
-        "bodajk_utca": lambda n: n in Ranges([Range(1, 37, isOdd=True),
-                                              Range(2, 32, isOdd=False)]),
-        "orseg_utca": lambda n: n in Ranges([Range(1, 29, isOdd=True),
-                                             Range(2, 40, isOdd=False)]),
-        "sasadi_koz": lambda n: n in Ranges([Range(1, 1, isOdd=True),
-                                             Range(2, 4, isOdd=False)]),
-        "eper_utca": lambda n: n in Ranges([Range(1, 77, isOdd=True),
-                                            Range(2, 56, isOdd=False)]),
-        "botfalu_koz": lambda n: n in Ranges([Range(1, 23, isOdd=True),
-                                              Range(2, 20, isOdd=False)]),
-        "nagyida_koz": lambda n: n in Ranges([Range(1, 21, isOdd=True),
-                                              Range(2, 18, isOdd=False)]),
-        "nagyszalonta_utca": lambda n: n in Ranges([Range(1, 57, isOdd=True),
-                                                    Range(2, 68, isOdd=False)]),
-        "ratkoc_koz": lambda n: n in Ranges([Range(1, 5, isOdd=True),
-                                             Range(2, 8, isOdd=False)]),
-    }
-    if streetName in normalizers.keys():
-        if not normalizers[streetName](n):
-            return None
-    return str(n)
+    ret = []
+    for houseNumber in houseNumbers.split('-'):
+        try:
+            n = int(re.sub(r"([0-9]+).*", r"\1", houseNumber))
+        except ValueError:
+            continue
+        normalizers = {
+            # Source for this data: survey.
+            "zajzon_utca": lambda n: n <= 24,
+            "pannonhalmi_ut": lambda n: n in Ranges([Range(1, 47, isOdd=True),
+                                                     Range(51, 61, isOdd=True),
+                                                     Range(2, 44, isOdd=False),
+                                                     Range(50, 58, isOdd=False)]),
+            "bodajk_utca": lambda n: n in Ranges([Range(1, 37, isOdd=True),
+                                                  Range(2, 32, isOdd=False)]),
+            "orseg_utca": lambda n: n in Ranges([Range(1, 29, isOdd=True),
+                                                 Range(2, 40, isOdd=False)]),
+            "sasadi_koz": lambda n: n in Ranges([Range(1, 1, isOdd=True),
+                                                 Range(2, 4, isOdd=False)]),
+            "eper_utca": lambda n: n in Ranges([Range(1, 77, isOdd=True),
+                                                Range(2, 56, isOdd=False)]),
+            "botfalu_koz": lambda n: n in Ranges([Range(1, 23, isOdd=True),
+                                                  Range(2, 20, isOdd=False)]),
+            "nagyida_koz": lambda n: n in Ranges([Range(1, 21, isOdd=True),
+                                                  Range(2, 18, isOdd=False)]),
+            "nagyszalonta_utca": lambda n: n in Ranges([Range(1, 57, isOdd=True),
+                                                        Range(2, 68, isOdd=False)]),
+            "ratkoc_koz": lambda n: n in Ranges([Range(1, 5, isOdd=True),
+                                                 Range(2, 8, isOdd=False)]),
+        }
+        if streetName in normalizers.keys():
+            if not normalizers[streetName](n):
+                continue
+        ret.append(str(n))
+    return ret
 
 
 def getHouseNumbersFromCsv(streetName):
@@ -110,9 +116,7 @@ def getHouseNumbersFromCsv(streetName):
             continue
         if tokens[1] != streetName:
             continue
-        houseNumber = normalize(tokens[2], simplify(streetName))
-        if houseNumber:
-            houseNumbers.append(houseNumber)
+        houseNumbers += normalize(tokens[2], simplify(streetName))
     streetHouseNumbersSock.close()
     return sorted(set(houseNumbers))
 
@@ -125,9 +129,7 @@ def getHouseNumbersFromLst(streetName):
     for line in sock.readlines():
         line = line.strip()
         if line.startswith(prefix):
-            houseNumber = normalize(line.replace(prefix, ''), lstStreetName)
-            if houseNumber:
-                houseNumbers.append(houseNumber)
+            houseNumbers += normalize(line.replace(prefix, ''), lstStreetName)
     sock.close()
     return sorted(set(houseNumbers))
 
