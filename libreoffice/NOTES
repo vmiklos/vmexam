@@ -1515,6 +1515,30 @@ daily.git:
 - bc22f523978e3494c91fe5ceeba709c29e23ab49 / 2016-12-08: source-hash-72b70d933e50edf95e989c59a69c396db06bd5e9 is still bad -> indeed
 - core.git range is 72b70d933e50edf95e989c59a69c396db06bd5e9..cb598029835477326b190bc99abd31a487cc5a91 -> fc8c4606e0834cd2128a228c2c95fc7c8f9eb7b1 is the fix, only need to backport it
 
+second problem: 'xray ThisComponent' is broken on master
+
+daily.git:
+- 35574763296c875a3a52ad1e2fd7dd3f9057ede8 is good
+- master is bad
+- [8671898e81d6069d8b79c8c005158f813eaf21db] 2016-12-19: source-hash-5903235d57acb13d9d5286d23b443a01aeab9a3c is good
+- [ddf2b9939e09c36a514378d28d2a4efb15e53e07] 2017-01-01: source-hash-879bac84cde2fc7cc27363d1bb0ca50c53162a88 is good
+- [6ea6b077c7c4ca40f971a701989a1b5c577955ba] 2017-01-07: source-hash-0ad4b2570f06aa014f8446757931afa1f2305458 is good
+- [9129d58b2bed1fa27b64b10a6f89a44ce16e1242] 2017-01-10: source-hash-4434b0029009d6d0327eaca1ff22a0c39711291d is bad
+- [26f50489e12bc75025c79eda6bfd7d2ef2fa1072] 2017-01-09: source-hash-048e30c1f8231e6cd144a9251061f6fa127b353e is good
+- 9129d58b2bed1fa27b64b10a6f89a44ce16e1242 / 2017-01-10: source-hash-4434b0029009d6d0327eaca1ff22a0c39711291d is the first bad
+- 26f50489e12bc75025c79eda6bfd7d2ef2fa1072 / 2017-01-09: source-hash-048e30c1f8231e6cd144a9251061f6fa127b353e is the last good
+- core.git range is 048e30c1f8231e6cd144a9251061f6fa127b353e..4434b0029009d6d0327eaca1ff22a0c39711291d -> reported as <https://bugs.documentfoundation.org/show_bug.cgi?id=105735>
+
+third topic, to increase writerfilter test coverage.
+
+----
+oRules = ThisComponent.StyleFamilies.NumberingStyles.WWNum1.NumberingRules
+xray oRules.getByIndex(0)(0) -> Adjust should be 2
+----
+
+before: rtfdispatchvalue.cxx line cov is 87.1%
+after:  rtfdispatchvalue.cxx line cov is 87.4%
+
 <<<
 
 Problematic bugs:
