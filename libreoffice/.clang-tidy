@@ -2,6 +2,6 @@
 # - disabled modernize-pass-by-value, conflicts with loplugin:passstuffbyref
 # - disabled cppcoreguidelines-pro-type-member-init, suggested fix doesn't always work with gcc-4.8
 # - disabled readability-redundant-declaration, invalid output on static members
-Checks: 'clang-diagnostic-*,performance-*,unused-*,modernize-*,-modernize-raw-string-literal,-modernize-use-using,-modernize-pass-by-value,misc-*,readability-redundant-*,-readability-redundant-declaration'
+Checks: 'clang-diagnostic-*,performance-*,unused-*,modernize-*,-modernize-raw-string-literal,-modernize-use-using,-modernize-pass-by-value,misc-*,readability-redundant'
 WarningsAsErrors: '*'
 
