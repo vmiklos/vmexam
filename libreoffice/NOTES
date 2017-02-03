@@ -1494,6 +1494,27 @@ Word's output: w:before/w:after has priority
 
 (at least) 3 attributes: beforeAutospacing, beforeLines and before
 
+=== 2017-02-03
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=104082
+
+- regression, but seems to be fixed on master already
+- 2016-11-14 is reported to be bad
+- 2016-11-23 is where daily.git towards LO 5.4 starts -> indeed bad
+- daily.git master is good -> can do reverse bibisect
+
+daily.git:
+- 35574763296c875a3a52ad1e2fd7dd3f9057ede8 is bad (good for g-b)
+- master is good (bad for g-b)
+- [8671898e81d6069d8b79c8c005158f813eaf21db] 2016-12-19: source-hash-5903235d57acb13d9d5286d23b443a01aeab9a3c is good (bad for g-b)
+- [a990b0cfab53f3f73abdd5a6d44c377d61bbff0a] 2016-12-06: source-hash-8a460cfa1b1ce01c7a479ce2e7f21a92a2c50de3 is bad (good for g-b)
+- [61bf95eee4de75fb69742384db9bf619a400215e] 2016-12-12: source-hash-634589b340316ba64b731b4d923c1056be415494 is good (bad for g-b)
+- [1bd0403f0c5411496822fc2429d3a08f52d0a95e] 2016-12-09: source-hash-cb598029835477326b190bc99abd31a487cc5a91 is good (bad for g-b)
+- [bc22f523978e3494c91fe5ceeba709c29e23ab49] 2016-12-08: source-hash-72b70d933e50edf95e989c59a69c396db06bd5e9 is bad (good for g-b)
+- 1bd0403f0c5411496822fc2429d3a08f52d0a95e / 2016-12-09: source-hash-cb598029835477326b190bc99abd31a487cc5a91 is the first good (bad for g-b) -> indeed
+- bc22f523978e3494c91fe5ceeba709c29e23ab49 / 2016-12-08: source-hash-72b70d933e50edf95e989c59a69c396db06bd5e9 is still bad -> indeed
+- core.git range is 72b70d933e50edf95e989c59a69c396db06bd5e9..cb598029835477326b190bc99abd31a487cc5a91 -> fc8c4606e0834cd2128a228c2c95fc7c8f9eb7b1 is the fix, only need to backport it
+
 <<<
 
 Problematic bugs:
