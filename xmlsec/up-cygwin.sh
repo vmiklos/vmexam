@@ -7,12 +7,6 @@
 # This script is a wrapper around the libxmlsec nmake build system, so it work
 # out of the box at least on my 32bit MSVC install.
 
-XMLSEC_VERSION_MAJOR=$(grep ^XMLSEC_VERSION_MAJOR= configure.ac|sed 's/.*=//')
-XMLSEC_VERSION_MINOR=$(grep ^XMLSEC_VERSION_MINOR= configure.ac|sed 's/.*=//')
-XMLSEC_VERSION_SUBMINOR=$(grep ^XMLSEC_VERSION_SUBMINOR= configure.ac|sed 's/.*=//')
-XMLSEC_VERSION="$XMLSEC_VERSION_MAJOR.$XMLSEC_VERSION_MINOR.$XMLSEC_VERSION_SUBMINOR"
-XMLSEC_VERSION_INFO=`echo $XMLSEC_VERSION | awk -F. '{ printf "%d:%d:%d", $1+$2, $3, $2 }'`
-
 msvcdir="c:/Program Files/Microsoft Visual Studio 12.0/VC"
 xml2dir="c:/lo/master/workdir/UnpackedTarball/xml2"
 icudir="c:/lo/master/workdir/UnpackedTarball/icu"
@@ -27,12 +21,6 @@ myinc+=" /I\"$sdkdir/Include/shared\""
 time sh -ce "git pull -r
     git clean -x -d -f
     export PATH='$(cygpath -u "$msvcdir/bin/"):$PATH'
-    cat include/xmlsec/version.h.in > include/xmlsec/version.h
-    sed -i 's/@XMLSEC_VERSION_MAJOR@/${XMLSEC_VERSION_MAJOR}/' include/xmlsec/version.h
-    sed -i 's/@XMLSEC_VERSION_MINOR@/${XMLSEC_VERSION_MINOR}/' include/xmlsec/version.h
-    sed -i 's/@XMLSEC_VERSION_SUBMINOR@/${XMLSEC_VERSION_SUBMINOR}/' include/xmlsec/version.h
-    sed -i 's/@XMLSEC_VERSION@/${XMLSEC_VERSION}/' include/xmlsec/version.h
-    sed -i 's/@XMLSEC_VERSION_INFO@/${XMLSEC_VERSION_INFO}/' include/xmlsec/version.h
     cd win32
     cscript configure.js crypto=mscrypto xslt=no iconv=no static=no debug=yes
     sed -i -e 's|/I\$(INCPREFIX)|/I\$(INCPREFIX) $myinc|' Makefile
