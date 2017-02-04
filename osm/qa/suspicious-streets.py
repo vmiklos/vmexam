@@ -95,6 +95,9 @@ def normalize(houseNumbers, streetName):
                                                         Range(2, 68, isOdd=False)]),
             "ratkoc_koz": lambda n: n in Ranges([Range(1, 5, isOdd=True),
                                                  Range(2, 8, isOdd=False)]),
+            # Not entirely sure about this, even after survey...
+            "szent_kristof_utca": lambda n: n in Ranges([Range(1, 3, isOdd=True),
+                                                         Range(2, 4, isOdd=False)]),
         }
         if streetName in normalizers.keys():
             if not normalizers[streetName](n):
