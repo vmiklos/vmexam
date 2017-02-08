@@ -109,6 +109,11 @@ def normalize(houseNumbers, streetName):
             # 13 could be 21, but it's in fact 13-21.
             "homonna_utca": lambda n: n in Ranges([Range(1, 13, isOdd=True),
                                                    Range(2, 20, isOdd=False)]),
+            # Not sure about the 2.
+            "arnika_utca": lambda n: n in Ranges([Range(1, 9, isOdd=True),
+                                                  Range(2, 2, isOdd=False)]),
+            "barackfa_utca": lambda n: n in Ranges([Range(1, 23, isOdd=True),
+                                                    Range(2, 24, isOdd=False)]),
         }
         if streetName in normalizers.keys():
             if not normalizers[streetName](n):
