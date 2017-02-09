@@ -100,7 +100,7 @@ def normalize(houseNumbers, streetName):
                                                          Range(2, 4, isOdd=False)]),
             # Not sure about the 12.
             "rozsato_utca": lambda n: n in Ranges([Range(1, 9, isOdd=True),
-                                                         Range(2, 12, isOdd=False)]),
+                                                   Range(2, 12, isOdd=False)]),
             "olt_utca": lambda n: n in Ranges([Range(1, 41, isOdd=True),
                                                Range(2, 40, isOdd=False)]),
             # Not sure about the 16.
@@ -114,6 +114,10 @@ def normalize(houseNumbers, streetName):
                                                   Range(2, 2, isOdd=False)]),
             "barackfa_utca": lambda n: n in Ranges([Range(1, 23, isOdd=True),
                                                     Range(2, 24, isOdd=False)]),
+            "kohalom_utca": lambda n: n in Ranges([Range(1, 13, isOdd=True),
+                                                   Range(2, 16, isOdd=False)]),
+            "gulyas_utca": lambda n: n in Ranges([Range(1, 27, isOdd=True),
+                                                  Range(2, 24, isOdd=False)]),
         }
         if streetName in normalizers.keys():
             if not normalizers[streetName](n):
