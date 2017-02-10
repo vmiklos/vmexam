@@ -1541,16 +1541,41 @@ after:  rtfdispatchvalue.cxx line cov is 87.4%
 
 === 2017-02-09
 
-Brief research on the Rectangle -> tools::Rectangle rename:
+Brief research on the Rectangle -> tools::Rectangle rename, with a smaller
+example: writerfilter::rtftok::RTFDocumentImpl ->
+writerfilter::rtftok::foo::RTFDocumentImpl.
 
----
-- QualifiedName:  writerfilter::rtftok::RTFDocumentImpl
-  NewName:        foo::RTFDocumentImpl
-...
+- touch the relevant header
+- make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=clang-rename-wrapper RENAME_ARGS="-qualified-name=writerfilter::rtftok::RTFDocumentImpl -new-name=foo::RTFDocumentImpl"
+- clang-apply-replacements /tmp/rename
+- rm -rf /tmp/rename
 
-then touch the header + run according to dev-tools/clang/README mostly produces
-usable result, ctor/dtor and forward declarations are not handled correctly,
-but the rest is usable.
+need to fix up the header + the class itself, but all client code is adapted
+correctly as far as I see -> promising.
+
+=== 2017-02-10
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=104039
+
+- can't reproduce on master
+- reported using 757a60d01dd152aadab2ba3c8224252481ce8a88 / 2016-11-14
+- checked daily.git:
+  - oldest is indeed bad
+  - master is good -> can do reverse bibisect
+
+daily.git reverse bibisect:
+- [8671898e81d6069d8b79c8c005158f813eaf21db] 2016-12-19: source-hash-5903235d57acb13d9d5286d23b443a01aeab9a3c is good (bad for g-b)
+- [a990b0cfab53f3f73abdd5a6d44c377d61bbff0a] 2016-12-06: source-hash-8a460cfa1b1ce01c7a479ce2e7f21a92a2c50de3 is good (bad for g-b)
+- [9c47f8c7fcf2b64d14c00a617caa7fdb507111a2] 2016-11-29: source-hash-4130c8def811d1dcc87eacaa8ae48ba02738a790 is good (bad for g-b)
+- [9d151bfa817a0d67179553a041c4e2a6ae16366a] 2016-11-26: source-hash-aabc5aab5af27e929a81a6036d2f470ab1f5ac4d is bad (good for g-b)
+- [6ce98757cd7c024ff24b41fb33aec6c322eb030d] 2016-11-28: source-hash-2db42ab241d0852d89a470b18727c22d0fc06745 is bad (good for g-b)
+- 9c47f8c7fcf2b64d14c00a617caa7fdb507111a2 / 2016-11-29: source-hash-4130c8def811d1dcc87eacaa8ae48ba02738a790 is the first good -> indeed
+- 6ce98757cd7c024ff24b41fb33aec6c322eb030d / 2016-11-28: source-hash-2db42ab241d0852d89a470b18727c22d0fc06745 is the last bad -> indeed
+- core.git range is 2db42ab241d0852d89a470b18727c22d0fc06745..4130c8def811d1dcc87eacaa8ae48ba02738a790 -> 787d31a94510ca3de9ce582d7b7402dfca584b23 looks related
+
+lcov, rtfattributeoutput.cxx:
+- old: line coverage is 77.8 %
+- new: line coverage is 
 
 <<<
 
