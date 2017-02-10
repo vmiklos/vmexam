@@ -1575,7 +1575,7 @@ daily.git reverse bibisect:
 
 lcov, rtfattributeoutput.cxx:
 - old: line coverage is 77.8 %
-- new: line coverage is 
+- new: line coverage is 77.9 %
 
 <<<
 

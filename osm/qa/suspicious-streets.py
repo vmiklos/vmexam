@@ -9,8 +9,9 @@
 # Tries to find streets which do have at least one house number, but suspicious
 # as lots of house numbers are probably missing.
 
-import sys
+import json
 import re
+import sys
 import unittest
 
 
@@ -72,54 +73,13 @@ def normalize(houseNumbers, streetName):
             n = int(re.sub(r"([0-9]+).*", r"\1", houseNumber))
         except ValueError:
             continue
-        normalizers = {
-            # Source for this data: survey.
-            "zajzon_utca": lambda n: n in Ranges([Range(1, 15, isOdd=True),
-                                                  Range(2, 24, isOdd=False)]),
-            "pannonhalmi_ut": lambda n: n in Ranges([Range(1, 47, isOdd=True),
-                                                     Range(51, 61, isOdd=True),
-                                                     Range(2, 44, isOdd=False),
-                                                     Range(50, 58, isOdd=False)]),
-            "bodajk_utca": lambda n: n in Ranges([Range(1, 37, isOdd=True),
-                                                  Range(2, 32, isOdd=False)]),
-            "orseg_utca": lambda n: n in Ranges([Range(1, 29, isOdd=True),
-                                                 Range(2, 40, isOdd=False)]),
-            "sasadi_koz": lambda n: n in Ranges([Range(1, 1, isOdd=True),
-                                                 Range(2, 4, isOdd=False)]),
-            "eper_utca": lambda n: n in Ranges([Range(1, 77, isOdd=True),
-                                                Range(2, 56, isOdd=False)]),
-            "botfalu_koz": lambda n: n in Ranges([Range(1, 23, isOdd=True),
-                                                  Range(2, 20, isOdd=False)]),
-            "nagyida_koz": lambda n: n in Ranges([Range(1, 21, isOdd=True),
-                                                  Range(2, 18, isOdd=False)]),
-            "nagyszalonta_utca": lambda n: n in Ranges([Range(1, 57, isOdd=True),
-                                                        Range(2, 68, isOdd=False)]),
-            "ratkoc_koz": lambda n: n in Ranges([Range(1, 5, isOdd=True),
-                                                 Range(2, 8, isOdd=False)]),
-            # Not sure about the 4.
-            "szent_kristof_utca": lambda n: n in Ranges([Range(1, 3, isOdd=True),
-                                                         Range(2, 4, isOdd=False)]),
-            # Not sure about the 12.
-            "rozsato_utca": lambda n: n in Ranges([Range(1, 9, isOdd=True),
-                                                   Range(2, 12, isOdd=False)]),
-            "olt_utca": lambda n: n in Ranges([Range(1, 41, isOdd=True),
-                                               Range(2, 40, isOdd=False)]),
-            # Not sure about the 16.
-            "rozmaring_utca": lambda n: n in Ranges([Range(3, 19, isOdd=True),
-                                                     Range(2, 16, isOdd=False)]),
-            # 13 could be 21, but it's in fact 13-21.
-            "homonna_utca": lambda n: n in Ranges([Range(1, 13, isOdd=True),
-                                                   Range(2, 20, isOdd=False)]),
-            # Not sure about the 2.
-            "arnika_utca": lambda n: n in Ranges([Range(1, 9, isOdd=True),
-                                                  Range(2, 2, isOdd=False)]),
-            "barackfa_utca": lambda n: n in Ranges([Range(1, 23, isOdd=True),
-                                                    Range(2, 24, isOdd=False)]),
-            "kohalom_utca": lambda n: n in Ranges([Range(1, 13, isOdd=True),
-                                                   Range(2, 16, isOdd=False)]),
-            "gulyas_utca": lambda n: n in Ranges([Range(1, 27, isOdd=True),
-                                                  Range(2, 24, isOdd=False)]),
-        }
+        normalizers = {}
+        filtersJson = normalizersJson["filters"]
+        for street in filtersJson.keys():
+            l = []
+            for r in filtersJson[street]["ranges"]:
+                l.append(Range(int(r["start"]), int(r["end"]), r["isOdd"] == "true"))
+            normalizers[street] = lambda n: n in Ranges([l])
         if streetName in normalizers.keys():
             if not normalizers[streetName](n):
                 continue
@@ -210,6 +170,8 @@ class Test(unittest.TestCase):
         self.assertEqual([], finder.suspiciousStreets)
 
 if __name__ == '__main__':
+    with open("housenumber-filters.json") as jsonSock:
+        normalizersJson = json.load(jsonSock)
     unittest.main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:

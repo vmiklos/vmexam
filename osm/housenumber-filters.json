@@ -1,0 +1,286 @@
+{
+    "source": "survey",
+    "filters": {
+        "gulyas_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "27",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "24",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "kohalom_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "13",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "16",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "barackfa_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "23",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "24",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "arnika_utca": {
+            "comment": "not sure about the 2",
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "9",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "2",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "homonna_utca": {
+            "comment": "13 could be 21, but it's in fact 13-21",
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "13",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "20",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "rozmaring_utca": {
+            "comment": "not sure about the 16",
+            "ranges": [
+                {
+                    "start": "3",
+                    "end": "19",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "16",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "olt_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "41",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "40",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "rozsato_utca": {
+            "comment": "not sure about the 12",
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "9",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "12",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "szent_kristof_utca": {
+            "comment": "not sure about the 4",
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "3",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "4",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "ratkoc_koz": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "5",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "8",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "nagyszalonta_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "57",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "68",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "nagyida_koz": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "21",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "18",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "botfalu_koz": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "23",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "20",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "eper_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "77",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "56",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "sasadi_koz": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "1",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "4",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "orseg_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "29",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "40",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "bodajk_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "37",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "32",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "pannonhalmi_ut": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "47",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "51",
+                    "end": "61",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "44",
+                    "isOdd": "false"
+                },
+                {
+                    "start": "50",
+                    "end": "58",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "zajzon_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "15",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "24",
+                    "isOdd": "false"
+                }
+            ]
+        }
+    }
+}
