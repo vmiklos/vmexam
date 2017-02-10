@@ -73,13 +73,6 @@ def normalize(houseNumbers, streetName):
             n = int(re.sub(r"([0-9]+).*", r"\1", houseNumber))
         except ValueError:
             continue
-        normalizers = {}
-        filtersJson = normalizersJson["filters"]
-        for street in filtersJson.keys():
-            l = []
-            for r in filtersJson[street]["ranges"]:
-                l.append(Range(int(r["start"]), int(r["end"]), r["isOdd"] == "true"))
-            normalizers[street] = lambda n: n in Ranges([l])
         if streetName in normalizers.keys():
             if not normalizers[streetName](n):
                 continue
@@ -170,8 +163,15 @@ class Test(unittest.TestCase):
         self.assertEqual([], finder.suspiciousStreets)
 
 if __name__ == '__main__':
+    normalizers = {}
     with open("housenumber-filters.json") as jsonSock:
         normalizersJson = json.load(jsonSock)
+    filtersJson = normalizersJson["filters"]
+    for street in filtersJson.keys():
+        l = []
+        for r in filtersJson[street]["ranges"]:
+            l.append(Range(int(r["start"]), int(r["end"]), r["isOdd"] == "true"))
+        normalizers[street] = lambda n: n in Ranges([l])
     unittest.main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:

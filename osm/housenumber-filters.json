@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "komondor_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "11",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "12",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "gulyas_utca": {
             "ranges": [
                 {
