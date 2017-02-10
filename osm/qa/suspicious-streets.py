@@ -74,7 +74,8 @@ def normalize(houseNumbers, streetName):
             continue
         normalizers = {
             # Source for this data: survey.
-            "zajzon_utca": lambda n: n <= 24,
+            "zajzon_utca": lambda n: n in Ranges([Range(1, 15, isOdd=True),
+                                                  Range(2, 24, isOdd=False)]),
             "pannonhalmi_ut": lambda n: n in Ranges([Range(1, 47, isOdd=True),
                                                      Range(51, 61, isOdd=True),
                                                      Range(2, 44, isOdd=False),
