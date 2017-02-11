@@ -20,7 +20,7 @@ class Ranges:
     def __init__(self, items):
         self.items = items
 
-    def __contains__(self, item):
+    def __call__(self, item):
         for i in self.items:
             if item in i:
                 return True
@@ -171,7 +171,7 @@ if __name__ == '__main__':
         l = []
         for r in filtersJson[street]["ranges"]:
             l.append(Range(int(r["start"]), int(r["end"]), r["isOdd"] == "true"))
-        normalizers[street] = lambda n: n in Ranges([l])
+        normalizers[street] = Ranges(l)
     unittest.main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
