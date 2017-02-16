@@ -14,4 +14,149 @@
   - ../../win32/binaries/xmlsec.exe verify --trusted-der ../keys/cacert.der --enabled-key-data x509 enveloping-sha256-rsa-sha256-verify.xml
   - and so on, e.g. use --insecure instead of --trusted-...
 
+== ECDSA
+
+=== ECDSA verification
+
+after initial patch, the verification:
+
+cd tests/aleksey-xmldsig-01
+libtool --mode=execute /usr/bin/gdb --args /home/vmiklos/git/xmlsec/apps/xmlsec1 verify --trusted-der ../keys/cacert.der --enabled-key-data x509 enveloping-sha256-ecdsa-sha256.xml
+
+fails with:
+
+VFY_EndWithSignature() fails (even if 'dsasig' and 'hash' look OK) because
+PK11_Verify() fails
+
+mechamism is 0x1041 (CKM_ECDSA), OK
+
+NSS: signature.len is 64
+debug, xmlSecNssSignatureVerify: data is af9f033c91c1d858bb4ac73fe56e7f657cacf2e5a2cf7685f97b43a3a65117bf2b824d934034ec7bacaf4d40bd918dcb507703665f6c193257cabc370e2adab1
+debug, xmlSecNssSignatureExecute: inSize is 502
+
+openssl: dataSize is 64
+debug, xmlSecOssSignatureVerify: data is af9f033c91c1d858bb4ac73fe56e7f657cacf2e5a2cf7685f97b43a3a65117bf2b824d934034ec7bacaf4d40bd918dcb507703665f6c193257cabc370e2adab1
+debug, xmlSecOssSignatureExecute: inSize is 502
+
+if VFY_EndWithSignature takes a DER-encoded input, then it fails in PK11_Verify
+
+Problem description:
+
+- patch: ...
+- run:
+
+cd tests/aleksey-xmldsig-01
+../../apps/xmlsec1 verify --trusted-der ../keys/cacert.der --enabled-key-data x509 enveloping-sha256-ecdsa-sha256.xml
+
+- gdb session:
+
+----
+397         crv = PK11_GETTAB(slot)->C_CreateObject(rwsession,
+(gdb) 
+383         SECStatus rv = SECSuccess;
+(gdb) 
+397         crv = PK11_GETTAB(slot)->C_CreateObject(rwsession,
+(gdb) 
+400         if (crv != CKR_OK) {
+(gdb) print /x crv
+$1 = 0x130
+(gdb) bt
+#0  PK11_CreateNewObject (slot=slot@entry=0x6929a0, session=session@entry=0, theTemplate=theTemplate@entry=0x7fffffffd0a0, count=count@entry=7, token=token@entry=0, 
+    objectID=objectID@entry=0x7fffffffd098) at pk11obj.c:400
+#1  0x00007ffff7675c15 in PK11_ImportPublicKey (slot=slot@entry=0x6929a0, pubKey=pubKey@entry=0x6ae8d0, isToken=isToken@entry=0) at pk11akey.c:232
+#2  0x00007ffff768e872 in PK11_VerifyWithMechanism (key=0x6ae8d0, mechanism=<optimized out>, param=param@entry=0x0, sig=sig@entry=0x7fffffffd2a0, hash=hash@entry=0x7fffffffd280, 
+    wincx=<optimized out>) at pk11obj.c:736
+#3  0x00007ffff768e99e in PK11_Verify (key=<optimized out>, sig=sig@entry=0x7fffffffd2a0, hash=hash@entry=0x7fffffffd280, wincx=<optimized out>) at pk11obj.c:690
+#4  0x00007ffff7673722 in VFY_EndWithSignature (cx=0x6a2d70, sig=sig@entry=0x7fffffffd360) at secvfy.c:596
+#5  0x0000000000418c31 in xmlSecNssSignatureVerify (transform=0x6ab4d0, 
+    data=0x6b36c0 "\257\237\003<\221\301\330X\273J\307?\345n\177e|\254\362\345\242\317v\205\371{C\243\246Q\027\277+\202M\223@4\354{\254\257M@\275\221\215\313Pw\003f_l\031\062Wʼ7\016*ڱ", 
+    dataSize=64, transformCtx=<optimized out>) at signatures.c:347
+#6  0x0000000000443b9a in xmlSecTransformVerifyNodeContent (transform=0x6ab4d0, node=<optimized out>, transformCtx=transformCtx@entry=0x7fffffffd710) at transforms.c:1523
+#7  0x000000000044e0f4 in xmlSecDSigCtxVerify (dsigCtx=dsigCtx@entry=0x7fffffffd450, node=<optimized out>) at xmldsig.c:353
+#8  0x000000000040929c in xmlSecAppVerifyFile (filename=<optimized out>) at xmlsec.c:1223
+#9  0x000000000040737d in main (argc=7, argv=0x7fffffffd9e8) at xmlsec.c:1058
+----
+
+- 0x130 is CKR_DOMAIN_PARAMS_INVALID
+
+- idea #1 is to ask the NSS guys, done at <http://www.mail-archive.com/dev-tech-crypto@lists.mozilla.org/msg12759.html>
+
+- dev-tech-crypto@ points out an additional debug package is needed for softtoken, new backtrace is:
+
+----
+(gdb) next     
+1789                if (EC_FillParams(arena, &pubKey->u.ec.ecParams.DEREncoding,
+(gdb) next     
+1791                    crv = CKR_DOMAIN_PARAMS_INVALID;
+(gdb) 
+1789                if (EC_FillParams(arena, &pubKey->u.ec.ecParams.DEREncoding,
+(gdb) print crv
+$5 = 0
+(gdb) next     
+1841        *crvp = crv;
+(gdb) print crv
+$6 = 304
+(gdb) bt
+#0  sftk_GetPubKey (object=object@entry=0x6b4fa0, key_type=key_type@entry=3, crvp=crvp@entry=0x7fffffffced0) at pkcs11.c:1841
+#1  0x00007ffff572be7c in sftk_handlePublicKeyObject (session=<optimized out>, key_type=3, object=0x6b4fa0) at pkcs11.c:970
+#2  sftk_handleKeyObject (object=0x6b4fa0, session=0x693170) at pkcs11.c:1397
+#3  sftk_handleObject (object=object@entry=0x6b4fa0, session=session@entry=0x693170) at pkcs11.c:1662
+#4  0x00007ffff572ece0 in NSC_CreateObject (hSession=<optimized out>, pTemplate=<optimized out>, ulCount=<optimized out>, phObject=0x7fffffffd098) at pkcs11.c:4296
+#5  0x00007ffff768e0e2 in PK11_CreateNewObject (slot=slot@entry=0x6929a0, session=session@entry=0, theTemplate=theTemplate@entry=0x7fffffffd0a0, count=count@entry=7, token=token@entry=0, 
+    objectID=objectID@entry=0x7fffffffd098) at pk11obj.c:397
+#6  0x00007ffff7675c15 in PK11_ImportPublicKey (slot=slot@entry=0x6929a0, pubKey=pubKey@entry=0x6ae8d0, isToken=isToken@entry=0) at pk11akey.c:232
+#7  0x00007ffff768e872 in PK11_VerifyWithMechanism (key=0x6ae8d0, mechanism=<optimized out>, param=param@entry=0x0, sig=sig@entry=0x7fffffffd2a0, hash=hash@entry=0x7fffffffd280, 
+    wincx=<optimized out>) at pk11obj.c:736
+#8  0x00007ffff768e99e in PK11_Verify (key=<optimized out>, sig=sig@entry=0x7fffffffd2a0, hash=hash@entry=0x7fffffffd280, wincx=<optimized out>) at pk11obj.c:690
+#9  0x00007ffff7673722 in VFY_EndWithSignature (cx=0x6a2d70, sig=sig@entry=0x7fffffffd360) at secvfy.c:596
+#10 0x0000000000418c31 in xmlSecNssSignatureVerify (transform=0x6ab4d0, 
+    data=0x6b3700 "\257\237\003<\221\301\330X\273J\307?\345n\177e|\254\362\345\242\317v\205\371{C\243\246Q\027\277+\202M\223@4\354{\254\257M@\275\221\215\313Pw\003f_l\031\062Wʼ7\016*ڱ", 
+    dataSize=64, transformCtx=<optimized out>) at signatures.c:347
+#11 0x0000000000443b9a in xmlSecTransformVerifyNodeContent (transform=0x6ab4d0, node=<optimized out>, transformCtx=transformCtx@entry=0x7fffffffd710) at transforms.c:1523
+#12 0x000000000044e0f4 in xmlSecDSigCtxVerify (dsigCtx=dsigCtx@entry=0x7fffffffd450, node=<optimized out>) at xmldsig.c:353
+#13 0x000000000040929c in xmlSecAppVerifyFile (filename=<optimized out>) at xmlsec.c:1223
+#14 0x000000000040737d in main (argc=7, argv=0x7fffffffd9e8) at xmlsec.c:1058
+(gdb) print pubKey->u.ec.ecParams.DEREncoding
+$7 = {type = siBuffer, data = 0x6b3d08 "\006\005+\201\004", len = 7}
+----
+
+why EC_FillParams() fails:
+
+----
+(gdb) 
+252             PORT_SetError(SEC_ERROR_UNSUPPORTED_ELLIPTIC_CURVE);
+(gdb) bt
+#0  EC_FillParams (arena=arena@entry=0x6b35c0, encodedParams=encodedParams@entry=0x6b3cf0, params=params@entry=0x6b3c30) at ecdecode.c:252
+#1  0x00007ffff572b696 in sftk_GetPubKey (object=object@entry=0x6b4fe0, key_type=key_type@entry=3, crvp=crvp@entry=0x7fffffffced0) at pkcs11.c:1789
+#2  0x00007ffff572be7c in sftk_handlePublicKeyObject (session=<optimized out>, key_type=3, object=0x6b4fe0) at pkcs11.c:970
+#3  sftk_handleKeyObject (object=0x6b4fe0, session=0x693170) at pkcs11.c:1397
+#4  sftk_handleObject (object=object@entry=0x6b4fe0, session=session@entry=0x693170) at pkcs11.c:1662
+#5  0x00007ffff572ece0 in NSC_CreateObject (hSession=<optimized out>, pTemplate=<optimized out>, ulCount=<optimized out>, phObject=0x7fffffffd098) at pkcs11.c:4296
+#6  0x00007ffff768e0e2 in PK11_CreateNewObject (slot=slot@entry=0x6929a0, session=session@entry=0, theTemplate=theTemplate@entry=0x7fffffffd0a0, count=count@entry=7, token=token@entry=0, 
+    objectID=objectID@entry=0x7fffffffd098) at pk11obj.c:397
+#7  0x00007ffff7675c15 in PK11_ImportPublicKey (slot=slot@entry=0x6929a0, pubKey=pubKey@entry=0x6ae8d0, isToken=isToken@entry=0) at pk11akey.c:232
+#8  0x00007ffff768e872 in PK11_VerifyWithMechanism (key=0x6ae8d0, mechanism=<optimized out>, param=param@entry=0x0, sig=sig@entry=0x7fffffffd2a0, hash=hash@entry=0x7fffffffd280, 
+    wincx=<optimized out>) at pk11obj.c:736
+#9  0x00007ffff768e99e in PK11_Verify (key=<optimized out>, sig=sig@entry=0x7fffffffd2a0, hash=hash@entry=0x7fffffffd280, wincx=<optimized out>) at pk11obj.c:690
+#10 0x00007ffff7673722 in VFY_EndWithSignature (cx=0x6a2d70, sig=sig@entry=0x7fffffffd360) at secvfy.c:596
+#11 0x0000000000418c31 in xmlSecNssSignatureVerify (transform=0x6ab4d0, 
+    data=0x6b3740 "\257\237\003<\221\301\330X\273J\307?\345n\177e|\254\362\345\242\317v\205\371{C\243\246Q\027\277+\202M\223@4\354{\254\257M@\275\221\215\313Pw\003f_l\031\062Wʼ7\016*ڱ", 
+    dataSize=64, transformCtx=<optimized out>) at signatures.c:347
+#12 0x0000000000443b9a in xmlSecTransformVerifyNodeContent (transform=0x6ab4d0, node=<optimized out>, transformCtx=transformCtx@entry=0x7fffffffd710) at transforms.c:1523
+#13 0x000000000044e0f4 in xmlSecDSigCtxVerify (dsigCtx=dsigCtx@entry=0x7fffffffd450, node=<optimized out>) at xmldsig.c:353
+#14 0x000000000040929c in xmlSecAppVerifyFile (filename=<optimized out>) at xmlsec.c:1223
+#15 0x000000000040737d in main (argc=7, argv=0x7fffffffd9e8) at xmlsec.c:1058
+----
+
+at the end solved by "Change ECDSA tests to use the secp256r1 parameter"
+
+=== ECDSA generation
+
+This is still broken, current problem: <SignatureValue> has content where the
+length is (after base64 decode) 71 bytes, not 64 bytes (probably an additional
+DER encoding somewhere).
+
+Actually hardcoding 64 bytes makes it work, but surely there is API somewhere
+to get the size nicely.
+
 // vim: ft=asciidoc
