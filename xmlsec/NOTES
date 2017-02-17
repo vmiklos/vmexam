@@ -159,4 +159,6 @@ DER encoding somewhere).
 Actually hardcoding 64 bytes makes it work, but surely there is API somewhere
 to get the size nicely.
 
+SECKEY_SignatureLen() can give the signature length for a public key.
+
 // vim: ft=asciidoc

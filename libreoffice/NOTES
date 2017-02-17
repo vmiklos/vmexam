@@ -1577,6 +1577,13 @@ lcov, rtfattributeoutput.cxx:
 - old: line coverage is 77.8 %
 - new: line coverage is 77.9 %
 
+=== 2017-02-17
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=104081
+
+- docx version works fine, probably missing import of a comat setting
+- <w:doNotUseHTMLParagraphAutoSpacing/> perhaps this one? -> NS_ooxml::LN_CT_Compat_doNotUseHTMLParagraphAutoSpacing token -> \htmautsp in RTF
+
 <<<
 
 Problematic bugs:
