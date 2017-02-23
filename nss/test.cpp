@@ -16,7 +16,7 @@ void test(const char* string)
 
 int main()
 {
-    test("C=HU,L=Budapest,O=NISZ Nemzeti Infokommunikációs Szolgáltató Zrt.,CN=Állampolgári Tanúsítványkiadó - Qualified Citizen CA,UNDEF=VATHU-10585560");
+    test("C=HU,L=Budapest,O=NISZ Nemzeti Infokommunikációs Szolgáltató Zrt.,CN=Állampolgári Tanúsítványkiadó - Qualified Citizen CA,2.5.4.97=VATHU-10585560");
     test("C=HU,L=Budapest,O=NISZ Nemzeti Infokommunikációs Szolgáltató Zrt.,CN=Állampolgári Tanúsítványkiadó - Qualified Citizen CA");
 
     return 0;
