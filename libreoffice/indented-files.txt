@@ -9,6 +9,7 @@ include/o3tl/make_unique.hxx
 include/sfx2/classificationhelper.hxx
 include/sfx2/lokhelper.hxx
 include/svl/grabbagitem.hxx
+include/xmlsecurity/pdfio/pdfdocument.hxx
 oox/source/drawingml/customshapepresetdata.cxx
 oox/source/shape/LockedCanvasContext.cxx
 oox/source/shape/LockedCanvasContext.hxx
@@ -110,7 +111,6 @@ writerfilter/source/rtftok/rtfvalue.cxx
 writerfilter/source/rtftok/rtfvalue.hxx
 xmlsecurity/inc/certificate.hxx
 xmlsecurity/inc/documentsignaturemanager.hxx
-xmlsecurity/inc/pdfio/pdfdocument.hxx
 xmlsecurity/inc/pdfsignaturehelper.hxx
 xmlsecurity/qa/unit/pdfsigning/pdfsigning.cxx
 xmlsecurity/qa/unit/signing/signing.cxx
