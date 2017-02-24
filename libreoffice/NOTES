@@ -1584,6 +1584,49 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=104081
 - docx version works fine, probably missing import of a comat setting
 - <w:doNotUseHTMLParagraphAutoSpacing/> perhaps this one? -> NS_ooxml::LN_CT_Compat_doNotUseHTMLParagraphAutoSpacing token -> \htmautsp in RTF
 
+=== 2017-02-24
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=103931
+
+QA says it's introduced by d185204737031955c56a24356ed003d342548434
+
+problem seems to be that the last section in the bugdoc is empty, if it has 1 para, then we're OK.
+
+dmapper debug xml simply has 2 vs 3 <DomainMapper.section> elements
+
+bt for first section:
+
+----
+#0  0x00007fffc9e1c475 in writerfilter::dmapper::DomainMapper::lcl_startSectionGroup() (this=0x1ec10d0)
+    at /home/vmiklos/git/libreoffice/master/writerfilter/source/dmapper/DomainMapper.cxx:2850
+#1  0x00007fffc9e99561 in writerfilter::LoggedStream::startSectionGroup() (this=0x1ec10f8) at /home/vmiklos/git/libreoffice/master/writerfilter/source/dmapper/LoggedResources.cxx:96
+#2  0x00007fffc9ef5aa4 in writerfilter::ooxml::OOXMLFastContextHandler::startSectionGroup() (this=this@entry=0x1eed340)
+    at /home/vmiklos/git/libreoffice/master/writerfilter/source/ooxml/OOXMLFastContextHandler.cxx:436
+#3  0x00007fffc9f51d3b in writerfilter::ooxml::OOXMLFactory_wml::startAction(writerfilter::ooxml::OOXMLFastContextHandler*) (this=<optimized out>, pHandler=0x1eed340)
+    at /home/vmiklos/git/libreoffice/master/workdir/CustomTarget/writerfilter/source/ooxml/OOXMLFactory_wml.cxx:8084
+----
+
+bt for second section:
+
+----
+#0  0x00007fffc9e1c475 in writerfilter::dmapper::DomainMapper::lcl_startSectionGroup() (this=0x1ec0b70)
+    at /home/vmiklos/git/libreoffice/master/writerfilter/source/dmapper/DomainMapper.cxx:2850
+#1  0x00007fffc9e99561 in writerfilter::LoggedStream::startSectionGroup() (this=0x1ec0b98) at /home/vmiklos/git/libreoffice/master/writerfilter/source/dmapper/LoggedResources.cxx:96
+#2  0x00007fffc9ef5b4b in writerfilter::ooxml::OOXMLFastContextHandler::startSectionGroup() (this=this@entry=0x1fb8190)
+    at /home/vmiklos/git/libreoffice/master/writerfilter/source/ooxml/OOXMLFastContextHandler.cxx:437
+#3  0x00007fffc9ef5e4e in writerfilter::ooxml::OOXMLFastContextHandler::handleLastParagraphInSection() (this=this@entry=0x1fb8190)
+    at /home/vmiklos/git/libreoffice/master/writerfilter/source/ooxml/OOXMLFastContextHandler.cxx:576
+#4  0x00007fffc9f51c6d in writerfilter::ooxml::OOXMLFactory_wml::startAction(writerfilter::ooxml::OOXMLFastContextHandler*) (this=<optimized out>, pHandler=0x1fb8190)
+    at /home/vmiklos/git/libreoffice/master/workdir/CustomTarget/writerfilter/source/ooxml/OOXMLFactory_wml.cxx:8026
+#5  0x00007fffc9ef3cc2 in writerfilter::ooxml::OOXMLFactory::startAction(writerfilter::ooxml::OOXMLFastContextHandler*, int) (pHandler=pHandler@entry=0x1fb8190)
+    at /home/vmiklos/git/libreoffice/master/writerfilter/source/ooxml/OOXMLFactory.cxx:163
+#6  0x00007fffc9ef46ba in writerfilter::ooxml::OOXMLFastContextHandler::lcl_startFastElement(int, com::sun::star::uno::Reference<com::sun::star::xml::sax::XFastAttributeList> const&) (this=0x1fb8190, Element=921300) at /home/vmiklos/git/libreoffice/master/writerfilter/source/ooxml/OOXMLFastContextHandler.cxx:197
+#7  0x00007fffc9ef9bf0 in writerfilter::ooxml::OOXMLFastContextHandler::startFastElement(int, com::sun::star::uno::Reference<com::sun::star::xml::sax::XFastAttributeList> const&) (this=0x1fb8190, Element=921300, Attribs=uno::Reference to (sax_fastparser::FastAttributeList *) 0x1f7a178)
+    at /home/vmiklos/git/libreoffice/master/writerfilter/source/ooxml/OOXMLFastContextHandler.cxx:168
+----
+
+testcase: xray ThisComponent.TextSections.getCount ' should be 3
+
 <<<
 
 Problematic bugs:

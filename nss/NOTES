@@ -1,0 +1,18 @@
+= NSS notes
+
+== Building
+
+https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS
+
+----
+cd nss
+make nss_build_all USE_64=1
+----
+
+== CERT_AsciiToName() bug
+
+https://bugzilla.mozilla.org/show_bug.cgi?id=1342137
+
+ParseRFC1485AVA() has the bug
+
+// vim: ft=asciidoc
