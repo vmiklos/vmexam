@@ -1,5 +1,5 @@
 # This based on libclang-vim's .clang-tidy, changes:
 # - disabled readability-redundant-declaration, invalid output on static members
-Checks: 'clang-diagnostic-*,performance-*,unused-*,modernize-*,-modernize-raw-string-literal,misc-*,readability-redundant-*,-readability-redundant-declaration'
+Checks: 'clang-diagnostic-*,performance-*,unused-*,modernize-*,-modernize-raw-string-literal,misc-*,readability-redundant-*'
 WarningsAsErrors: '*'
 

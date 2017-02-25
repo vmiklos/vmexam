@@ -14,6 +14,12 @@
   - ../../win32/binaries/xmlsec.exe verify --trusted-der ../keys/cacert.der --enabled-key-data x509 enveloping-sha256-rsa-sha256-verify.xml
   - and so on, e.g. use --insecure instead of --trusted-...
 
+== Linux building
+
+----
+./configure --with-pic --disable-shared --disable-crypto-dl --without-libxslt --without-gnutls --enable-silent-rules --without-openssl --without-gcrypt --enable-debugging
+----
+
 == ECDSA
 
 === ECDSA verification
