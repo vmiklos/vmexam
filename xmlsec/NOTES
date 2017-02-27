@@ -167,4 +167,21 @@ to get the size nicely.
 
 SECKEY_SignatureLen() can give the signature length for a public key.
 
+=== after xmlsec is fixed and CERT_AsciiToName() is patched
+
+- how to reproduce, xmlsec build:
+
+----
+NSS_CFLAGS="-I/home/vmiklos/scm/hg/dist/Linux4.4_x86_64_cc_glibc_PTH_64_DBG.OBJ/include -I/home/vmiklos/scm/hg/dist/public/nss" NSS_LIBS="-L/home/vmiklos/scm/hg/dist/Linux4.4_x86_64_cc_glibc_PTH_64_DBG.OBJ/lib -lssl3 -lsmime3 -lnss3 -lnssutil3 -lplds4 -lplc4 -lnspr4"
+----
+
+- how to reproduce, run:
+
+----
+cd /home/vmiklos/git/libreoffice/lo-test-files/writer/bugs/tdf105983
+LD_LIBRARY_PATH=/home/vmiklos/scm/hg/dist/Linux4.4_x86_64_cc_glibc_PTH_64_DBG.OBJ/lib /home/vmiklos/git/xmlsec/apps/xmlsec1 verify --enabled-key-data x509 --insecure META-INF/documentsignatures.xml
+----
+
+- currently fails in VFY_EndWithSignature() -> decodeECorDSASignature() -> ... -> DSAU_ConvertSignedToFixedUnsigned() fails in dsautil.c:199
+
 // vim: ft=asciidoc
