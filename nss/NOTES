@@ -15,4 +15,21 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1342137
 
 ParseRFC1485AVA() has the bug
 
+== certutil reproducer
+
+----
+cd $HOME/scm/hg
+LD_LIBRARY_PATH=${WORKDIR}/dist/Linux4.4_x86_64_cc_glibc_PTH_64_DBG.OBJ/lib dist/Linux4.4_x86_64_cc_glibc_PTH_64_DBG.OBJ/bin/certutil -S -d db -t "C,," -x -n "Server-Cert" -g 2048 -s "CN=nss.dev.example.com,O=Testing,L=example,ST=South Australia,C=AU,2.5.4.97=VATHU-10585560"
+----
+
+how does it fail? CreateCert -> GetCertRequest -> second SEC_ASN1DecodeItem fails
+
+(gdb) print signedData.data.len
+$6 = 434
+(gdb) x/434xb signedData.data.data      
+
+openssl asn1parse -inform der <bin
+
+confirms that there is a problem with the encoding result.
+
 // vim: ft=asciidoc

@@ -1,3 +1,4 @@
+#include <iomanip>
 #include <iostream>
 
 #include <cert.h>
@@ -9,6 +10,19 @@ void test(const char* string)
     {
         std::cerr << "CERT_AsciiToName() succeeded for '" << string << "'"
                   << std::endl;
+
+        PRArenaPool* arena = PORT_NewArena(DER_DEFAULT_CHUNKSIZE);
+        SECItem* derName = SEC_ASN1EncodeItem(arena, nullptr, name,
+                                              SEC_ASN1_GET(CERT_NameTemplate));
+        std::cerr << "derName->len is " << derName->len << std::endl;
+        for (size_t i = 0; i < derName->len; ++i)
+        {
+            std::cerr << std::setw(2) << std::setfill('0') << std::hex
+                      << int(*(derName->data + i));
+        }
+        std::cerr << std::endl;
+        PORT_FreeArena(arena, PR_FALSE);
+
         CERT_DestroyName(name);
     }
     else
