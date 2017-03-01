@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "eper_koz": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "17",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "14",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "harta_utca": {
             "ranges": [
                 {
