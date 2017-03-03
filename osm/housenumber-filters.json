@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "raho_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "15",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "32",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "ortahaza_utca": {
             "ranges": [
                 {

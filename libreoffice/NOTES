@@ -1627,6 +1627,31 @@ bt for second section:
 
 testcase: xray ThisComponent.TextSections.getCount ' should be 3
 
+=== 2017-03-03
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=104287
+
+Given picture wrapped in a shape can't be imported anymore inside table.
+
+- pict itself is there if buffer is disabled during buffer replay to avoid recursion
+- size is still wrong
+
+bad size:
+
+          <GraphicImport.sprm name="ooxml:CT_Anchor_extent">RTFSprm ('ooxml:CT_Anchor_extent', '0')
+            <GraphicImport.attribute name="ooxml:CT_PositiveSize2D_cx" value="0"/>
+            <GraphicImport.attribute name="ooxml:CT_PositiveSize2D_cy" value="0"/>
+          </GraphicImport.sprm>
+
+good size:
+
+          <GraphicImport.sprm name="ooxml:CT_Anchor_extent">RTFSprm ('ooxml:CT_Anchor_extent', '0')
+            <GraphicImport.attribute name="ooxml:CT_PositiveSize2D_cx" value="6050160"/>
+            <GraphicImport.attribute name="ooxml:CT_PositiveSize2D_cy" value="4020840"/>
+          </GraphicImport.sprm>
+
+unrelated: XMLEncryptionTemplateImpl is unused in xmlsecurity, since 0649622956431e0a1955cb80d1175025401ab5e5
+
 <<<
 
 Problematic bugs:
