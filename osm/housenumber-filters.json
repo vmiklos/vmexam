@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "gulyas_koz": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "9",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "8",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "raho_utca": {
             "ranges": [
                 {
