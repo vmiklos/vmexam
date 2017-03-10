@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "oltvany_utca": {
+            "ranges": [
+                {
+                    "start": "3",
+                    "end": "19",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "32",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "suveg_utca": {
             "ranges": [
                 {
