@@ -1541,17 +1541,15 @@ after:  rtfdispatchvalue.cxx line cov is 87.4%
 
 === 2017-02-09
 
-Brief research on the Rectangle -> tools::Rectangle rename, with a smaller
-example: writerfilter::rtftok::RTFDocumentImpl ->
-writerfilter::rtftok::foo::RTFDocumentImpl.
+Brief research on the Rectangle -> tools::Rectangle rename.
 
 - touch the relevant header
-- make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=clang-rename-wrapper RENAME_ARGS="-qualified-name=writerfilter::rtftok::RTFDocumentImpl -new-name=foo::RTFDocumentImpl"
-- clang-apply-replacements /tmp/rename
-- rm -rf /tmp/rename
+- make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=clang-rename-wrapper RENAME_ARGS="-qualified-name=Rectangle -new-name=tools::Rectangle"
+- clang-apply-replacements -remove-change-desc-files /tmp/rename
 
 need to fix up the header + the class itself, but all client code is adapted
-correctly as far as I see -> promising.
+correctly as far as I see -> promising. Bug for this is
+<https://bugs.documentfoundation.org/show_bug.cgi?id=82580>.
 
 === 2017-02-10
 
@@ -1651,6 +1649,18 @@ good size:
           </GraphicImport.sprm>
 
 unrelated: XMLEncryptionTemplateImpl is unused in xmlsecurity, since 0649622956431e0a1955cb80d1175025401ab5e5
+
+=== 2017-03-10
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=105729
+
+- minimized bugdoc is fine, what is the difference between the minimal and the full bugdoc?
+- \ltrpar is the key for some reason, just removing those from the orig bugdoc fixes the lack of center
+- \qc is NS_ooxml::LN_Value_ST_Jc_center (type is NS_ooxml::LN_CT_PPrBase_jc)
+- LN_CT_PPrBase_jc is found to be a duplicate; but that should be fine.
+- this situation is similar to 92fd894ea18672cba4cf961bdc4c0bc98f168102, but here \qc comes from a style
+- ww8 import equivalent is SwWW8ImplReader::Read_ParaBiDi(), it does not set the paragraph adjustment
+- this docx import behavior was added by 2638faa2e834c2da4c195224fd88d32c29b3d0cc
 
 <<<
 
