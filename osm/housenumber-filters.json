@@ -1,6 +1,15 @@
 {
     "source": "survey",
     "filters": {
+        "rodosto_utca": {
+            "ranges": [
+                {
+                    "start": "7",
+                    "end": "17",
+                    "isOdd": "true"
+                }
+            ]
+        },
         "oltvany_utca": {
             "ranges": [
                 {
