@@ -1,6 +1,11 @@
 {
     "source": "survey",
     "filters": {
+        "gazdagreti_ut": {
+            "comment": "no house numbers for Sasad",
+            "ranges": [
+            ]
+        },
         "rodosto_utca": {
             "ranges": [
                 {
