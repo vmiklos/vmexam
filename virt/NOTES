@@ -1,0 +1,9 @@
+= virt-manager notes
+
+== Windows 7 vs slow IO
+
+Perhaps
+<http://unix.stackexchange.com/questions/47082/how-to-improve-windows-perfomance-when-running-inside-kvm/48584#48584>
+is the answer, i.e. set cache to none and io mode to native.
+
+// vim: ft=asciidoc
