@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "barackos_koz": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "7",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "10",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "gazdagreti_ut": {
             "comment": "no house numbers for Sasad",
             "ranges": [
