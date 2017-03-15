@@ -1,6 +1,16 @@
 {
     "source": "survey",
     "filters": {
+        "budaorsi_ut": {
+            "comment": "this is just the Sasad part",
+            "ranges": [
+                {
+                    "start": "77",
+                    "end": "135",
+                    "isOdd": "true"
+                }
+            ]
+        },
         "barackos_koz": {
             "ranges": [
                 {
