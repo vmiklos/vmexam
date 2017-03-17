@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "gorbe_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "9",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "14",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "haraszt_utca": {
             "ranges": [
                 {
