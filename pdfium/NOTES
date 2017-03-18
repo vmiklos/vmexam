@@ -1,0 +1,36 @@
+= pdfium notes
+
+== setup
+
+See <https://pdfium.googlesource.com/pdfium/>:
+
+----
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+export PATH=`pwd`/depot_tools:"$PATH"
+gclient config --unmanaged https://pdfium.googlesource.com/pdfium.git
+gclient sync
+sudo zypper in gyp
+build/linux/sysroot_scripts/install-sysroot.py --arch=amd64
+gn gen workdir
+gn args workdir
+----
+
+argument list:
+
+----
+is_debug = true
+pdf_enable_xfa = false
+pdf_enable_v8 = false
+pdf_is_standalone = true    # important - to get pdfium_test
+is_component_build = false
+----
+
+finally:
+
+----
+sed -i 's|-fuse-ld=gold ||' $(find workdir/ -name "*.ninja")
+sed -i 's|-Wl,--icf=all ||' $(find workdir/ -name "*.ninja")
+ninja -C workdir
+----
+
+// vim: ft=asciidoc
