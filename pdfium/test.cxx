@@ -21,7 +21,10 @@ int main()
         fileContents.data(), fileContents.size(), /*password=*/nullptr);
     assert(document);
 
-    FPDF_CloseDocument(pPdfDocument);
+    // The document has one page.
+    assert(FPDF_GetPageCount(document) == 1);
+
+    FPDF_CloseDocument(document);
 
     FPDF_DestroyLibrary();
 }
