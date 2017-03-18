@@ -1,8 +1,10 @@
 #include <cassert>
 #include <fstream>
+#include <iostream>
 #include <iterator>
 #include <vector>
 
+#include <fpdf_edit.h>
 #include <fpdfview.h>
 
 int main()
@@ -23,6 +25,16 @@ int main()
 
     // The document has one page.
     assert(FPDF_GetPageCount(document) == 1);
+    FPDF_PAGE page = FPDF_LoadPage(document, /*page_index=*/0);
+    assert(page);
+
+    int objectCount = FPDFPage_CountObject(page);
+    std::cerr << "FPDFPage_CountObject() is " << objectCount << std::endl;
+
+    FPDF_PAGEOBJECT pageObject = FPDFPage_GetObject(page, 0);
+    assert(pageObject);
+
+    FPDF_ClosePage(page);
 
     FPDF_CloseDocument(document);
 

@@ -24,7 +24,7 @@ PDFIUM_LIBS := -Wl,--start-group \
 	${P}/obj/third_party/libbigint.a \
 	${P}/obj/testing/gmock/libgmock.a \
 	${P}/obj/testing/gtest/libgtest.a \
-	-Wl,--end-group  -ldl -lrt -lfreetype
+	-Wl,--end-group  -ldl -lrt -lfreetype -pthread
 
 test: test.o Makefile
 	clang++ -std=c++11 -o test test.o ${PDFIUM_LIBS}
