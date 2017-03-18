@@ -1,4 +1,4 @@
-PDFIUM_CFLAGS := -I${HOME}/git/pdfium/pdfium/public
+PDFIUM_CFLAGS := -I${HOME}/git/pdfium/pdfium/public -I${HOME}/git/pdfium/pdfium/ -I/usr/include/freetype2
 P := ${HOME}/git/pdfium/pdfium/workdir
 PDFIUM_LIBS := -Wl,--start-group \
 	${P}/obj/libpdfium.a \

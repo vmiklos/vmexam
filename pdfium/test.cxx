@@ -7,6 +7,10 @@
 #include <fpdf_edit.h>
 #include <fpdfview.h>
 
+#include "core/fpdfapi/page/cpdf_page.h"
+#include "core/fpdfapi/parser/cpdf_dictionary.h"
+#include "core/fpdfapi/parser/cpdf_object.h"
+
 int main()
 {
     FPDF_LIBRARY_CONFIG config;
@@ -28,11 +32,21 @@ int main()
     FPDF_PAGE page = FPDF_LoadPage(document, /*page_index=*/0);
     assert(page);
 
-    int objectCount = FPDFPage_CountObject(page);
-    std::cerr << "FPDFPage_CountObject() is " << objectCount << std::endl;
+    // Start of internal API.
+    auto pageInternal = static_cast<CPDF_Page*>(page);
+    CPDF_Object* resources = pageInternal->GetPageAttr("Resources");
+    assert(resources);
+    CPDF_Dictionary* xobject = resources->GetDict()->GetDictFor("XObject");
+    assert(xobject);
+    // The page has one image.
+    assert(xobject->GetCount() == 1);
 
-    FPDF_PAGEOBJECT pageObject = FPDFPage_GetObject(page, 0);
-    assert(pageObject);
+    CPDF_Object* referenceXObject =
+        xobject->GetObjectFor(xobject->begin()->first);
+    assert(referenceXObject);
+    // The image is a reference XObject.
+    assert(referenceXObject->GetDict()->GetDictFor("Ref"));
+    // End of internal API.
 
     FPDF_ClosePage(page);
 
