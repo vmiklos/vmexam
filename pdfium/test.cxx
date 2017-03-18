@@ -36,7 +36,8 @@ int main()
     auto pageInternal = static_cast<CPDF_Page*>(page);
     CPDF_Object* resources = pageInternal->GetPageAttr("Resources");
     assert(resources);
-    CPDF_Dictionary* xobject = resources->GetDict()->GetDictFor("XObject");
+    CPDF_Dictionary* xobject =
+        resources->GetDict()->GetObjectFor("XObject")->AsDictionary();
     assert(xobject);
     // The page has one image.
     assert(xobject->GetCount() == 1);
@@ -45,7 +46,7 @@ int main()
         xobject->GetObjectFor(xobject->begin()->first);
     assert(referenceXObject);
     // The image is a reference XObject.
-    assert(referenceXObject->GetDict()->GetDictFor("Ref"));
+    assert(referenceXObject->GetDict()->GetObjectFor("Ref"));
     // End of internal API.
 
     FPDF_ClosePage(page);
