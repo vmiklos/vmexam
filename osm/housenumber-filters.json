@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "oltvany_arok": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "43",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "4",
+                    "end": "34",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "ramocsa_utca": {
             "ranges": [
                 {
