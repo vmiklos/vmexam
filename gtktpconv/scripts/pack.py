@@ -35,7 +35,7 @@ def main():
         "fontconfig.dll",
         "libxml2.dll",
         "pangoft2-1.0.dll",
-        "harfbuzz.dll",
+        "harfbuzz-vs14.dll",
         "cairo-gobject.dll",
         "gdk_pixbuf-2.0.dll",
         "epoxy-0.dll",
