@@ -1,6 +1,21 @@
 {
     "source": "survey",
     "filters": {
+        "brasso_ut": {
+            "comment": "<=152 is just the Sasad part, 169 is actually 169-179",
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "169",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "152",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "oltvany_arok": {
             "ranges": [
                 {
