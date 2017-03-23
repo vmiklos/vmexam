@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "haromszek_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "43",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "56",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "brasso_ut": {
             "comment": "<=152 is just the Sasad part, 169 is actually 169-179",
             "ranges": [
