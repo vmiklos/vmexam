@@ -1737,6 +1737,14 @@ doc model is:
 [  19] 0x1c0ec70              EndNode }
 ----
 
+=== 2017-03-24
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=106694
+
+dmapper has code to deduplicate tabs, is that still necessary? see commit 7f6e26917d -> yes, necessary
+
+ooxml:CT_PPrBase_tabs / 92158 is the token in question, should not dedup it in this case probably
+
 <<<
 
 Problematic bugs:
