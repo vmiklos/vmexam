@@ -1544,7 +1544,7 @@ after:  rtfdispatchvalue.cxx line cov is 87.4%
 Brief research on the Rectangle -> tools::Rectangle rename.
 
 - touch the relevant header
-- make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=clang-rename-wrapper RENAME_ARGS="-qualified-name=Rectangle -new-name=tools::Rectangle"
+- make check COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=rename-wrapper RENAME_ARGS="-old-name=Rectangle -new-name=tools::Rectangle"
 - clang-apply-replacements -remove-change-desc-files /tmp/rename
 
 need to fix up the header + the class itself, but all client code is adapted
@@ -1744,6 +1744,22 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=106694
 dmapper has code to deduplicate tabs, is that still necessary? see commit 7f6e26917d -> yes, necessary
 
 ooxml:CT_PPrBase_tabs / 92158 is the token in question, should not dedup it in this case probably
+
+=== 2017-03-25
+
+kerning broken for docx import?
+
+doc bt:
+
+----
+#0  0x00007fffcbccf334 in SwDoc::RemoveAllFormatLanguageDependencies() (this=0x1c04070) at /home/vmiklos/git/libreoffice/master/sw/source/core/doc/poolfmt.cxx:333
+#1  0x00007fffcc2bc92b in SwDocShell::ConvertFrom(SfxMedium&) (this=0x1bdbdc0, rMedium=...) at /home/vmiklos/git/libreoffice/master/sw/source/uibase/app/docsh.cxx:256
+#2  0x00007ffff288f13f in SfxObjectShell::DoLoad(SfxMedium*) (this=0x1bdbdc0, pMed=pMed@entry=0x1bf25f0) at /home/vmiklos/git/libreoffice/master/sfx2/source/doc/objstor.cxx:776
+#3  0x00007ffff28b6647 in SfxBaseModel::load(com::sun::star::uno::Sequence<com::sun::star::beans::PropertyValue> const&) (this=0x1bdc880, seqArguments=...)
+    at /home/vmiklos/git/libreoffice/master/sfx2/source/doc/sfxbasemodel.cxx:1802
+----
+
+-> CharAutoKerning
 
 <<<
 
