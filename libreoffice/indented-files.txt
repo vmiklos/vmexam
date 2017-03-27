@@ -9,6 +9,7 @@ include/o3tl/make_unique.hxx
 include/sfx2/classificationhelper.hxx
 include/sfx2/lokhelper.hxx
 include/svl/grabbagitem.hxx
+include/vcl/filter/pdfdocument.hxx
 include/xmlsecurity/pdfio/pdfdocument.hxx
 oox/source/drawingml/customshapepresetdata.cxx
 oox/source/shape/LockedCanvasContext.cxx
@@ -54,6 +55,7 @@ sw/source/filter/ww8/rtfstringbuffer.hxx
 sw/source/filter/ww8/sprmids.hxx
 sw/source/uibase/docvw/SidebarScrollBar.cxx
 sw/source/uibase/docvw/SidebarScrollBar.hxx
+vcl/source/filter/ipdf/pdfdocument.cxx
 vcl/source/filter/ipdf/pdfread.cxx
 vcl/source/filter/ipdf/pdfread.hxx
 writerfilter/inc/dmapper/DomainMapperFactory.hxx
