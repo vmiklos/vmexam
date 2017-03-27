@@ -1,0 +1,15 @@
+#!/bin/bash -e
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+style-check-files
+if git-review; then
+    rev=$(git rev-parse HEAD)
+    host=$(git config -f .gitreview gerrit.host)
+    ssh $host gerrit review --code-review=2 $rev
+fi
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:

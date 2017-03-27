@@ -1,0 +1,3 @@
+git-breview is the same as
+<https://cgit.freedesktop.org/libreoffice/contrib/dev-tools/tree/gerrit/auto-submit/git-breview>,
+but also runs style-check-files before anything else.
