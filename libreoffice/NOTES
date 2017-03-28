@@ -1544,7 +1544,7 @@ after:  rtfdispatchvalue.cxx line cov is 87.4%
 Brief research on the Rectangle -> tools::Rectangle rename.
 
 - touch the relevant header
-- make check COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=rename-wrapper RENAME_ARGS="-old-name=Rectangle -new-name=tools::Rectangle"
+- make check COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=clang-rename-wrapper RENAME_ARGS="-qualified-name=Rectangle -new-name=tools::Rectangle"
 - clang-apply-replacements -remove-change-desc-files /tmp/rename
 
 need to fix up the header + the class itself, but all client code is adapted
