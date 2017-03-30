@@ -27,7 +27,7 @@ class Otrs(callbacks.Plugin):
         self.url = config.sections()[0]
         self.user = config.get(self.url, "soap_user")
         self.password = config.get(self.url, "soap_password")
-        self.prefix = config.get(self.url, "prefix")
+        self.prefixes = config.get(self.url, "prefixes").split(",")
 
     def _ticket_id(self, number):
         #
@@ -36,7 +36,7 @@ class Otrs(callbacks.Plugin):
         # [https://localhost/otrs/rpc.pl]
         # soap_user = mycompany
         # soap_password = secret
-        # prefix = bug#
+        # prefixes = bug#,otrs#
         #
 
         import os
@@ -71,17 +71,16 @@ class Otrs(callbacks.Plugin):
         id = doc.childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].toxml().encode('utf-8')
         return "%s/index.pl?Action=AgentTicketZoom;TicketID=%s" % (self.url.replace('/rpc.pl', ''), id)
 
-    def _lookup_otrs(self, irc, msg):
+    def _lookup_otrs(self, irc, msg, prefix):
         (recipients, text) = msg.args
-        ticket_number = re.sub(".*%s([0-9]+).*" % self.prefix, r"\1", text)
+        ticket_number = re.sub(".*%s([0-9]+).*" % prefix, r"\1", text)
         irc.reply(self._ticket_id(ticket_number), prefixNick=False)
 
     def doPrivmsg(self, irc, msg):
         (recipients, text) = msg.args
-        if re.match(".*%s[0-9].*" % self.prefix, text):
-            self._lookup_otrs(irc, msg)
-        else:
-            pass
+        for prefix in self.prefixes:
+            if re.match(".*%s[0-9].*" % prefix, text):
+                self._lookup_otrs(irc, msg, prefix)
 
 
 Class = Otrs
