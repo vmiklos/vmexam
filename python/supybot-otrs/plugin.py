@@ -29,6 +29,11 @@ class Otrs(callbacks.Plugin):
         self.password = config.get(self.url, "soap_password")
         self.prefixes = config.get(self.url, "prefixes").split(",")
 
+        self.bugzillaUrl = None
+        if len(config.sections()) > 1:
+            self.bugzillaUrl = config.sections()[1]
+            self.bugzillaPrefixes = config.get(self.bugzillaUrl, "prefixes").split(",")
+
     def _ticket_id(self, number):
         #
         # Example ~/.otrsrc:
@@ -37,6 +42,11 @@ class Otrs(callbacks.Plugin):
         # soap_user = mycompany
         # soap_password = secret
         # prefixes = bug#,otrs#
+        #
+        # [https://localhost/bugzilla/show_bug.cgi]
+        # prefixes = bz#
+        #
+        # The second section is optional.
         #
 
         import os
@@ -76,11 +86,20 @@ class Otrs(callbacks.Plugin):
         ticket_number = re.sub(".*%s([0-9]+).*" % prefix, r"\1", text)
         irc.reply(self._ticket_id(ticket_number), prefixNick=False)
 
+    def _lookup_bugzilla(self, irc, msg, prefix):
+        (recipients, text) = msg.args
+        ticket_number = re.sub(".*%s([0-9]+).*" % prefix, r"\1", text)
+        irc.reply("%s?id=%s" % (self.bugzillaUrl, ticket_number), prefixNick=False)
+
     def doPrivmsg(self, irc, msg):
         (recipients, text) = msg.args
         for prefix in self.prefixes:
             if re.match(".*%s[0-9].*" % prefix, text):
                 self._lookup_otrs(irc, msg, prefix)
+        if self.bugzillaUrl:
+            for prefix in self.bugzillaPrefixes:
+                if re.match(".*%s[0-9].*" % prefix, text):
+                    self._lookup_bugzilla(irc, msg, prefix)
 
 
 Class = Otrs
