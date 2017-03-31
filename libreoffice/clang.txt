@@ -11,7 +11,7 @@ make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrap
 Detect unprefixed members for a class:
 
 ----
-make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-class-name=SdrDragView"
+make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-class-name=SdrDragView -yaml" 2>&1 |tee ~/rename.yaml
 make build-nocheck COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-class-name=SdrDragView"
 ----
 

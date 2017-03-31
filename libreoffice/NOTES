@@ -1551,6 +1551,13 @@ need to fix up the header + the class itself, but all client code is adapted
 correctly as far as I see -> promising. Bug for this is
 <https://bugs.documentfoundation.org/show_bug.cgi?id=82580>.
 
+in the modules which have their own foo::tools namespace, need to use ::tools::Rectangle:
+
+----
+for i in $(git grep -l '[^:]tools::Rectangle'); do sed -i 's/\([^:]\)tools::Rectangle/\1::tools::Rectangle/g' $i; done
+for i in $(git grep -l '^tools::Rectangle'); do sed -i 's/^tools::Rectangle/::tools::Rectangle/g' $i; done
+----
+
 === 2017-02-10
 
 https://bugs.documentfoundation.org/show_bug.cgi?id=104039
