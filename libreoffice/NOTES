@@ -1768,6 +1768,14 @@ doc bt:
 
 -> CharAutoKerning
 
+=== 2017-03-31
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=106690
+
+a situation where auto spacing is supposed to mean something...
+
+regression from c486e875de7c8e845594f5043a37ee8800865782
+
 <<<
 
 Problematic bugs:
