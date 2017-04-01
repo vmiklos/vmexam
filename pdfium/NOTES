@@ -30,6 +30,7 @@ finally:
 ----
 sed -i 's|-fuse-ld=gold ||' $(find workdir/ -name "*.ninja")
 sed -i 's|-Wl,--icf=all ||' $(find workdir/ -name "*.ninja")
+sed -i 's|-Wl,--gdb-index ||' $(find workdir/ -name "*.ninja")
 ninja -C workdir
 ----
 
