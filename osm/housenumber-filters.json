@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "cseresznye_koz": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "3",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "4",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "dayka_gabor_utca": {
             "comment": "21-87 is outside Sasad",
             "ranges": [
