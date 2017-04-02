@@ -84,13 +84,12 @@ void testTdf105461()
     for (int i = 0; i < pageObjectCount; ++i)
     {
         FPDF_PAGEOBJECT pageObject = FPDFPage_GetObject(page, i);
-        // Start of internal API.
-        auto pageObjectInternal = static_cast<CPDF_PageObject*>(pageObject);
-        if (pageObjectInternal->GetType() != CPDF_PageObject::PATH)
+        if (FPDFPageObj_GetType(pageObject) != FPDF_PAGEOBJ_PATH)
             continue;
 
-        int red, green, blue;
-        if (pageObjectInternal->m_ColorState.GetFillRGB() != (0xff << 8 | 0xff))
+        // Start of internal API.
+        auto pageObjectInternal = static_cast<CPDF_PageObject*>(pageObject);
+        if (pageObjectInternal->m_ColorState.GetFillRGB() != 0xffff)
             continue;
         // End of internal API.
 
