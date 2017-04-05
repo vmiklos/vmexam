@@ -7,6 +7,7 @@
 #include <fpdf_edit.h>
 #include <fpdfview.h>
 
+#if 0
 #include "core/fpdfapi/page/cpdf_page.h"
 #include "core/fpdfapi/page/cpdf_pageobject.h"
 #include "core/fpdfapi/page/cpdf_pathobject.h"
@@ -57,6 +58,7 @@ void testTdf106059()
 
     FPDF_DestroyLibrary();
 }
+#endif
 
 void testTdf105461()
 {
@@ -87,11 +89,10 @@ void testTdf105461()
         if (FPDFPageObj_GetType(pageObject) != FPDF_PAGEOBJ_PATH)
             continue;
 
-        // Start of internal API.
-        auto pageObjectInternal = static_cast<CPDF_PageObject*>(pageObject);
-        if (pageObjectInternal->m_ColorState.GetFillRGB() != 0xffff)
+        unsigned int red, green, blue, alpha;
+        FPDFPath_GetFillColor(pageObject, &red, &green, &blue, &alpha);
+        if (((red << 16) | (green << 8) | blue) != 0xffff00)
             continue;
-        // End of internal API.
 
         ++yellowPathcount;
     }
@@ -106,7 +107,9 @@ void testTdf105461()
 
 int main()
 {
-    // testTdf106059();
+#if 0
+    testTdf106059();
+#endif
     testTdf105461();
 }
 
