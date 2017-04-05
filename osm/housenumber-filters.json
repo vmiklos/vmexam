@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "beregszasz_ut": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "101",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "4",
+                    "end": "100",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "cseresznye_koz": {
             "ranges": [
                 {

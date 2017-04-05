@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <fpdf_edit.h>
+#include <fpdf_save.h>
 #include <fpdfview.h>
 
 #if 0
@@ -105,12 +106,61 @@ void testTdf105461()
     FPDF_DestroyLibrary();
 }
 
+static std::string buf;
+
+static int WriteBlockCallback(FPDF_FILEWRITE* /*pFileWrite*/, const void* data,
+                              unsigned long size)
+{
+    buf.append(static_cast<const char*>(data), size);
+    return 1;
+}
+
+void testRoundtrip()
+{
+    // Demo code to show how to remove all but the first page of a document and
+    // save it.
+    FPDF_LIBRARY_CONFIG config;
+    config.version = 2;
+    config.m_pUserFontPaths = nullptr;
+    config.m_pIsolate = nullptr;
+    config.m_v8EmbedderSlot = 0;
+    FPDF_InitLibraryWithConfig(&config);
+
+    std::ifstream testFile("test.pdf", std::ios::binary);
+    std::vector<char> fileContents((std::istreambuf_iterator<char>(testFile)),
+                                   std::istreambuf_iterator<char>());
+    FPDF_DOCUMENT document = FPDF_LoadMemDocument(
+        fileContents.data(), fileContents.size(), /*password=*/nullptr);
+    assert(document);
+
+    for (int i = FPDF_GetPageCount(document) - 1; i > 0; --i)
+    {
+        FPDFPage_Delete(document, i);
+    }
+
+    FPDF_PAGE page = FPDF_LoadPage(document, /*page_index=*/0);
+    assert(page);
+    FPDFPage_GenerateContent(page);
+
+    FPDF_FILEWRITE fileWrite;
+    fileWrite.version = 1;
+    fileWrite.WriteBlock = WriteBlockCallback;
+    assert(FPDF_SaveWithVersion(document, &fileWrite, 0, 17));
+    std::ofstream testOutFile("test.out.pdf", std::ios::binary);
+    std::copy(buf.begin(), buf.end(),
+              std::ostreambuf_iterator<char>(testOutFile));
+
+    FPDF_CloseDocument(document);
+
+    FPDF_DestroyLibrary();
+}
 int main()
 {
 #if 0
     testTdf106059();
-#endif
     testTdf105461();
+#endif
+    testRoundtrip();
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
