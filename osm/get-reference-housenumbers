@@ -14,12 +14,14 @@ import sys
 import urllib.error
 import urllib.request
 
+suffix = ""
+
 
 # Reads list of streets for an area from OSM.
 def getStreets():
     ret = []
 
-    sock = open("workdir/streets.csv")
+    sock = open("workdir/streets%s.csv" % suffix)
     first = True
     for line in sock.readlines():
         if first:
@@ -129,6 +131,9 @@ def getReferenceHouseNumbers(street, prefix):
 # Gets known house numbers (not their coordinates) from a reference site, based
 # on street names from OSM.
 def main():
+    global suffix
+    if len(sys.argv) > 1:
+        suffix = sys.argv[1]
     # Sample config:
     # [get-reference-housenumbers]
     # prefix = ...
@@ -143,7 +148,7 @@ def main():
         lst += getReferenceHouseNumbers(street, prefix)
 
     lst = sorted(set(lst))
-    sock = open("workdir/street-housenumbers-reference.lst", "w")
+    sock = open("workdir/street-housenumbers-reference%s.lst" % suffix, "w")
     for l in lst:
         sock.write(l + "\n")
     sock.close()

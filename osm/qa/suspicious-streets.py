@@ -14,6 +14,8 @@ import re
 import sys
 import unittest
 
+suffix = ""
+
 
 # A Ranges object contains an item if any of its Range objects contains it.
 class Ranges:
@@ -43,10 +45,7 @@ class Range:
 
 
 def getArea():
-    if len(sys.argv) > 1:
-        return sys.argv[1]
-    else:
-        return str()
+        return suffix
 
 
 def simplify(s):
@@ -102,7 +101,7 @@ def getHouseNumbersFromLst(streetName):
     houseNumbers = []
     lstStreetName = simplify(streetName)
     prefix = lstStreetName + "_"
-    sock = open("workdir/street-housenumbers-reference.lst")
+    sock = open("workdir/street-housenumbers-reference%s.lst" % getArea())
     for line in sock.readlines():
         line = line.strip()
         if line.startswith(prefix):
@@ -164,7 +163,10 @@ class Test(unittest.TestCase):
 
 if __name__ == '__main__':
     normalizers = {}
-    with open("housenumber-filters.json") as jsonSock:
+    if len(sys.argv) > 1:
+        suffix = sys.argv[1]
+        sys.argv = sys.argv[:1]
+    with open("housenumber-filters%s.json" % getArea()) as jsonSock:
         normalizersJson = json.load(jsonSock)
     filtersJson = normalizersJson["filters"]
     for street in filtersJson.keys():

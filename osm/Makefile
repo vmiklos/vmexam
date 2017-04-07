@@ -52,6 +52,7 @@ check: check-style download
 	qa/interpolated-addresses.py -nemetvolgy
 	qa/streets-nomaxspeed.py
 	qa/suspicious-streets.py
+	#qa/suspicious-streets.py -gazdagret
 
 workdir/streets-gazdagret.txt: streets.txt
 	@mkdir -p workdir
