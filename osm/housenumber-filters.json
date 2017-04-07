@@ -1,6 +1,30 @@
 {
     "source": "survey",
     "filters": {
+        "harasztos_ut": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "7",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "8",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "torokbalinti_ut": {
+            "comment": "just the Sasad part",
+            "ranges": [
+                {
+                    "start": "2",
+                    "end": "54",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "beregszasz_ut": {
             "ranges": [
                 {
