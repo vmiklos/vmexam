@@ -4,7 +4,7 @@
 
 - why? as you can't test the mscrypto backend on Linux
 
-- environment: I only tested with VS2013 on 32bit Windows 7
+- environment: I only tested with VS2015 on 64bit Windows 7
   - I previously built LibreOffice master in this VM, under c:/lo/master
 
 - configure / make / copy-in deps: see up-cygwin.sh
@@ -18,6 +18,12 @@
 
 ----
 ./configure --with-pic --disable-shared --disable-crypto-dl --without-libxslt --without-gnutls --enable-silent-rules --without-openssl --without-gcrypt --enable-debugging
+----
+
+clang-tidy:
+
+----
+~/git/llvm/tools/clang/tools/extra/clang-tidy/tool/run-clang-tidy.py -checks=-*,readability-else-after-return
 ----
 
 == ECDSA
