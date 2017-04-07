@@ -6,7 +6,7 @@
 #
 
 header_filter=""
-for header in $(grep hxx$ .git/indented-files.cache)
+for header in $(grep hxx$ .git/indented-files.cache|grep -v 'make_unique.hxx')
 do
     if [ -n "$header_filter" ]; then
         header_filter+="|"
@@ -17,7 +17,7 @@ done
 if [ -n "$1" ]; then
     clang-tidy -header-filter="$header_filter" $1
 else
-    for object in $(grep cxx$ .git/indented-files.cache|grep -v '/qa/')
+    for object in $(grep cxx$ .git/indented-files.cache|egrep -v '/qa/|classificationcontroller.cxx')
     do
         clang-tidy -header-filter="$header_filter" $object
     done
