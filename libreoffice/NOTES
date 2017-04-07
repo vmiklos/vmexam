@@ -1776,6 +1776,20 @@ a situation where auto spacing is supposed to mean something...
 
 regression from c486e875de7c8e845594f5043a37ee8800865782
 
+=== 2017-04-07
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=106970
+
+one more fallout from the numbering vs autospace thing
+
+regression from c486e875de7c8e845594f5043a37ee8800865782
+
+ww8 equivalent code is SwWW8ImplReader::AppendTextNode
+
+additional condition: only collapse autospace if NumberingStyleName is the same -> fixed
+
+sigh, xray is broken again on master -- but 2017-03-17 is fine -> need to get back to this later
+
 <<<
 
 Problematic bugs:

@@ -133,6 +133,7 @@ void testRoundtrip()
         fileContents.data(), fileContents.size(), /*password=*/nullptr);
     assert(document);
 
+#if 0
     for (int i = FPDF_GetPageCount(document) - 1; i > 0; --i)
     {
         FPDFPage_Delete(document, i);
@@ -140,12 +141,13 @@ void testRoundtrip()
 
     FPDF_PAGE page = FPDF_LoadPage(document, /*page_index=*/0);
     assert(page);
-    FPDFPage_GenerateContent(page);
+    //FPDFPage_GenerateContent(page);
+#endif
 
     FPDF_FILEWRITE fileWrite;
     fileWrite.version = 1;
     fileWrite.WriteBlock = WriteBlockCallback;
-    assert(FPDF_SaveWithVersion(document, &fileWrite, 0, 17));
+    assert(FPDF_SaveWithVersion(document, &fileWrite, 0, 14));
     std::ofstream testOutFile("test.out.pdf", std::ios::binary);
     std::copy(buf.begin(), buf.end(),
               std::ostreambuf_iterator<char>(testOutFile));

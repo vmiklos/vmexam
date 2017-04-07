@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+import json
+import os
+import re
+import sys
+
+
+# Searches for a string (e.g. name or email) in the MCM db.
+def searchInMcm(query):
+    pwd = os.getcwd()
+    os.chdir(os.path.join(os.environ['HOME'], ".mcm/db"))
+    ret = os.system("git grep -q '%s'" % query)
+    os.chdir(pwd)
+    return ret == 0
+
+
+# Filters git shortlog about, hiding already existing TDF members.
+def main(argv):
+    config = json.load(open("git-mcmshortlog.json"))
+    ignoreNames = [n["name"] for n in config["ignoreNames"]]
+    emailMap = config["emailMap"]
+    sock = os.popen("git shortlog -s -n -e --since=6.months.ago")
+    while True:
+        line = sock.readline().strip()
+        if not ('\t' in line):
+            continue
+        commits, nameEmail = line.split('\t')
+        if int(commits) < 10:
+            # Less then 10 recent commits -> assume it's the not interesting
+            # long tail.
+            break
+        name = re.sub(r'(.*) <(.*)>', r'\1', nameEmail)
+        if name in ignoreNames:
+            continue
+
+        email = re.sub(r'(.*) <(.*)>', r'\2', nameEmail)
+        if email in emailMap.keys():
+            email = emailMap[email]
+        if searchInMcm(email):
+            # Found by email.
+            continue
+
+        if searchInMcm(name):
+            # Found by name.
+            continue
+
+        print(line)
+    sock.close()
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
