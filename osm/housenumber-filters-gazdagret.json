@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "szurdok_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "5",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "18",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "torokugrato_utca": {
             "ranges": [
                 {
