@@ -1790,6 +1790,28 @@ additional condition: only collapse autospace if NumberingStyleName is the same 
 
 sigh, xray is broken again on master -- but 2017-03-17 is fine -> need to get back to this later
 
+bibisect using daily.git (5.3->5.4):
+- 7db94e55252ce497207bc905e7eef73bdd5f24ba / 2017-04-08: source-hash-7e03a22b690ff2fa9e2a1cf3a7b0f86ab48b10a4 is bad
+- d953f6d38cd20662a35ad96864d4b6a3ef435b6c / 2017-03-17: source-hash-1bffa5e110772a7d6183ac64e56c23f2c3019f93 is good
+- [1e9e0f3c08c75b81bfedde19cabb390a1fc6f6ec] 2017-03-28: source-hash-648ab6fcab8b9e8642c6f5cbac9c9e44579de746 is good
+- [1bc5357b92ef1a4210fd94f108485a1379b9867c] 2017-04-02: source-hash-8e0201fe535daa888aded842043b2a28fe645390 is good
+- [6c64006c113b6a8bd34b77ef5c8bfbfd66a085a0] 2017-04-05: source-hash-81894a5f7200b4c4233e407163b7f1b00256dccb is bad
+- [c78467dcd25f2aeb9cc5393b67b53937c50f61b9] 2017-04-04: source-hash-1a1d1a86e9129ec3885610b641179b30f9bf5e79 is bad
+- [6b64a940ca12940b8c5ff18838be5918d7a67afe] 2017-04-03: source-hash-74917d23782413aa0f129bcf9e6bf5a1c496d23b is good
+=> c78467dcd25f2aeb9cc5393b67b53937c50f61b9 / 2017-04-04: source-hash-1a1d1a86e9129ec3885610b641179b30f9bf5e79 is the first bad -> indeed
+=> 6b64a940ca12940b8c5ff18838be5918d7a67afe / 2017-04-03: source-hash-74917d23782413aa0f129bcf9e6bf5a1c496d23b is the last good -> indeed
+=> core.git range is 74917d23782413aa0f129bcf9e6bf5a1c496d23b..1a1d1a86e9129ec3885610b641179b30f9bf5e79
+
+core.git bisect:
+- git bisect start 1a1d1a86e9129ec3885610b641179b30f9bf5e79 74917d23782413aa0f129bcf9e6bf5a1c496d23b
+- [8a5374f2fdbd1e15c107133f55930cbc431edbd5] tdf#106237 sw: do some basic sanity checking on layout-cache -> bad
+- [f2b52c8597b51813761048f43d60d94a661ca58d] coverity#1403736 Unintentional integer overflow -> good
+- [5d0e485e827057eee9fb2c997685690b710e7f34] use actual UNO enums in reportdesign..svtools -> good
+- [0fe6f1a196b70f0ba4c948389b2ef9b1e77187b8] use actual UNO enums in vcl..xmlsecurity -> bad
+- [d68927c7fd4346311dce58e6059186633996d68b] use actual UNO enums in test..vbahelper -> good
+=> 0fe6f1a196b70f0ba4c948389b2ef9b1e77187b8 is the first bad -> indeed
+=> d68927c7fd4346311dce58e6059186633996d68b is the last good -> 
+
 <<<
 
 Problematic bugs:
