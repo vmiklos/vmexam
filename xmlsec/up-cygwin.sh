@@ -11,23 +11,22 @@ msvcdir="c:/Program Files (x86)/Microsoft Visual Studio 14.0/VC"
 xml2dir="c:/lo/master/workdir/UnpackedTarball/xml2"
 icudir="c:/lo/master/workdir/UnpackedTarball/icu"
 sdkdir="c:/Program Files (x86)/Windows Kits/8.1"
-sdkinc10="c:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt"
+sdkinc10="c:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.10240.0\\ucrt"
 sdklib10="c:/Program Files (x86)/Windows Kits/10/Lib/10.0.10240.0/ucrt/x86"
 
-myinc="/I\"$msvcdir/include\""
-myinc+=" /I\"$xml2dir/include\""
-myinc+=" /I\"$icudir/source/common\""
-myinc+=" /I\"$sdkdir/Include/um\""
-myinc+=" /I\"$sdkdir/Include/shared\""
-myinc+=" /I\"$sdkinc10\""
+incpath="$msvcdir/include"
+incpath+=";$xml2dir/include"
+incpath+=";$icudir/source/common"
+incpath+=";$sdkdir/Include/um"
+incpath+=";$sdkdir/Include/shared"
+incpath+=";$sdkinc10"
 
-time sh -ce "git pull -r
+time sh -cex ": git pull -r
     git clean -x -d -f
     export PATH='$(cygpath -u "$msvcdir/bin/"):$PATH'
     cd win32
     cscript configure.js crypto=mscrypto xslt=no iconv=no static=no debug=yes
-    sed -i -e 's|/I\$(INCPREFIX)|/I\$(INCPREFIX) $myinc|' Makefile
-    LIB='$xml2dir/win32/bin.msvc;$msvcdir/lib;$sdkdir/Lib/winv6.3/um/x86;$sdklib10' '$msvcdir/bin/nmake.exe'
+    LIB='$xml2dir/win32/bin.msvc;$msvcdir/lib;$sdkdir/Lib/winv6.3/um/x86;$sdklib10' INCLUDE='$incpath' '$msvcdir/bin/nmake.exe'
     cp $xml2dir/win32/bin.msvc/libxml2.dll binaries/
     cp $icudir/source/lib/icuuc58.dll binaries/
     cp $icudir/source/lib/icudt58.dll binaries/" 2>&1 |tee log
