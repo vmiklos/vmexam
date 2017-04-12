@@ -24,6 +24,7 @@ pdf_enable_v8 = false
 pdf_is_standalone = true    # important - to get pdfium_test
 is_component_build = false
 pdf_is_complete_lib = true
+#system_libjpeg_config = true
 ----
 
 finally:
