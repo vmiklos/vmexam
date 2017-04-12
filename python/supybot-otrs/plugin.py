@@ -88,8 +88,10 @@ class Otrs(callbacks.Plugin):
 
     def _lookup_bugzilla(self, irc, msg, prefix):
         (recipients, text) = msg.args
-        ticket_number = re.sub(".*%s([0-9]+).*" % prefix, r"\1", text)
-        irc.reply("%s?id=%s" % (self.bugzillaUrl, ticket_number), prefixNick=False)
+        pattern = re.compile("%s([0-9]+)" % prefix)
+        matches = pattern.findall(text)
+        for match in matches:
+            irc.reply("%s?id=%s" % (self.bugzillaUrl, match), prefixNick=False)
 
     def doPrivmsg(self, irc, msg):
         (recipients, text) = msg.args
