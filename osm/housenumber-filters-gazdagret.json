@@ -1,6 +1,15 @@
 {
     "source": "survey",
     "filters": {
+        "nagyszeben_ter": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "3",
+                    "isOdd": "true"
+                }
+            ]
+        },
         "regos_utca": {
             "ranges": [
                 {

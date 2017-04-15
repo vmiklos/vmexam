@@ -1812,6 +1812,19 @@ core.git bisect:
 => 0fe6f1a196b70f0ba4c948389b2ef9b1e77187b8 is the first bad -> indeed
 => d68927c7fd4346311dce58e6059186633996d68b is the last good -> 
 
+=== 2017-04-14
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=107116
+
+another rtf style dedup regression
+
+the tricky question: if <w:top>'s all children is removed due to style dedup,
+is it safe to remove <w:top> itself as well? it seems so, in case the intention
+is to disable a border from the parent style, then not only a bare <w:top> is
+written, but also various attributes.
+
+still a fallout from 1be0a3fa9ebb22b607c54b47739d4467acfed259
+
 <<<
 
 Problematic bugs:
