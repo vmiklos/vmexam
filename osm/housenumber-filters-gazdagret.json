@@ -16,10 +16,11 @@
             ]
         },
         "retkoz_utca": {
+            "comment": "just the Gazdagrét part",
             "ranges": [
                 {
                     "start": "7",
-                    "end": "65",
+                    "end": "9",
                     "isOdd": "true"
                 },
                 {
