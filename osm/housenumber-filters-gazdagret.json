@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "regos_koz": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "7",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "6",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "csiki-hegyek_utca": {
             "ranges": [
                 {
