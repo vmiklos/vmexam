@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "retkoz_utca": {
+            "ranges": [
+                {
+                    "start": "7",
+                    "end": "65",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "22",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "regos_koz": {
             "ranges": [
                 {
