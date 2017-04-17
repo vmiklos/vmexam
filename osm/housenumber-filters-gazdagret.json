@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "csiki-hegyek_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "15",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "26",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "gazdagreti_ter": {
             "ranges": [
                 {
