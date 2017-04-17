@@ -2,16 +2,12 @@
     "source": "survey",
     "filters": {
         "gazdagreti_ut": {
+            "comment": "just the Gazdagrét part",
             "ranges": [
                 {
                     "start": "5",
                     "end": "9",
                     "isOdd": "true"
-                },
-                {
-                    "start": "26",
-                    "end": "44",
-                    "isOdd": "false"
                 }
             ]
         },
