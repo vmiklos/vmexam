@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "gazdagreti_ut": {
+            "ranges": [
+                {
+                    "start": "5",
+                    "end": "9",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "26",
+                    "end": "44",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "retkoz_utca": {
             "ranges": [
                 {
