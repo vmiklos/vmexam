@@ -1825,6 +1825,21 @@ written, but also various attributes.
 
 still a fallout from 1be0a3fa9ebb22b607c54b47739d4467acfed259
 
+=== 2017-04-21
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=107104
+
+two quite similar arrows, one shows up, the other does not. what's the difference?
+
+aha, <wp:extent cx="0"> for the invisible one, probably there is some minimal
+value for the same in the VML import; ww8 import seems to set 2 twips as width?
+
+saving the DML as ww8 then back to VML sets 1pt as width
+
+in the vml case, oox::vml::ShapeType::getAbsRectangle() does the rounding up, that's how it works
+
+indeed, if 12700 is used for cx, then the arrow is visible
+
 <<<
 
 Problematic bugs:
