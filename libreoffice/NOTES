@@ -1840,6 +1840,28 @@ in the vml case, oox::vml::ShapeType::getAbsRectangle() does the rounding up, th
 
 indeed, if 12700 is used for cx, then the arrow is visible
 
+=== 2017-04-27
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=107033
+
+empty docx without footnote -> open in Write -> separator is gone
+
+we still want no ftn sep for /home/vmiklos/git/libreoffice/lo-test-files/writer/bugs/tdf107033/regression/libo-footnote-test/saved.docx
+
+relevant code is writerfilter::dmapper::SectionPropertyMap::HandleMarginsHeaderFooter()
+
+related problem:
+
+warn:legacy.osl:12884:1:writerfilter/source/dmapper/PropertyMap.cxx:1484: Exception in SectionPropertyMap::ApplyProperties_
+warn:legacy.osl:12884:1:writerfilter/source/dmapper/PropertyMap.cxx:1496: Exception in SectionPropertyMap::ApplyProperties_
+
+also:
+
+make -sr CppunitTest_sw_ww8export CPPUNIT_TEST_NAME="testTableKeep"
+
+started to fail, who broke it? git bisect points out e3b7ef45d4364fda15691b5748a9a88bc908afc6, hmm
+at least Jenkins_Callgrind fails the same way
+
 <<<
 
 Problematic bugs:
