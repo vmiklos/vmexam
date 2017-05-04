@@ -1,6 +1,49 @@
 {
     "source": "survey",
     "filters": {
+        "bod_peter_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "27",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "22",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "budaorsi_ut": {
+            "comment": "this is just the sashegy part",
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "75",
+                    "isOdd": "true"
+                }
+            ]
+        },
+        "elopatak_utca": {
+            "comment": "just the sashegy part",
+            "ranges": [
+                {
+                    "start": "2",
+                    "end": "6",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "bod_peter_lejto": {
+            "ranges": [
+                {
+                    "start": "2",
+                    "end": "6",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "brezno_koz": {
             "ranges": [
                 {
