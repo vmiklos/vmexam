@@ -1862,6 +1862,34 @@ make -sr CppunitTest_sw_ww8export CPPUNIT_TEST_NAME="testTableKeep"
 started to fail, who broke it? git bisect points out e3b7ef45d4364fda15691b5748a9a88bc908afc6, hmm
 at least Jenkins_Callgrind fails the same way
 
+=== 2017-05-05
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=107620
+
+RTF import result indeed differs, but that's the difference? ParaBottomMargin is 494 in both cases
+
+regression from c486e875de7c8e845594f5043a37ee8800865782, but actually the old rtf export result is already of 2 pages in word -> best to just keep autospacing
+
+doesn't seem to be a regression from that commit..
+
+bibisect with daily.git:
+- master is bad
+- oldest is good
+- [57ba475337d22a8a9024dfe2876b8748d65a2911] 2017-01-30: source-hash-c6dd735afb2e1b3837c4f8c5659f52fafab4c56f is good
+- [b710c1187f464de95fe8c1e6e3b3e5e660a6f573] 2017-03-05: source-hash-9ec55a085277e7ae98857edf64c425e35b73eab8 is good
+- [11ac9c772d0969d3885049c5d59e4d4013ee8a67] 2017-03-22: source-hash-bdf41d8aeb53a298780f3633a76d71598a695bab is good
+- [c973856f0bbb4edc02abc531c810dadc5a4deaa6] 2017-03-30: source-hash-726b34c9c788af74bea005f2717e4c1da4814183 is good
+- [6b64a940ca12940b8c5ff18838be5918d7a67afe] 2017-04-03: source-hash-74917d23782413aa0f129bcf9e6bf5a1c496d23b is good
+- [6c64006c113b6a8bd34b77ef5c8bfbfd66a085a0] 2017-04-05: source-hash-81894a5f7200b4c4233e407163b7f1b00256dccb is bad -> first bad
+- [c78467dcd25f2aeb9cc5393b67b53937c50f61b9] 2017-04-04: source-hash-1a1d1a86e9129ec3885610b641179b30f9bf5e79 is good
+1bf7f6a1a50ee9f24a3687240fe6ae390b905a6b in core.git most probably
+
+ww8 import result for 2nd para: 494 mm100 -> 280
+
+sigh, turns out the problem is that when converting ooxml autospace to rtf autospace, we need to add \htmautsp on the export side, since the default differs
+
+testcase: margin should be 100 twips after roundtrip
+
 <<<
 
 Problematic bugs:
