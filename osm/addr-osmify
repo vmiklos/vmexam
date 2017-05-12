@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Takes an OSM way ID and turns it into a string that is readable and
+# e.g. OsmAnd can parse it as well.
+#
+
+import json
+import sys
+import urllib.parse
+import urllib.request
+
+
+def queryTurbo(query):
+    url = "http://overpass-api.de/api/interpreter"
+
+    sock = urllib.request.urlopen(url, bytes(query, "utf-8"))
+    buf = sock.read()
+    sock.close()
+
+    return buf.decode("utf-8")
+
+
+def queryNominatim(query):
+    url = "http://nominatim.openstreetmap.org/search.php?"
+    d = {
+        "q": query,
+        "format": "json"
+    }
+    url += urllib.parse.urlencode(d)
+
+    sock = urllib.request.urlopen(url)
+    buf = sock.read()
+    sock.close()
+
+    return buf.decode("utf-8")
+
+
+def osmify(id):
+    # Turn the ID into an address.
+    # For now assume the id is a way.
+    query = """[out:json];
+(
+    way(%s);
+);
+out body;""" % id
+
+    j = json.loads(queryTurbo(query))
+    element = j['elements'][0]
+    city = element['tags']['addr:city']
+    housenumber = element['tags']['addr:housenumber']
+    postcode = element['tags']['addr:postcode']
+    street = element['tags']['addr:street']
+    addr = "%s %s, %s %s" % (postcode, city, street, housenumber)
+
+    # Have the address, now talk to nominatim to get the coordinates as well.
+    j = json.loads(queryNominatim(addr))
+    element = j[0]
+    lat = element["lat"]
+    lon = element["lon"]
+
+    # Print the result.
+    print("%s,%s (%s)" % (lat, lon, addr))
+
+if len(sys.argv) > 1:
+    osmify(sys.argv[1])
+else:
+    print("usage: addr-osmify <way id>")
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
