@@ -39,14 +39,20 @@ def queryNominatim(query):
     return buf.decode("utf-8")
 
 
-def osmify(id):
+def osmify(url):
+    tokens = url.split('/')
+    # E.g. node or way.
+    objectType = tokens[-2]
+    # Numeric ID.
+    objectId = tokens[-1]
+
     # Turn the ID into an address.
     # For now assume the id is a way.
     query = """[out:json];
 (
-    way(%s);
+    %s(%s);
 );
-out body;""" % id
+out body;""" % (objectType, objectId)
 
     j = json.loads(queryTurbo(query))
     element = j['elements'][0]
@@ -68,6 +74,8 @@ out body;""" % id
 if len(sys.argv) > 1:
     osmify(sys.argv[1])
 else:
-    print("usage: addr-osmify <way id>")
+    print("usage: addr-osmify <url>")
+    print()
+    print("e.g. addr-osmify http://www.openstreetmap.org/node/2700453924")
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
