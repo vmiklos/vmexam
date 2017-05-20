@@ -45,6 +45,15 @@ class Context
 
         return bRet;
     }
+
+    clang::DiagnosticBuilder report(llvm::StringRef aString,
+                                    clang::SourceLocation aLocation) const
+    {
+        clang::DiagnosticsEngine& rEngine = m_pContext->getDiagnostics();
+        return rEngine.Report(
+            aLocation, rEngine.getDiagnosticIDs()->getCustomDiagID(
+                           clang::DiagnosticIDs::Level::Warning, aString));
+    }
 };
 
 /// Finds C++ member functions which could be const but are not.
@@ -93,7 +102,9 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
 
         if (m_bConstCandidate)
         {
-            std::cerr << pDecl->getQualifiedNameAsString() << std::endl;
+            m_rContext.report("this member function can be declared const",
+                              pDecl->getCanonicalDecl()->getLocation())
+                << pDecl->getCanonicalDecl()->getSourceRange();
             return true;
         }
 
