@@ -1913,6 +1913,14 @@ testcase:
 - ParaLeftMargin property state was wrong
 - should be 0 (direct), was 1 (default)
 
+=== 2017-05-19
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=107868
+
+my last pdf regression, from ee32c7d8083ae1449d6b379034be92995c142da9 / tdf#105461
+
+fun, only print-to-file triggers the problem, came up with a testcase at the end
+
 <<<
 
 Problematic bugs:
