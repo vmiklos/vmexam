@@ -2,6 +2,7 @@
 #include <iostream>
 #include <set>
 #include <sstream>
+#include <unistd.h>
 
 #include <clang/AST/ASTConsumer.h>
 #include <clang/AST/ASTContext.h>
@@ -12,12 +13,12 @@
 
 class Context
 {
-    std::string m_aPathPrefix;
+    std::set<std::string> m_aPaths;
     clang::ASTContext* m_pContext;
 
   public:
-    Context(const std::string& rPathPrefix)
-        : m_aPathPrefix(rPathPrefix), m_pContext(nullptr)
+    Context(const std::set<std::string>& rPaths)
+        : m_aPaths(rPaths), m_pContext(nullptr)
     {
     }
 
@@ -31,7 +32,7 @@ class Context
             m_pContext->getSourceManager().getExpansionLoc(rLocation);
         if (m_pContext->getSourceManager().isInSystemHeader(aLocation))
             bRet = true;
-        else if (m_aPathPrefix.empty())
+        else if (m_aPaths.empty())
         {
             bRet = false;
         }
@@ -40,7 +41,7 @@ class Context
             const char* pName = m_pContext->getSourceManager()
                                     .getPresumedLoc(aLocation)
                                     .getFilename();
-            bRet = std::string(pName).find(m_aPathPrefix) != 0;
+            bRet = m_aPaths.find(pName) == m_aPaths.end();
         }
 
         return bRet;
@@ -142,19 +143,55 @@ class FrontendAction
     }
 };
 
+/// Parses rPathsFile and puts the first two column of it into rNameMap.
+static bool parsePathsFile(const std::string& rPathsFile,
+                           std::set<std::string>& rPaths)
+{
+    std::ifstream aStream(rPathsFile);
+    if (!aStream.is_open())
+    {
+        std::cerr << "parsePathsFile: failed to open " << rPathsFile
+                  << std::endl;
+        return false;
+    }
+
+    std::string aLine;
+    char pCwd[PATH_MAX];
+    getcwd(pCwd, PATH_MAX);
+    const std::string aCwd(pCwd);
+    while (std::getline(aStream, aLine))
+    {
+        if (!aLine.empty() && aLine[0] != '/')
+            aLine = aCwd + "/" + aLine;
+        rPaths.insert(aLine);
+    }
+
+    aStream.close();
+    return true;
+}
+
 int main(int argc, const char** argv)
 {
     llvm::cl::OptionCategory aCategory("find-nonconst-methods options");
-    llvm::cl::opt<std::string> aPathPrefix(
-        "path-prefix", llvm::cl::desc("If not empty, ignore all source code "
-                                      "paths not matching this prefix."),
+    llvm::cl::opt<std::string> aPathsFile(
+        "paths-file",
+        llvm::cl::desc(
+            "If not empty, ignore all source code "
+            "paths not mentioned in the paths file (one full path / line)."),
         llvm::cl::cat(aCategory));
     clang::tooling::CommonOptionsParser aParser(argc, argv, aCategory);
 
     clang::tooling::ClangTool aTool(aParser.getCompilations(),
                                     aParser.getSourcePathList());
 
-    Context aContext(aPathPrefix);
+    std::set<std::string> aPaths;
+    if (!aPathsFile.empty())
+    {
+        if (!parsePathsFile(aPathsFile, aPaths))
+            return 1;
+    }
+
+    Context aContext(aPaths);
     FrontendAction aAction(aContext);
     std::unique_ptr<clang::tooling::FrontendActionFactory> pFactory =
         clang::tooling::newFrontendActionFactory(&aAction);
