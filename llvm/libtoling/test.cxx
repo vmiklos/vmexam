@@ -14,6 +14,8 @@ class S
 
     /// Assignment to primitive type -> can't be const.
     void setX(int nX) { m_nX = nX; }
+
+    virtual int getXVirtual() { return 0; }
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

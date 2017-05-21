@@ -98,6 +98,9 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
         if (pDecl->isStatic())
             return true;
 
+        if (pDecl->isVirtual())
+            return true;
+
         m_bConstCandidate = true;
         TraverseStmt(pDecl->getBody());
 
