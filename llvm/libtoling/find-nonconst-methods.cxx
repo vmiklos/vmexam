@@ -61,7 +61,7 @@ class Context
 class Visitor : public clang::RecursiveASTVisitor<Visitor>
 {
     Context& m_rContext;
-    bool m_bConstCandidate = false;
+    const clang::CXXMethodDecl* m_pConstCandidate = nullptr;
 
   public:
     Visitor(Context& rContext, clang::ASTContext& rASTContext)
@@ -82,7 +82,7 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
         auto pMemberExpr =
             llvm::dyn_cast<clang::MemberExpr>(pOperator->getLHS());
         if (pMemberExpr)
-            m_bConstCandidate = false;
+            m_pConstCandidate = nullptr;
 
         return true;
     }
@@ -98,7 +98,24 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
 
         auto pMemberExpr = llvm::dyn_cast<clang::MemberExpr>(pExpr->getArg(0));
         if (pMemberExpr)
-            m_bConstCandidate = false;
+            m_pConstCandidate = nullptr;
+
+        return true;
+    }
+
+    /*
+     * setFoo();
+     * ^ Handles this when setFoo() is a non-const member function.
+     */
+    bool VisitCXXMemberCallExpr(clang::CXXMemberCallExpr* pExpr)
+    {
+        auto pMemberExpr =
+            llvm::dyn_cast<clang::MemberExpr>(pExpr->getCallee());
+        if (!pMemberExpr)
+            return true;
+
+        if (llvm::isa<clang::CXXThisExpr>(pMemberExpr->getBase()))
+            m_pConstCandidate = nullptr;
 
         return true;
     }
@@ -120,10 +137,10 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
         if (pDecl->isVirtual())
             return true;
 
-        m_bConstCandidate = true;
+        m_pConstCandidate = pDecl;
         TraverseStmt(pDecl->getBody());
 
-        if (m_bConstCandidate)
+        if (m_pConstCandidate)
         {
             m_rContext.report("this member function can be declared const",
                               pDecl->getLocation())
