@@ -1,6 +1,9 @@
+#include <string>
+
 class S
 {
     int m_nX = 0;
+    std::string m_aX;
 
   public:
     /// This can be const, we want to find this one.
@@ -14,6 +17,8 @@ class S
 
     /// Assignment to primitive type -> can't be const.
     void setX(int nX) { m_nX = nX; }
+
+    void setXString(const std::string& rX) { m_aX = rX; }
 
     virtual int getXVirtual() { return 0; }
 };

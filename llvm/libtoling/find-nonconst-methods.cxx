@@ -87,9 +87,28 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
         return true;
     }
 
+    /*
+     * m_aX = aX;
+     *      ^ Handles this when it's a non-primitive type.
+     */
+    bool VisitCXXOperatorCallExpr(const clang::CXXOperatorCallExpr* pExpr)
+    {
+        if (pExpr->getOperator() != clang::OO_Equal)
+            return true;
+
+        auto pMemberExpr = llvm::dyn_cast<clang::MemberExpr>(pExpr->getArg(0));
+        if (pMemberExpr)
+            m_bConstCandidate = false;
+
+        return true;
+    }
+
     bool TraverseCXXMethodDecl(const clang::CXXMethodDecl* pDecl)
     {
         if (m_rContext.ignoreLocation(pDecl->getLocation()))
+            return true;
+
+        if (!pDecl->isThisDeclarationADefinition())
             return true;
 
         if (pDecl->isConst())
@@ -107,8 +126,8 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
         if (m_bConstCandidate)
         {
             m_rContext.report("this member function can be declared const",
-                              pDecl->getCanonicalDecl()->getLocation())
-                << pDecl->getCanonicalDecl()->getSourceRange();
+                              pDecl->getLocation())
+                << pDecl->getSourceRange();
             return true;
         }
 
