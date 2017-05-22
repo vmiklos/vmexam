@@ -51,9 +51,9 @@ class Context
                                     clang::SourceLocation aLocation) const
     {
         clang::DiagnosticsEngine& rEngine = m_pContext->getDiagnostics();
-        return rEngine.Report(
-            aLocation, rEngine.getDiagnosticIDs()->getCustomDiagID(
-                           clang::DiagnosticIDs::Level::Warning, aString));
+        return rEngine.Report(aLocation,
+                              rEngine.getDiagnosticIDs()->getCustomDiagID(
+                                  clang::DiagnosticIDs::Level::Error, aString));
     }
 };
 
