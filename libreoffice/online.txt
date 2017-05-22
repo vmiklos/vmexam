@@ -1,0 +1,13 @@
+= online notes
+
+How to obtain logs for a single test:
+
+----
+LC_ALL=C ./loolwsd --o:num_prespawn_children=1 --o:sys_template_path="$HOME/git/libreoffice/online-clang/systemplate" --o:lo_template_path="$HOME/git/libreoffice/master/instdir" --o:storage.filesystem[@allow]=true --o:admin_console.username=admin --o:admin_console.password=admin --o:logging.file[@enable]=false --o:logging.level=trace 2>&1 |tee wsd.log
+----
+
+----
+(cd test; LC_ALL=C CPPUNIT_TEST_NAME="HTTPCrashTest::testCrashKit" ./test) 2>&1 |tee test.log
+----
+
+// vim: ft=asciidoc
