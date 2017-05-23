@@ -122,7 +122,11 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
 
     bool TraverseCXXMethodDecl(const clang::CXXMethodDecl* pDecl)
     {
-        if (m_rContext.ignoreLocation(pDecl->getLocation()))
+        clang::SourceLocation aLocation = pDecl->getLocation();
+        if (aLocation.isMacroID())
+            return true;
+
+        if (m_rContext.ignoreLocation(aLocation))
             return true;
 
         if (!pDecl->isThisDeclarationADefinition())

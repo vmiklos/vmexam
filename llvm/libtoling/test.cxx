@@ -1,13 +1,19 @@
 #include <string>
 
+#define FOO()                                                                  \
+    int getXMacro() { return m_nX; }
+
 class S
 {
     int m_nX = 0;
     std::string m_aX;
 
   public:
-    /// This can be const, we want to find this one.
+    /// This can be const, only reads a member.
     int getX() { return m_nX; }
+
+    /// This can be const, only calls const.
+    void callsConst() { getXConst(); }
 
     /// This is const already.
     int getXConst() const { return m_nX; }
@@ -27,8 +33,7 @@ class S
     /// Calls non-const -> can't be const.
     void callsNonconst() { setX(0); }
 
-    /// This can be const, only calls const.
-    void callsConst() { getXConst(); }
+    FOO();
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
