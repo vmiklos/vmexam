@@ -24,10 +24,10 @@ def queryTurbo(query):
     return buf.decode("utf-8")
 
 
-def queryNominatim(query):
+def queryNominatim(city, street, housenumber):
     url = "http://nominatim.openstreetmap.org/search.php?"
     d = {
-        "q": query,
+        "q": "%s %s, %s" % (housenumber, street, city),
         "format": "json"
     }
     url += urllib.parse.urlencode(d)
@@ -63,7 +63,7 @@ out body;""" % (objectType, objectId)
     addr = "%s %s, %s %s" % (postcode, city, street, housenumber)
 
     # Have the address, now talk to nominatim to get the coordinates as well.
-    j = json.loads(queryNominatim(addr))
+    j = json.loads(queryNominatim(city, street, housenumber))
     element = j[0]
     lat = element["lat"]
     lon = element["lon"]
