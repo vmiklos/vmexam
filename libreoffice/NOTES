@@ -1921,6 +1921,38 @@ my last pdf regression, from ee32c7d8083ae1449d6b379034be92995c142da9 / tdf#1054
 
 fun, only print-to-file triggers the problem, came up with a testcase at the end
 
+=== 2017-05-26
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=107837
+
+daily-till54.git master: bad
+daily-till53.git master: bad
+daily-till52.git master: bad
+daily-till51.git master: bad
+daily-till50.git master: bad
+daily-till44.git master: bad
+daily-till43.git master: bad; oldest: good
+- [91a3610703bc28b3b7bf6200fa320edf1a061a75] 2014-03-03 is good
+- [b9306b3e3cdd484b99aac407bf140d8832986f12] 2014-04-12 is good
+- [1aa6838a674677306bb0bb28cdaa9b9272f1c992] 2014-05-01 is good
+- [4ce906359e35e2ebe4d874e502f9ff727169aab5] 2014-05-11 is bad
+- [c65efe82c506fc5076b50e99cdd9b38f6a90f476] 2014-05-06 is good
+- [de07d070cae0671b0bb06e6ec8486072a8b2a618] 2014-05-08 is bad
+- [2e11915f7c7a9c78343f3e04edc5d82d31bdfc57] 2014-05-07 is good
+=> cabd5e4b2ac9ed857845984c6617a556f950ff70 is already bad in core.git
+=> 6cc92a2fead337eef3d9cc3e5818cfcc505e4651 is still good in core.git
+most probably regression from f6eb92406bd366c557bc07810649e7ab3d1db614
+but reverting that doesn't fix the problem
+b6e62dc0dc2b284c825f1182a67bb2f9259a30ce is also related
+
+- the synerzip bugdoc doesn't want to "evenly distribute content", but wants the last section have cols
+- this bugdoc wants even distribution, but doesn't care about an additional section break
+  - adding an additional section break seems to be the only way to force word to do the distribution we want
+
+=> this case is the multi-col + distributed one
+
+what is the doc model for the DontBalanceTextColumns uno prop?
+
 <<<
 
 Problematic bugs:
