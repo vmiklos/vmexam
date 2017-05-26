@@ -13,11 +13,8 @@ if ! ~/bin/gcontacts -u -n; then
     echo "gcontacts failed, please run manually." |~/bin/pymail -r $(git config user.email|sed "s/.*@/$(hostname)@/") -s "gcontacts error" $(git config user.email)
     exit
 fi
-cp ~/.gcontacts/contacts.xml contacts.xml
 
-formatted=$(mktemp)
-xmllint --format contacts.xml > $formatted
-mv -f $formatted contacts.xml
+xmllint --format ~/.gcontacts/contacts.xml > contacts.xml
 
 # Filter out some noise.
 sed -i 's/ ns1:etag="[^"]\+"//' contacts.xml
