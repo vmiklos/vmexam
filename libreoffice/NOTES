@@ -1953,6 +1953,40 @@ b6e62dc0dc2b284c825f1182a67bb2f9259a30ce is also related
 
 what is the doc model for the DontBalanceTextColumns uno prop?
 
+=== 2017-05-27
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=107684
+
+regression from fd2d14d5543c82eb875e720c98b51518699a8fbc
+
+//w:style[@w:styleId="Heading1"]/w:pPr/w:outlineLvl
+
+actual: 2, expected: 1
+
+=== 2017-05-28
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=107480
+
+- looks like this is already fixed on master
+- does bibisect-linux-64-5.4 have an old version that reproduces? bugreport is from 2017-04-27 -> gave up, so much missing info :(
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=106950
+
+missing center in rtf import
+
+because the Title style isn't center
+
+because of this probably:
+warn:writerfilter:4339:1:writerfilter/source/dmapper/StyleSheetTable.cxx:1160: StyleSheetTable::ApplyStyleSheets: Some style properties could not be set: Unknown property: CharShadingValue
+
+aha, para styles don't have CharShadingValue -> regression from 26d40686128e70916a636e20f5ccc5763bbb6cc8, which is now more visible since a9e029ace41562e28e9242d63230ad1ca275f5d3
+
+Perugia bugs fixed:
+- tdf#107976 sw: let a view handle multiple transferables
+- tdf#107837 DOCX export: fix balanced multi-col section at doc end
+- pending: tdf#107684 DOCX export: fix duplicated <w:outlineLvl> element for styles
+- pending: tdf#106950 sw: support CharShadingValue property on paragraph styles
+
 <<<
 
 Problematic bugs:
