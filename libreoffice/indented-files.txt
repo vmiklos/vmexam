@@ -35,7 +35,6 @@ sw/inc/rdfhelper.hxx
 sw/inc/textboxhelper.hxx
 sw/qa/extras/rtfexport/rtfexport.cxx
 sw/qa/extras/rtfimport/rtfimport.cxx
-sw/qa/extras/tiledrendering/tiledrendering.cxx
 sw/source/core/doc/rdfhelper.cxx
 sw/source/core/doc/textboxhelper.cxx
 sw/source/filter/rtf/swparrtf.cxx
