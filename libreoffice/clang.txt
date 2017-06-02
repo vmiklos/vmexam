@@ -1,5 +1,29 @@
 = LO clang notes
 
+== Member prefixing effort
+
+There are two modes:
+
+- prefix the first class we hit in a module (this happens when large-scale
+  changes are not wanted)
+- prefix the largest classes (this happens when large-scale changes are
+  welcome)
+
+=== Handling the first non-conforming class
+
+----
+make -sr FORCE_COMPILE_ALL=1 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD -yaml" 2>&1 |tee ~/rename.yaml
+# Touch the header of the relevant class.
+make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=clang-rename-wrapper RENAME_ARGS="-input=$HOME/rename.yaml"
+clang-apply-replacements -remove-change-desc-files /tmp/rename
+----
+
+=== Finding a class with a known name
+
+FIXME fill this in after LO 5.4.2
+
+=== Other examples:
+
 Detect unprefixed members in a whole module:
 
 ----
@@ -19,12 +43,6 @@ Detect unprefixed members in a directory:
 
 ----
 make -sr COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD/source/filter/ww8/rtf"
-----
-
-Detect unprefixed members in e.g. sw, without touching anything, this time with YAML output:
-
-----
-make -sr FORCE_COMPILE_ALL=1 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD -yaml" 2>&1 |tee ~/rename.yaml
 ----
 
 Example `rename.csv` for a member function rename:
