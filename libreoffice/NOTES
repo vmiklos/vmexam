@@ -1987,6 +1987,20 @@ Perugia bugs fixed:
 - pending: tdf#107684 DOCX export: fix duplicated <w:outlineLvl> element for styles
 - pending: tdf#106950 sw: support CharShadingValue property on paragraph styles
 
+=== 2017-06-02
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=108123
+
+table manager stack is like this:
+debug:15973:1: m_aTableManagers: push
+debug:15973:1: m_aTableManagers: push
+debug:15973:1: m_aTableManagers: pop
+debug:15973:1: m_aTableManagers: push
+debug:15973:1: m_aTableManagers: pop
+debug:15973:1: m_aTableManagers: pop <- unexpected
+
+aha, for an empty text append stack the pop/push of the table managers isn't symmetric on shape start/end
+
 <<<
 
 Problematic bugs:
