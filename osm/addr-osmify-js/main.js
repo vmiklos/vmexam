@@ -80,12 +80,21 @@ function getParameterByName(name)
 }
 
 domready(function() {
+    // Allow pre-fill via GET parameters.
     var url = getParameterByName('url');
     if (url)
     {
         var urlInput = document.getElementById('url-input');
         urlInput.value = url;
     }
+
+    // Create our page.
+    var body = document.getElementsByTagName('body')[0];
+    // TODO remaining contents
+    var example = document.createElement('p');
+    example.appendChild(document.createTextNode(
+        'Example URL: http://www.openstreetmap.org/node/2700453924'));
+    body.appendChild(example);
 });
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:
