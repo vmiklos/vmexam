@@ -47,7 +47,6 @@ def osmify(url):
     objectId = tokens[-1]
 
     # Turn the ID into an address.
-    # For now assume the id is a way.
     query = """[out:json];
 (
     %s(%s);
