@@ -10,7 +10,7 @@ var request = require('browser-request');
 
 function queryTurbo(query)
 {
-    var url = "http://overpass-api.de/api/interpreter";
+    var url = 'http://overpass-api.de/api/interpreter';
 
     request({'method' : 'POST', 'url' : url, 'body' : query, 'json' : true},
             function(er, response, body) {
@@ -27,13 +27,13 @@ function queryTurbo(query)
 
                 // Have the address, now talk to nominatim to get the
                 // coordinates as well.
-                queryNominatim(addr, city, street, housenumber)
+                queryNominatim(addr, city, street, housenumber);
             });
 }
 
 function queryNominatim(addr, city, street, housenumber)
 {
-    var url = "http://nominatim.openstreetmap.org/search.php?";
+    var url = 'http://nominatim.openstreetmap.org/search.php?';
     url += querystring.stringify(
         {'q' : housenumber + ' ' + street + ', ' + city, 'format' : 'json'});
     request({'method' : 'GET', 'url' : url, 'json' : true},
@@ -42,8 +42,8 @@ function queryNominatim(addr, city, street, housenumber)
                     throw er;
 
                 var element = body[0];
-                var lat = element["lat"];
-                var lon = element["lon"];
+                var lat = element['lat'];
+                var lon = element['lon'];
 
                 // Show the result.
                 var result = lat + ',' + lon + ' (' + addr + ')';
@@ -55,7 +55,7 @@ function osmify()
     var url = document.getElementById('url-input').value;
     var tokens = url.split('/');
     // E.g. node or way.
-    objectType = tokens[tokens.length - 2];
+    var objectType = tokens[tokens.length - 2];
     // Numeric ID.
     var objectId = tokens[tokens.length - 1];
 
