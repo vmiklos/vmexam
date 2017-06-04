@@ -5,13 +5,14 @@
  */
 
 var domready = require('domready');
+var querystring = require('querystring-browser');
 var request = require('browser-request');
 
 function queryTurbo(query)
 {
     var url = "http://overpass-api.de/api/interpreter";
 
-    request({method : 'POST', url : url, body : query, json : true},
+    request({'method' : 'POST', 'url' : url, 'body' : query, 'json' : true},
             function(er, response, body) {
                 if (er)
                     throw er;
@@ -32,7 +33,21 @@ function queryTurbo(query)
 
 function queryNominatim(addr, city, street, housenumber)
 {
-    var url = "http://nominatim.openstreetmap.org/search.php";
+    var url = "http://nominatim.openstreetmap.org/search.php?";
+    url += querystring.stringify(
+        {'q' : housenumber + ' ' + street + ', ' + city, 'format' : 'json'});
+    request({'method' : 'GET', 'url' : url, 'json' : true},
+            function(er, response, body) {
+                if (er)
+                    throw er;
+
+                var element = body[0];
+                var lat = element["lat"];
+                var lon = element["lon"];
+
+                // Show the result.
+                var result = lat + ',' + lon + ' (' + addr + ')';
+            });
 }
 
 function osmify()
