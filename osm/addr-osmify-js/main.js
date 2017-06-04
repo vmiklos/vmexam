@@ -47,6 +47,8 @@ function queryNominatim(addr, city, street, housenumber)
 
                 // Show the result.
                 var result = lat + ',' + lon + ' (' + addr + ')';
+                var output = document.getElementById('output');
+                output.value = result;
             });
 }
 
