@@ -5,6 +5,35 @@
  */
 
 var domready = require('domready');
+var request = require('browser-request');
+
+function queryTurbo(query)
+{
+    var url = "http://overpass-api.de/api/interpreter";
+
+    request({method : 'POST', url : url, body : query, json : true},
+            function(er, response, body) {
+                if (er)
+                    throw er;
+
+                var element = body['elements'][0];
+                var city = element['tags']['addr:city'];
+                var housenumber = element['tags']['addr:housenumber'];
+                var postcode = element['tags']['addr:postcode'];
+                var street = element['tags']['addr:street'];
+                var addr =
+                    postcode + ' ' + city + ', ' + street + ' ' + housenumber;
+
+                // Have the address, now talk to nominatim to get the
+                // coordinates as well.
+                queryNominatim(addr, city, street, housenumber)
+            });
+}
+
+function queryNominatim(addr, city, street, housenumber)
+{
+    var url = "http://nominatim.openstreetmap.org/search.php";
+}
 
 function osmify()
 {
@@ -18,7 +47,7 @@ function osmify()
     // Turn the ID into an address.
     var query = '[out:json];\n(\n    ' + objectType + '(' + objectId +
                 ');\n);\nout body;';
-    // TODO query overpass.
+    queryTurbo(query);
 }
 
 // Allow calling this from the button event handler.
