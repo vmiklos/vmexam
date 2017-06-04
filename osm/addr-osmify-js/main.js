@@ -6,7 +6,20 @@
 
 var domready = require('domready');
 
-function osmify() {}
+function osmify()
+{
+    var url = document.getElementById('url-input').value;
+    var tokens = url.split('/');
+    // E.g. node or way.
+    objectType = tokens[tokens.length - 2];
+    // Numeric ID.
+    var objectId = tokens[tokens.length - 1];
+
+    // Turn the ID into an address.
+    var query = '[out:json];\n(\n    ' + objectType + '(' + objectId +
+                ');\n);\nout body;';
+    // TODO query overpass.
+}
 
 // Allow calling this from the button event handler.
 window.osmify = osmify;
