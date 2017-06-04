@@ -6,11 +6,27 @@
 
 var domready = require('domready');
 
-function osmify() { var url = document.getElementById('url-input').value; }
+function osmify() {}
 
 // Allow calling this from the button event handler.
 window.osmify = osmify;
 
-domready(function() {});
+/// Look up name as a key in the query string.
+function getParameterByName(name)
+{
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
+        results = regex.exec(location.search);
+    return results === null ? '' : results[1].replace(/\+/g, ' ');
+}
+
+domready(function() {
+    var url = getParameterByName('url');
+    if (url)
+    {
+        var urlInput = document.getElementById('url-input');
+        urlInput.value = url;
+    }
+});
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:
