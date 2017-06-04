@@ -4,4 +4,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+var domready = require('domready');
+
+function osmify() {}
+
+// Allow calling this from the button event handler.
+window.osmify = osmify;
+
+domready(function() {});
+
 // vim: shiftwidth=4 softtabstop=4 expandtab:
