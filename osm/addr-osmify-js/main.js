@@ -6,7 +6,7 @@
 
 var domready = require('domready');
 
-function osmify() {}
+function osmify() { var url = document.getElementById('url-input').value; }
 
 // Allow calling this from the button event handler.
 window.osmify = osmify;
