@@ -15,7 +15,11 @@ function queryTurbo(query)
     request({'method' : 'POST', 'url' : url, 'body' : query, 'json' : true},
             function(er, response, body) {
                 if (er)
-                    throw er;
+                {
+                    var output = document.getElementById('output');
+                    output.value = 'Overpass error: ' + er;
+                    return;
+                }
 
                 var element = body['elements'][0];
                 var city = element['tags']['addr:city'];
@@ -39,7 +43,11 @@ function queryNominatim(addr, city, street, housenumber)
     request({'method' : 'GET', 'url' : url, 'json' : true},
             function(er, response, body) {
                 if (er)
-                    throw er;
+                {
+                    var output = document.getElementById('output');
+                    output.value = 'Nominatim error: ' + er;
+                    return;
+                }
 
                 var element = body[0];
                 var lat = element['lat'];
