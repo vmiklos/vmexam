@@ -54,6 +54,9 @@ function queryNominatim(addr, city, street, housenumber)
 
 function osmify()
 {
+    var output = document.getElementById('output');
+    output.value = 'Please wait...';
+
     var url = document.getElementById('url-input').value;
     var tokens = url.split('/');
     // E.g. node or way.
@@ -67,9 +70,6 @@ function osmify()
     queryTurbo(query);
 }
 
-// Allow calling this from the button event handler.
-window.osmify = osmify;
-
 /// Look up name as a key in the query string.
 function getParameterByName(name)
 {
@@ -80,18 +80,28 @@ function getParameterByName(name)
 }
 
 domready(function() {
-    // Allow pre-fill via GET parameters.
-    var url = getParameterByName('url');
-    if (url)
-    {
-        var urlInput = document.getElementById('url-input');
-        urlInput.value = url;
-    }
-
     // Create our page.
     var body = document.getElementsByTagName('body')[0];
 
-    // TODO remaining contents
+    var desc = document.createElement('p');
+    desc.appendChild(document.createTextNode(
+        'Takes an OSM object ID and turns it into a string that is readable (so that you can save it to your contacts) and is also machine-friendly, e.g. OsmAnd can parse it as well.'));
+    body.appendChild(desc);
+
+    var input = document.createElement('p');
+    var urlInput = document.createElement('input');
+    urlInput.id = 'url-input';
+    urlInput.type = 'text';
+    urlInput.placeholder = 'URL';
+    urlInput.size = 64;
+    input.appendChild(urlInput);
+    input.appendChild(document.createTextNode(' '));
+    var button = document.createElement('input');
+    button.type = 'button';
+    button.value = 'osmify';
+    button.onclick = osmify;
+    input.appendChild(button);
+    body.appendChild(input);
 
     var result = document.createElement('p');
     result.appendChild(document.createTextNode('Result: '));
@@ -106,6 +116,15 @@ domready(function() {
     example.appendChild(document.createTextNode(
         'Example URL: http://www.openstreetmap.org/node/2700453924'));
     body.appendChild(example);
+
+    // Allow pre-fill via GET parameters.
+    var url = getParameterByName('url');
+    if (url)
+    {
+        var urlInput = document.getElementById('url-input');
+        urlInput.value = url;
+    }
+
 });
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:
