@@ -90,7 +90,18 @@ domready(function() {
 
     // Create our page.
     var body = document.getElementsByTagName('body')[0];
+
     // TODO remaining contents
+
+    var result = document.createElement('p');
+    result.appendChild(document.createTextNode('Result: '));
+    var output = document.createElement('input');
+    output.id = 'output';
+    output.type = 'text';
+    output.size = 64;
+    result.appendChild(output);
+    body.appendChild(result);
+
     var example = document.createElement('p');
     example.appendChild(document.createTextNode(
         'Example URL: http://www.openstreetmap.org/node/2700453924'));
