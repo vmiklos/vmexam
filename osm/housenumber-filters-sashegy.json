@@ -1,6 +1,21 @@
 {
     "source": "survey",
     "filters": {
+        "somorjai_utca": {
+            "comment": "this is just the sashegy part",
+            "ranges": [
+                {
+                    "start": "19",
+                    "end": "23",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "18",
+                    "end": "18",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "kallo_esperes_utca": {
             "comment": "this is just the sashegy part; the even side",
             "ranges": [
