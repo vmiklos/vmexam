@@ -2001,6 +2001,26 @@ debug:15973:1: m_aTableManagers: pop <- unexpected
 
 aha, for an empty text append stack the pop/push of the table managers isn't symmetric on shape start/end
 
+=== 2017-06-09
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=107618
+
+one more special case: can't avoid duplicated section break at the end if there is header/footer?
+
+whitelisting fixes this bug, but does it keep the original problem fixed?
+
+original testcase was testTdf106492, followup was testTdf107837
+
+test:
+xray ThisComponent.StyleFamilies.PageStyles.Standard.HeaderIsOn
+
+<<<
+
+system-xmlsec notes:
+- current state: verification works correctly, signing not
+  - need to find out how to let xmlsec know about our private key needed for signing
+- build system support is missing
+
 <<<
 
 Problematic bugs:
