@@ -2019,6 +2019,8 @@ xray ThisComponent.StyleFamilies.PageStyles.Standard.HeaderIsOn
 system-xmlsec notes:
 - current state: verification works correctly, signing not
   - need to find out how to let xmlsec know about our private key needed for signing
+    - xmlSecNssAppliedKeysMngrCreate -> xmlSecNssKeyDataStoreX509SetCertDb? (but that is commented out)
+    - maybe interesting to see who calls xmlSecNssKeysStoreAdoptKey?
 - build system support is missing
 
 <<<
