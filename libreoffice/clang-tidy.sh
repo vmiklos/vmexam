@@ -6,7 +6,7 @@
 #
 
 header_filter=""
-for header in $(grep hxx$ .git/indented-files.cache|grep -v 'make_unique.hxx')
+for header in $(grep hxx$ .git/indented-files.cache)
 do
     if [ -n "$header_filter" ]; then
         header_filter+="|"

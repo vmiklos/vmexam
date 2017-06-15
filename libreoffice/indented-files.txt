@@ -5,7 +5,6 @@ drawinglayer/qa/unit/border.cxx
 filter/source/msfilter/rtfutil.cxx
 framework/qa/cppunit/dispatchtest.cxx
 include/comphelper/propertyvalue.hxx
-include/o3tl/make_unique.hxx
 include/sfx2/classificationhelper.hxx
 include/sfx2/lokhelper.hxx
 include/svl/grabbagitem.hxx
