@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "muskotaly_koz": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "3",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "6",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "muskotaly_utca": {
             "ranges": [
                 {

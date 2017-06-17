@@ -2014,14 +2014,15 @@ original testcase was testTdf106492, followup was testTdf107837
 test:
 xray ThisComponent.StyleFamilies.PageStyles.Standard.HeaderIsOn
 
-<<<
+=== 2017-06-16
 
-system-xmlsec notes:
-- current state: verification works correctly, signing not
-  - need to find out how to let xmlsec know about our private key needed for signing
-    - xmlSecNssAppliedKeysMngrCreate -> xmlSecNssKeyDataStoreX509SetCertDb? (but that is commented out)
-    - maybe interesting to see who calls xmlSecNssKeysStoreAdoptKey?
-- build system support is missing
+https://bugs.documentfoundation.org/show_bug.cgi?id=108416
+
+commenting out the rtf-specific code in DomainMapper_Impl::GetCurrentNumberingCharStyle works around the bug
+
+testcase:
+
+xray ThisComponent.StyleFamilies.CharacterStyles.getByName("ListLabel 1").CharWeight -> should be 100, was 150
 
 <<<
 
