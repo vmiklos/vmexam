@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "hegyalja_ut": {
+            "ranges": [
+                {
+                    "start": "47",
+                    "end": "93",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "70",
+                    "end": "182",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "muskotaly_koz": {
             "ranges": [
                 {
