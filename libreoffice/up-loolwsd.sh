@@ -2,7 +2,7 @@
 
 time sh -c "git pull -r && \
     ./autogen.sh && \
-    ./configure --prefix=$PWD/install --enable-debug --with-lo-path=$HOME/git/libreoffice/master/instdir --with-lokit-path=$HOME/git/libreoffice/master/include CC='ccache $HOME/git/llvm/instdir/bin/clang' CXX='ccache $HOME/git/llvm/instdir/bin/clang++' && \
+    ./configure --prefix=$PWD/install --enable-debug --with-lo-path=$HOME/git/libreoffice/master/instdir --with-lokit-path=$HOME/git/libreoffice/master/include CC='ccache $HOME/git/llvm/instdir/bin/clang' CXX='ccache $HOME/git/llvm/instdir/bin/clang++' CFLAGS='-g -O0' CXXFLAGS='-g -O0' && \
     make clean && \
     make -j$(getconf _NPROCESSORS_ONLN) && \
     make ctags && \
