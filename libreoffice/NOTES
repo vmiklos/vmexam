@@ -1,5 +1,16 @@
 = LO hacking notes
 
+== General
+
+=== Debugging a function with lots of early returns:
+
+----
+#include <comphelper/scopeguard.hxx>
+...
+SAL_DEBUG("SwContentFrame("<<GetFrameId()<<")::MakeAll start");
+comphelper::ScopeGuard g([this]() { SAL_DEBUG("SwContentFrame("<<this->GetFrameId()<<")::MakeAll end"); });
+----
+
 == 2011-12-22
 
 - cmdline to incrementally rebuild with debug:
