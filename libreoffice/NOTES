@@ -2024,10 +2024,50 @@ testcase:
 
 xray ThisComponent.StyleFamilies.CharacterStyles.getByName("ListLabel 1").CharWeight -> should be 100, was 150
 
+=== 2017-06-23
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=106132
+
+reported to be a regression from c761df1e42fd11acc5fc05b0baacd803c3788ca6, 2016-10-25 -> reproduced, but reverting the sw part doesn't fix the bug
+
+size of outer shape in docx file:
+
+                <wp:extent cx="3810000" cy="4094480"/>
+
+width: 10.5833333333 cm
+height: 11.3735555556 cm -> size is the same on master
+
+daily-till53.git: bisect of from-docx-old.odt
+- 9a9b8d528eca194b445970adb953e5da53458f4a / 2016-10-25: source-hash-b5c65b53de6663e12a8192100d6e25494779c5c7 is good
+- master is bad
+- [74c29538088e81c49e8bde714bdcaad74365adca] 2016-11-08: source-hash-05d2a66955f8a6552a79696474386ca9f45f9ef2 is bad
+- [9a216e0e8b68af2f272bd990fc4695e67fae03c5] 2016-11-01: source-hash-9fa6dadc4e1e75b2fd7b7360995c524fa7a5d40e is good
+- [01da4440264090bd749e8df9587663a584544d60] 2016-11-04: source-hash-a6ce5d391476e4b6a2cb2d92ff45548c1d75684b is bad
+- [0ad3d0ef552d67d0926330f4db364ed54b80056a] 2016-11-03: source-hash-8f2dd1df1d6cc94ebbc1149de72bc6d6dffa6533 is good
+=> 01da4440264090bd749e8df9587663a584544d60 / 2016-11-04: source-hash-a6ce5d391476e4b6a2cb2d92ff45548c1d75684b is the first bad
+=> 0ad3d0ef552d67d0926330f4db364ed54b80056a / 2016-11-03: source-hash-8f2dd1df1d6cc94ebbc1149de72bc6d6dffa6533 is still good
+=> core.git range is 8f2dd1df1d6cc94ebbc1149de72bc6d6dffa6533..a6ce5d391476e4b6a2cb2d92ff45548c1d75684b
+
+did not get anywhere, perhaps it's Justin's area
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=105095
+
+odt->docx looks ok, docx import is the bug; regression from b38629ae210b204a6d24d6e9c5c62eaaf563d494
+
+confusion: i assumed that there is always a gap after a footnote number in a footnote frame, but that's not true
+
+two ways to represent the gap: a gap or no gap + tab char. what does the ww8 import do? it's buggy the same way..
+
+perhaps the no gap + tab is cleaner; so how to enable no gap for the rtf import? probably there is some rtf keyword for it...
+
+ThisComponent.StyleFamilies.ParagraphStyles.Footnote.ParaLeftmargin -> large number: tab is not wanted. 0 -> tab is wanted
+
 <<<
 
 Problematic bugs:
 
 https://bugs.documentfoundation.org/show_bug.cgi?id=104556 "FILEOPEN DOCX: Misplaced vertical red line (drawing object)" -- gave it a try, no luck so far
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=106132 "FILEOPEN, DOCX: Frame (text box) around image cuts into image and caption" -- gave it a try, looks like Justin's sw core bug
 
 // vim: ft=asciidoc
