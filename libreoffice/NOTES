@@ -2073,6 +2073,20 @@ perhaps the no gap + tab is cleaner; so how to enable no gap for the rtf import?
 
 ThisComponent.StyleFamilies.ParagraphStyles.Footnote.ParaLeftmargin -> large number: tab is not wanted. 0 -> tab is wanted
 
+=== 2017-07-06
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=106132
+
+attacking this again, root cause may be that for nested WPS shapes the same oox shape handler is reused -> mess
+
+idea:
+- in OOXMLFastContextHandlerShape increment/decrement a stack counter
+- create the handler for each stack level
+
+breaks testN705956_2 in CppunitTest_sw_ooxmlexport8, i.e. VML in general
+
+testcase: xray ThisComponent.DrawPage(0).TextRightDistance ' should be 0, is 250
+
 <<<
 
 Problematic bugs:
