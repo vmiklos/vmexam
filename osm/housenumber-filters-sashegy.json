@@ -1,6 +1,30 @@
 {
     "source": "survey",
     "filters": {
+        "jagello_ut": {
+            "comment": "this is just the sashegy part",
+            "ranges": [
+                {
+                    "start": "2",
+                    "end": "4",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "kond_vezer_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "15",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "16",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "harasztos_ut": {
             "ranges": [
                 {
