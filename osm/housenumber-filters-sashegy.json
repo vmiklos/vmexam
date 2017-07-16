@@ -1,6 +1,15 @@
 {
     "source": "survey",
     "filters": {
+        "harasztos_ut": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "1",
+                    "isOdd": "true"
+                }
+            ]
+        },
         "zolyomi_ut": {
             "ranges": [
                 {
@@ -131,11 +140,11 @@
             ]
         },
         "elopatak_utca": {
-            "comment": "just the sashegy part",
+            "comment": "this is just the sashegy part, would be <6 but there is no 4",
             "ranges": [
                 {
                     "start": "2",
-                    "end": "6",
+                    "end": "2",
                     "isOdd": "false"
                 }
             ]
