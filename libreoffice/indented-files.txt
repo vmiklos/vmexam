@@ -1,3 +1,8 @@
+connectivity/source/drivers/writer/WConnection.cxx
+connectivity/source/drivers/writer/WDriver.cxx
+connectivity/source/drivers/writer/Wservices.cxx
+connectivity/source/inc/writer/WConnection.hxx
+connectivity/source/inc/writer/WDriver.hxx
 cppcanvas/qa/extras/emfplus/emfplus.cxx
 desktop/source/lib/lokclipboard.cxx
 desktop/source/lib/lokclipboard.hxx
