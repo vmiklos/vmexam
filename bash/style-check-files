@@ -13,7 +13,7 @@ do
 		astyle-check $file || exit 1
 		find-unsorted-includes $file || exit 1
 		# Use css:: instead.
-		grep com::sun::star:: $file && exit 1
+		grep -H -n com::sun::star:: $file && exit 1
 		;;
 	*.py)
 		pep8 $file || exit 1
