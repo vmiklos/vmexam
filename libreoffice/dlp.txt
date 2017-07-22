@@ -2,7 +2,18 @@
 
 https://www.documentliberation.org/projects/
 
+- auto-rewrite:
+
+----
+clang-tidy -header-filter=^$PWD -export-fixes=clang/foo.yaml $(git ls-files|grep cpp$)
+clang-apply-replacements clang
+----
+
 == librevenge
+
+- clone url: git://git.code.sf.net/p/libwpd/librevenge
+
+- cpp11 patches: misc-unused-using-decls found nothing, modernize-use-override is in, modernize-use-nullptr is pending
 
 == libodfgen
 
@@ -10,7 +21,7 @@ https://www.documentliberation.org/projects/
 
 - clone url: git://git.code.sf.net/p/libepubgen/code
 
-- cpp11 patches: misc-unused-using-decls and modernize-use-override are in; modernize-use-nullptr and modernize-loop-convert is pending
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
 
 == librvngabw
 

@@ -2073,7 +2073,7 @@ perhaps the no gap + tab is cleaner; so how to enable no gap for the rtf import?
 
 ThisComponent.StyleFamilies.ParagraphStyles.Footnote.ParaLeftmargin -> large number: tab is not wanted. 0 -> tab is wanted
 
-=== 2017-07-06
+=== 2017-07-07
 
 https://bugs.documentfoundation.org/show_bug.cgi?id=106132
 
@@ -2087,12 +2087,21 @@ breaks testN705956_2 in CppunitTest_sw_ooxmlexport8, i.e. VML in general
 
 testcase: xray ThisComponent.DrawPage(0).TextRightDistance ' should be 0, is 250
 
+=== 2017-07-21
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=108951
+
+regression from f528f9499bd91b700c549575e88fa102cfffede9 -> indeed
+- commit puts numid to numPr instead of tabs, that looks OK
+
+"good": ooxml:CT_PPrBase_tabs -> ooxml:CT_NumPr_numId
+
+there are two numIds, why? the order is perhaps random, and after the above commit the 1st num wins, not the 2nd one
+
 <<<
 
 Problematic bugs:
 
 https://bugs.documentfoundation.org/show_bug.cgi?id=104556 "FILEOPEN DOCX: Misplaced vertical red line (drawing object)" -- gave it a try, no luck so far
-
-https://bugs.documentfoundation.org/show_bug.cgi?id=106132 "FILEOPEN, DOCX: Frame (text box) around image cuts into image and caption" -- gave it a try, looks like Justin's sw core bug
 
 // vim: ft=asciidoc
