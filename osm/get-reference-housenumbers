@@ -46,9 +46,13 @@ def getStreetURL(street, prefix):
         # Really strange, survey confirms OSM is correct here, so map it
         # instead.
         simplifiedStreet = "zolyom_koz"
+    elif simplifiedStreet == "kiss_janos_altabornagy_utca":
+        simplifiedStreet = "kiss_janos_altb._utca"
     district = "xi"
     if suffix == "-sashegy" and simplifiedStreet in ("brezno_lepcso", "kallo_esperes_utca", "sasfiok_utca", "sion_lepcso", "somorjai_utca"):
         # This city part isn't a strict subset of a city district, these are the exceptions.
+        district = "xii"
+    elif suffix == "-nemetvolgy":
         district = "xii"
     return prefix + "/budapest%20" + district + ".%20kerulet_" + simplifiedStreet + ".html"
 
@@ -101,7 +105,9 @@ class HTMLHouseNumberParser(html.parser.HTMLParser):
         if not len(houseNumber):
             return
 
-        self.housenumbers.append(simplify(houseNumber))
+        # Needed by -nemetvolgy.
+        simplified = simplify(houseNumber).replace("altb.", "altabornagy")
+        self.housenumbers.append(simplified)
 
 
 # Gets known house numbers for a single street
