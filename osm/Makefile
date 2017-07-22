@@ -53,7 +53,7 @@ check: check-style download
 	qa/streets-nomaxspeed.py
 	qa/suspicious-streets.py
 	qa/suspicious-streets.py -gazdagret
-	#qa/suspicious-streets.py -sashegy
+	qa/suspicious-streets.py -sashegy
 
 workdir/streets-gazdagret.txt: streets.txt
 	@mkdir -p workdir
