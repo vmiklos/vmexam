@@ -13,7 +13,7 @@ clang-apply-replacements clang
 
 - clone url: git://git.code.sf.net/p/libwpd/librevenge
 
-- cpp11 patches: misc-unused-using-decls found nothing, modernize-use-override is in, modernize-use-nullptr is pending
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
 
 == libodfgen
 
