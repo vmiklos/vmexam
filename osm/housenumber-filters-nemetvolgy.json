@@ -2,14 +2,20 @@
     "source": "survey",
     "filters": {
         "kiss_janos_altabornagy_utca": {
+            "comment": "this is just the nemetvolgy part",
             "ranges": [
                 {
-                    "start": "1",
+                    "start": "25",
                     "end": "59",
                     "isOdd": "true"
                 },
                 {
                     "start": "2",
+                    "end": "2",
+                    "isOdd": "false"
+                },
+                {
+                    "start": "6",
                     "end": "88",
                     "isOdd": "false"
                 }
