@@ -2098,6 +2098,28 @@ regression from f528f9499bd91b700c549575e88fa102cfffede9 -> indeed
 
 there are two numIds, why? the order is perhaps random, and after the above commit the 1st num wins, not the 2nd one
 
+=== 2017-07-28
+
+refactor: Table object in sw/sc driver in connectivity:
+- fillColumns: different
+- construct: different
+- disposing: different
+
+- refreshColumns: can be shared, done in header
+- refreshIndexes: can be shared, done in header
+- getTypes: can be shared, done in header
+- queryInterface: can be shared, done in header
+
+- getCurrentLastPos: can be shared, done in header
+- seekRow: can be shared, done in header
+- FileClose: can be shared, done in header
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=109790
+
+- regression from cbe79789a0fc9b80b2fd14a5abfe0973a2cb69dc
+- \pard should not reset para style between \cell and \row it seems
+- opposite situation, compared to tdf#44715
+
 <<<
 
 Problematic bugs:

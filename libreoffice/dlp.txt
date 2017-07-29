@@ -6,7 +6,7 @@ https://www.documentliberation.org/projects/
 
 ----
 clang-tidy -header-filter=^$PWD -export-fixes=clang/foo.yaml $(git ls-files|grep cpp$)
-clang-apply-replacements clang
+clang-apply-replacements -remove-change-desc-files clang
 ----
 
 == librevenge
@@ -16,6 +16,10 @@ clang-apply-replacements clang
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
 
 == libodfgen
+
+- clone url: git://git.code.sf.net/p/libwpd/libodfgen
+
+- cpp11 patches: misc-unused-using-decls, modernize-use-override
 
 == libepubgen
 
