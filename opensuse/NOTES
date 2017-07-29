@@ -147,4 +147,13 @@ http://www.howtoeverything.net/linux/hardware/ubuntu-freeze-issue-after-ssd-upgr
     - copy from /usr, comment out hostonly=
     - also 'add_drivers+="ci_hdrc_imx"' is needed for some reason to see the USB raid1 HDDs + run dracut
 
+=== openSUSE 42.2 -> openSUSE Leap 42.3
+
+- mutt is replaced by neomutt, minor tweaks to config is necessary: https://github.com/vmiklos/dotfiles/commit/ac3dd6b0989527131c8bccd8602463aac3b05b33
+  - gets rid of "unknown config key" error on startup + number of unread mails are shown again on the sidebar
+- gcontacts is broken: need to install the python-oauth2client package
+  - this used to be provided by the google-api-python-client package, which gets removed during upgrade
+- colors in vim are strange: actually a konsole problem
+  - settings -> edit current profile -> general -> environment -> edit -> TERM should be 'xterm', not 'xterm-256color'
+
 // vim: ft=asciidoc paste
