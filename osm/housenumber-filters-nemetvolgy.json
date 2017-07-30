@@ -20,6 +20,20 @@
                     "isOdd": "false"
                 }
             ]
+        },
+        "vercse_koz": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "5",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "6",
+                    "isOdd": "false"
+                }
+            ]
         }
     }
 }

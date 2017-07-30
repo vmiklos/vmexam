@@ -19,7 +19,7 @@ clang-apply-replacements -remove-change-desc-files clang
 
 - clone url: git://git.code.sf.net/p/libwpd/libodfgen
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr
 
 == libepubgen
 
