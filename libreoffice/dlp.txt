@@ -29,6 +29,10 @@ clang-apply-replacements -remove-change-desc-files clang
 
 == librvngabw
 
+- clone url: git://git.code.sf.net/p/librvngabw/code
+
+- cpp11 patches: modernize-use-override is pending
+
 == libwpd
 
 == libwpg
