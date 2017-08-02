@@ -158,4 +158,11 @@ http://www.howtoeverything.net/linux/hardware/ubuntu-freeze-issue-after-ssd-upgr
 - usual pain with firefox and html5 codecs: https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support
   - installing the mentioned packages from packman fixes the problem
 
+- KDE5 restart:
+
+----
+killall plasmashell #to stop it
+kstart plasmashell #to restart it
+----
+
 // vim: ft=asciidoc paste
