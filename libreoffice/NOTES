@@ -2120,6 +2120,16 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=109790
 - \pard should not reset para style between \cell and \row it seems
 - opposite situation, compared to tdf#44715
 
+=== 2017-08-03
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=110440
+
+reported to be a regression from 527440c9d9086ae01c277b0dca96a87eb0868ae6
+
+"don't do anything", is implemented as "return nullptr", should be "return this"
+
+test: ThisComponent.DrawPages(0).getByIndex(0).Visible -> should be false
+
 <<<
 
 Problematic bugs:

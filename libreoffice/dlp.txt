@@ -9,6 +9,12 @@ clang-tidy -header-filter=^$PWD -export-fixes=clang/foo.yaml $(git ls-files|grep
 clang-apply-replacements -remove-change-desc-files clang
 ----
 
+- silly names after loop-convert:
+
+----
+git show|grep 'for.*m_.* :'
+----
+
 == librevenge
 
 - clone url: git://git.code.sf.net/p/libwpd/librevenge
@@ -34,6 +40,10 @@ clang-apply-replacements -remove-change-desc-files clang
 - cpp11 patches: modernize-use-override is pending
 
 == libwpd
+
+- clone url: git://git.code.sf.net/p/libwpd/code
+
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
 
 == libwpg
 
