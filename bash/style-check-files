@@ -6,11 +6,23 @@ cdup=$(git rev-parse --show-cdup)
 
 [ -n "$cdup" ] && cd $cdup
 
+fix=
+if [ "$1" == "--fix" ]; then
+	fix=y
+	shift
+fi
+
 for file in $(cat .git/indented-files.cache)
 do
 	case $file in
 	*.cxx|*.cpp|*.hxx)
-		astyle-check $file || exit 1
+		if ! astyle-check $file; then
+			if [ -n "$fix" ]; then
+				astyle-check --fix $file
+			else
+				exit 1
+			fi
+		fi
 		find-unsorted-includes $file || exit 1
 		# Use css:: instead.
 		grep -H -n com::sun::star:: $file && exit 1
