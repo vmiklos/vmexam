@@ -47,28 +47,56 @@ git show|grep 'for.*m_.* :'
 
 == libwpg
 
+- pending
+
 == libwps
+
+- pending
 
 == libmwaw
 
+- pending
+
 == libabw
+
+- pending -- gerrit
 
 == libcdr
 
+- pending -- gerrit
+
 == libmspub
+
+- pending -- gerrit
 
 == libvisio
 
+- pending -- gerrit
+
 == libetonyek
+
+- pending -- gerrit
 
 == libfreehand
 
+- pending -- gerrit
+
 == libe-book
+
+- pending
 
 == libpagemaker
 
+- pending -- gerrit
+
 == libzmf
 
+- pending -- gerrit
+
 == libstaroffice
+
+- clone url: https://github.com/fosnola/libstaroffice
+ 
+- cpp11 patches: misc-unused-using-decls done, modernize-use-override, modernize-use-nullptr pending as <https://github.com/fosnola/libstaroffice/pull/1> and modernize-loop-convert
 
 // vim: ft=asciidoc
