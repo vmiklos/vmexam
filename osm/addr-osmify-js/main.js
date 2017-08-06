@@ -8,9 +8,9 @@ var domready = require('domready');
 var querystring = require('querystring-browser');
 var request = require('browser-request');
 
-function queryTurbo(query)
+function queryTurbo(protocol, query)
 {
-    var url = 'http://overpass-api.de/api/interpreter';
+    var url = protocol + '//overpass-api.de/api/interpreter';
 
     request({'method' : 'POST', 'url' : url, 'body' : query, 'json' : true},
             function(er, response, body) {
@@ -31,13 +31,13 @@ function queryTurbo(query)
 
                 // Have the address, now talk to nominatim to get the
                 // coordinates as well.
-                queryNominatim(addr, city, street, housenumber);
+                queryNominatim(protocol, addr, city, street, housenumber);
             });
 }
 
-function queryNominatim(addr, city, street, housenumber)
+function queryNominatim(protocol, addr, city, street, housenumber)
 {
-    var url = 'http://nominatim.openstreetmap.org/search.php?';
+    var url = protocol + '//nominatim.openstreetmap.org/search.php?';
     url += querystring.stringify(
         {'q' : housenumber + ' ' + street + ', ' + city, 'format' : 'json'});
     request({'method' : 'GET', 'url' : url, 'json' : true},
@@ -55,7 +55,7 @@ function queryNominatim(addr, city, street, housenumber)
 
                 // Show the result.
                 var result = lat + ',' + lon + ' (' + addr + ')';
-                var output = document.getElementById('output');
+                output = document.getElementById('output');
                 output.value = result;
             });
 }
@@ -73,9 +73,10 @@ function osmify()
     var objectId = tokens[tokens.length - 1];
 
     // Turn the ID into an address.
+    var protocol = location.protocol != 'https:' ? 'http:' : 'https:';
     var query = '[out:json];\n(\n    ' + objectType + '(' + objectId +
                 ');\n);\nout body;';
-    queryTurbo(query);
+    queryTurbo(protocol, query);
 }
 
 /// Look up name as a key in the query string.
@@ -129,7 +130,6 @@ domready(function() {
     var url = getParameterByName('url');
     if (url)
     {
-        var urlInput = document.getElementById('url-input');
         urlInput.value = url;
     }
 
