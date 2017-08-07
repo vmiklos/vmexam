@@ -29,7 +29,24 @@ do
 	if [ ! -e "$file" ]; then
 		continue
 	fi
-	astyle --options=$HOME/.astyle.options < $file > $new
+
+	options=""
+	i="$PWD/$(dirname $file)"
+	while true
+	do
+		if [ -e "$i/astyle.options" ]; then
+			options="$i/astyle.options"
+			break
+		elif [ "$i" == "" ]; then
+			break
+		fi
+		i=${i%/*}
+	done
+	if [ -z "$options" ]; then
+		options=$HOME/.astyle.options
+	fi
+
+	astyle --options=$options < $file > $new
 	if ! diff -u $file $new; then
 		if [ -n "$fix" ]; then
 			cat $new > $file

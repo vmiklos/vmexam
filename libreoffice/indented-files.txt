@@ -33,7 +33,6 @@ oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
 sc/inc/clipoptions.hxx
 sfx2/qa/cppunit/test_classification.cxx
-sfx2/source/view/classificationcontroller.cxx
 sfx2/source/view/classificationhelper.cxx
 sfx2/source/view/lokhelper.cxx
 starmath/source/rtfexport.cxx
@@ -122,6 +121,12 @@ writerfilter/source/rtftok/rtftokenizer.cxx
 writerfilter/source/rtftok/rtftokenizer.hxx
 writerfilter/source/rtftok/rtfvalue.cxx
 writerfilter/source/rtftok/rtfvalue.hxx
+writerperfect/source/writer/EPUBExportFilter.cxx
+writerperfect/source/writer/EPUBExportFilter.hxx
+writerperfect/source/writer/EPUBPackage.cxx
+writerperfect/source/writer/EPUBPackage.hxx
+writerperfect/source/writer/exp/xmlimp.cxx
+writerperfect/source/writer/exp/xmlimp.hxx
 xmlsecurity/inc/certificate.hxx
 xmlsecurity/inc/documentsignaturemanager.hxx
 xmlsecurity/inc/pdfsignaturehelper.hxx
