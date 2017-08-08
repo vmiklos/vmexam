@@ -97,6 +97,6 @@ git show|grep 'for.*m_.* :'
 
 - clone url: https://github.com/fosnola/libstaroffice
  
-- cpp11 patches: misc-unused-using-decls done, modernize-use-override is pending as <https://github.com/fosnola/libstaroffice/pull/2> , modernize-use-nullptr done and modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
 
 // vim: ft=asciidoc
