@@ -1,0 +1,16 @@
+:tabletags-red.bodydata: <td style="background-color:red;">|</td>
+:tabledef-default.red-style: tags="red"
+:tabletags-green.bodydata: <td style="background-color:green;">|</td>
+:tabledef-default.green-style: tags="green"
+:tabletags-yellow.bodydata: <td style="background-color:yellow;">|</td>
+:tabledef-default.yellow-style: tags="yellow"
+
+|====
+|project name |misc-unused-using-decls |modernize-use-override |modernize-use-nullptr |modernize-loop-convert
+|librevege    g|yes                   g|yes                   g|yes                  g|yes
+|libodfgen    g|yes                   g|yes                   g|yes                  g|yes
+|libepubgen   g|yes                   g|yes                   g|yes                  g|yes
+|librvngabw   y|pending               r|no                    r|no                   r|no
+|====
+
+// vim: ft=asciidoc

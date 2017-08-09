@@ -17,31 +17,21 @@ git show|grep 'for.*m_.* :'
 
 == librevenge
 
-- clone url: git://git.code.sf.net/p/libwpd/librevenge
-
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
 
 == libodfgen
-
-- clone url: git://git.code.sf.net/p/libwpd/libodfgen
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
 
 == libepubgen
 
-- clone url: git://git.code.sf.net/p/libepubgen/code
-
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
 
 == librvngabw
 
-- clone url: git://git.code.sf.net/p/librvngabw/code
-
 - cpp11 patches: modernize-use-override is pending
 
 == libwpd
-
-- clone url: git://git.code.sf.net/p/libwpd/code
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
 
@@ -59,7 +49,7 @@ git show|grep 'for.*m_.* :'
 
 == libabw
 
-- pending -- gerrit
+- cpp11 patches: misc-unused-using-decls, modernize-use-override
 
 == libcdr
 
@@ -95,8 +85,6 @@ git show|grep 'for.*m_.* :'
 
 == libstaroffice
 
-- clone url: https://github.com/fosnola/libstaroffice
- 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
 
 // vim: ft=asciidoc
