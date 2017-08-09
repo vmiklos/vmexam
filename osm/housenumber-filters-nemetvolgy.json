@@ -1,6 +1,16 @@
 {
     "source": "survey",
     "filters": {
+        "nemetvolgyi_ut": {
+            "comment": "this is just the nemetvolgy part",
+            "ranges": [
+                {
+                    "start": "2",
+                    "end": "130",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "taltos_utca": {
             "ranges": [
                 {
