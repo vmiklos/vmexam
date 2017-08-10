@@ -29,7 +29,7 @@ git show|grep 'for.*m_.* :'
 
 == librvngabw
 
-- cpp11 patches: modernize-use-override is pending
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert pending
 
 == libwpd
 
@@ -45,7 +45,7 @@ git show|grep 'for.*m_.* :'
 
 == libmwaw
 
-- pending
+- pending, later
 
 == libabw
 

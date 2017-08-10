@@ -6,6 +6,11 @@
             "ranges": [
                 {
                     "start": "2",
+                    "end": "42",
+                    "isOdd": "false"
+                },
+                {
+                    "start": "46",
                     "end": "130",
                     "isOdd": "false"
                 }
