@@ -1,6 +1,16 @@
 {
     "source": "survey",
     "filters": {
+        "hegyalja_ut": {
+            "comment": "this is just the nemetvolgy part",
+            "ranges": [
+                {
+                    "start": "95",
+                    "end": "139",
+                    "isOdd": "true"
+                }
+            ]
+        },
         "nemetvolgyi_ut": {
             "comment": "this is just the nemetvolgy part",
             "ranges": [

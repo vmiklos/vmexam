@@ -2130,6 +2130,14 @@ reported to be a regression from 527440c9d9086ae01c277b0dca96a87eb0868ae6
 
 test: ThisComponent.DrawPages(0).getByIndex(0).Visible -> should be false
 
+=== 2017-08-11
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=107480
+
+can reproduce, bottom margin of para 3 is supposed to be something larger than 176 mm100, i.e. 100 twips, should be 280
+
+ah, probably the problem is that \htmautsp affects the style table, but in RTF it's after the style table...
+
 <<<
 
 Problematic bugs:
