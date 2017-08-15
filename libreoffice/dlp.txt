@@ -29,7 +29,7 @@ git show|grep 'for.*m_.* :'
 
 == librvngabw
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert pending
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
 
 == libwpd
 
@@ -49,11 +49,11 @@ git show|grep 'for.*m_.* :'
 
 == libabw
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libcdr
 
-- pending -- gerrit
+- cpp11 patches: misc-unused-using-decls, modernize-use-override
 
 == libmspub
 
@@ -86,5 +86,8 @@ git show|grep 'for.*m_.* :'
 == libstaroffice
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
+
+More ideas:
+- clang-analyzer-deadcode.DeadStores
 
 // vim: ft=asciidoc
