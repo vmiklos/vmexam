@@ -2138,6 +2138,48 @@ can reproduce, bottom margin of para 3 is supposed to be something larger than 1
 
 ah, probably the problem is that \htmautsp affects the style table, but in RTF it's after the style table...
 
+=== 2017-08-17
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=108943
+
+RTF version is buggy vs MSO, DOCX version is OK, what is the problem?
+
+DOCX tokens:
+
+- direct formatting:
+
+----
+        <DomainMapper.sprm name="ooxml:CT_PPrBase_pStyle">(ooxml:CT_PPrBase_pStyle, ParaLevel1)
+          <tablemanager.sprm>(ooxml:CT_PPrBase_pStyle, ParaLevel1)</tablemanager.sprm>
+          <TablePropertiesHandler.sprm sprm="(ooxml:CT_PPrBase_pStyle, ParaLevel1)"/>
+          <unhandled/>
+          <propertyMap.insert name="ParaStyleName" unsignedValue="0" unsignedValue="0" unsignedValue="0" stringValue="ParaLevel1"/>
+          <propertyMap.insert name="NumberingStyleName" unsignedValue="0" unsignedValue="0" unsignedValue="0" stringValue="WWNum1"/>
+        </DomainMapper.sprm>
+        <DomainMapper.sprm name="ooxml:CT_PPrBase_tabs">(ooxml:CT_PPrBase_tabs, OOXMLPropertySetValue(t:0x3650c70, m:0x3657b50))
+          <tablemanager.sprm>(ooxml:CT_PPrBase_tabs, OOXMLPropertySetValue(t:0x3650c70, m:0x3657b50))</tablemanager.sprm>
+          <TablePropertiesHandler.sprm sprm="(ooxml:CT_PPrBase_tabs, OOXMLPropertySetValue(t:0x3650c70, m:0x3657b50))"/>
+          <unhandled/>
+          <DomainMapper.sprm name="ooxml:CT_Tabs_tab">(ooxml:CT_Tabs_tab, OOXMLPropertySetValue(t:0x220b080, m:0x2200c50))
+            <tablemanager.sprm>(ooxml:CT_Tabs_tab, OOXMLPropertySetValue(t:0x220b080, m:0x2200c50))</tablemanager.sprm>
+            <TablePropertiesHandler.sprm sprm="(ooxml:CT_Tabs_tab, OOXMLPropertySetValue(t:0x220b080, m:0x2200c50))"/>
+            <unhandled/>
+            <DomainMapper.attribute name="ooxml:CT_TabStop_val" value="91942"/> <- LN_Value_ST_TabJc_right
+            <DomainMapper.attribute name="ooxml:CT_TabStop_pos" value="720"/>
+          </DomainMapper.sprm>
+          <propertyMap.insert name="ParaTabStops" unsignedValue="0" unsignedValue="0" unsignedValue="0" stringValue=""/>
+        </DomainMapper.sprm>
+----
+
+ODF level:
+- direct formatting seems to be the same
+- ParaLevel1: same...
+- WWNum1 def: text:list-tab-stop-position="1.27cm" is missing in RTF, why?
+
+numbering uno props, which are perhaps interesting: IndentAt, FirstLineIndent
+rtf: IndentAt is 1270, FirstLineIndent is -635; ListtabStopPosition is 0
+docx: IndentAt is 1270, FirstLineIndent is -1270; ListtabStopPosition is 1270!, from NS_ooxml::LN_CT_TabStop_pos -> fixed
+
 <<<
 
 Problematic bugs:
