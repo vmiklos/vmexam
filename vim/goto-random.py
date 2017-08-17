@@ -12,7 +12,7 @@ def main():
     # Jump to a line.
     line = random.choice(range(len(vim.current.buffer)))
     # cursor() is 1-based.
-    vim.eval("cursor(" + str(line + 1) + ", 0)")
+    vim.eval("cursor(" + str(line + 1) + ", 1)")
 
     # Move the cursor to the center of the screen.
     vim.command("normal! zz")
