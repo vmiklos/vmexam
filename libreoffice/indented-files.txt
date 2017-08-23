@@ -125,6 +125,10 @@ writerperfect/source/writer/EPUBExportFilter.cxx
 writerperfect/source/writer/EPUBExportFilter.hxx
 writerperfect/source/writer/EPUBPackage.cxx
 writerperfect/source/writer/EPUBPackage.hxx
+writerperfect/source/writer/exp/XMLBase64ImportContext.cxx
+writerperfect/source/writer/exp/XMLBase64ImportContext.hxx
+writerperfect/source/writer/exp/XMLTextFrameContext.cxx
+writerperfect/source/writer/exp/XMLTextFrameContext.hxx
 writerperfect/source/writer/exp/txtparai.cxx
 writerperfect/source/writer/exp/txtparai.hxx
 writerperfect/source/writer/exp/xmlictxt.cxx
@@ -133,6 +137,8 @@ writerperfect/source/writer/exp/xmlimp.cxx
 writerperfect/source/writer/exp/xmlimp.hxx
 writerperfect/source/writer/exp/xmlmetai.cxx
 writerperfect/source/writer/exp/xmlmetai.hxx
+writerperfect/source/writer/exp/xmltbli.cxx
+writerperfect/source/writer/exp/xmltbli.hxx
 writerperfect/source/writer/exp/xmltext.cxx
 writerperfect/source/writer/exp/xmltext.hxx
 xmlsecurity/inc/certificate.hxx
