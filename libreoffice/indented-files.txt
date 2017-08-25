@@ -121,6 +121,7 @@ writerfilter/source/rtftok/rtftokenizer.cxx
 writerfilter/source/rtftok/rtftokenizer.hxx
 writerfilter/source/rtftok/rtfvalue.cxx
 writerfilter/source/rtftok/rtfvalue.hxx
+writerperfect/qa/unit/EPUBExportTest.cxx
 writerperfect/source/writer/EPUBExportFilter.cxx
 writerperfect/source/writer/EPUBExportFilter.hxx
 writerperfect/source/writer/EPUBPackage.cxx
