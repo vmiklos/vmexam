@@ -53,19 +53,19 @@ git show|grep 'for.*m_.* :'
 
 == libcdr
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libmspub
 
-- pending -- gerrit
+- pending -- gerrit (builds fails with '-Werror=effc++')
 
 == libvisio
 
-- pending -- gerrit
+- pending -- gerrit (doesn't build for me)
 
 == libetonyek
 
-- pending -- gerrit
+- cpp11 patches: misc-unused-using-decls, modernize-use-override pending
 
 == libfreehand
 

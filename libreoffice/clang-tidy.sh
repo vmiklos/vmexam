@@ -17,7 +17,7 @@ done
 if [ -n "$1" ]; then
     clang-tidy -header-filter="$header_filter" $1
 else
-    for object in $(grep cxx$ .git/indented-files.cache)
+    for object in $(grep cxx$ .git/indented-files.cache|egrep -v '/qa/')
     do
         clang-tidy -header-filter="$header_filter" $object
     done

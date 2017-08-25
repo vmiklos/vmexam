@@ -2180,6 +2180,23 @@ numbering uno props, which are perhaps interesting: IndentAt, FirstLineIndent
 rtf: IndentAt is 1270, FirstLineIndent is -635; ListtabStopPosition is 0
 docx: IndentAt is 1270, FirstLineIndent is -1270; ListtabStopPosition is 1270!, from NS_ooxml::LN_CT_TabStop_pos -> fixed
 
+=== 2017-08-25
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=104937
+
+regression from 0f2d5db38bac64b665c6e4a127bbbd63a7ed9af5, something around these fake cells at the end of table rows
+
+2nd row has 8 cells, 7 of them are normal, then a fake one
+
+docx equivalent confirms this: grid has 9 cols, 8 normal and 1 "after" cell
+
+docx separators: 42, 152, 924, 1512, 2688, 3496, 4304, 4818 (0..7)
+rtf  separators: 27, 100, 608, 995, 1770, 2302, 2834, 3173 (0..7)
+
+edge of fake cell is 8460, edge of last cell is 7870 -> diff is 590; total is 8460
+
+pdfium update: we are at 3151, upstream is at 3196
+
 <<<
 
 Problematic bugs:
