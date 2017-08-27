@@ -65,7 +65,7 @@ git show|grep 'for.*m_.* :'
 
 == libetonyek
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override pending
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr pending
 
 == libfreehand
 

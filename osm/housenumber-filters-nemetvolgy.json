@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "torpe_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "9",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "12",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "hegyalja_ut": {
             "comment": "this is just the nemetvolgy part",
             "ranges": [
