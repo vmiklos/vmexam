@@ -41,11 +41,9 @@ starmath/source/unofilter.cxx
 starmath/source/wordexportbase.cxx
 svl/source/items/grabbagitem.cxx
 svx/qa/unit/xoutdev.cxx
-sw/inc/rdfhelper.hxx
 sw/inc/textboxhelper.hxx
 sw/qa/extras/rtfexport/rtfexport.cxx
 sw/qa/extras/rtfimport/rtfimport.cxx
-sw/source/core/doc/rdfhelper.cxx
 sw/source/core/doc/textboxhelper.cxx
 sw/source/filter/rtf/swparrtf.cxx
 sw/source/filter/ww8/docxsdrexport.cxx
@@ -132,6 +130,10 @@ writerperfect/source/writer/exp/XMLTextFrameContext.cxx
 writerperfect/source/writer/exp/XMLTextFrameContext.hxx
 writerperfect/source/writer/exp/txtparai.cxx
 writerperfect/source/writer/exp/txtparai.hxx
+writerperfect/source/writer/exp/txtstyli.cxx
+writerperfect/source/writer/exp/txtstyli.hxx
+writerperfect/source/writer/exp/xmlfmt.cxx
+writerperfect/source/writer/exp/xmlfmt.hxx
 writerperfect/source/writer/exp/xmlictxt.cxx
 writerperfect/source/writer/exp/xmlictxt.hxx
 writerperfect/source/writer/exp/xmlimp.cxx
