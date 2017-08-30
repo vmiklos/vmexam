@@ -65,11 +65,11 @@ git show|grep 'for.*m_.* :'
 
 == libetonyek
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr pending
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libfreehand
 
-- pending -- gerrit
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr pending
 
 == libe-book
 
@@ -90,4 +90,4 @@ git show|grep 'for.*m_.* :'
 More ideas:
 - clang-analyzer-deadcode.DeadStores
 
-// vim: ft=asciidoc
+// vim: ft=asciidoc paste
