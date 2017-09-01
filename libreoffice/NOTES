@@ -2197,6 +2197,19 @@ edge of fake cell is 8460, edge of last cell is 7870 -> diff is 590; total is 84
 
 pdfium update: we are at 3151, upstream is at 3196
 
+=== 2017-09-01
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=104936
+
+5.0 regression, does 4.4 indeed work? yes
+
+bibisect-50max.git bisect:
+- master is bad
+- oldest is good
+
+which is the correct z-order?
+original: linked image is on top -> turns out export never wrote ZOrder -> implemented
+
 <<<
 
 Problematic bugs:

@@ -1,4 +1,4 @@
 # This based on libclang-vim's .clang-tidy
-Checks: 'clang-diagnostic-*,performance-*,unused-*,modernize-*,misc-*,readability-*,-readability-braces-around-statements,-readability-implicit-bool-cast'
+Checks: 'clang-diagnostic-*,performance-*,unused-*,modernize-*,misc-*,readability-*,-readability-braces-around-statements,-readability-implicit-bool-cast,-readability-implicit-bool-conversion,-readability-function-size'
 WarningsAsErrors: '*'
 

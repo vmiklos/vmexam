@@ -69,15 +69,15 @@ git show|grep 'for.*m_.* :'
 
 == libfreehand
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr pending
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libe-book
 
 - pending
 
-== libpagemaker
+== libpagemaker (builds with clang only)
 
-- pending -- gerrit
+- cpp11 patches: misc-unused-using-decls, modernize-use-override pending
 
 == libzmf
 
