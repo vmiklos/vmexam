@@ -73,7 +73,7 @@ function osmify()
     var objectId = tokens[tokens.length - 1];
 
     // Turn the ID into an address.
-    var protocol = location.protocol != 'https:' ? 'http:' : 'https:';
+    var protocol = location.protocol != 'http:' ? 'https:' : 'http:';
     var query = '[out:json];\n(\n    ' + objectType + '(' + objectId +
                 ');\n);\nout body;';
     queryTurbo(protocol, query);
