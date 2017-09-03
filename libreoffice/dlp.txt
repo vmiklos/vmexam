@@ -77,7 +77,7 @@ git show|grep 'for.*m_.* :'
 
 == libpagemaker (builds with clang only)
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override pending
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert pending
 
 == libzmf
 

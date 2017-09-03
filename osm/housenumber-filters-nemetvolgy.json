@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "stromfeld_aurel_ut": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "9",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "10",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "zsambeki_utca": {
             "ranges": [
                 {
