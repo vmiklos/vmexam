@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "furj_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "33",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "46",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "stromfeld_aurel_ut": {
             "ranges": [
                 {
