@@ -55,9 +55,9 @@ git show|grep 'for.*m_.* :'
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
-== libmspub
+== libmspub (builds with clang only)
 
-- pending -- gerrit (builds fails with '-Werror=effc++')
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr
 
 == libvisio
 
@@ -77,7 +77,7 @@ git show|grep 'for.*m_.* :'
 
 == libpagemaker (builds with clang only)
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert pending
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libzmf
 

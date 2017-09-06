@@ -23,7 +23,6 @@ include/sfx2/lokhelper.hxx
 include/svl/grabbagitem.hxx
 include/vcl/filter/pdfdocument.hxx
 include/vcl/filter/pdfdocument.hxx
-include/xmlsecurity/pdfio/pdfdocument.hxx
 oox/source/drawingml/customshapepresetdata.cxx
 oox/source/shape/LockedCanvasContext.cxx
 oox/source/shape/LockedCanvasContext.hxx
@@ -146,6 +145,7 @@ writerperfect/source/writer/exp/xmltext.cxx
 writerperfect/source/writer/exp/xmltext.hxx
 xmlsecurity/inc/certificate.hxx
 xmlsecurity/inc/documentsignaturemanager.hxx
+xmlsecurity/inc/pdfio/pdfdocument.hxx
 xmlsecurity/inc/pdfsignaturehelper.hxx
 xmlsecurity/qa/unit/pdfsigning/pdfsigning.cxx
 xmlsecurity/qa/unit/signing/signing.cxx
