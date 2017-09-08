@@ -192,6 +192,9 @@ void testTdf108963()
             continue;
 
         ++yellowPathcount;
+
+        unsigned int pathPointCount = FPDFPath_CountPoint(pageObject);
+        assert(pathPointCount == 5);
     }
     assert(yellowPathcount == 1);
 

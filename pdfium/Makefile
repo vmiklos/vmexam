@@ -7,7 +7,7 @@ PDFIUM_LIBS := -Wl,--start-group \
 	-Wl,--end-group  -ldl -lrt -lfreetype -pthread
 
 test: test.o Makefile
-	clang++ -std=c++11 -o test test.o ${PDFIUM_LIBS}
+	clang++ -std=c++11 -g -o test test.o ${PDFIUM_LIBS}
 
 test.o: test.cxx Makefile
-	clang++ -std=c++11 -c -o test.o ${PDFIUM_CFLAGS} test.cxx
+	clang++ -std=c++11 -g -c -o test.o ${PDFIUM_CFLAGS} test.cxx

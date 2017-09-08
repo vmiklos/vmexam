@@ -36,4 +36,17 @@ sed -i 's|-Wl,--gdb-index ||' $(find workdir/ -name "*.ninja")
 ninja -C workdir
 ----
 
+== path API
+
+- first goal: expose # of points in a path -> patch is at https://pdfium-review.googlesource.com/c/pdfium/+/13592
+- ed4705b4db1405a5abef99ad1b2725eee65fedf8 added similar public api with a test
+
+how to run the tests?
+
+----
+workdir/pdfium_embeddertests
+----
+
+But has to disable bunch of already failing tests.
+
 // vim: ft=asciidoc
