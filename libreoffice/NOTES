@@ -2210,6 +2210,23 @@ bibisect-50max.git bisect:
 which is the correct z-order?
 original: linked image is on top -> turns out export never wrote ZOrder -> implemented
 
+=== 2017-09-08
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=108963
+
+need to do the same as PDFWriterImpl::drawStrikeoutChar() -> fixed
+
+OWriterDatabaseMetaData and OCalcDatabaseMetaData merge -- member functions:
+- impl_getTypeInfo_throw -> can be shared
+- getColumns -> can be shared
+- getURL -> no
+- getMaxBinaryLiteralLength -> yes
+- getMaxCharLiteralLength -> yes
+- getMaxColumnNameLength -> yes
+- getMaxColumnsInIndex -> yes
+- getMaxColumnsInTable -> yes
+- getTables -> no
+
 <<<
 
 Problematic bugs:

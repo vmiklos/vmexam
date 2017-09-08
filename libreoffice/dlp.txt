@@ -57,7 +57,7 @@ git show|grep 'for.*m_.* :'
 
 == libmspub (builds with clang only)
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libvisio
 
