@@ -106,6 +106,7 @@ void testTdf105461()
     FPDF_DestroyLibrary();
 }
 
+#if 0
 static std::string buf;
 
 static int WriteBlockCallback(FPDF_FILEWRITE* /*pFileWrite*/, const void* data,
@@ -156,13 +157,17 @@ void testRoundtrip()
 
     FPDF_DestroyLibrary();
 }
+#endif
+
 int main()
 {
 #if 0
     testTdf106059();
-    testTdf105461();
 #endif
+    testTdf105461();
+#if 0
     testRoundtrip();
+#endif
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
