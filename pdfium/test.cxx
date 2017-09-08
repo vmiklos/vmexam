@@ -59,7 +59,6 @@ void testTdf106059()
 
     FPDF_DestroyLibrary();
 }
-#endif
 
 void testTdf105461()
 {
@@ -106,7 +105,6 @@ void testTdf105461()
     FPDF_DestroyLibrary();
 }
 
-#if 0
 static std::string buf;
 
 static int WriteBlockCallback(FPDF_FILEWRITE* /*pFileWrite*/, const void* data,
@@ -159,15 +157,58 @@ void testRoundtrip()
 }
 #endif
 
+void testTdf108963()
+{
+    FPDF_LIBRARY_CONFIG config;
+    config.version = 2;
+    config.m_pUserFontPaths = nullptr;
+    config.m_pIsolate = nullptr;
+    config.m_v8EmbedderSlot = 0;
+    FPDF_InitLibraryWithConfig(&config);
+
+    std::ifstream testFile("tdf108963.pdf", std::ios::binary);
+    std::vector<char> fileContents((std::istreambuf_iterator<char>(testFile)),
+                                   std::istreambuf_iterator<char>());
+    FPDF_DOCUMENT document = FPDF_LoadMemDocument(
+        fileContents.data(), fileContents.size(), /*password=*/nullptr);
+    assert(document);
+
+    // The document has one page.
+    assert(FPDF_GetPageCount(document) == 1);
+    FPDF_PAGE page = FPDF_LoadPage(document, /*page_index=*/0);
+    assert(page);
+
+    int pageObjectCount = FPDFPage_CountObject(page);
+    int yellowPathcount = 0;
+    for (int i = 0; i < pageObjectCount; ++i)
+    {
+        FPDF_PAGEOBJECT pageObject = FPDFPage_GetObject(page, i);
+        if (FPDFPageObj_GetType(pageObject) != FPDF_PAGEOBJ_PATH)
+            continue;
+
+        unsigned int red, green, blue, alpha;
+        FPDFPath_GetFillColor(pageObject, &red, &green, &blue, &alpha);
+        if (((red << 16) | (green << 8) | blue) != 0xffff00)
+            continue;
+
+        ++yellowPathcount;
+    }
+    assert(yellowPathcount == 1);
+
+    FPDF_ClosePage(page);
+
+    FPDF_CloseDocument(document);
+
+    FPDF_DestroyLibrary();
+}
 int main()
 {
 #if 0
     testTdf106059();
-#endif
     testTdf105461();
-#if 0
     testRoundtrip();
 #endif
+    testTdf108963();
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
