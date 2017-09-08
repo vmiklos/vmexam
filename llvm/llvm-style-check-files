@@ -13,7 +13,7 @@ cdup=$(git rev-parse --show-cdup)
 
 [ -n "$cdup" ] && cd $cdup
 
-for file in $(find tools/clang/tools/extra/clang-rename/ -type f)
+for file in $(find tools/clang/lib/Tooling/Refactoring/Rename/ tools/clang/tools/clang-rename/ -type f)
 do
 	case $file in
 	*.cpp|*.h)

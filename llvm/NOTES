@@ -38,7 +38,7 @@ cd ~/git/vmexam/libclang/qa/data
 Automatic test:
 
 ----
-cd tools/clang/tools/extra/test/clang-rename
+cd tools/clang/test/clang-rename
 ~/git/llvm/workdir/bin/llvm-lit .
 ----
 
@@ -60,6 +60,16 @@ Coding style:
 ----
 clang-format -i $(git ls-files|egrep '(cpp|h)$')
 ----
+
+=== -force with multi-rename feature
+
+- original -force option was 8a73c96b5848869534caf46e612d37a14a06e80e in clang-tools-extra.git
+- we have:
+  - symbol offsets or qualified names
+  - spelling names: qualified names, as they appear in the source code
+  - prev names (Unified Symbol Resolutions or USRs)
+  - new names
+- idea: don't append USR -> append empty USR
 
 == clang-include-fixer
 
