@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "boszormenyi_ut": {
+            "ranges": [
+                {
+                    "start": "3",
+                    "end": "37",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "16",
+                    "end": "46",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "furj_utca": {
             "ranges": [
                 {
