@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "lejto_ut": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "51",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "28",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "boszormenyi_ut": {
             "ranges": [
                 {
