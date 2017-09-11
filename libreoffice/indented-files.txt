@@ -18,7 +18,6 @@ drawinglayer/qa/unit/border.cxx
 filter/source/msfilter/rtfutil.cxx
 framework/qa/cppunit/dispatchtest.cxx
 include/comphelper/propertyvalue.hxx
-include/sfx2/classificationhelper.hxx
 include/sfx2/lokhelper.hxx
 include/svl/grabbagitem.hxx
 include/vcl/filter/pdfdocument.hxx
@@ -32,7 +31,6 @@ oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
 sc/inc/clipoptions.hxx
 sfx2/qa/cppunit/test_classification.cxx
-sfx2/source/view/classificationhelper.cxx
 sfx2/source/view/lokhelper.cxx
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
@@ -125,6 +123,8 @@ writerperfect/source/writer/EPUBPackage.cxx
 writerperfect/source/writer/EPUBPackage.hxx
 writerperfect/source/writer/exp/XMLBase64ImportContext.cxx
 writerperfect/source/writer/exp/XMLBase64ImportContext.hxx
+writerperfect/source/writer/exp/XMLSectionContext.cxx
+writerperfect/source/writer/exp/XMLSectionContext.hxx
 writerperfect/source/writer/exp/XMLTextFrameContext.cxx
 writerperfect/source/writer/exp/XMLTextFrameContext.hxx
 writerperfect/source/writer/exp/txtparai.cxx
