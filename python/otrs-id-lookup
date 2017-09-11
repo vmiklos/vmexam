@@ -11,7 +11,7 @@
 # [https://localhost/otrs/rpc.pl]
 # soap_user = mycompany
 # soap_password = secret
-# prefix = bug#
+# prefixes = bug#
 #
 
 #
