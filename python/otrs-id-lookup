@@ -30,8 +30,10 @@ config.read(os.path.expanduser('~/.otrsrc'))
 url = config.sections()[0]
 user = config.get(url, "soap_user")
 password = config.get(url, "soap_password")
-prefix = config.get(url, "prefix")
-number = sys.argv[1].replace(prefix, '')
+prefixes = config.get(url, "prefixes").split(',')
+number = sys.argv[1]
+for prefix in prefixes:
+	number = number.replace(prefix, '')
 
 headers = {}
 headers['Authorization'] = 'Basic ' + base64.encodestring('%s:%s' % (user, password)).strip()
