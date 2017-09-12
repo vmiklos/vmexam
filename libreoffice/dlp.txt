@@ -17,27 +17,27 @@ git show|grep 'for.*m_.* :'
 
 == librevenge
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libodfgen
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libepubgen
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == librvngabw
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libwpd
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libwpg
 
-- pending
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libwps
 
@@ -55,13 +55,13 @@ git show|grep 'for.*m_.* :'
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
-== libmspub (builds with clang only)
+== libmspub
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libvisio
 
-- pending -- gerrit (doesn't build for me)
+- cpp11 patches: misc-unused-using-decls, modernize-use-override pending
 
 == libetonyek
 
@@ -75,7 +75,7 @@ git show|grep 'for.*m_.* :'
 
 - pending
 
-== libpagemaker (builds with clang only)
+== libpagemaker
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
@@ -85,7 +85,7 @@ git show|grep 'for.*m_.* :'
 
 == libstaroffice
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr and modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 More ideas:
 - clang-analyzer-deadcode.DeadStores
