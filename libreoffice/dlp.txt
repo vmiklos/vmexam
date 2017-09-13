@@ -61,7 +61,7 @@ git show|grep 'for.*m_.* :'
 
 == libvisio
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override pending
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr pending
 
 == libetonyek
 

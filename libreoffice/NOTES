@@ -2227,6 +2227,32 @@ OWriterDatabaseMetaData and OCalcDatabaseMetaData merge -- member functions:
 - getMaxColumnsInTable -> yes
 - getTables -> no
 
+=== 2017-09-13
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=112211
+
+- claimed to be a regression from aaa6a5202a447fb4e86d5f016d8e79fbc34a3ed7, though reverting that doesn't fix the problem for me
+- 5.3.3.2 is indeed good
+
+direct formatting on the problematic para in FODT:
+<style:paragraph-properties fo:margin-left="1.27cm" fo:margin-right="0cm" fo:text-indent="0cm" style:auto-text-indent="false">
+-> if these attributes are missing, everything is fine
+
+- reverting f528f9499bd91b700c549575e88fa102cfffede9 fixes the problem, can we fix *that* in a different way?
+- seems ind-from-num > ind-from-parastyle is what we want for tdf#112211, why ind-from-parastyle > ind-from-num was needed for tdf#106953?
+  - somehow in that case indentation info from the listlevel is indeed ignored, but no idea why
+
+bLevelNumbersValid has to mean also that left/right indent in num should be ignored...
+
+so yes, at this point i'm pretty confident that tdf#106953 should be fixed differently. ideas:
+- have a look at the docx version and fix that first -- could work, but that's also broken, sounds like FirstLineIndent is (by default) set to some value
+  - so when we have no <w:ind>, we don't set it, but the sw default is not ok for docx
+- make the "don't deduplicate left/first margin" code in RTF conditional -> hard to do as the info is many layers away from where we need it
+
+the first idea looks cleaner, then that can be a better fix for tdf#106953 -> can revert the original commit to fix tdf#112211
+
+-> did the docx fixing, but providing the good indentation values from list defs in rtf and reverting the original fix is still needed
+
 <<<
 
 Problematic bugs:
