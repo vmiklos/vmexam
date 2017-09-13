@@ -30,7 +30,6 @@ oox/source/shape/WpgContext.hxx
 oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
 sc/inc/clipoptions.hxx
-sfx2/qa/cppunit/test_classification.cxx
 sfx2/source/view/lokhelper.cxx
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
@@ -119,6 +118,8 @@ writerfilter/source/rtftok/rtfvalue.hxx
 writerperfect/qa/unit/EPUBExportTest.cxx
 writerperfect/source/writer/EPUBExportFilter.cxx
 writerperfect/source/writer/EPUBExportFilter.hxx
+writerperfect/source/writer/EPUBExportUIComponent.cxx
+writerperfect/source/writer/EPUBExportUIComponent.hxx
 writerperfect/source/writer/EPUBPackage.cxx
 writerperfect/source/writer/EPUBPackage.hxx
 writerperfect/source/writer/exp/XMLBase64ImportContext.cxx
@@ -127,6 +128,10 @@ writerperfect/source/writer/exp/XMLSectionContext.cxx
 writerperfect/source/writer/exp/XMLSectionContext.hxx
 writerperfect/source/writer/exp/XMLTextFrameContext.cxx
 writerperfect/source/writer/exp/XMLTextFrameContext.hxx
+writerperfect/source/writer/exp/XMLTextListContext.cxx
+writerperfect/source/writer/exp/XMLTextListContext.hxx
+writerperfect/source/writer/exp/XMLTextListItemContext.cxx
+writerperfect/source/writer/exp/XMLTextListItemContext.hxx
 writerperfect/source/writer/exp/txtparai.cxx
 writerperfect/source/writer/exp/txtparai.hxx
 writerperfect/source/writer/exp/txtstyli.cxx
