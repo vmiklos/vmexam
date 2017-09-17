@@ -2,6 +2,8 @@
 
 == setup
 
+`zypper in binutils-gold` to have `/usr/bin/ld.gold`
+
 See <https://pdfium.googlesource.com/pdfium/>:
 
 ----
@@ -27,15 +29,6 @@ pdf_is_complete_lib = true
 #system_libjpeg_config = true
 ----
 
-finally:
-
-----
-sed -i 's|-fuse-ld=gold ||' $(find workdir/ -name "*.ninja")
-sed -i 's|-Wl,--icf=all ||' $(find workdir/ -name "*.ninja")
-sed -i 's|-Wl,--gdb-index ||' $(find workdir/ -name "*.ninja")
-ninja -C workdir
-----
-
 == path API
 
 - first goal: expose # of points in a path -> patch is at https://pdfium-review.googlesource.com/c/pdfium/+/13592
@@ -48,5 +41,10 @@ workdir/pdfium_embeddertests
 ----
 
 But has to disable bunch of already failing tests.
+
+=== get nth point from path API
+
+- FPDFPath_GetPoint, based on FPDFPage_GetObject
+- impl next to FPDFPath_CountPoint -> https://pdfium-review.googlesource.com/c/pdfium/+/14111
 
 // vim: ft=asciidoc
