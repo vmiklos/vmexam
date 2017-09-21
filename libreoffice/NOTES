@@ -2253,6 +2253,19 @@ the first idea looks cleaner, then that can be a better fix for tdf#106953 -> ca
 
 -> did the docx fixing, but providing the good indentation values from list defs in rtf and reverting the original fix is still needed
 
+=== 2017-09-21
+
+back to https://bugs.documentfoundation.org/show_bug.cgi?id=112211
+
+Instance
+  ^A   ^B
+
+bullet should be at A, is at B
+
+tdf106953 is about: tab pos should be around 2.5cm, first/left ind should be around 1.5cm -> without the hack the first line has a different margin
+
+=> finally fixed
+
 <<<
 
 Problematic bugs:
