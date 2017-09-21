@@ -28,7 +28,7 @@ do
 		grep -H -n com::sun::star:: $file && exit 1
 		;;
 	*.py)
-		pep8 $file || exit 1
+		pep8 --ignore=E501 $file || exit 1
 
 		lint=$(pylint $file 2>/dev/null | egrep -i 'unused|indent')
 		if [ -n "$lint" ]; then

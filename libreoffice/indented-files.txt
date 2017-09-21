@@ -29,7 +29,6 @@ oox/source/shape/WpgContext.cxx
 oox/source/shape/WpgContext.hxx
 oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
-sc/inc/clipoptions.hxx
 sfx2/source/view/lokhelper.cxx
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
@@ -115,7 +114,10 @@ writerfilter/source/rtftok/rtftokenizer.cxx
 writerfilter/source/rtftok/rtftokenizer.hxx
 writerfilter/source/rtftok/rtfvalue.cxx
 writerfilter/source/rtftok/rtfvalue.hxx
+writerperfect/qa/uitest/epubexport/epubexport.py
 writerperfect/qa/unit/EPUBExportTest.cxx
+writerperfect/source/writer/EPUBExportDialog.cxx
+writerperfect/source/writer/EPUBExportDialog.hxx
 writerperfect/source/writer/EPUBExportFilter.cxx
 writerperfect/source/writer/EPUBExportFilter.hxx
 writerperfect/source/writer/EPUBExportUIComponent.cxx
