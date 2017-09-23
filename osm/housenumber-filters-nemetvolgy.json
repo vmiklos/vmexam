@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "derkovits_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "13",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "12",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "brassai_samuel_utca": {
             "ranges": [
                 {
