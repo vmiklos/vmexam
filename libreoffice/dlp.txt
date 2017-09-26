@@ -41,7 +41,7 @@ git show|grep 'for.*m_.* :'
 
 == libwps
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libmwaw
 

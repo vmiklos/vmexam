@@ -30,6 +30,10 @@ do
 	*.py)
 		pep8 --ignore=E501 $file || exit 1
 
+		if echo $file |grep -q /uitest/; then
+			continue
+		fi
+
 		lint=$(pylint $file 2>/dev/null | egrep -i 'unused|indent')
 		if [ -n "$lint" ]; then
 			echo "$file"
