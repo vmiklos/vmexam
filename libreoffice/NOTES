@@ -2266,6 +2266,61 @@ tdf106953 is about: tab pos should be around 2.5cm, first/left ind should be aro
 
 => finally fixed
 
+=== 2017-09-29
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=112507
+
+- reported to be a regression from e6ec0794858df1444f43659b568119bf126a90e6
+- sounds like fixing tdf#104937 in a different way would be the proper fix for this
+
+rtf:
+70, 250, 1510, 2470, 4390, 5710, 7030, 7870 from cellx, 8460 from trwWidthA -> total is 16330
+
+----
+              <property.TableColumnSeparators>
+                <separator position="28" visible="1"/>
+                <separator position="101" visible="1"/>
+                <separator position="609" visible="1"/>
+                <separator position="996" visible="1"/>
+                <separator position="1771" visible="1"/>
+                <separator position="2303" visible="1"/>
+                <separator position="2835" visible="1"/>
+                <separator position="3174" visible="1"/>
+              </property.TableColumnSeparators>
+----
+
+docx: table width is 28.8cm
+
+----
+      <w:tblGrid>
+        <w:gridCol w:w="70"/> 70.0/16330*10000 = 42.86 -> 43 looks correct
+        <w:gridCol w:w="180"/> sum is 250
+        <w:gridCol w:w="1260"/> sum is 1510
+        <w:gridCol w:w="960"/> sum is 2470
+        <w:gridCol w:w="1920"/> sum is 4390
+        <w:gridCol w:w="1320"/> sum is 5710
+        <w:gridCol w:w="1320"/> sum is 7030
+        <w:gridCol w:w="840"/> sum is 7870
+        <w:gridCol w:w="8460"/> sum is 16330
+      </w:tblGrid>
+
+              <property.TableColumnSeparators>
+                <separator position="43" visible="1"/>
+                <separator position="153" visible="1"/>
+                <separator position="925" visible="1"/>
+                <separator position="1513" visible="1"/>
+                <separator position="2689" visible="1"/>
+                <separator position="3497" visible="1"/>
+                <separator position="4305" visible="1"/>
+                <separator position="4819" visible="1"/>
+              </property.TableColumnSeparators> => 9 cells
+----
+
+testcase: enough text in B2 cell -- should be in 1 line, but was in 2 lines
+
+good separators: 4207,9209 -> >5000 is the B2 width
+bad separators: 3333, 6666 -> 3333 is the B2 width
+
 <<<
 
 Problematic bugs:

@@ -73,7 +73,7 @@ git show|grep 'for.*m_.* :'
 
 == libe-book
 
-- pending
+- cpp11 patches: misc-unused-using-decls pending
 
 == libpagemaker
 
