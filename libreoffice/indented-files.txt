@@ -18,7 +18,6 @@ drawinglayer/qa/unit/border.cxx
 filter/source/msfilter/rtfutil.cxx
 framework/qa/cppunit/dispatchtest.cxx
 include/comphelper/propertyvalue.hxx
-include/sfx2/lokhelper.hxx
 include/svl/grabbagitem.hxx
 include/vcl/filter/pdfdocument.hxx
 include/vcl/filter/pdfdocument.hxx
@@ -29,7 +28,6 @@ oox/source/shape/WpgContext.cxx
 oox/source/shape/WpgContext.hxx
 oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
-sfx2/source/view/lokhelper.cxx
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
 starmath/source/unofilter.cxx
