@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "apor_vilmos_ter": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "13",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "14",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "csorsz_utca": {
             "ranges": [
                 {
