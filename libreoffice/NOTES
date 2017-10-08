@@ -2321,6 +2321,14 @@ testcase: enough text in B2 cell -- should be in 1 line, but was in 2 lines
 good separators: 4207,9209 -> >5000 is the B2 width
 bad separators: 3333, 6666 -> 3333 is the B2 width
 
+=== 2017-10-06
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=112211 got reopened
+
+- indeed a problem on master
+- is the daily build from 2017-09-27 OK? no
+- but trivial to fix up the original doc based on the minimal one
+
 <<<
 
 Problematic bugs:

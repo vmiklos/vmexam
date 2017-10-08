@@ -73,7 +73,7 @@ git show|grep 'for.*m_.* :'
 
 == libe-book
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override pending
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libpagemaker
 
