@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "vas_gereben_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "39",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "40",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "apor_vilmos_ter": {
             "ranges": [
                 {
