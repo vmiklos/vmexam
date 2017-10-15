@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "vercse_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "45",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "32",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "koszta_jozsef_utca": {
             "ranges": [
                 {

@@ -6,6 +6,7 @@ time sh -ce "git pull -r
     git pull -r
     cd ../../tools/clang
     git pull -r
+    git svn rebase -l
     cd tools/extra
     git pull -r
     git svn rebase -l
