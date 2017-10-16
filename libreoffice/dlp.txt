@@ -79,9 +79,9 @@ git show|grep 'for.*m_.* :'
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
-== libzmf (doesn't build with openSUSE Leap 42.3 boost)
+== libzmf
 
-- pending -- gerrit
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libstaroffice
 
