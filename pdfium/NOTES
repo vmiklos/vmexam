@@ -61,7 +61,7 @@ download:
 - download_from_google_storage --no_resume --no_auth --bucket chromium-clang-format 0679b295e2ce2fce7919d1e8d003e497475f24a3 # mac
   -> clang-format-r302580-mac
 - download_from_google_storage --no_resume --no_auth --bucket chromium-clang-format c8455d43d052eb79f65d046c6b02c169857b963b # win
-  -> clang-format.exe-r302580-win
+  -> clang-format-r302580-win.exe
 
 https://dev-www.libreoffice.org/bin/ is where we host these binaries
 
