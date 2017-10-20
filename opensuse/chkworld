@@ -10,7 +10,7 @@ up2dates = {
     "lcov": "lynx -dump http://ltp.sourceforge.net/coverage/lcov.php|grep lcov-.*tar.gz$ |sed -e 's|.*lcov-||;s|.tar.gz.*||;q'",
     "foo2zjs": "lynx -dump http://foo2zjs.rkkda.com/Changelog|head -n 1|cut -d ' ' -f 1|sed y/-/_/",
     # just check that we're packaging the latest commit
-    "gtimelog": "[ $(git ls-remote git://git.collabora.co.uk/git/gtimelog.git|grep master|cut -c 1-7) == '1f136e9' ] && echo 0.6.0",
+    "gtimelog": "[ $(git ls-remote git://git.collabora.co.uk/git/gtimelog.git|grep master|cut -c 1-7) == 'f3ae0d8' ] && echo 0.6.0",
 }
 
 
