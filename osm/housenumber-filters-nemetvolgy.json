@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "sashegyi_ut": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "39",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "30",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "vercse_utca": {
             "ranges": [
                 {
