@@ -1,0 +1,41 @@
+#!/bin/bash
+
+#
+# Simple wrapper script to use core.git clang loplugin in other autotools-based projects.
+#
+# Usage: 'make -j8 CCACHE_PREFIX=loplugin-wrapper CCACHE_DISABLE=1 2>&1 |tee loplugin.log'
+#
+# Note that plugin.so will only emit warnings if the checkout is inside the core.git checkout.
+#
+
+c=
+for i in "$@"
+do
+    if [ "$i" = "-c" ]; then
+        c=1
+        break
+    fi
+done
+
+# Separate the compiler and the last argument (source file) from the rest of the arguments.
+first=$1
+last=${@:$#}
+shift
+n=$(($#-1))
+# Turn the last argument into an absolute path.
+set -- ${@:1:$n} $PWD/$last
+
+ret=0
+if [ -n "$c" ]; then
+    $first -Xclang -load -Xclang $HOME/git/libreoffice/master-clang/compilerplugins/obj/plugin.so -Xclang -add-plugin -Xclang loplugin "$@"
+    ret=$?
+fi
+
+# error: no need to call the real compiler
+if [ $ret -gt 0 ]; then
+    exit $ret
+fi
+
+exec "$first" "$@"
+
+# vi:set shiftwidth=4 expandtab:
