@@ -22,8 +22,10 @@ first=$1
 last=${@:$#}
 shift
 n=$(($#-1))
-# Turn the last argument into an absolute path.
-set -- ${@:1:$n} $PWD/$last
+if [ -e $last ]; then
+    # Turn the last argument into an absolute path.
+    set -- ${@:1:$n} $PWD/$last
+fi
 
 ret=0
 if [ -n "$c" ]; then
