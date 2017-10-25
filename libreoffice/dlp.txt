@@ -45,7 +45,7 @@ git show|grep 'for.*m_.* :'
 
 == libmwaw
 
-- pending, later
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
 
 == libabw
 
