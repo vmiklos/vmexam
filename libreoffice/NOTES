@@ -2329,6 +2329,14 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=112211 got reopened
 - is the daily build from 2017-09-27 OK? no
 - but trivial to fix up the original doc based on the minimal one
 
+=== 2017-10-27
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=113408
+
+- style dedup code goes wrong, inserts left/right 0 values
+- \li -> NS_ooxml::LN_CT_PPrBase_ind, NS_ooxml::LN_CT_Ind_left
+- sounds like we look up para props in some char prop list and that's how we don't find left/right indentation?
+
 <<<
 
 Problematic bugs:
