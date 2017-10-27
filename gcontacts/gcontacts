@@ -35,6 +35,7 @@ class GContacts(object):
         configPath = os.path.expanduser("~/.gcontacts")
         self.clientSecretsPath = os.path.join(configPath, "client_secrets.json")
         self.contactsXmlPath = os.path.join(configPath, "contacts.xml")
+        self.contactsLdapXmlPath = os.path.join(configPath, "contacts-ldap.xml")
         self.oauth2ClientJsonPath = os.path.join(configPath, "oauth2client.json")
 
     def updateCredentials(self, interactive):
@@ -52,7 +53,7 @@ class GContacts(object):
         self.oauth2Token = gdata.gauth.OAuth2Token(self.flow.client_id, self.flow.client_secret, self.flow.scope, self.flow.user_agent, self.flow.auth_uri, self.flow.token_uri,
                                                    self.storage.get().access_token, self.storage.get().refresh_token, self.flow.revoke_uri)
 
-    def select(self, args):
+    def select(self, xmlPath, args):
         def getName(entryNode):
             nameNodes = [i for i in entryNode.childNodes if i.localName == "name"]
             for nameNode in nameNodes:
@@ -82,7 +83,9 @@ class GContacts(object):
             return False
 
         patternString = args[0].decode('utf-8')
-        contacts = minidom.parse(self.contactsXmlPath)
+        if not os.path.exists(xmlPath):
+            return
+        contacts = minidom.parse(xmlPath)
         feedNode = [i for i in contacts.childNodes if i.localName == "feed"][0]
         contactNodes = [i for i in feedNode.childNodes if i.localName == "entry"]
         matches = []
@@ -178,7 +181,8 @@ gcontacts <pattern>""")
     else:
         if not len(pattern):
             usage()
-        contacts.select(argv[optIndex:])
+        contacts.select(contacts.contactsXmlPath, argv[optIndex:])
+        contacts.select(contacts.contactsLdapXmlPath, argv[optIndex:])
 
 if __name__ == "__main__":
     main(sys.argv[1:])
