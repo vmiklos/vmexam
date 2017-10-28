@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "siraly_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "13",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "4",
+                    "end": "20",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "sashegyi_ut": {
             "ranges": [
                 {
