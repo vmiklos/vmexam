@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+#
+# Instead of killing a given process, kill its parent, but with the same flags.
+#
+
+# Original PID.
+last=${@:$#}
+shift
+
+# Look up parent PID.
+parent=$(grep ^PPid /proc/$last/status|sed 's/.*:.//')
+
+# Delete the last argument.
+n=$(($#-1))
+set -- ${@:1:$n}
+
+exec kill "$@" $parent
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
