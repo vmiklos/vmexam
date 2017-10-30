@@ -22,7 +22,8 @@ git show|grep 'for.*m_.* :'
 
 == libodfgen
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
+  modernize-use-auto
 
 == libepubgen
 
@@ -31,7 +32,8 @@ git show|grep 'for.*m_.* :'
 
 == librvngabw
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
+  modernize-use-auto
 
 == libwpd
 
