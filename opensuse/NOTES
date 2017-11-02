@@ -157,6 +157,8 @@ http://www.howtoeverything.net/linux/hardware/ubuntu-freeze-issue-after-ssd-upgr
   - settings -> edit current profile -> general -> environment -> edit -> TERM should be 'xterm', not 'xterm-256color'
 - usual pain with firefox and html5 codecs: https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support
   - installing the mentioned packages from packman fixes the problem
+- STL container pretty-printers do not work by default in gdb anymore:
+  - can be fixed with: 'zypper in libstdc++6-devel-gcc7'
 
 - KDE5 restart:
 
