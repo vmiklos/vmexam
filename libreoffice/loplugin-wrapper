@@ -5,6 +5,9 @@
 #
 # Usage: 'make -j8 CCACHE_PREFIX=loplugin-wrapper CCACHE_DISABLE=1 2>&1 |tee loplugin.log'
 #
+# Then you can get an overview of the output by running
+# 'grep loplugin: loplugin.log|sed 's/.*loplugin:/loplugin:/'|sort -u'.
+#
 # Note that plugin.so will only emit warnings if the checkout is inside the core.git checkout.
 #
 

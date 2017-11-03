@@ -5,7 +5,7 @@ https://www.documentliberation.org/projects/
 - auto-rewrite:
 
 ----
-clang-tidy -header-filter=^$PWD -export-fixes=clang/foo.yaml $(git ls-files|grep cpp$)
+clang-tidy -header-filter=^$PWD -export-fixes=clang/foo.yaml $(git ls-files|egrep '(cxx|cpp)$')
 clang-apply-replacements -remove-change-desc-files clang
 ----
 
