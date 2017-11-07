@@ -11,7 +11,6 @@
 
 # Original PID.
 last=${@:$#}
-shift
 
 # Look up parent PID.
 parent=$(grep ^PPid /proc/$last/status|sed 's/.*:.//')
