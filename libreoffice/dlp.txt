@@ -67,11 +67,13 @@ git show|grep 'for.*m_.* :'
 
 == libmspub
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
+  modernize-use-auto
 
 == libvisio
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
+  modernize-use-auto
 
 == libetonyek
 

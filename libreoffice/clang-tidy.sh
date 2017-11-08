@@ -17,7 +17,8 @@ done
 if [ -n "$1" ]; then
     clang-tidy -header-filter="$header_filter" $1
 else
-    for object in $(grep cxx$ .git/indented-files.cache|egrep -v '/qa/')
+    # Ignore writerperfect for now, too many local changes.
+    for object in $(grep cxx$ .git/indented-files.cache|egrep -v '/qa/|writerperfect')
     do
         clang-tidy -header-filter="$header_filter" $object
     done
