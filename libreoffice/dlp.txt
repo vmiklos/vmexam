@@ -77,15 +77,18 @@ git show|grep 'for.*m_.* :'
 
 == libetonyek
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
+  modernize-use-auto
 
 == libfreehand
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
+  modernize-use-auto
 
 == libe-book
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
+  modernize-use-auto
 
 == libpagemaker
 

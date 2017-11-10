@@ -2337,6 +2337,20 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=113408
 - \li -> NS_ooxml::LN_CT_PPrBase_ind, NS_ooxml::LN_CT_Ind_left
 - sounds like we look up para props in some char prop list and that's how we don't find left/right indentation?
 
+=== 2017-11-10
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=113549
+
+- can't reproduce on master, there is a first line indent (unwanted) on the screenshot
+
+daily.git:
+- 2017-11-03 / 2416d69ad4fa26b65d5b05a8575ac96af6b2c9a9 is bad
+- 2017-11-10 / eaa9cf6a3069fba3d82c046f0041bfb537d9e648 is good
+=> 4fd01477aefaa4fb52e3ca37162ba527b0f537cd / 2017-11-08 is the first good
+=> 1716427edfa9bb1bf756977b4a5900ea1235c63b / 2017-11-07 is the last bad -> duplicate of tdf#113550
+
+instead: sbkodd has no test coverage -> added
+
 <<<
 
 Problematic bugs:
