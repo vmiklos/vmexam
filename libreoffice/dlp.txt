@@ -92,7 +92,8 @@ git show|grep 'for.*m_.* :'
 
 == libpagemaker
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
+  modernize-use-auto
 
 == libzmf
 
@@ -100,7 +101,8 @@ git show|grep 'for.*m_.* :'
 
 == libstaroffice
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
+  modernize-use-auto
 
 More ideas:
 - clang-analyzer-deadcode.DeadStores
