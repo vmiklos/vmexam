@@ -2351,6 +2351,24 @@ daily.git:
 
 instead: sbkodd has no test coverage -> added
 
+=== 2017-11-16
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=113544
+
+- can't reproduce on master
+
+daily.git:
+- c4c60b971b814b91f92a70683dfb4e68bec8a863 / 2017-10-31: source-hash-45f76baf6d7f38849e2972b7d0931f4046723f7e is indeed bad
+- master / 2017-11-10: source-hash-eaa9cf6a3069fba3d82c046f0041bfb537d9e648 is good
+- [ee80b451e4dbb53e58aa511cfa5ab8ce3569aa2e] 2017-11-05: source-hash-6070dec9ca9a15587a2aece81f9ae1ab5ac0f8c4 is good -> bad for g-b
+- [ee566a46b9fd3cfd7140f3781e684f8638e3eca7] 2017-11-02: source-hash-afe501df00733a80af464d0eac3809c833388877 is good -> bad for g-b
+- [3a3b937938179a81ee0e06bccece6eaf45e8b589] 2017-11-01: source-hash-dae6ba564fcf20299b7a560aeb346efc84364d41 is good -> bad for g-b
+=> 3a3b937938179a81ee0e06bccece6eaf45e8b589 / 2017-11-01: source-hash-dae6ba564fcf20299b7a560aeb346efc84364d41 is the first good
+=> c4c60b971b814b91f92a70683dfb4e68bec8a863 / 2017-10-31: source-hash-45f76baf6d7f38849e2972b7d0931f4046723f7e is the last bad
+core.git range is 45f76baf6d7f38849e2972b7d0931f4046723f7e..dae6ba564fcf20299b7a560aeb346efc84364d41 -> duplicate of tdf#113408
+
+instead: sbkeven has no test coverage -> added
+
 <<<
 
 Problematic bugs:
