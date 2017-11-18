@@ -97,7 +97,8 @@ git show|grep 'for.*m_.* :'
 
 == libzmf
 
-- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert
+- cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
+  modernize-use-auto
 
 == libstaroffice
 
@@ -106,6 +107,5 @@ git show|grep 'for.*m_.* :'
 
 More ideas:
 - clang-analyzer-deadcode.DeadStores
-- modernize-use-auto
 
 // vim: ft=asciidoc paste
