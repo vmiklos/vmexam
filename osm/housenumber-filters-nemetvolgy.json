@@ -1,6 +1,34 @@
 {
     "source": "survey",
     "filters": {
+        "somorjai_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "17",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "16",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "lipto_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "15",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "14",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "szoboszlai_utca": {
             "ranges": [
                 {
