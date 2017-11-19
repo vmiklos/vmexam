@@ -18,22 +18,22 @@ git show|grep 'for.*m_.* :'
 == librevenge
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores
 
 == libodfgen
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores
 
 == libepubgen
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores
 
 == librvngabw
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores
 
 == libwpd
 
