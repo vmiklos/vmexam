@@ -12,11 +12,11 @@ if [ "$1" == "--fix" ]; then
 	shift
 fi
 
-for file in $(cat .git/indented-files.cache)
+for file in $(cat .git/indented-files.cache .git/indented-files2.cache)
 do
 	case $file in
 	*.cxx|*.cpp|*.hxx)
-		if ! astyle-check $file; then
+		if grep -q $file .git/indented-files.cache && ! astyle-check $file; then
 			if [ -n "$fix" ]; then
 				astyle-check --fix $file
 			else
