@@ -13,12 +13,18 @@ function mailArchiveClick()
         'https://www.mail-archive.com/search?l=mid&q=' + msgid;
 }
 
+function debianClick()
+{
+    var msgid = document.getElementById('msgid').value;
+    document.location.href = 'https://lists.debian.org/msgid-search/' + msgid;
+}
+
 domready(function() {
     // Create our page.
     var body = document.getElementsByTagName('body')[0];
     var desc = document.createElement('p');
     desc.appendChild(document.createTextNode(
-        'Takes a Message-ID from a public mailing list and attempts to look up a public archive entry for it.'));
+        'Takes a Message-ID from a public mailing list and attempts to look up a public archive entry for it from multiple sources.'));
     body.appendChild(desc);
 
     var input = document.createElement('p');
@@ -34,13 +40,23 @@ domready(function() {
     mailArchive.value = 'Mail Archive';
     mailArchive.onclick = mailArchiveClick;
     input.appendChild(mailArchive);
+    input.appendChild(document.createTextNode(' '));
+    var debian = document.createElement('input');
+    debian.type = 'button';
+    debian.value = 'Debian';
+    debian.onclick = debianClick;
+    input.appendChild(debian);
     body.appendChild(input);
 
-    // cfb1d155-499d-3205-8283-ce84c39dbb14@redhat.com
-    var example = document.createElement('p');
-    example.appendChild(document.createTextNode(
-        'Example MessageID: cfb1d155-499d-3205-8283-ce84c39dbb14@redhat.com'));
-    body.appendChild(example);
+    var maExample = document.createElement('p');
+    maExample.appendChild(document.createTextNode(
+        'Example Mail Archive MessageID: cfb1d155-499d-3205-8283-ce84c39dbb14@redhat.com'));
+    body.appendChild(maExample);
+
+    var dExample = document.createElement('p');
+    dExample.appendChild(document.createTextNode(
+        'Example Debian MessageID: 20171121214924.kwjklln5t6t7dedh@rene-engelhard.de'));
+    body.appendChild(dExample);
 });
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:
