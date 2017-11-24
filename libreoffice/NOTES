@@ -2369,6 +2369,28 @@ core.git range is 45f76baf6d7f38849e2972b7d0931f4046723f7e..dae6ba564fcf20299b7a
 
 instead: sbkeven has no test coverage -> added
 
+=== 2017-11-21
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=104035
+
+- "1.0 (cont)" should be on page 2, is on page 1 after roundtrip
+- "1.0 facility" block is of 3 lines originally, 4 lines after RT
+- sounds like it's due to tab stops:
+  - orig/good has: 0.79cm, 5.08cm, etc -> 5 items
+    \tx450\tx2880\tx3427\tx3787\tx4147
+  - RT/bad    has: 5.87cm, 10.16cm, etc.
+- looks like an RTF export problem, DOCX export is fine
+  - 5 is there, but values are off: \tx3330\tx5760\tx6307\tx6667\tx7027
+  - first item for docx is fine:           <w:tab w:val="left" w:pos="450" w:leader="none"/>
+
+debug:6923:6923: writing tx, tab pos is 450, with offset: 3330
+^ offset is the problem
+WW8AttributeOutput::ParaTabStop does the offset only in a compat case
+
+testcase:
+Stops = ThisComponent.Text.createEnumeration.nextElement.ParaTabStops
+xray Stops(0).Position
+
 <<<
 
 Problematic bugs:
