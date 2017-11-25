@@ -53,17 +53,17 @@ git show|grep 'for.*m_.* :'
 == libmwaw
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores
 
 == libabw
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores
 
 == libcdr
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores
 
 == libmspub
 
