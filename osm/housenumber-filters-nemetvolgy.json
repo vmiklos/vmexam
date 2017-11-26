@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "dolgos_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "21",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "2",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "ban_utca": {
             "ranges": [
                 {
