@@ -68,12 +68,12 @@ git show|grep 'for.*m_.* :'
 == libmspub
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores
 
 == libvisio
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores
 
 == libetonyek
 
@@ -106,6 +106,6 @@ git show|grep 'for.*m_.* :'
   modernize-use-auto
 
 More ideas:
-- clang-analyzer-deadcode.DeadStores
+- modernize-use-noexcept
 
 // vim: ft=asciidoc paste
