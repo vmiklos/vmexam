@@ -2391,6 +2391,19 @@ testcase:
 Stops = ThisComponent.Text.createEnumeration.nextElement.ParaTabStops
 xray Stops(0).Position
 
+=== 2017-12-01
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=104016
+
+good: ParaFirstLineIndent is 0, ParaLeftMargin is 0 (directly)
+- numbering: FirstLineIndent is -635, IndentAt is 1270
+- custom props of para 2: part of WW8Num1 numbering + a tab stop
+bad: fo:margin-left="1.27cm" fo:margin-right="0cm" is set directly on para 2
+
+tried to do direct formatting vs numbering definition deduplication at a
+tokenizer level, but too much work, and we have that info at hand in dmapper ->
+did that instead
+
 <<<
 
 Problematic bugs:
