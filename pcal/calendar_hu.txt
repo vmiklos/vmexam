@@ -19,6 +19,7 @@ year *			# following entries apply to every year
 # http://hu.wikipedia.org/wiki/Magyarorsz%C3%A1gi_%C3%BCnnepek_%C3%A9s_eml%C3%A9knapok_list%C3%A1ja
 Jan 01*
 Mar 15*
+Good_Friday*          Nagypéntek
 Easter*	              Húsvét
 day after Easter*	      Húsvéthétfõ
 May 01*
