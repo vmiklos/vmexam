@@ -58,14 +58,6 @@ writerfilter/source/dmapper/TablePositionHandler.hxx
 writerfilter/source/dmapper/domainmapperfactory.cxx
 writerfilter/source/filter/RtfFilter.cxx
 writerfilter/source/filter/WriterFilter.cxx
-writerfilter/source/ooxml/factory_ns.py
-writerfilter/source/ooxml/factoryimpl.py
-writerfilter/source/ooxml/factoryimpl_ns.py
-writerfilter/source/ooxml/factoryinc.py
-writerfilter/source/ooxml/modelpreprocess.py
-writerfilter/source/ooxml/qnametostr.py
-writerfilter/source/ooxml/resourceids.py
-writerperfect/qa/uitest/epubexport/epubexport.py
 writerperfect/qa/unit/EPUBExportTest.cxx
 writerperfect/source/writer/EPUBExportDialog.cxx
 writerperfect/source/writer/EPUBExportDialog.hxx

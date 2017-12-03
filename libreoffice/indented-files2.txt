@@ -16,6 +16,13 @@ sw/source/filter/ww8/rtfstringbuffer.cxx
 sw/source/filter/ww8/rtfstringbuffer.hxx
 writerfilter/inc/rtftok/RTFDocument.hxx
 writerfilter/qa/cppunittests/rtftok/testrtftok.cxx
+writerfilter/source/ooxml/factory_ns.py
+writerfilter/source/ooxml/factoryimpl.py
+writerfilter/source/ooxml/factoryimpl_ns.py
+writerfilter/source/ooxml/factoryinc.py
+writerfilter/source/ooxml/modelpreprocess.py
+writerfilter/source/ooxml/qnametostr.py
+writerfilter/source/ooxml/resourceids.py
 writerfilter/source/rtftok/rtfcharsets.cxx
 writerfilter/source/rtftok/rtfcharsets.hxx
 writerfilter/source/rtftok/rtfcontrolwords.cxx
@@ -45,3 +52,4 @@ writerfilter/source/rtftok/rtftokenizer.cxx
 writerfilter/source/rtftok/rtftokenizer.hxx
 writerfilter/source/rtftok/rtfvalue.cxx
 writerfilter/source/rtftok/rtfvalue.hxx
+writerperfect/qa/uitest/epubexport/epubexport.py
