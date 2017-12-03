@@ -1,4 +1,4 @@
-# National holidays in Hungary of Dec 2010.
+# National holidays in Hungary as of Dec 2017.
 #
 # Created by Ferenc Kruzslicz and Miklos Vajna
 # A bit of copy-and-paste from the Finnish settings
