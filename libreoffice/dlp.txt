@@ -98,12 +98,12 @@ git show|grep 'for.*m_.* :'
 == libzmf
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores
 
 == libstaroffice
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores
 
 More ideas:
 - modernize-use-noexcept
