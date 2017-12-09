@@ -2404,6 +2404,51 @@ tried to do direct formatting vs numbering definition deduplication at a
 tokenizer level, but too much work, and we have that info at hand in dmapper ->
 did that instead
 
+=== 2017-12-08
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=113183
+
+DrawPage(1) in the bad case:
+HoriOrient                integer                       0  may be void 
+HoriOrientPosition        long                      20960  may be void 
+HoriOrientRelation        integer                       4  may be void
+
+DrawPage(0) in the good case:
+HoriOrient                integer                       0  may be void 
+HoriOrientPosition        long                          0  may be void 
+HoriOrientRelation        integer                       4  may be void 
+
+regression from 44ea0b3a2550a79148fb86f3e7175fffe77674b4
+
+debug:8894:8894: OOXMLFastContextHandler::positionOffset: rText is '7545705', inPositionV is '0', calling mpStream->positionOffset()
+debug:8894:8894: OOXMLFastContextHandler::positionOffset: rText is '3401695', inPositionV is '1', calling mpStream->positionOffset()
+debug:8894:8894: OOXMLFastContextHandlerShape::sendShape: getPositionOffset() returned 20960,9449 -> OK
+debug:8894:8894: OOXMLFastContextHandler::positionOffset: rText is '6254115', inPositionV is '1', calling mpStream->positionOffset()
+debug:8894:8894: OOXMLFastContextHandlerShape::sendShape: getPositionOffset() returned 20960,17373 -> 20960 is a leftover from the previous shape!
+
+- old code explicitly zeroed out the values after handing them out
+
+make check -> breaks CppunitTest_sw_ooxmlexport8 -> testN792778
+
+good:
+debug:30124:30124: OOXMLFastContextHandler::positionOffset: rText is '635', inPositionV is '0', calling mpStream->positionOffset()
+debug:30124:30124: OOXMLFastContextHandler::positionOffset: rText is '4206240', inPositionV is '1', calling mpStream->positionOffset()
+debug:30124:30124: OOXMLFastContextHandlerShape::sendShape: getPositionOffset() returned 2,11684
+bad:
+debug:30287:30287: OOXMLFastContextHandler::positionOffset: rText is '635', inPositionV is '0', calling mpStream->positionOffset()
+debug:30287:30287: OOXMLFastContextHandler::positionOffset: rText is '4206240', inPositionV is '1', calling mpStream->positionOffset()
+debug:30287:30287: OOXMLFastContextHandlerShape::sendShape: getPositionOffset() returned 2,11684
+
+aha:
+
+debug:30693:30693: OOXMLFastContextHandler::positionOffset: rText is '635', inPositionV is '0', calling mpStream->positionOffset()
+debug:30693:30693: OOXMLFastContextHandler::positionOffset: rText is '4206240', inPositionV is '1', calling mpStream->positionOffset()
+debug:30693:30693: OOXMLFastContextHandlerShape::sendShape: getPositionOffset() returned 2,11684
+debug:30693:30693: PositionHandler::lcl_sprm: NS_ooxml::LN_CT_PosH_posOffset: 0
+debug:30693:30693: PositionHandler::lcl_sprm: NS_ooxml::LN_CT_PosV_posOffset: 0
+
+so we clear too early
+
 <<<
 
 Problematic bugs:
