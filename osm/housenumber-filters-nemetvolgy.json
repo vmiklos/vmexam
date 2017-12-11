@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "szendi_arok": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "11",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "8",
+                    "end": "10",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "dolgos_utca": {
             "ranges": [
                 {
