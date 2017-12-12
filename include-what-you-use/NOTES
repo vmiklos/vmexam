@@ -1,0 +1,24 @@
+= IWYU notes
+
+- build and install:
+
+----
+git clone https://github.com/include-what-you-use/include-what-you-use
+cd include-what-you-use
+git checkout --track origin/clang_3.8
+mkdir workdir
+cd workdir
+cmake -G "Unix Makefiles" -DIWYU_LLVM_ROOT_PATH=/usr/lib64 -DCMAKE_INSTALL_PREFIX=$PWD/../instdir ..
+cd ../instdir
+ln -s /usr/lib64
+----
+
+- how to run:
+
+----
+~/git/include-what-you-use/iwyu_tool.py -p . path/to/file.cxx 2>&1 |tee out
+----
+
+- <https://blog.mozilla.org/nnethercote/2013/08/13/using-include-what-you-use/> suggests focusing on the "should remove these lines" lines
+
+// vim: ft=asciidoc
