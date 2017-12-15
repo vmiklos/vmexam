@@ -12,15 +12,42 @@ import re
 import sys
 
 
+def unwrapInclude(include):
+    # Drop <> or "" around the include.
+    return include[1:-1]
+
+
+def ignoreRemoval(include, toAdd):
+    # Avoid replacing .hpp with .hdl in the com::sun::star namespace.
+    if include.startswith("com/sun/star") and include.endswith(".hpp"):
+        hdl = include.replace(".hpp", ".hdl")
+        if hdl in toAdd:
+            return True
+
+    return False
+
+
 def processIWYUOutput(iwyuOutput):
+    inAdd = False
+    toAdd = []
     inRemove = False
     toRemove = []
     currentFileName = None
     for line in iwyuOutput:
         line = line.strip()
 
-        if len(line) == 0 and inRemove:
-            inRemove = False
+        if len(line) == 0:
+            if inRemove:
+                inRemove = False
+                continue
+            if inAdd:
+                inAdd = False
+                continue
+
+        match = re.match("(.*) should add these lines:$", line)
+        if match:
+            currrentFileName = match.group(1)
+            inAdd = True
             continue
 
         match = re.match("(.*) should remove these lines:$", line)
@@ -29,12 +56,20 @@ def processIWYUOutput(iwyuOutput):
             inRemove = True
             continue
 
+        if inAdd:
+            match = re.match("#include (.*)", line)
+            if match:
+                include = unwrapInclude(match.group(1))
+                toAdd.append(include)
+                continue
+
         if inRemove:
             match = re.match("- #include (.*)  // lines (.*)-.*", line)
             if match:
-                include = match.group(1)
+                include = unwrapInclude(match.group(1))
                 lineno = match.group(2)
-                toRemove.append("%s:%s: %s" % (currentFileName, lineno, include))
+                if not ignoreRemoval(include, toAdd):
+                    toRemove.append("%s:%s: %s" % (currentFileName, lineno, include))
                 continue
 
     for remove in toRemove:
