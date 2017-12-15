@@ -39,6 +39,10 @@ def ignoreRemoval(include, toAdd):
         if forwardDecl in toAdd:
             return True
 
+    # Avoid debug STL.
+    if include == "vector" and "debug/vector" in toAdd:
+        return True
+
     return False
 
 
@@ -72,7 +76,7 @@ def processIWYUOutput(iwyuOutput):
             continue
 
         if inAdd:
-            match = re.match("#include (.*)", line)
+            match = re.match('#include ([^ ]+) ', line)
             if match:
                 include = unwrapInclude(match.group(1))
                 toAdd.append(include)
