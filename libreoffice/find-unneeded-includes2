@@ -4,8 +4,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# This parses the output of include-what-you-use's output, focusing on just
-# removing not needed includes and filtering out LibreOffice-specific false
+# This parses the output of include-what-you-use, focusing on just removing not
+# needed includes and filtering out a number of LibreOffice-specific false
 # positives.
 #
 
@@ -18,6 +18,21 @@ def unwrapInclude(include):
     return include[1:-1]
 
 
+def getFwdDecl(include, keyword):
+    match = re.match("(.*).hpp", include)
+    tokens = match.group(1).split("/")
+    start = []
+    end = []
+    forwardDecl = None
+    for i in range(len(tokens)):
+        if i == len(tokens) - 1:
+            forwardDecl = "%s%s %s;%s" % ("".join(start), keyword, tokens[-1], "".join(end))
+        else:
+            start.append("namespace %s { " % tokens[i])
+            end.append(" }")
+    return forwardDecl
+
+
 def ignoreRemoval(include, toAdd):
     # Avoid replacing .hpp with .hdl in the com::sun::star namespace.
     if include.startswith("com/sun/star") and include.endswith(".hpp"):
@@ -26,23 +41,22 @@ def ignoreRemoval(include, toAdd):
             return True
 
         # Forward declaration case.
-        match = re.match("(.*).hpp", include)
-        tokens = match.group(1).split("/")
-        start = []
-        end = []
-        forwardDecl = None
-        for i in range(len(tokens)):
-            if i == len(tokens) - 1:
-                forwardDecl = "%sclass %s;%s" % ("".join(start), tokens[-1], "".join(end))
-            else:
-                start.append("namespace %s { " % tokens[i])
-                end.append(" }")
-        if forwardDecl in toAdd:
+        if getFwdDecl(include, "class") in toAdd or getFwdDecl(include, "struct") in toAdd:
             return True
 
-    # Avoid debug STL.
-    if include == "vector" and "debug/vector" in toAdd:
+    # rtl::Reference fwd decl case.
+    if include == "rtl/ref.hxx" and "namespace rtl { template <class reference_type> class Reference; }" in toAdd:
         return True
+
+    # Avoid debug STL.
+    debugStl = {
+        "vector": "debug/vector",
+        "set": "debug/set.h",
+        "map": "debug/map.h"
+    }
+    for k, v in debugStl.items():
+        if include == k and v in toAdd:
+            return True
 
     # Follow boost documentation.
     if include == "boost/optional.hpp" and "boost/optional/optional.hpp" in toAdd:
@@ -86,7 +100,7 @@ def processIWYUOutput(iwyuOutput):
             continue
 
         if inAdd:
-            match = re.match('#include ([^ ]+) ', line)
+            match = re.match('#include ([^ ]+)', line)
             if match:
                 include = unwrapInclude(match.group(1))
                 toAdd.append(include)

@@ -19,7 +19,6 @@ framework/qa/cppunit/dispatchtest.cxx
 include/comphelper/propertyvalue.hxx
 include/svl/grabbagitem.hxx
 include/vcl/filter/pdfdocument.hxx
-include/vcl/filter/pdfdocument.hxx
 oox/source/drawingml/customshapepresetdata.cxx
 oox/source/shape/LockedCanvasContext.cxx
 oox/source/shape/LockedCanvasContext.hxx
@@ -41,7 +40,6 @@ sw/source/filter/ww8/sprmids.hxx
 sw/source/uibase/docvw/SidebarScrollBar.cxx
 sw/source/uibase/docvw/SidebarScrollBar.hxx
 vcl/inc/pdfread.hxx
-vcl/source/filter/ipdf/pdfdocument.cxx
 vcl/source/filter/ipdf/pdfdocument.cxx
 vcl/source/filter/ipdf/pdfread.cxx
 writerfilter/inc/dmapper/DomainMapperFactory.hxx
