@@ -8,8 +8,8 @@
 #
 
 time sh -c "git pull -r && \
+    if [ -e Makefile ]; then make distclean; fi && \
     ./autogen.sh && \
-    make clean && \
     make build-nocheck &&
     if [ \"$(git config libreoffice.bibisect)\" == "true" ]; then sh ~/git/vmexam/libreoffice/daily.sh; fi && \
     make tags && \

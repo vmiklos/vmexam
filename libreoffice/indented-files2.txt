@@ -1,6 +1,8 @@
+filter/qa/unit/textfilterdetect.cxx
 filter/source/msfilter/rtfutil.cxx
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
+svtools/qa/unit/testHtmlReader.cxx
 sw/qa/extras/rtfexport/rtfexport.cxx
 sw/qa/extras/rtfimport/rtfimport.cxx
 sw/source/filter/rtf/swparrtf.cxx
