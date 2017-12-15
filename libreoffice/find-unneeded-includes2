@@ -43,6 +43,10 @@ def ignoreRemoval(include, toAdd):
     if include == "vector" and "debug/vector" in toAdd:
         return True
 
+    # Follow boost documentation.
+    if include == "boost/optional.hpp" and "boost/optional/optional.hpp" in toAdd:
+        return True
+
     return False
 
 

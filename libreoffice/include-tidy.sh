@@ -5,6 +5,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
+# To debug:
+# ~/git/include-what-you-use/iwyu_tool.py -p . $object 2>&1 |tee out
+# cat out | ~/git/vmexam/libreoffice/find-unneeded-includes2
+
 for object in $(cat .git/indented-files.cache .git/indented-files2.cache|grep cxx$)
 do
     ~/git/include-what-you-use/iwyu_tool.py -p . $object 2>&1 | ~/git/vmexam/libreoffice/find-unneeded-includes2
