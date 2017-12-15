@@ -24,6 +24,21 @@ def ignoreRemoval(include, toAdd):
         if hdl in toAdd:
             return True
 
+        # Forward declaration case.
+        match = re.match("(.*).hpp", include)
+        tokens = match.group(1).split("/")
+        start = []
+        end = []
+        forwardDecl = None
+        for i in range(len(tokens)):
+            if i == len(tokens) - 1:
+                forwardDecl = "%sclass %s;%s" % ("".join(start), tokens[-1], "".join(end))
+            else:
+                start.append("namespace %s { " % tokens[i])
+                end.append(" }")
+        if forwardDecl in toAdd:
+            return True
+
     return False
 
 
@@ -61,7 +76,9 @@ def processIWYUOutput(iwyuOutput):
             if match:
                 include = unwrapInclude(match.group(1))
                 toAdd.append(include)
-                continue
+            else:
+                # Forward declaration.
+                toAdd.append(line)
 
         if inRemove:
             match = re.match("- #include (.*)  // lines (.*)-.*", line)
