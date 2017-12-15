@@ -4,8 +4,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# find-unneeded-includes had the problem of introducing more and more
-# transitive includes, this one depends on the output of IWYU instead.
+# This parses the output of include-what-you-use's output, focusing on just
+# removing not needed includes and filtering out LibreOffice-specific false
+# positives.
 #
 
 import re
@@ -45,6 +46,11 @@ def ignoreRemoval(include, toAdd):
 
     # Follow boost documentation.
     if include == "boost/optional.hpp" and "boost/optional/optional.hpp" in toAdd:
+        return True
+
+    # <https://www.openoffice.org/tools/CodingGuidelines.sxw> insists on not
+    # removing this.
+    if include == "sal/config.h":
         return True
 
     return False
