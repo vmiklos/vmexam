@@ -2449,6 +2449,26 @@ debug:30693:30693: PositionHandler::lcl_sprm: NS_ooxml::LN_CT_PosV_posOffset: 0
 
 so we clear too early
 
+=== 2017-12-15
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=113547
+
+doc/good:
+          <style:list-level-label-alignment text:label-followed-by="listtab" fo:text-indent="-0.635cm" fo:margin-left="1.27cm"/>
+docx/bad:
+           <style:list-level-label-alignment text:label-followed-by="listtab" fo:margin-left="1.27cm"/>
+so the problem is that the level 1 of the numbering has no explicit fo:text-indent
+
+what is the UNO key name? FirstLineIndent (fo:margin-left is IndentAt)
+
+debug:13196:13196: ListLevel::GetLevelProperties: property is IndentAt, value is 1270
+debug:13196:13196: ListLevel::GetLevelProperties: property is FirstLineIndent, value is -635
+looks good
+
+but FirstLineIndent is 0 at the end (IndentAt is fine)
+
+ah, it's not the usual abstract def + nominal override, there is a non-trivial override there
+
 <<<
 
 Problematic bugs:

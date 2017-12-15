@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# find-unneeded-includes had the problem of introducing more and more
+# transitive includes, this one depends on the output of IWYU instead.
+#
+
+import re
+import sys
+
+
+def processIWYUOutput(iwyuOutput):
+    inRemove = False
+    toRemove = []
+    currentFileName = None
+    for line in iwyuOutput:
+        line = line.strip()
+
+        if len(line) == 0 and inRemove:
+            inRemove = False
+            continue
+
+        match = re.match("(.*) should remove these lines:$", line)
+        if match:
+            currentFileName = match.group(1)
+            inRemove = True
+            continue
+
+        if inRemove:
+            match = re.match("- #include (.*)  // lines (.*)-.*", line)
+            if match:
+                include = match.group(1)
+                lineno = match.group(2)
+                toRemove.append("%s:%s: %s" % (currentFileName, lineno, include))
+                continue
+
+    for remove in toRemove:
+        print("%s: remove not needed include" % remove)
+    return min(len(toRemove), 100)
+
+if __name__ == '__main__':
+    sys.exit(processIWYUOutput(sys.stdin))
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
