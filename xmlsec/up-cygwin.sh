@@ -38,7 +38,7 @@ time sh -cex "git pull -r
     cscript configure.js crypto=mscrypto xslt=no iconv=no static=no debug=yes
     LIB='$libpath' INCLUDE='$incpath' '$msvcdir/bin/nmake.exe'
     cp $xml2dir/win32/bin.msvc/libxml2.dll binaries/
-    cp $icudir/source/lib/icuuc58.dll binaries/
-    cp $icudir/source/lib/icudt58.dll binaries/" 2>&1 |tee log
+    cp $icudir/source/lib/icuuc60.dll binaries/
+    cp $icudir/source/lib/icudt60.dll binaries/" 2>&1 |tee log
 
 # vim:set shiftwidth=4 expandtab:

@@ -48,6 +48,10 @@ def ignoreRemoval(include, toAdd):
     if include == "rtl/ref.hxx" and "namespace rtl { template <class reference_type> class Reference; }" in toAdd:
         return True
 
+    # uno::Sequence fwd decl case.
+    if include == "com/sun/star/uno/Sequence.hxx" and "namespace com { namespace sun { namespace star { namespace uno { template <class E> class __attribute__((type_visibility(\"default\"))) __attribute__((warn_unused)) Sequence; } } } }" in toAdd:
+        return True
+
     # Avoid debug STL.
     debugStl = {
         "vector": "debug/vector",
