@@ -26,6 +26,9 @@ make
 make check 2>&1 |tee out
 ----
 
+- for now hacked in -lcrypt32 into the Makefiles, should probably fix configure later
+- also, Windows dynamic loading seems to be not used, only the nmake build system would trigger its usage
+
 == Linux building
 
 ----
