@@ -12,9 +12,9 @@ There are two modes:
 === Handling the first non-conforming class
 
 ----
-make -sr FORCE_COMPILE_ALL=1 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD -yaml" 2>&1 |tee ~/rename.yaml
+make -sr -j8 FORCE_COMPILE_ALL=1 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD -yaml" 2>&1 |tee ~/rename.yaml
 # Touch the header of the relevant class.
-make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=clang-rename-wrapper RENAME_ARGS="-input=$HOME/rename.yaml"
+make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=clang-rename-wrapper RENAME_ARGS="-force -input=$HOME/rename.yaml" gb_SUPPRESS_TESTS=1
 clang-apply-replacements -remove-change-desc-files /tmp/rename
 ----
 
