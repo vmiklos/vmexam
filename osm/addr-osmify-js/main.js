@@ -52,7 +52,7 @@ function queryTurbo(protocol, element)
             });
 }
 
-function queryNominatim(protocol, query)
+function queryNominatim(protocol, query, next)
 {
     var output = document.getElementById('output');
     output.value = 'Using nominatim...';
@@ -75,7 +75,7 @@ function queryNominatim(protocol, query)
                     output.value = 'No results from nominatim';
                     return;
                 }
-                queryTurbo(protocol, element);
+                next(protocol, element);
             });
 }
 
@@ -85,7 +85,8 @@ function osmify()
     var query = document.getElementById('nominatim-input').value;
 
     // Use nominatim to get the coordinates and the osm type/id.
-    queryNominatim(protocol, query);
+    // Next, use overpass to get the properties of the object.
+    queryNominatim(protocol, query, queryTurbo);
 }
 
 /// Look up name as a key in the query string.
