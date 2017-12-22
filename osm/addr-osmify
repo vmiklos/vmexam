@@ -24,10 +24,10 @@ def queryTurbo(query):
     return buf.decode("utf-8")
 
 
-def queryNominatim(city, street, housenumber):
+def queryNominatim(query):
     url = "http://nominatim.openstreetmap.org/search.php?"
     d = {
-        "q": "%s %s, %s" % (housenumber, street, city),
+        "q": query,
         "format": "json"
     }
     url += urllib.parse.urlencode(d)
@@ -39,33 +39,37 @@ def queryNominatim(city, street, housenumber):
     return buf.decode("utf-8")
 
 
-def osmify(url):
-    tokens = url.split('/')
-    # E.g. node or way.
-    objectType = tokens[-2]
-    # Numeric ID.
-    objectId = tokens[-1]
+def osmify(query):
+    # Use nominatim to get the coordinates and the osm type/id.
+    j = json.loads(queryNominatim(query))
+    if not len(j):
+        print("No results from nominatim")
+        return
 
-    # Turn the ID into an address.
-    query = """[out:json];
+    element = j[0]
+    lat = element["lat"]
+    lon = element["lon"]
+    objectType = element["osm_type"]
+    objectId = element["osm_id"]
+
+    # Use overpass to get the properties of the object.
+    overpassQuery = """[out:json];
 (
     %s(%s);
 );
 out body;""" % (objectType, objectId)
+    j = json.loads(queryTurbo(overpassQuery))
+    elements = j["elements"]
+    if not len(elements):
+        print("No results from overpass")
+        return
 
-    j = json.loads(queryTurbo(query))
-    element = j['elements'][0]
+    element = elements[0]
     city = element['tags']['addr:city']
     housenumber = element['tags']['addr:housenumber']
     postcode = element['tags']['addr:postcode']
     street = element['tags']['addr:street']
     addr = "%s %s, %s %s" % (postcode, city, street, housenumber)
-
-    # Have the address, now talk to nominatim to get the coordinates as well.
-    j = json.loads(queryNominatim(city, street, housenumber))
-    element = j[0]
-    lat = element["lat"]
-    lon = element["lon"]
 
     # Print the result.
     print("%s,%s (%s)" % (lat, lon, addr))
@@ -73,8 +77,8 @@ out body;""" % (objectType, objectId)
 if len(sys.argv) > 1:
     osmify(sys.argv[1])
 else:
-    print("usage: addr-osmify <url>")
+    print("usage: addr-osmify <query>")
     print()
-    print("e.g. addr-osmify http://www.openstreetmap.org/node/2700453924")
+    print("e.g. addr-osmify 'Mészáros utca 58/a, Budapest'")
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
