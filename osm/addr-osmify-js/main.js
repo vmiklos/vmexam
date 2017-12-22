@@ -24,14 +24,20 @@ function queryTurbo(protocol, element)
 
     request({'method' : 'POST', 'url' : url, 'body' : query, 'json' : true},
             function(er, response, body) {
+                var output = document.getElementById('output');
                 if (er)
                 {
-                    var output = document.getElementById('output');
                     output.value = 'Overpass error: ' + er;
                     return;
                 }
 
                 element = body['elements'][0];
+                if (element == null)
+                {
+                    output.value = 'No results from overpass';
+                    return;
+                }
+
                 var city = element['tags']['addr:city'];
                 var housenumber = element['tags']['addr:housenumber'];
                 var postcode = element['tags']['addr:postcode'];
@@ -55,15 +61,20 @@ function queryNominatim(protocol, query)
     url += querystring.stringify({'q' : query, 'format' : 'json'});
     request({'method' : 'GET', 'url' : url, 'json' : true},
             function(er, response, body) {
+                var output = document.getElementById('output');
                 if (er)
                 {
-                    var output = document.getElementById('output');
                     output.value = 'Nominatim error: ' + er;
                     return;
                 }
 
                 var element = body[0];
 
+                if (element == null)
+                {
+                    output.value = 'No results from nominatim';
+                    return;
+                }
                 queryTurbo(protocol, element);
             });
 }
