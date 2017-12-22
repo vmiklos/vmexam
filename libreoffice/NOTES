@@ -2469,6 +2469,24 @@ but FirstLineIndent is 0 at the end (IndentAt is fine)
 
 ah, it's not the usual abstract def + nominal override, there is a non-trivial override there
 
+=== 2017-12-22
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=113357
+
+regression from OS' a6f3ca06100bc23eee5017d6cf53e89282dc580d
+
+- text/richtext vs text/rtf
+- OS says: Paste should in all application only show one of the two formats and prefer RTF
+- reproduced in Impress and Calc
+
+cui/uiconfig/ui/pastespecial.ui, "list" is the interesting widget -> SvPasteObjectDialog
+
+how to test this? uitest/impress_tests/start.py has a similar impress test
+
+self.xUITest.executeCommand(".uno:Foo")
+
+SID_PASTE_SPECIAL -> PasteSpecial
+
 <<<
 
 Problematic bugs:

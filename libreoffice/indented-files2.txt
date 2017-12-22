@@ -1,3 +1,4 @@
+cui/qa/uitest/dialogs/pastedlg.py
 filter/qa/unit/textfilterdetect.cxx
 filter/source/msfilter/rtfutil.cxx
 starmath/source/rtfexport.cxx

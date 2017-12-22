@@ -4,9 +4,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# This parses the output of include-what-you-use, focusing on just removing not
-# needed includes and filtering out a number of LibreOffice-specific false
+# This parses the output of 'iwyu_tool.py -p . /path/to/test.cxx 2>&1',
+# focusing on just removing not needed includes and providing a relatively
+# conservative output by filtering out a number of LibreOffice-specific false
 # positives.
+#
+# It assumes you have a 'compile_commands.json' around (similar to clang-tidy),
+# you can generate one with 'make vim-ide-integration'.
 #
 
 import re
@@ -65,10 +69,28 @@ def ignoreRemoval(include, toAdd):
     # Follow boost documentation.
     if include == "boost/optional.hpp" and "boost/optional/optional.hpp" in toAdd:
         return True
+    if include == "boost/intrusive_ptr.hpp" and "boost/smart_ptr/intrusive_ptr.hpp" in toAdd:
+        return True
 
-    # <https://www.openoffice.org/tools/CodingGuidelines.sxw> insists on not
-    # removing this.
-    if include == "sal/config.h":
+    # 3rd-party, non-self-contained headers.
+    if include == "libepubgen/libepubgen.h" and "libepubgen/libepubgen-decls.h" in toAdd:
+        return True
+    if include == "librevenge/librevenge.h" and "librevenge/RVNGPropertyList.h" in toAdd:
+        return True
+
+    noRemove = (
+        # <https://www.openoffice.org/tools/CodingGuidelines.sxw> insists on not
+        # removing this.
+        "sal/config.h",
+        # Works around a build breakage specific to the broken Android
+        # toolchain.
+        "android/compatibility.hxx",
+    )
+    if include in noRemove:
+        return True
+
+    # Ignore when <foo> is to be replaced with "foo".
+    if include in toAdd:
         return True
 
     return False

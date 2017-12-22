@@ -18,22 +18,22 @@ git show|grep 'for.*m_.* :'
 == librevenge
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libodfgen
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libepubgen
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == librvngabw
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libwpd
 
@@ -104,8 +104,5 @@ git show|grep 'for.*m_.* :'
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
   modernize-use-auto, clang-analyzer-deadcode.DeadStores
-
-More ideas:
-- modernize-use-noexcept
 
 // vim: ft=asciidoc paste

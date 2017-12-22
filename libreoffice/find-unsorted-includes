@@ -36,9 +36,12 @@ for i, line in enumerate(lines):
     if not line.startswith("#include"):
         continue
     what = line.strip().replace("#include ", "")
-    if includetools.isOwnHeader(what, srcfile) and not firstInclude:
-        print("""%s:%s: own header is not the first one""" % (srcfile, (i + 1)))
-        sys.exit(1)
+    if includetools.isOwnHeader(what, srcfile):
+        if firstInclude:
+            sys.exit(0)
+        else:
+            print("""%s:%s: own header is not the first one""" % (srcfile, (i + 1)))
+            sys.exit(1)
     if firstInclude:
         firstInclude = False
 
