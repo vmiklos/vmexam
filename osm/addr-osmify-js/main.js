@@ -8,8 +8,18 @@ var domready = require('domready');
 var querystring = require('querystring-browser');
 var request = require('browser-request');
 
-function queryTurbo(protocol, query)
+function queryTurbo(protocol, element)
 {
+    var output = document.getElementById('output');
+    output.value = 'Using overpass-api...';
+
+    var lat = element['lat'];
+    var lon = element['lon'];
+    var objectType = element['osm_type'];
+    var objectId = element['osm_id'];
+    var query = '[out:json];\n(\n    ' + objectType + '(' + objectId +
+                ');\n);\nout body;';
+
     var url = protocol + '//overpass-api.de/api/interpreter';
 
     request({'method' : 'POST', 'url' : url, 'body' : query, 'json' : true},
@@ -21,7 +31,7 @@ function queryTurbo(protocol, query)
                     return;
                 }
 
-                var element = body['elements'][0];
+                element = body['elements'][0];
                 var city = element['tags']['addr:city'];
                 var housenumber = element['tags']['addr:housenumber'];
                 var postcode = element['tags']['addr:postcode'];
@@ -29,17 +39,20 @@ function queryTurbo(protocol, query)
                 var addr =
                     postcode + ' ' + city + ', ' + street + ' ' + housenumber;
 
-                // Have the address, now talk to nominatim to get the
-                // coordinates as well.
-                queryNominatim(protocol, addr, city, street, housenumber);
+                // Show the result.
+                var result = lat + ',' + lon + ' (' + addr + ')';
+                output = document.getElementById('output');
+                output.value = result;
             });
 }
 
-function queryNominatim(protocol, addr, city, street, housenumber)
+function queryNominatim(protocol, query)
 {
+    var output = document.getElementById('output');
+    output.value = 'Using nominatim...';
+
     var url = protocol + '//nominatim.openstreetmap.org/search.php?';
-    url += querystring.stringify(
-        {'q' : housenumber + ' ' + street + ', ' + city, 'format' : 'json'});
+    url += querystring.stringify({'q' : query, 'format' : 'json'});
     request({'method' : 'GET', 'url' : url, 'json' : true},
             function(er, response, body) {
                 if (er)
@@ -50,33 +63,18 @@ function queryNominatim(protocol, addr, city, street, housenumber)
                 }
 
                 var element = body[0];
-                var lat = element['lat'];
-                var lon = element['lon'];
 
-                // Show the result.
-                var result = lat + ',' + lon + ' (' + addr + ')';
-                output = document.getElementById('output');
-                output.value = result;
+                queryTurbo(protocol, element);
             });
 }
 
 function osmify()
 {
-    var output = document.getElementById('output');
-    output.value = 'Please wait...';
-
-    var url = document.getElementById('url-input').value;
-    var tokens = url.split('/');
-    // E.g. node or way.
-    var objectType = tokens[tokens.length - 2];
-    // Numeric ID.
-    var objectId = tokens[tokens.length - 1];
-
-    // Turn the ID into an address.
     var protocol = location.protocol != 'http:' ? 'https:' : 'http:';
-    var query = '[out:json];\n(\n    ' + objectType + '(' + objectId +
-                ');\n);\nout body;';
-    queryTurbo(protocol, query);
+    var query = document.getElementById('nominatim-input').value;
+
+    // Use nominatim to get the coordinates and the osm type/id.
+    queryNominatim(protocol, query);
 }
 
 /// Look up name as a key in the query string.
@@ -94,16 +92,16 @@ domready(function() {
 
     var desc = document.createElement('p');
     desc.appendChild(document.createTextNode(
-        'Takes an OSM object ID and turns it into a string that is readable (so that you can save it to your contacts) and is also machine-friendly, e.g. OsmAnd can parse it as well.'));
+        'Takes an nominatim query and turns it into a string that is readable (so that you can save it to your contacts) and is also machine-friendly, e.g. OsmAnd can parse it as well.'));
     body.appendChild(desc);
 
     var input = document.createElement('p');
-    var urlInput = document.createElement('input');
-    urlInput.id = 'url-input';
-    urlInput.type = 'text';
-    urlInput.placeholder = 'URL';
-    urlInput.size = 64;
-    input.appendChild(urlInput);
+    var nominatimInput = document.createElement('input');
+    nominatimInput.id = 'nominatim-input';
+    nominatimInput.type = 'text';
+    nominatimInput.placeholder = 'URL';
+    nominatimInput.size = 64;
+    input.appendChild(nominatimInput);
     input.appendChild(document.createTextNode(' '));
     var button = document.createElement('input');
     button.type = 'button';
@@ -122,15 +120,15 @@ domready(function() {
     body.appendChild(result);
 
     var example = document.createElement('p');
-    example.appendChild(document.createTextNode(
-        'Example URL: http://www.openstreetmap.org/node/2700453924'));
+    example.appendChild(
+        document.createTextNode('Example query: Mészáros utca 58/a, Budapest'));
     body.appendChild(example);
 
     // Allow pre-fill via GET parameters.
-    var url = getParameterByName('url');
-    if (url)
+    var query = getParameterByName('query');
+    if (query)
     {
-        urlInput.value = url;
+        nominatimInput.value = decodeURIComponent(query);
     }
 
 });
