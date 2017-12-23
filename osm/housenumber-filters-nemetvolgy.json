@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "kapitany_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "3",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "6",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "szendi_arok": {
             "ranges": [
                 {
