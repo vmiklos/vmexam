@@ -38,71 +38,71 @@ git show|grep 'for.*m_.* :'
 == libwpd
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libwpg
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libwps
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libmwaw
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libabw
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libcdr
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libmspub
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libvisio
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libetonyek
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libfreehand
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libe-book
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libpagemaker
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libzmf
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 == libstaroffice
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
 
 // vim: ft=asciidoc paste
