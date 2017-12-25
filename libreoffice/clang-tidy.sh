@@ -6,7 +6,7 @@
 #
 
 header_filter=""
-for header in $(grep hxx$ .git/indented-files.cache .git/indented-files2.cache)
+for header in $(cat .git/indented-files.cache .git/indented-files2.cache|grep 'hxx$')
 do
     if [ -n "$header_filter" ]; then
         header_filter+="|"
@@ -17,8 +17,7 @@ done
 if [ -n "$1" ]; then
     clang-tidy -header-filter="$header_filter" $1
 else
-    # Ignore writerperfect for now, too many local changes.
-    for object in $(grep cxx$ .git/indented-files.cache .git/indented-files2.cache|egrep -v '/qa/|writerperfect')
+    for object in $(cat .git/indented-files.cache .git/indented-files2.cache|grep 'cxx$' |egrep -v '/qa/')
     do
         clang-tidy -header-filter="$header_filter" $object
     done

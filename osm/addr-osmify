@@ -72,7 +72,7 @@ out body;""" % (objectType, objectId)
     addr = "%s %s, %s %s" % (postcode, city, street, housenumber)
 
     # Print the result.
-    print("%s,%s (%s)" % (lat, lon, addr))
+    print("geo:%s,%s (%s)" % (lat, lon, addr))
 
 if len(sys.argv) > 1:
     osmify(sys.argv[1])
