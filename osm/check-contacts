@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Goes through your Google contacts XML and finds addresses which don't start
+# with 'geo:', assuming that data does not come from OSM.
+#
+
+import os
+from xml.dom import minidom
+
+
+class GContacts(object):
+    def __init__(self):
+        configPath = os.path.expanduser("~/.gcontacts")
+        self.contactsXmlPath = os.path.join(configPath, "contacts.xml")
+
+    def check(self):
+        def getName(entryNode):
+            nameNodes = [i for i in entryNode.childNodes if i.localName == "name"]
+            for nameNode in nameNodes:
+                fullNameNodes = [i for i in nameNode.childNodes if i.localName == "fullName"]
+                for fullNameNode in fullNameNodes:
+                    return fullNameNode.childNodes[0].wholeText
+
+        def getAddress(entryNode):
+            addresses = []
+            structNodes = [i for i in entryNode.childNodes if i.localName == "structuredPostalAddress"]
+            formatNodes = []
+            for structNode in structNodes:
+                formatNodes.extend([i for i in structNode.childNodes if i.localName == "formattedAddress"])
+            for formatNode in formatNodes:
+                if len(formatNode.childNodes):
+                    addresses.append(formatNode.childNodes[0].wholeText)
+            return addresses
+
+        if not os.path.exists(self.contactsXmlPath):
+            return
+        contacts = minidom.parse(self.contactsXmlPath)
+        feedNode = [i for i in contacts.childNodes if i.localName == "feed"][0]
+        contactNodes = [i for i in feedNode.childNodes if i.localName == "entry"]
+        matches = []
+        for contactNode in contactNodes:
+            name = getName(contactNode)
+            addresses = getAddress(contactNode)
+            if not len(addresses):
+                continue
+
+            address = addresses[0]
+            if address.startswith("geo:"):
+                # This is the whole point of this script.
+                continue
+            matches.append("%s: %s" % (name, address))
+        matches = sorted(set(matches))
+        for i in matches:
+            print(i.encode('utf-8'))
+
+
+def main():
+
+    contacts = GContacts()
+    contacts.check()
+
+if __name__ == "__main__":
+    main()
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
