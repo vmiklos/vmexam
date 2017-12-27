@@ -46,7 +46,7 @@ function queryTurbo(protocol, element)
                     postcode + ' ' + city + ', ' + street + ' ' + housenumber;
 
                 // Show the result.
-                var result = lat + ',' + lon + ' (' + addr + ')';
+                var result = 'geo:' + lat + ',' + lon + ' (' + addr + ')';
                 output = document.getElementById('output');
                 output.value = result;
             });
@@ -111,7 +111,7 @@ domready(function() {
     var nominatimInput = document.createElement('input');
     nominatimInput.id = 'nominatim-input';
     nominatimInput.type = 'text';
-    nominatimInput.placeholder = 'URL';
+    nominatimInput.placeholder = 'Query';
     nominatimInput.size = 64;
     input.appendChild(nominatimInput);
     input.appendChild(document.createTextNode(' '));
