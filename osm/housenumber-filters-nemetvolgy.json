@@ -2,9 +2,10 @@
     "source": "survey",
     "filters": {
         "gyori_ut": {
+            "comment": "this is just the nemetvolgy part",
             "ranges": [
                 {
-                    "start": "1",
+                    "start": "9",
                     "end": "19",
                     "isOdd": "true"
                 },
