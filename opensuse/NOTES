@@ -167,4 +167,8 @@ killall plasmashell #to stop it
 kstart plasmashell #to restart it
 ----
 
+=== openSUSE Leap 42.2 -> openSUSE Leap 42.3 for ARMV7
+
+- repo-update's URL is now http://download.opensuse.org/ports/update/42.3/oss (extra /oss at the end of the URL)
+
 // vim: ft=asciidoc paste
