@@ -1,6 +1,25 @@
 {
     "source": "survey",
     "filters": {
+        "jagello_ut": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "5",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "9",
+                    "end": "15",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "52",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "gyori_ut": {
             "comment": "this is just the nemetvolgy part",
             "ranges": [
