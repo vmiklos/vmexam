@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "alkotas_utca": {
+            "ranges": [
+                {
+                    "start": "39",
+                    "end": "53",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "42",
+                    "end": "58",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "jagello_ut": {
             "ranges": [
                 {
