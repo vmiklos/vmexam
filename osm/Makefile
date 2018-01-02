@@ -54,7 +54,7 @@ check: check-style download
 	qa/suspicious-streets.py
 	qa/suspicious-streets.py -gazdagret
 	qa/suspicious-streets.py -sashegy
-	#qa/suspicious-streets.py -nemetvolgy
+	qa/suspicious-streets.py -nemetvolgy
 
 workdir/streets-gazdagret.txt: streets.txt
 	@mkdir -p workdir
