@@ -1,22 +1,24 @@
 download: update-streets update-house-numbers update-addr-interpolation update-streets-nomaxspeed update-osmose-$(USER)
 
-update-streets: streets.txt workdir/streets-gazdagret.txt workdir/streets-sashegy.txt workdir/streets-nemetvolgy.txt workdir/streets-martonhegy.txt
+update-streets: streets.txt workdir/streets-gazdagret.txt workdir/streets-sashegy.txt workdir/streets-nemetvolgy.txt workdir/streets-martonhegy.txt workdir/streets-ormezo.txt
 	./overpass-query streets.txt > workdir/streets.csv
 	./overpass-query workdir/streets-gazdagret.txt > workdir/streets-gazdagret.csv
 	./overpass-query workdir/streets-sashegy.txt > workdir/streets-sashegy.csv
 	./overpass-query workdir/streets-nemetvolgy.txt > workdir/streets-nemetvolgy.csv
 	./overpass-query workdir/streets-martonhegy.txt > workdir/streets-martonhegy.csv
+	./overpass-query workdir/streets-ormezo.txt > workdir/streets-ormezo.csv
 
 update-streets-nomaxspeed: streets-nomaxspeed.txt
 	./overpass-query streets-nomaxspeed.txt > workdir/streets-nomaxspeed.csv
 
-update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdagret.txt workdir/street-housenumbers-nemetvolgy.txt workdir/street-housenumbers-martonhegy.txt
+update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdagret.txt workdir/street-housenumbers-sashegy.txt workdir/street-housenumbers-nemetvolgy.txt workdir/street-housenumbers-martonhegy.txt workdir/street-housenumbers-ormezo.txt
 	@mkdir -p workdir
 	./overpass-query street-housenumbers.txt > workdir/street-housenumbers.csv
 	./overpass-query workdir/street-housenumbers-gazdagret.txt > workdir/street-housenumbers-gazdagret.csv
 	./overpass-query workdir/street-housenumbers-sashegy.txt > workdir/street-housenumbers-sashegy.csv
 	./overpass-query workdir/street-housenumbers-nemetvolgy.txt > workdir/street-housenumbers-nemetvolgy.csv
 	./overpass-query workdir/street-housenumbers-martonhegy.txt > workdir/street-housenumbers-martonhegy.csv
+	./overpass-query workdir/street-housenumbers-ormezo.txt > workdir/street-housenumbers-ormezo.csv
 
 update-addr-interpolation: addr-interpolation.txt workdir/street-housenumbers-gazdagret.txt workdir/street-housenumbers-sashegy.txt
 	@mkdir -p workdir
@@ -46,6 +48,7 @@ check: check-style download
 	qa/houseless-streets.py -sashegy
 	qa/houseless-streets.py -nemetvolgy
 	qa/houseless-streets.py -martonhegy
+	#qa/houseless-streets.py -ormezo
 	qa/interpolated-addresses.py
 	qa/interpolated-addresses.py -gazdagret
 	qa/interpolated-addresses.py -sashegy
@@ -88,6 +91,10 @@ workdir/streets-martonhegy.txt: streets.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602787965/' streets.txt > workdir/streets-martonhegy.txt
 
+workdir/streets-ormezo.txt: streets.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3602713749/' streets.txt > workdir/streets-ormezo.txt
+
 workdir/street-housenumbers-sashegy.txt: street-housenumbers.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602714524/' street-housenumbers.txt > workdir/street-housenumbers-sashegy.txt
@@ -99,3 +106,7 @@ workdir/street-housenumbers-nemetvolgy.txt: street-housenumbers.txt
 workdir/street-housenumbers-martonhegy.txt: street-housenumbers.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602787965/' street-housenumbers.txt > workdir/street-housenumbers-martonhegy.txt
+
+workdir/street-housenumbers-ormezo.txt: street-housenumbers.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3602713749/' street-housenumbers.txt > workdir/street-housenumbers-ormezo.txt
