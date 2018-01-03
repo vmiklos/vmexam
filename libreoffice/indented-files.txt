@@ -32,7 +32,6 @@ svl/source/items/grabbagitem.cxx
 svx/qa/unit/xoutdev.cxx
 sw/inc/textboxhelper.hxx
 sw/source/core/doc/textboxhelper.cxx
-sw/source/filter/ww8/docxsdrexport.cxx
 sw/source/filter/ww8/docxsdrexport.hxx
 sw/source/filter/ww8/docxtablestyleexport.cxx
 sw/source/filter/ww8/docxtablestyleexport.hxx
@@ -92,14 +91,10 @@ writerperfect/source/writer/exp/xmltbli.hxx
 writerperfect/source/writer/exp/xmltext.cxx
 writerperfect/source/writer/exp/xmltext.hxx
 xmlsecurity/inc/certificate.hxx
-xmlsecurity/inc/documentsignaturemanager.hxx
 xmlsecurity/inc/pdfio/pdfdocument.hxx
-xmlsecurity/inc/pdfsignaturehelper.hxx
 xmlsecurity/qa/unit/pdfsigning/pdfsigning.cxx
 xmlsecurity/qa/unit/signing/signing.cxx
-xmlsecurity/source/helper/documentsignaturemanager.cxx
 xmlsecurity/source/helper/ooxmlsecexporter.cxx
 xmlsecurity/source/helper/ooxmlsecexporter.hxx
-xmlsecurity/source/helper/pdfsignaturehelper.cxx
 xmlsecurity/source/pdfio/pdfdocument.cxx
 xmlsecurity/workben/pdfverify.cxx

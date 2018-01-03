@@ -7,6 +7,7 @@ svtools/qa/unit/testHtmlReader.cxx
 sw/qa/extras/rtfexport/rtfexport.cxx
 sw/qa/extras/rtfimport/rtfimport.cxx
 sw/source/filter/rtf/swparrtf.cxx
+sw/source/filter/ww8/docxsdrexport.cxx
 sw/source/filter/ww8/rtfattributeoutput.cxx
 sw/source/filter/ww8/rtfattributeoutput.hxx
 sw/source/filter/ww8/rtfexport.cxx
@@ -56,3 +57,7 @@ writerfilter/source/rtftok/rtftokenizer.hxx
 writerfilter/source/rtftok/rtfvalue.cxx
 writerfilter/source/rtftok/rtfvalue.hxx
 writerperfect/qa/uitest/epubexport/epubexport.py
+xmlsecurity/inc/documentsignaturemanager.hxx
+xmlsecurity/inc/pdfsignaturehelper.hxx
+xmlsecurity/source/helper/documentsignaturemanager.cxx
+xmlsecurity/source/helper/pdfsignaturehelper.cxx
