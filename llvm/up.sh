@@ -23,6 +23,7 @@ cmake \
     ..
 make -j8
 make -j8 check-clang
+make -j8 check-clang-tools
 make install
 ~/git/vmexam/llvm/llvm-style-check-files
 
