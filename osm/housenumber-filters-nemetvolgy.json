@@ -226,12 +226,12 @@
             "ranges": [
                 {
                     "start": "1",
-                    "end": "13",
+                    "end": "25",
                     "isOdd": "true"
                 },
                 {
                     "start": "2",
-                    "end": "14",
+                    "end": "26",
                     "isOdd": "false"
                 }
             ]
