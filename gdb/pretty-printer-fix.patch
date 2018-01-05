@@ -1,0 +1,42 @@
+--- /usr/share/gcc-7/python/libstdcxx/v6/printers.py.orig    2017-11-27 20:13:51.000000000 +0100
++++ /usr/share/gcc-7/python/libstdcxx/v6/printers.py       2018-01-05 14:32:38.080537703 +0100
+@@ -141,12 +141,13 @@
+ 
+     def to_string (self):
+         impl_type = self.val.type.fields()[0].type.tag
+-        if is_specialization_of(impl_type, '__uniq_ptr_impl'): # New implementation
+-            v = self.val['_M_t']['_M_t']['_M_head_impl']
+-        elif is_specialization_of(impl_type, 'tuple'):
+-            v = self.val['_M_t']['_M_head_impl']
+-        else:
+-            raise ValueError("Unsupported implementation for unique_ptr: %s" % self.val.type.fields()[0].type.tag)
++        #if is_specialization_of(impl_type, '__uniq_ptr_impl'): # New implementation
++        #    v = self.val['_M_t']['_M_t']['_M_head_impl']
++        #elif is_specialization_of(impl_type, 'tuple'):
++        #    v = self.val['_M_t']['_M_head_impl']
++        v = self.val['_M_t']['_M_head_impl']
++        #else:
++        #    raise ValueError("Unsupported implementation for unique_ptr: %s" % self.val.type.fields()[0].type.tag)
+         return 'std::unique_ptr<%s> containing %s' % (str(v.type.target()),
+                                                       str(v))
+ 
+--- /usr/share/gcc-7/python/libstdcxx/v6/xmethods.py.orig    2017-11-27 20:13:51.000000000 +0100
++++ /usr/share/gcc-7/python/libstdcxx/v6/xmethods.py       2018-01-05 14:32:28.888269829 +0100
+@@ -586,11 +586,12 @@
+ 
+     def __call__(self, obj):
+         impl_type = obj.dereference().type.fields()[0].type.tag
+-        if re.match('^std::(__\d+::)?__uniq_ptr_impl<.*>$', impl_type): # New implementation
+-            return obj['_M_t']['_M_t']['_M_head_impl']
+-        elif re.match('^std::(__\d+::)?tuple<.*>$', impl_type):
+-            return obj['_M_t']['_M_head_impl']
+-        return None
++        #if re.match('^std::(__\d+::)?__uniq_ptr_impl<.*>$', impl_type): # New implementation
++        #    return obj['_M_t']['_M_t']['_M_head_impl']
++        #elif re.match('^std::(__\d+::)?tuple<.*>$', impl_type):
++        #    return obj['_M_t']['_M_head_impl']
++        #return None
++        return obj['_M_t']['_M_head_impl']
+ 
+ class UniquePtrDerefWorker(UniquePtrGetWorker):
+     "Implements std::unique_ptr<T>::operator*()"
