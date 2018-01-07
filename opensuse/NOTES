@@ -170,5 +170,10 @@ kstart plasmashell #to restart it
 === openSUSE Leap 42.2 -> openSUSE Leap 42.3 for ARMV7
 
 - repo-update's URL is now http://download.opensuse.org/ports/update/42.3/oss (extra /oss at the end of the URL)
+- migrate to new raid1:
+  - old boot.script: rd.md.uuid=88a7927e:aa3d4f13:50015668:5fa5569a root=UUID=54a3f32d-941a-435f-968b-6fa43fa97951
+  - new boot.script: rd.md.uuid=5f510f62:d1ed20dc:f7a02aac:46e749c5 root=UUID=abc2f9de-fc98-4a5e-9dd7-0176553d5977
+  - need to find the values in /dev/disk/by-uuid/ (root) and /dev/disk/by-id/ (rd.md.uuid)
+  - then update these in /boot/boot.script + run mkimage, reboot, then mdadm can stop the old raid1 and re-assign the now unused disk to the new one
 
 // vim: ft=asciidoc paste
