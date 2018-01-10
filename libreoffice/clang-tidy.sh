@@ -17,7 +17,8 @@ done
 if [ -n "$1" ]; then
     clang-tidy -header-filter="$header_filter" $1
 else
-    for object in $(cat .git/indented-files.cache .git/indented-files2.cache|grep 'cxx$' |egrep -v '/qa/')
+    # EPUBExportUIComponent.cxx: use-after-free false negative for ScopedVclPtrInstance
+    for object in $(cat .git/indented-files.cache .git/indented-files2.cache|grep 'cxx$' |egrep -v '/qa/|EPUBExportUIComponent.cxx')
     do
         clang-tidy -header-filter="$header_filter" $object
     done
