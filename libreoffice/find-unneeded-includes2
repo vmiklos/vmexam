@@ -37,7 +37,7 @@ def getFwdDecl(include, keyword):
     return forwardDecl
 
 
-def ignoreRemoval(include, toAdd):
+def ignoreRemoval(include, toAdd, currentFileName):
     # Avoid replacing .hpp with .hdl in the com::sun::star namespace.
     if include.startswith("com/sun/star") and include.endswith(".hpp"):
         hdl = include.replace(".hpp", ".hdl")
@@ -93,6 +93,12 @@ def ignoreRemoval(include, toAdd):
     if include in toAdd:
         return True
 
+    # IWYU assumes std::stack<IncompleteType> in a header is OK, but that's not
+    # the case for all of LO's supported platforms.
+    # See <https://github.com/include-what-you-use/include-what-you-use/issues/175>.
+    if currentFileName.endswith("writerfilter/source/rtftok/rtfsdrimport.hxx") and include.endswith("dmapper/GraphicZOrderHelper.hxx"):
+        return True
+
     return False
 
 
@@ -139,7 +145,7 @@ def processIWYUOutput(iwyuOutput):
             if match:
                 include = unwrapInclude(match.group(1))
                 lineno = match.group(2)
-                if not ignoreRemoval(include, toAdd):
+                if not ignoreRemoval(include, toAdd, currentFileName):
                     toRemove.append("%s:%s: %s" % (currentFileName, lineno, include))
                 continue
 
