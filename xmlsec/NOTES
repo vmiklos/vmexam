@@ -55,8 +55,7 @@ nmake
 How to test:
 
 ----
-export XMLSEC_TEST_NAME="aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256"
-nmake check-dsig
+XMLSEC_TEST_NAME="aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256" nmake check-dsig
 ----
 
 How to run:
@@ -64,10 +63,12 @@ How to run:
 ----
 cd win32/binaries/
 ./xmlsec.exe check-transforms  --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config sha256 ecdsa-sha256
+./xmlsec.exe check-key-data --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config ecdsa x509
 ----
 
 - currently fails with: Error: transform "sha256" not found -> fixed
-- currently fails with: Error: transform "ecdsa-sha256" not found
+- currently fails with: Error: transform "ecdsa-sha256" not found -> skeleton is now there
+- currently fails with: Error: key data "ecdsa" not found
 
 === ECDSA verification
 
