@@ -2498,6 +2498,67 @@ gdb says unwanted defaults are: ListtabStopPosition, LabelFollowedBy and FirstLi
 
 test: FirstLineIndent should be -1000, not 0
 
+=== 2018-01-12
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=114536
+
+----
+debug:11203:11203: SwLinePortion dtor: 0x6225460
+debug:11203:11203: SwTextFormatter(0x7ffcddc9cb80)::MergeCharacterBorder
+debug:11203:11203: SwLinePortion dtor: 0x6225420
+debug:11203:11203: SwTextFormatter(0x7ffcddc9cb80)::MergeCharacterBorder
+debug:11203:11203: SwTextFormatter::MergeCharacterBorder: m_pFirstOfBorderMerge is 0x6225460
+----
+
+in gdb:
+
+----
+(gdb) b /home/vmiklos/git/libreoffice/master/sw/source/core/text/porlin.cxx:57
+No source file named /home/vmiklos/git/libreoffice/master/sw/source/core/text/porlin.cxx.
+Make breakpoint pending on future shared library load? (y or [n]) y
+Breakpoint 1 (/home/vmiklos/git/libreoffice/master/sw/source/core/text/porlin.cxx:57) pending.
+(gdb) command 1
+Type commands for breakpoint(s) 1, one per line.
+End with a line saying just "end".
+>print this
+>bt 5
+>c
+>end
+(gdb) set pagination off
+(gdb) r
+...
+Breakpoint 1, SwLinePortion::~SwLinePortion (this=0x4a9a340, __in_chrg=<optimized out>) at /home/vmiklos/git/libreoffice/master/sw/source/core/text/porlin.cxx:57
+57          SAL_DEBUG("SwLinePortion dtor: " << this);
+$3115 = (SwLinePortion * const) 0x4a9a340
+#0  0x00007fffcc107f9f in SwLinePortion::~SwLinePortion() (this=0x4a9a340, __in_chrg=<optimized out>) at /home/vmiklos/git/libreoffice/master/sw/source/core/text/porlin.cxx:57
+#1  0x00007fffcc0b9930 in SwTextPortion::~SwTextPortion() (this=0x4a9a340, __in_chrg=<optimized out>) at /home/vmiklos/git/libreoffice/master/sw/source/core/text/portxt.hxx:29
+#2  0x00007fffcc0b9964 in SwTextPortion::~SwTextPortion() (this=0x4a9a340, __in_chrg=<optimized out>) at /home/vmiklos/git/libreoffice/master/sw/source/core/text/portxt.hxx:29
+#3  0x00007fffcc1087e6 in SwLinePortion::Truncate_() (this=0x4a9a4d0) at /home/vmiklos/git/libreoffice/master/sw/source/core/text/porlin.cxx:165
+#4  0x00007fffcc0b0ed1 in SwLinePortion::Truncate() (this=0x4a9a4d0) at /home/vmiklos/git/libreoffice/master/sw/source/core/text/porlin.hxx:199
+#5  0x00007fffcc0d7063 in SwTextFormatter::Underflow(SwTextFormatInfo&) (this=0x7fffffffb170, rInf=...) at /home/vmiklos/git/libreoffice/master/sw/source/core/text/itrform2.cxx:275
+debug:11840:11840: SwLinePortion dtor: 0x4a9a340
+debug:11840:11840: SwTextFormatter(0x7fffffffb170)::MergeCharacterBorder
+
+Breakpoint 1, SwLinePortion::~SwLinePortion (this=0x4a9a4d0, __in_chrg=<optimized out>) at /home/vmiklos/git/libreoffice/master/sw/source/core/text/porlin.cxx:57
+57          SAL_DEBUG("SwLinePortion dtor: " << this);
+$3116 = (SwLinePortion * const) 0x4a9a4d0
+#0  0x00007fffcc107f9f in SwLinePortion::~SwLinePortion() (this=0x4a9a4d0, __in_chrg=<optimized out>) at /home/vmiklos/git/libreoffice/master/sw/source/core/text/porlin.cxx:57
+#1  0x00007fffcc0b9930 in SwTextPortion::~SwTextPortion() (this=0x4a9a4d0, __in_chrg=<optimized out>) at /home/vmiklos/git/libreoffice/master/sw/source/core/text/portxt.hxx:29
+#2  0x00007fffcc0b9964 in SwTextPortion::~SwTextPortion() (this=0x4a9a4d0, __in_chrg=<optimized out>) at /home/vmiklos/git/libreoffice/master/sw/source/core/text/portxt.hxx:29
+#3  0x00007fffcc1087e6 in SwLinePortion::Truncate_() (this=0x4a9aeb0) at /home/vmiklos/git/libreoffice/master/sw/source/core/text/porlin.cxx:165
+#4  0x00007fffcc0b0ed1 in SwLinePortion::Truncate() (this=0x4a9aeb0) at /home/vmiklos/git/libreoffice/master/sw/source/core/text/porlin.hxx:199
+#5  0x00007fffcc0d7063 in SwTextFormatter::Underflow(SwTextFormatInfo&) (this=0x7fffffffb170, rInf=...) at /home/vmiklos/git/libreoffice/master/sw/source/core/text/itrform2.cxx:275
+debug:11840:11840: SwLinePortion dtor: 0x4a9a4d0
+debug:11840:11840: SwTextFormatter(0x7fffffffb170)::MergeCharacterBorder
+debug:11840:11840: SwTextFormatter::MergeCharacterBorder: m_pFirstOfBorderMerge is 0x4a9a340
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00007fffcc087052 in SwPosSize::Height (this=0x99999999999999a1) at /home/vmiklos/git/libreoffice/master/sw/source/core/text/possiz.hxx:44
+44          sal_uInt16 Height() const { return nHeight; }
+----
+
+seems the problem is that in SwTextFormatter::Underflow(), pPor->Truncate() may delete portions, and then m_pFirstOfBorderMerge points to deleted memory
+
 <<<
 
 Problematic bugs:

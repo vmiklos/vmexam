@@ -61,14 +61,17 @@ XMLSEC_TEST_NAME="aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256" nmake check
 How to run:
 
 ----
-cd win32/binaries/
-./xmlsec.exe check-transforms  --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config sha256 ecdsa-sha256
-./xmlsec.exe check-key-data --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config ecdsa x509
+win32/binaries/xmlsec.exe check-transforms  --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config sha256 ecdsa-sha256
+win32/binaries/xmlsec.exe check-key-data --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config ecdsa x509
+win32/binaries/xmlsec.exe verify --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config --trusted-der tests/keys/cacert.der --enabled-key-data x509 tests/aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256.xml
 ----
 
 - currently fails with: Error: transform "sha256" not found -> fixed
 - currently fails with: Error: transform "ecdsa-sha256" not found -> skeleton is now there
-- currently fails with: Error: key data "ecdsa" not found
+- currently fails with: Error: key data "ecdsa" not found -> skeleton is now there
+- currently fails with: Error: key data "x509" not found
+- next fail: func=xmlSecMSCngAppKeysMngrCertLoad:file=..\src\mscng\app.c:line=226:obj=unknown:subj=unknown:error=9:feature is not implemented:details=NULL
+    /* register our keys storage that exposes keys from the MS Certificate store */
 
 === ECDSA verification
 

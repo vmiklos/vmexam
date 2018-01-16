@@ -60,7 +60,8 @@ def ignoreRemoval(include, toAdd, currentFileName):
     debugStl = {
         "vector": "debug/vector",
         "set": "debug/set.h",
-        "map": "debug/map.h"
+        "map": "debug/map.h",
+        "unordered_map": "debug/unordered_map"
     }
     for k, v in debugStl.items():
         if include == k and v in toAdd:

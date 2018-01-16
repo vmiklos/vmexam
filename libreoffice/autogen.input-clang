@@ -1,5 +1,5 @@
 CC=clang
 CXX=clang++
-COMPILER_PLUGINS_CXX=clang++ -std=c++11
+COMPILER_PLUGINS_CXX=g++ -std=c++11
 --enable-dbgutil
 --enable-werror
