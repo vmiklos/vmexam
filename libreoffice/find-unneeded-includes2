@@ -99,6 +99,9 @@ def ignoreRemoval(include, toAdd, currentFileName):
     # See <https://github.com/include-what-you-use/include-what-you-use/issues/175>.
     if currentFileName.endswith("writerfilter/source/rtftok/rtfsdrimport.hxx") and include.endswith("dmapper/GraphicZOrderHelper.hxx"):
         return True
+    if currentFileName.endswith("sw/inc/IDocumentLinksAdministration.hxx") and include.endswith("sal/types.h"):
+        # css namespace alias is declared there.
+        return True
 
     return False
 
