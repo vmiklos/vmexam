@@ -70,8 +70,9 @@ win32/binaries/xmlsec.exe verify --crypto mscng --crypto-config win32/tmp/xmlsec
 - currently fails with: Error: transform "ecdsa-sha256" not found -> skeleton is now there
 - currently fails with: Error: key data "ecdsa" not found -> skeleton is now there
 - currently fails with: Error: key data "x509" not found
-- next fail: func=xmlSecMSCngAppKeysMngrCertLoad:file=..\src\mscng\app.c:line=226:obj=unknown:subj=unknown:error=9:feature is not implemented:details=NULL
-    /* register our keys storage that exposes keys from the MS Certificate store */
+- next fail: hash does not match
+  - openssl says the hash should be c3709bfbe7b8e901523ef333291e12bf2e7eb87af22df05c2050a98a357c8fc6
+  - cng says the hash is            bb00000000000000000000000000000000000000000000000000000000000000, which is clearly nonsense
 
 === ECDSA verification
 
