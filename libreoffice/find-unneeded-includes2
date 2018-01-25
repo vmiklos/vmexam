@@ -105,6 +105,8 @@ def ignoreRemoval(include, toAdd, currentFileName):
         return True
     if currentFileName.endswith("sw/inc/accmap.hxx") and include in ("list", "o3tl/typed_flags_set.hxx"):
         return True
+    if currentFileName.endswith("sw/inc/bparr.hxx") and include == "array":
+        return True
     if currentFileName.endswith("sw/inc/IDocumentLinksAdministration.hxx") and include.endswith("sal/types.h"):
         # css namespace alias is declared there.
         return True

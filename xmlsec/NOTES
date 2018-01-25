@@ -43,6 +43,15 @@ clang-tidy:
 
 === CNG effort
 
+TODO:
+- signature verify: cert verify
+- sign
+- non-sha256
+- non-ecdsa
+- decrypt
+- encrypt
+- mingw
+
 Doc entry point: https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx
 
 How to build:
@@ -66,13 +75,9 @@ win32/binaries/xmlsec.exe check-key-data --crypto mscng --crypto-config win32/tm
 win32/binaries/xmlsec.exe verify --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config --trusted-der tests/keys/cacert.der --enabled-key-data x509 --insecure tests/aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256.xml
 ----
 
-- currently fails with: Error: transform "sha256" not found -> fixed
-- currently fails with: Error: transform "ecdsa-sha256" not found -> skeleton is now there
-- currently fails with: Error: key data "ecdsa" not found -> skeleton is now there
-- currently fails with: Error: key data "x509" not found
-- next fail: hash does not match
-  - openssl says the hash should be c3709bfbe7b8e901523ef333291e12bf2e7eb87af22df05c2050a98a357c8fc6
-  - cng says the hash is            bb00000000000000000000000000000000000000000000000000000000000000, which is clearly nonsense
+What works:
+
+- ecdsa-sha256 verification with cert verification disabled
 
 === ECDSA verification
 
