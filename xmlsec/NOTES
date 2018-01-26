@@ -51,6 +51,7 @@ TODO:
 - decrypt
 - encrypt
 - mingw
+- experiment with -W4, -WX, clang-cl
 
 Doc entry point: https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx
 
