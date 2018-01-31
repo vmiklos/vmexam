@@ -103,9 +103,22 @@ def ignoreRemoval(include, toAdd, currentFileName):
         return True
     if currentFileName.endswith("sw/inc/acmplwrd.hxx") and include == "deque":
         return True
-    if currentFileName.endswith("sw/inc/accmap.hxx") and include in ("list", "o3tl/typed_flags_set.hxx"):
+    if (currentFileName.endswith("sw/inc/accmap.hxx") or currentFileName.endswith("sw/inc/dcontact.hxx")) and include == "list":
         return True
     if currentFileName.endswith("sw/inc/bparr.hxx") and include == "array":
+        return True
+    if include == "o3tl/typed_flags_set.hxx":
+        # Inheritance from o3tl::is_typed_flags<>, include is needed.
+        fileNames = [
+            "sw/inc/accmap.hxx",
+            "sw/inc/crsrsh.hxx",
+            "sw/inc/cshtyp.hxx",
+        ]
+        for fileName in fileNames:
+            if currentFileName.endswith(fileName):
+                return True
+    if currentFileName.endswith("sw/inc/doc.hxx") and include == "o3tl/deleter.hxx":
+        # o3tl::default_delete<> usage, include is needed.
         return True
     if currentFileName.endswith("sw/inc/IDocumentLinksAdministration.hxx") and include.endswith("sal/types.h"):
         # css namespace alias is declared there.

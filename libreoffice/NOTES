@@ -2559,6 +2559,40 @@ Program received signal SIGSEGV, Segmentation fault.
 
 seems the problem is that in SwTextFormatter::Underflow(), pPor->Truncate() may delete portions, and then m_pFirstOfBorderMerge points to deleted memory
 
+=== 2018-01-26
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=115155
+
+- minimal doc: 2 para, second para should be an inner list, but it isn't
+- .doc import is fine
+- reported to be a regression from c9dee880d88305312094b311abdae155e452bf14
+- docx import is fine as well, so perhaps an rtftok bug
+- docx markup confirms the theory that no direct formatting should happen here -- i.e. the mentioned commit just unconvers an existing problem
+
+rtf, first para:
+
+----
+ 10 | Structure : com.sun.star.beans.PropertyValue --> IndentAt                    1270 <- 720 twips
+----
+
+rtf, second para:
+
+----
+ 10 | Structure : com.sun.star.beans.PropertyValue --> IndentAt                    1270 <- 720 twips
+----
+
+docx, first para:
+
+----
+ 10 | Structure : com.sun.star.beans.PropertyValue --> IndentAt                    1270 <- 720 twips
+----
+
+docx, second para:
+
+----
+ 10 | Structure : com.sun.star.beans.PropertyValue --> IndentAt                    2540 <- 1440 twips
+----
+
 <<<
 
 Problematic bugs:

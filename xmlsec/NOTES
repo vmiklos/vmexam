@@ -78,7 +78,14 @@ win32/binaries/xmlsec.exe verify --crypto mscng --crypto-config win32/tmp/xmlsec
 
 What works:
 
-- ecdsa-sha256 verification with cert verification disabled
+- cert verification based on explicitly provided certificates
+- ecdsa-sha256 signature verification
+
+----
+XMLSEC_TEST_NAME="aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256" nmake check-dsig
+----
+
+Up to the 'Verify existing signature' part.
 
 === ECDSA verification
 
