@@ -11,14 +11,14 @@ git pull -r
 if [ -e Makefile ]; then
     make distclean
 fi
-./autogen.sh 2>&1 |tee log
-make build-nocheck 2>&1 |tee -a log
+./autogen.sh
+make build-nocheck
 if [ "$(git config libreoffice.bibisect)" == "true" ]; then
     sh ~/git/vmexam/libreoffice/daily.sh
 fi
 make tags
 (cd instdir && rm -rf user && ln -s $HOME/.config/libreofficedev/master/user)
-make check 2>&1 |tee -a log
+make check
 make vim-ide-integration
 style-check-files
 
