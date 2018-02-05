@@ -73,7 +73,15 @@ How to run:
 ----
 win32/binaries/xmlsec.exe check-transforms  --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config sha256 ecdsa-sha256
 win32/binaries/xmlsec.exe check-key-data --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config ecdsa x509
-win32/binaries/xmlsec.exe verify --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config --trusted-der tests/keys/cacert.der --enabled-key-data x509 --insecure tests/aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256.xml
+win32/binaries/xmlsec.exe verify --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config --trusted-der tests/keys/cacert.der --enabled-key-data x509 tests/aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256.xml
+win32/binaries/xmlsec.exe sign --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config --pkcs12-persist --pkcs12 tests/keys/ecdsa-secp256r1-key.p12 --pwd secret123 --output win32/tmp/output.xml tests/aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256.tmpl
+----
+
+How to debug:
+
+----
+"/cygdrive/c/Program Files (x86)/Microsoft Visual Studio 14.0/Common7/IDE/devenv.exe" /debugexe ... orig cmdline ...
+drmemory -free_max_frames 20 -- ... orig cmdline ...
 ----
 
 What works:
