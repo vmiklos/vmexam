@@ -158,4 +158,23 @@ Date:   Wed Dec 14 00:03:17 2016 +0000
 - so this is probably a regression from r289618
 - tracked as https://llvm.org/bugs/show_bug.cgi?id=31592
 
+== libtooling usage
+
+AST dump:
+
+----
+clang++ -Xclang -ast-dump -fsyntax-only -std=c++11 test.cxx
+----
+
+=== find-harmful-auto
+
+- done:
+  - find places where `auto` is used
+  - suggest replacement
+- TODO:
+  - filter out iterator
+  - filter out cast
+  - filter out new
+  - std::string vs canonical type
+
 // vim: ft=asciidoc

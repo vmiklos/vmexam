@@ -89,6 +89,12 @@ Generate compile_commands.json for clang-rename:
 bear make -j8 CCACHE_DISABLE=1
 ----
 
+`auto` killing:
+
+----
+make -j8 CCACHE_PREFIX=find-harmful-auto-wrapper CCACHE_DISABLE=1
+----
+
 == clang-tidy
 
 Online (same set of checks as for libclang-vim, except modernize):

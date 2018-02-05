@@ -3,9 +3,12 @@ CLANGWARNS=-Werror -Wall -Wno-missing-braces -Wnon-virtual-dtor -Wendif-labels -
 CLANGFLAGS = $(CLANGDEFS) $(CLANGWARNS) -g -std=c++11
 CLANGLIBS = -lclangAST -lclangBasic -lclangFrontend -lclangRewrite -lclangTooling -lLLVMSupport
 
-all: bin/find-nonconst-methods
+all: bin/find-nonconst-methods bin/find-harmful-auto
 
 bin/find-nonconst-methods: find-nonconst-methods.cxx Makefile
+	clang++ $(CLANGFLAGS) $(CLANGLIBS) -ldl -lpthread -o $@ $<
+
+bin/find-harmful-auto: find-harmful-auto.cxx Makefile
 	clang++ $(CLANGFLAGS) $(CLANGLIBS) -ldl -lpthread -o $@ $<
 
 run:
