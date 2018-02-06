@@ -21,24 +21,36 @@ def searchInMcm(query):
 
 # Filters git shortlog about, hiding already existing TDF members.
 def main(argv):
+    git = True
+    if len(argv) and argv[0] == "--qa":
+        git = False
     config = json.load(open("git-mcmshortlog.json"))
     ignoreNames = [n["name"] for n in config["ignoreNames"]]
     emailMap = config["emailMap"]
-    sock = os.popen("git shortlog -s -n -e --since=6.months.ago")
+    if git:
+        sock = os.popen("git shortlog -s -n -e --since=6.months.ago")
+    else:
+        sock = open("qa.csv")
     while True:
         line = sock.readline().strip()
-        if not ('\t' in line):
-            continue
-        commits, nameEmail = line.split('\t')
-        if int(commits) < 10:
-            # Less then 10 recent commits -> assume it's the not interesting
-            # long tail.
-            break
-        name = re.sub(r'(.*) <(.*)>', r'\1', nameEmail)
+        if git:
+            if not ('\t' in line):
+                continue
+            commits, nameEmail = line.split('\t')
+            if int(commits) < 10:
+                # Less then 10 recent commits -> assume it's the not interesting
+                # long tail.
+                break
+            name = re.sub(r'(.*) <(.*)>', r'\1', nameEmail)
+            email = re.sub(r'(.*) <(.*)>', r'\2', nameEmail)
+        else:
+            if not line:
+                break
+            name, email = line.split(", ")
+
         if name in ignoreNames:
             continue
 
-        email = re.sub(r'(.*) <(.*)>', r'\2', nameEmail)
         if email in emailMap.keys():
             email = emailMap[email]
         if searchInMcm(email):
