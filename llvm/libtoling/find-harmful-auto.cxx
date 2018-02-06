@@ -48,26 +48,37 @@ class Context
 class Visitor : public clang::RecursiveASTVisitor<Visitor>
 {
     Context& m_rContext;
-    bool m_bInVisitVarDecl;
+    /*bool m_bInVisitVarDecl;*/
     std::string m_aDeclRefName;
 
   public:
     Visitor(Context& rContext, clang::ASTContext& rASTContext)
-        : m_rContext(rContext), m_bInVisitVarDecl(false)
+        : m_rContext(rContext) /*, m_bInVisitVarDecl(false)*/
     {
         m_rContext.setASTContext(rASTContext);
     }
 
-    bool VisitDeclRefExpr(clang::DeclRefExpr* pExpr)
+    bool hasTemplateArguments(clang::Expr* pExpr)
     {
-        m_aDeclRefName = pExpr->getFoundDecl()->getQualifiedNameAsString();
-        return true;
+        if (!pExpr)
+            return false;
+
+        auto pCallExpr = clang::dyn_cast<clang::CallExpr>(pExpr);
+        if (!pCallExpr)
+            return false;
+
+        auto pFunctionDecl =
+            clang::dyn_cast<clang::FunctionDecl>(pCallExpr->getCalleeDecl());
+        if (!pFunctionDecl)
+            return false;
+
+        return pFunctionDecl->getTemplateSpecializationArgs() != nullptr;
     }
 
     bool VisitVarDecl(clang::VarDecl* pDecl)
     {
-        if (m_rContext.ignoreLocation(pDecl->getLocation()) ||
-            m_bInVisitVarDecl)
+        if (m_rContext.ignoreLocation(pDecl->getLocation())) /* ||
+             m_bInVisitVarDecl)*/
             return true;
 
         clang::QualType aType = pDecl->getType();
@@ -82,15 +93,11 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
 
         if (pDecl->hasInit())
         {
-            m_bInVisitVarDecl = true;
-            m_aDeclRefName.clear();
-            bool bRet = RecursiveASTVisitor::TraverseVarDecl(pDecl);
-            m_bInVisitVarDecl = false;
-            if (!bRet)
-                return false;
-
-            if (m_aDeclRefName.find("make_shared") != std::string::npos)
-                // Have the type info spelled out already.
+            if (hasTemplateArguments(pDecl->getInit()))
+                /*
+                 * Allow e.g.
+                 * auto pFoo = std::make_shared<Foo>();
+                 */
                 return true;
         }
 
