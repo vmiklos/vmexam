@@ -175,6 +175,5 @@ clang++ -Xclang -ast-dump -fsyntax-only -std=c++11 test.cxx
   - filter out iterator
   - filter out cast
   - filter out new
-  - std::string vs canonical type
 
 // vim: ft=asciidoc
