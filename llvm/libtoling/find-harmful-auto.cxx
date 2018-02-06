@@ -133,6 +133,10 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
                 return true;
         }
 
+        if (clang::isa<clang::AutoType>(aType.getCanonicalType()))
+            // Can't suggest what to spell out, ignore.
+            return true;
+
         if (clang::isa<clang::AutoType>(aType.getTypePtr()))
             m_rContext.report("harmful auto, consider spelling out %0 instead",
                               pDecl->getLocation())
