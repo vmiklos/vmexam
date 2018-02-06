@@ -48,12 +48,11 @@ class Context
 class Visitor : public clang::RecursiveASTVisitor<Visitor>
 {
     Context& m_rContext;
-    /*bool m_bInVisitVarDecl;*/
     std::string m_aDeclRefName;
 
   public:
     Visitor(Context& rContext, clang::ASTContext& rASTContext)
-        : m_rContext(rContext) /*, m_bInVisitVarDecl(false)*/
+        : m_rContext(rContext)
     {
         m_rContext.setASTContext(rASTContext);
     }
@@ -64,6 +63,34 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
             return false;
 
         auto pCallExpr = clang::dyn_cast<clang::CallExpr>(pExpr);
+        if (!pCallExpr)
+        {
+            auto pExprWithCleanups =
+                clang::dyn_cast<clang::ExprWithCleanups>(pExpr);
+            if (!pExprWithCleanups)
+                return false;
+
+            auto pCXXConstructExpr = clang::dyn_cast<clang::CXXConstructExpr>(
+                pExprWithCleanups->getSubExpr());
+            if (!pCXXConstructExpr || pCXXConstructExpr->getNumArgs() < 1)
+                return false;
+
+            auto pMaterializeTemporaryExpr =
+                clang::dyn_cast<clang::MaterializeTemporaryExpr>(
+                    pCXXConstructExpr->getArg(0));
+            if (!pMaterializeTemporaryExpr)
+                return false;
+
+            auto pCXXBindTemporaryExpr =
+                clang::dyn_cast<clang::CXXBindTemporaryExpr>(
+                    pMaterializeTemporaryExpr->GetTemporaryExpr());
+            if (!pCXXBindTemporaryExpr)
+                return false;
+
+            pCallExpr = clang::dyn_cast<clang::CallExpr>(
+                pCXXBindTemporaryExpr->getSubExpr());
+        }
+
         if (!pCallExpr)
             return false;
 
@@ -77,8 +104,7 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
 
     bool VisitVarDecl(clang::VarDecl* pDecl)
     {
-        if (m_rContext.ignoreLocation(pDecl->getLocation())) /* ||
-             m_bInVisitVarDecl)*/
+        if (m_rContext.ignoreLocation(pDecl->getLocation()))
             return true;
 
         clang::QualType aType = pDecl->getType();
