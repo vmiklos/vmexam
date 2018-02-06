@@ -70,25 +70,31 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
             if (!pExprWithCleanups)
                 return false;
 
-            auto pCXXConstructExpr = clang::dyn_cast<clang::CXXConstructExpr>(
-                pExprWithCleanups->getSubExpr());
-            if (!pCXXConstructExpr || pCXXConstructExpr->getNumArgs() < 1)
-                return false;
-
-            auto pMaterializeTemporaryExpr =
-                clang::dyn_cast<clang::MaterializeTemporaryExpr>(
-                    pCXXConstructExpr->getArg(0));
-            if (!pMaterializeTemporaryExpr)
-                return false;
-
-            auto pCXXBindTemporaryExpr =
-                clang::dyn_cast<clang::CXXBindTemporaryExpr>(
-                    pMaterializeTemporaryExpr->GetTemporaryExpr());
-            if (!pCXXBindTemporaryExpr)
-                return false;
-
             pCallExpr = clang::dyn_cast<clang::CallExpr>(
-                pCXXBindTemporaryExpr->getSubExpr());
+                pExprWithCleanups->getSubExpr());
+            if (!pCallExpr)
+            {
+                auto pCXXConstructExpr =
+                    clang::dyn_cast<clang::CXXConstructExpr>(
+                        pExprWithCleanups->getSubExpr());
+                if (!pCXXConstructExpr || pCXXConstructExpr->getNumArgs() < 1)
+                    return false;
+
+                auto pMaterializeTemporaryExpr =
+                    clang::dyn_cast<clang::MaterializeTemporaryExpr>(
+                        pCXXConstructExpr->getArg(0));
+                if (!pMaterializeTemporaryExpr)
+                    return false;
+
+                auto pCXXBindTemporaryExpr =
+                    clang::dyn_cast<clang::CXXBindTemporaryExpr>(
+                        pMaterializeTemporaryExpr->GetTemporaryExpr());
+                if (!pCXXBindTemporaryExpr)
+                    return false;
+
+                pCallExpr = clang::dyn_cast<clang::CallExpr>(
+                    pCXXBindTemporaryExpr->getSubExpr());
+            }
         }
 
         if (!pCallExpr || !pCallExpr->getCalleeDecl())

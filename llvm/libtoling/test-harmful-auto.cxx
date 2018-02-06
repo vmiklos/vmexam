@@ -3,6 +3,11 @@
 
 template <typename T> T func() { return T(); }
 
+struct S
+{
+    template <typename T> static T staticFunc() { return T(); }
+};
+
 int func2() { return 0; }
 
 int main()
@@ -17,6 +22,7 @@ int main()
     // OK
     auto pI = std::make_shared<int>();
     auto i = func<int>();
+    auto si = S::staticFunc<int>();
 
     // KO
     auto i2 = func2();
