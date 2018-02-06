@@ -91,7 +91,7 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
                 pCXXBindTemporaryExpr->getSubExpr());
         }
 
-        if (!pCallExpr)
+        if (!pCallExpr || !pCallExpr->getCalleeDecl())
             return false;
 
         auto pFunctionDecl =
