@@ -115,7 +115,8 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
 
         clang::QualType aType = pDecl->getType();
         std::string aTypeName = aType.getAsString();
-        if (aTypeName.find("iterator") != std::string::npos)
+        if (aTypeName.find("iterator") != std::string::npos ||
+            aTypeName.find("Iterator") != std::string::npos)
             // Ignore iterators.
             return true;
 
@@ -125,6 +126,15 @@ class Visitor : public clang::RecursiveASTVisitor<Visitor>
 
         if (pDecl->hasInit())
         {
+            if (clang::isa<clang::CXXStaticCastExpr>(pDecl->getInit()))
+                return true;
+
+            auto pExprWithCleanups =
+                clang::dyn_cast<clang::ExprWithCleanups>(pDecl->getInit());
+            if (pExprWithCleanups && clang::isa<clang::CXXStaticCastExpr>(
+                                         pExprWithCleanups->getSubExpr()))
+                return true;
+
             if (hasTemplateArguments(pDecl->getInit()))
                 /*
                  * Allow e.g.
