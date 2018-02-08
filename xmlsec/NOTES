@@ -44,14 +44,13 @@ clang-tidy:
 === CNG effort
 
 TODO:
-- signature verify: cert verify
 - sign
 - non-sha256
 - non-ecdsa
 - decrypt
 - encrypt
 - mingw
-- experiment with -W4, -WX, clang-cl
+- experiment with -W4, -WX, clang-cl, drmemory
 
 Doc entry point: https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx
 

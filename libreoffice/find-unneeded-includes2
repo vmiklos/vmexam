@@ -107,6 +107,15 @@ def ignoreRemoval(include, toAdd, currentFileName):
         return True
     if currentFileName.endswith("sw/inc/bparr.hxx") and include == "array":
         return True
+    if currentFileName.endswith("sw/inc/docary.hxx") and include in ("fldbas.hxx", "numrule.hxx", "tox.hxx"):
+        # Complete type is needed here:
+        # fldbas.hxx brings in SwTOXType, which is needed by SwTOXTypes, as SwVectorModifyBase's dtor wants to delete it
+        # numrule.hxx brings in SwNumRule, which is needed by SwNumRuleTable, as SwVectorModifyBase's dtor wants to delete it
+        # tox.hxx brings in SwTOXType, which is needed by SwTOXTypes, as SwVectorModifyBase's dtor wants to delete it
+        return True
+    if currentFileName.endswith("sw/inc/docfac.hxx") and include == "doc.hxx":
+        # Complete type is needed by rtl::Reference<SwDoc>.
+        return True
     if include == "o3tl/typed_flags_set.hxx":
         # Inheritance from o3tl::is_typed_flags<>, include is needed.
         fileNames = [
