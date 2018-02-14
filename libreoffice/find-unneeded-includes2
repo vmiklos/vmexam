@@ -56,6 +56,10 @@ def ignoreRemoval(include, toAdd, currentFileName):
     if include == "com/sun/star/uno/Sequence.hxx" and "namespace com { namespace sun { namespace star { namespace uno { template <class E> class __attribute__((type_visibility(\"default\"))) __attribute__((warn_unused)) Sequence; } } } }" in toAdd:
         return True
 
+    # uno::Any fwd decl case.
+    if include == "com/sun/star/uno/Any.hxx" and "namespace com { namespace sun { namespace star { namespace uno { class Any; } } } }" in toAdd:
+        return True
+
     # Avoid debug STL.
     debugStl = {
         "vector": "debug/vector",
@@ -99,8 +103,23 @@ def ignoreRemoval(include, toAdd, currentFileName):
     # See <https://github.com/include-what-you-use/include-what-you-use/issues/175>.
     if currentFileName.endswith("writerfilter/source/rtftok/rtfsdrimport.hxx") and include.endswith("dmapper/GraphicZOrderHelper.hxx"):
         return True
-    if currentFileName.endswith("sw/inc/PostItMgr.hxx") and include == "list":
-        return True
+    if include == "list":
+        fileNames = [
+            "sw/inc/PostItMgr.hxx",
+            "sw/inc/finalthreadmanager.hxx",
+            "sw/inc/frmfmt.hxx",
+        ]
+        for fileName in fileNames:
+            if currentFileName.endswith(fileName):
+                return True
+    if include == "vector":
+        fileNames = [
+            "sw/inc/extinput.hxx",
+            "sw/inc/fmtmeta.hxx",
+        ]
+        for fileName in fileNames:
+            if currentFileName.endswith(fileName):
+                return True
     if currentFileName.endswith("sw/inc/acmplwrd.hxx") and include == "deque":
         return True
     if (currentFileName.endswith("sw/inc/accmap.hxx") or currentFileName.endswith("sw/inc/dcontact.hxx")) and include == "list":
@@ -122,6 +141,7 @@ def ignoreRemoval(include, toAdd, currentFileName):
             "sw/inc/accmap.hxx",
             "sw/inc/crsrsh.hxx",
             "sw/inc/cshtyp.hxx",
+            "sw/inc/fesh.hxx",
         ]
         for fileName in fileNames:
             if currentFileName.endswith(fileName):
