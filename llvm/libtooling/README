@@ -10,4 +10,10 @@ Run it in a loop like this:
 for i in $(cat .git/indented-files.cache|grep -v /qa/); do ~/git/vmexam/llvm/libtoling/bin/find-nonconst-methods -paths-file .git/indented-files.cache $i || break; done
 ----
 
+Obsoleted by loplugin:constmethod.
+
+== readability-avoid-auto
+
+Demo tool to show how AST matching and fixit generation works.
+
 // vim: ft=asciidoc

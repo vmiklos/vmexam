@@ -116,6 +116,7 @@ def ignoreRemoval(include, toAdd, currentFileName):
         fileNames = [
             "sw/inc/extinput.hxx",
             "sw/inc/fmtmeta.hxx",
+            "sw/inc/istyleaccess.hxx",
         ]
         for fileName in fileNames:
             if currentFileName.endswith(fileName):
@@ -142,13 +143,20 @@ def ignoreRemoval(include, toAdd, currentFileName):
             "sw/inc/crsrsh.hxx",
             "sw/inc/cshtyp.hxx",
             "sw/inc/fesh.hxx",
+            "sw/inc/modcfg.hxx",
         ]
         for fileName in fileNames:
             if currentFileName.endswith(fileName):
                 return True
-    if currentFileName.endswith("sw/inc/doc.hxx") and include == "o3tl/deleter.hxx":
+    if include == "o3tl/deleter.hxx":
         # o3tl::default_delete<> usage, include is needed.
-        return True
+        fileNames = [
+            "sw/inc/doc.hxx",
+            "sw/inc/list.hxx",
+        ]
+        for fileName in fileNames:
+            if currentFileName.endswith(fileName):
+                return True
     if currentFileName.endswith("sw/inc/IDocumentLinksAdministration.hxx") and include.endswith("sal/types.h"):
         # css namespace alias is declared there.
         return True
