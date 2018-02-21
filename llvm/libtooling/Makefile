@@ -3,10 +3,7 @@ CLANGWARNS=-Werror -Wall -Wno-missing-braces -Wnon-virtual-dtor -Wendif-labels -
 CLANGFLAGS = $(CLANGDEFS) $(CLANGWARNS) -g -std=c++11
 CLANGLIBS = -lclangAST -lclangBasic -lclangFrontend -lclangRewrite -lclangTooling -lclangToolingCore -lclangASTMatchers -lLLVMSupport
 
-all: bin/find-nonconst-methods bin/readability-avoid-auto
-
-bin/find-nonconst-methods: find-nonconst-methods.cxx Makefile
-	clang++ $(CLANGFLAGS) $(CLANGLIBS) -ldl -lpthread -o $@ $<
+all: bin/readability-avoid-auto
 
 bin/readability-avoid-auto: readability-avoid-auto.cxx Makefile
 	clang++ $(CLANGFLAGS) $(CLANGLIBS) -ldl -lpthread -o $@ $<
