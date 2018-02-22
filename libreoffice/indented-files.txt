@@ -30,8 +30,6 @@ starmath/source/unofilter.cxx
 starmath/source/wordexportbase.cxx
 svl/source/items/grabbagitem.cxx
 svx/qa/unit/xoutdev.cxx
-sw/inc/textboxhelper.hxx
-sw/source/core/doc/textboxhelper.cxx
 sw/source/filter/ww8/docxsdrexport.hxx
 sw/source/filter/ww8/docxtablestyleexport.cxx
 sw/source/filter/ww8/docxtablestyleexport.hxx
