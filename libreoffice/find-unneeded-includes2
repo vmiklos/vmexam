@@ -144,6 +144,7 @@ def ignoreRemoval(include, toAdd, currentFileName):
             "sw/inc/cshtyp.hxx",
             "sw/inc/fesh.hxx",
             "sw/inc/modcfg.hxx",
+            "sw/inc/ndtyp.hxx",
         ]
         for fileName in fileNames:
             if currentFileName.endswith(fileName):

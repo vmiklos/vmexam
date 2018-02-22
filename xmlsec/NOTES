@@ -44,7 +44,6 @@ clang-tidy:
 === CNG effort
 
 TODO:
-- non-sha256
 - non-ecdsa
 - decrypt
 - encrypt
@@ -85,7 +84,9 @@ drmemory -free_max_frames 20 -- ... orig cmdline ...
 What works:
 
 ----
+XMLSEC_TEST_NAME="aleksey-xmldsig-01/enveloping-sha1-ecdsa-sha1" nmake check-dsig
 XMLSEC_TEST_NAME="aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256" nmake check-dsig
+XMLSEC_TEST_NAME="aleksey-xmldsig-01/enveloping-sha512-ecdsa-sha512" nmake check-dsig
 ----
 
 === ECDSA verification
