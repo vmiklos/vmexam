@@ -1,0 +1,243 @@
+
+Microsoft (R) Program Maintenance Utility Version 14.00.24210.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	cd ..
+	if not exist win32\tmp mkdir win32\tmp
+	set TMPFOLDER=win32/tmp
+	sh ./tests/testrun.sh ./tests/testDSig.sh "mscng" ./tests win32/binaries/xmlsec.exe der
+--- LD_LIBRARY_PATH=
+--- LTDL_LIBRARY_PATH=
+--------- Positive Testing ----------
+xmldsig2ed-tests/defCan-1
+    Checking required transforms                          Skip
+xmldsig2ed-tests/defCan-2
+    Checking required transforms                          Skip
+xmldsig2ed-tests/xpointer-1-SUN
+    Checking required transforms                          Skip
+xmldsig2ed-tests/xpointer-2-SUN
+    Checking required transforms                          Skip
+xmldsig2ed-tests/xpointer-3-SUN
+    Checking required transforms                          Skip
+xmldsig2ed-tests/xpointer-4-SUN
+    Checking required transforms                          Skip
+xmldsig2ed-tests/xpointer-5-SUN
+    Checking required transforms                          Skip
+xmldsig2ed-tests/xpointer-6-SUN
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-dsa-x509chain
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-rsa-x509chain
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-md5-hmac-md5
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-md5-hmac-md5-64
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-ripemd160-hmac-ripemd160
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-ripemd160-hmac-ripemd160-64
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/xpointer-hmac
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha1-hmac-sha1
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha1-hmac-sha1-64
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha224-hmac-sha224
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha224-hmac-sha224-64
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha256-hmac-sha256
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha256-hmac-sha256-64
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha384-hmac-sha384
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha384-hmac-sha384-64
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha512-hmac-sha512
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha512-hmac-sha512-64
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-md5-rsa-md5
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-ripemd160-rsa-ripemd160
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha1-rsa-sha1
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha224-rsa-sha224
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha256-rsa-sha256
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
+aleksey-xmldsig-01/enveloping-sha256-rsa-sha256-relationship
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
+aleksey-xmldsig-01/enveloping-sha384-rsa-sha384
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha512-rsa-sha512
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha256-dsa2048-sha256
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha256-dsa3072-sha256
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha1-ecdsa-sha1
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
+aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
+aleksey-xmldsig-01/enveloping-sha512-ecdsa-sha512
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
+aleksey-xmldsig-01/enveloping-expired-cert
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/dtd-hmac-91
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/x509data-test
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/x509data-sn-test
+    Checking required transforms                          Skip
+merlin-xmldsig-twenty-three/signature-enveloped-dsa
+    Checking required transforms                          Skip
+merlin-xmldsig-twenty-three/signature-enveloping-dsa
+    Checking required transforms                          Skip
+merlin-xmldsig-twenty-three/signature-enveloping-b64-dsa
+    Checking required transforms                          Skip
+merlin-xmldsig-twenty-three/signature-enveloping-hmac-sha1-40
+    Checking required transforms                          Skip
+merlin-xmldsig-twenty-three/signature-enveloping-hmac-sha1
+    Checking required transforms                          Skip
+merlin-xmldsig-twenty-three/signature-enveloping-rsa
+    Checking required transforms                          Skip
+merlin-xmldsig-twenty-three/signature-external-b64-dsa
+    Checking required transforms                          Skip
+merlin-xmldsig-twenty-three/signature-external-dsa
+    Checking required transforms                          Skip
+merlin-xmldsig-twenty-three/signature-keyname
+    Checking required transforms                          Skip
+merlin-xmldsig-twenty-three/signature-x509-crt
+    Checking required transforms                          Skip
+merlin-xmldsig-twenty-three/signature-x509-sn
+    Checking required transforms                          Skip
+merlin-xmldsig-twenty-three/signature-x509-is
+    Checking required transforms                          Skip
+merlin-xmldsig-twenty-three/signature-x509-ski
+    Checking required transforms                          Skip
+merlin-xmldsig-twenty-three/signature-retrievalmethod-rawx509crt
+    Checking required transforms                          Skip
+merlin-xmldsig-twenty-three/signature
+    Checking required transforms                          Skip
+merlin-xmlenc-five/encsig-ripemd160-hmac-ripemd160-kw-tripledes
+    Checking required transforms                          Skip
+merlin-xmlenc-five/encsig-sha256-hmac-sha256-kw-aes128
+    Checking required transforms                          Skip
+merlin-xmlenc-five/encsig-sha384-hmac-sha384-kw-aes192
+    Checking required transforms                          Skip
+merlin-xmlenc-five/encsig-sha512-hmac-sha512-kw-aes256
+    Checking required transforms                          Skip
+merlin-xmlenc-five/encsig-hmac-sha256-rsa-1_5
+    Checking required transforms                          Skip
+merlin-xmlenc-five/encsig-hmac-sha256-rsa-oaep-mgf1p
+    Checking required transforms                          Skip
+merlin-exc-c14n-one/exc-signature
+    Checking required transforms                          Skip
+merlin-exc-c14n-one/exc-signature
+    Checking required transforms                          Skip
+merlin-c14n-three/signature
+    Checking required transforms                          Skip
+merlin-xpath-filter2-three/sign-xfdl
+    Checking required transforms                          Skip
+merlin-xpath-filter2-three/sign-spec
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-big
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-dsa-detached
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-dsa-enveloped
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-dsa-enveloping
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-dsa-manifest
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-hmac-md5-c14n-enveloping
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-hmac-sha1-40-c14n-comments-detached
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-hmac-sha1-40-exclusive-c14n-comments-detached
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-hmac-sha1-exclusive-c14n-comments-detached
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-hmac-sha1-exclusive-c14n-enveloped
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-detached-b64-transform
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-detached
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-detached-xpath-transform
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-detached-xslt-transform-retrieval-method
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-detached-xslt-transform
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-enveloped
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-enveloping
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-manifest-x509-data-cert-chain
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-manifest-x509-data-cert
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-manifest-x509-data-issuer-serial
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-manifest-x509-data-ski
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-manifest-x509-data-subject-name
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-manifest
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-xpath-transform-enveloped
+    Checking required transforms                          Skip
+--------- These tests CAN FAIL (extra OS config required) ----------
+aleksey-xmldsig-01/enveloped-gost
+    Checking required transforms                          Skip
+--------- Negative Testing ----------
+merlin-xmldsig-twenty-three/signature-x509-crt-crl
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-expired-cert
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/dtd-hmac-91
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-detached-xslt-transform-bad-retrieval-method
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-enveloped-bad-digest-val
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-enveloped-bad-sig
+    Checking required transforms                          Skip
+phaos-xmldsig-three/signature-rsa-manifest-x509-data-crl
+    Checking required transforms                          Skip
+aleksey-xmldsig-01/enveloping-sha256-rsa-sha256-verify
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+aleksey-xmldsig-01/enveloping-sha256-rsa-sha256-verify
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+--- testDSig finished
+	cd win32
