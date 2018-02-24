@@ -2610,6 +2610,19 @@ left 0.254 cm, top 0.127 cm, right 0.254 cm, bottom 0.127 -> looks OK
   - ooxml compat mode "doNotUseHTMLParagraphAutoSpacing" -> more compact; but the compat mode is not used in the bugdoc
   - ah, SwWW8ImplReader::AppendTextNode() special-cases the first para in the text
 
+=== 2018-02-23
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=115715
+
+- rtf numbering problem, docx is not affected
+- 3 paragraph, 2nd has wrong indent
+- 2nd para: only <w:ind w:left="1580"/> is direct format
+  - direct format: fo:text-indent="-1.27cm" is expected; has fo:text-indent="0cm"
+
+idea: if the style has no sbasedon (or it's 0) and li/ri/fi(n) is 0, ignore it
+
+make check: CppunitTest_sw_rtfimport -> testTdf112211_2::Import breaks -> need to rework it
+
 <<<
 
 Problematic bugs:
