@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+import os
+import sys
+
+
+def parseLog(path):
+    ret = []
+
+    sock = open(path)
+    testName = None
+    for line in sock.readlines():
+        line = line.strip('\n')
+        if not line.startswith("    "):
+            testName = line
+        elif line.endswith("OK"):
+            ret.append(testName)
+
+    return sorted(set(ret))
+
+
+def getName(path):
+    return path.replace('-status.txt', '')
+
+
+def main(argv):
+    baselinePath = argv[0]
+    baselineName = getName(baselinePath)
+    baseline = parseLog(baselinePath)
+    currentPath = argv[1]
+    currentName = getName(currentPath)
+    current = parseLog(currentPath)
+
+    baselineOnly = [test for test in baseline if test not in current]
+    print(str(len(baselineOnly)) + " tests pass only on " + baselineName + ":")
+    for test in baselineOnly:
+        print("- %s" % test)
+    print()
+
+    intersection = [test for test in baseline if test in current]
+    print(str(len(intersection)) + " tests pass on both " + baselineName + " and " + currentName + ":")
+    for test in intersection:
+        print("- %s" % test)
+    print()
+
+    currentOnly = [test for test in current if test not in baseline]
+    print(str(len(currentOnly)) + " tests pass only on " + currentName + ":")
+    for test in currentOnly:
+        print("- %s" % test)
+    print()
+
+    if len(baselineOnly) == 0:
+        return 0
+    else:
+        print("ERROR: some tests only pass on " + baselineName)
+        return 1
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
