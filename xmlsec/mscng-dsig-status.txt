@@ -28,7 +28,11 @@ xmldsig2ed-tests/xpointer-6-SUN
 aleksey-xmldsig-01/enveloping-dsa-x509chain
     Checking required transforms                          Skip
 aleksey-xmldsig-01/enveloping-rsa-x509chain
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-md5-hmac-md5
     Checking required transforms                          Skip
 aleksey-xmldsig-01/enveloping-md5-hmac-md5-64
@@ -64,7 +68,11 @@ aleksey-xmldsig-01/enveloping-md5-rsa-md5
 aleksey-xmldsig-01/enveloping-ripemd160-rsa-ripemd160
     Checking required transforms                          Skip
 aleksey-xmldsig-01/enveloping-sha1-rsa-sha1
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-sha224-rsa-sha224
     Checking required transforms                          Skip
 aleksey-xmldsig-01/enveloping-sha256-rsa-sha256
@@ -80,9 +88,17 @@ aleksey-xmldsig-01/enveloping-sha256-rsa-sha256-relationship
     Create new signature                                    OK
     Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-sha384-rsa-sha384
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-sha512-rsa-sha512
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-sha256-dsa2048-sha256
     Checking required transforms                          Skip
 aleksey-xmldsig-01/enveloping-sha256-dsa3072-sha256
@@ -106,13 +122,23 @@ aleksey-xmldsig-01/enveloping-sha512-ecdsa-sha512
     Create new signature                                    OK
     Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-expired-cert
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 aleksey-xmldsig-01/dtd-hmac-91
     Checking required transforms                          Skip
 aleksey-xmldsig-01/x509data-test
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
+    Create new signature                                  Fail
+    Verify new signature                                  Fail
 aleksey-xmldsig-01/x509data-sn-test
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
+    Create new signature                                  Fail
+    Verify new signature                                  Fail
 merlin-xmldsig-twenty-three/signature-enveloped-dsa
     Checking required transforms                          Skip
 merlin-xmldsig-twenty-three/signature-enveloping-dsa
@@ -124,7 +150,11 @@ merlin-xmldsig-twenty-three/signature-enveloping-hmac-sha1-40
 merlin-xmldsig-twenty-three/signature-enveloping-hmac-sha1
     Checking required transforms                          Skip
 merlin-xmldsig-twenty-three/signature-enveloping-rsa
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
+    Create new signature                                  Fail
+    Verify new signature                                  Fail
 merlin-xmldsig-twenty-three/signature-external-b64-dsa
     Checking required transforms                          Skip
 merlin-xmldsig-twenty-three/signature-external-dsa
@@ -186,39 +216,65 @@ phaos-xmldsig-three/signature-hmac-sha1-exclusive-c14n-comments-detached
 phaos-xmldsig-three/signature-hmac-sha1-exclusive-c14n-enveloped
     Checking required transforms                          Skip
 phaos-xmldsig-three/signature-rsa-detached-b64-transform
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-rsa-detached
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-rsa-detached-xpath-transform
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-rsa-detached-xslt-transform-retrieval-method
     Checking required transforms                          Skip
 phaos-xmldsig-three/signature-rsa-detached-xslt-transform
     Checking required transforms                          Skip
 phaos-xmldsig-three/signature-rsa-enveloped
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-rsa-enveloping
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-rsa-manifest-x509-data-cert-chain
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-rsa-manifest-x509-data-cert
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-rsa-manifest-x509-data-issuer-serial
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-rsa-manifest-x509-data-ski
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-rsa-manifest-x509-data-subject-name
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-rsa-manifest
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-rsa-xpath-transform-enveloped
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 --------- These tests CAN FAIL (extra OS config required) ----------
 aleksey-xmldsig-01/enveloped-gost
     Checking required transforms                          Skip
 --------- Negative Testing ----------
 merlin-xmldsig-twenty-three/signature-x509-crt-crl
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 aleksey-xmldsig-01/enveloping-expired-cert
     Checking required transforms                          Skip
 aleksey-xmldsig-01/dtd-hmac-91
@@ -226,11 +282,17 @@ aleksey-xmldsig-01/dtd-hmac-91
 phaos-xmldsig-three/signature-rsa-detached-xslt-transform-bad-retrieval-method
     Checking required transforms                          Skip
 phaos-xmldsig-three/signature-rsa-enveloped-bad-digest-val
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-enveloped-bad-sig
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-manifest-x509-data-crl
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 aleksey-xmldsig-01/enveloping-sha256-rsa-sha256-verify
     Checking required transforms                            OK
     Checking required key data                              OK

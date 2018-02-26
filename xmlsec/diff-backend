@@ -10,6 +10,7 @@ import sys
 
 def parseLog(path):
     ret = []
+    retFail = []
 
     sock = open(path)
     testName = None
@@ -19,8 +20,11 @@ def parseLog(path):
             testName = line
         elif line.endswith("OK"):
             ret.append(testName)
+        elif line.endswith("Fail"):
+            retFail.append(testName)
 
-    return sorted(set(ret))
+    # Count only OK hits which don't have a matching Fail one.
+    return sorted(set([i for i in ret if i not in retFail]))
 
 
 def getName(path):
