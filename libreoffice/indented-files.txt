@@ -64,6 +64,8 @@ writerperfect/source/writer/EPUBPackage.cxx
 writerperfect/source/writer/EPUBPackage.hxx
 writerperfect/source/writer/exp/XMLBase64ImportContext.cxx
 writerperfect/source/writer/exp/XMLBase64ImportContext.hxx
+writerperfect/source/writer/exp/XMLFootnoteImportContext.cxx
+writerperfect/source/writer/exp/XMLFootnoteImportContext.hxx
 writerperfect/source/writer/exp/XMLSectionContext.cxx
 writerperfect/source/writer/exp/XMLSectionContext.hxx
 writerperfect/source/writer/exp/XMLTextFrameContext.cxx
