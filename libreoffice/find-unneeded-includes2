@@ -161,6 +161,15 @@ def ignoreRemoval(include, toAdd, currentFileName):
     if currentFileName.endswith("sw/inc/IDocumentLinksAdministration.hxx") and include.endswith("sal/types.h"):
         # css namespace alias is declared there.
         return True
+    if currentFileName.endswith("sw/inc/pagedesc.hxx") and include == "boost/multi_index/identity.hpp":
+        # boost::multi_index::identity<> usage.
+        return True
+    if currentFileName.endswith("sw/inc/rdfhelper.hxx") and include == "com/sun/star/uno/Reference.h":
+        # uno::Reference<> usage.
+        return True
+    if currentFileName.endswith("sw/inc/ring.hxx") and include == "utility":
+        # std::wap<> usage.
+        return True
 
     return False
 

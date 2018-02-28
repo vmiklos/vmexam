@@ -10,7 +10,7 @@
 # cat out | ~/git/vmexam/libreoffice/find-unneeded-includes2
 
 if [ "$1" == "sw-inc" ]; then
-    for object in $(git ls-files|grep sw/inc/.*.hxx)
+    for object in $(git ls-files|grep sw/inc/.*.hxx |grep -v /pch/)
     do
         ~/git/include-what-you-use/iwyu_tool.py -p . -a sw/source/core/doc/docnew.cxx $object 2>&1 | ~/git/vmexam/libreoffice/find-unneeded-includes2
     done
