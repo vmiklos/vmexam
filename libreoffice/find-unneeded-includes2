@@ -38,6 +38,8 @@ def getFwdDecl(include, keyword):
 
 
 def ignoreRemoval(include, toAdd, currentFileName):
+    # global rules
+
     # Avoid replacing .hpp with .hdl in the com::sun::star namespace.
     if include.startswith("com/sun/star") and include.endswith(".hpp"):
         hdl = include.replace(".hpp", ".hdl")
@@ -98,11 +100,16 @@ def ignoreRemoval(include, toAdd, currentFileName):
     if include in toAdd:
         return True
 
+    # writerfilter rules
+
     # IWYU assumes std::stack<IncompleteType> in a header is OK, but that's not
     # the case for all of LO's supported platforms.
     # See <https://github.com/include-what-you-use/include-what-you-use/issues/175>.
     if currentFileName.endswith("writerfilter/source/rtftok/rtfsdrimport.hxx") and include.endswith("dmapper/GraphicZOrderHelper.hxx"):
         return True
+
+    # sw rules
+
     if include == "list":
         fileNames = [
             "sw/inc/PostItMgr.hxx",
@@ -169,6 +176,9 @@ def ignoreRemoval(include, toAdd, currentFileName):
         return True
     if currentFileName.endswith("sw/inc/ring.hxx") and include == "utility":
         # std::wap<> usage.
+        return True
+    if currentFileName.endswith("sw/inc/shellid.hxx") and include == "sfx2/shell.hxx":
+        # SFX_INTERFACE_SW_START usage.
         return True
 
     return False

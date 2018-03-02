@@ -2623,6 +2623,17 @@ idea: if the style has no sbasedon (or it's 0) and li/ri/fi(n) is 0, ignore it
 
 make check: CppunitTest_sw_rtfimport -> testTdf112211_2::Import breaks -> need to rework it
 
+=== 2018-03-02
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=115861
+
+- testBnc875718 breaks, newline in body text
+
+all these are needed?
+- DomainMapper_Impl::RemoveLastParagraph -> needed by new bug
+- DomainMapper_Impl::finishParagraph -> half of that is needed
+- DomainMapper_Impl::PushFieldContext
+
 <<<
 
 Problematic bugs:

@@ -26,7 +26,11 @@ xmldsig2ed-tests/xpointer-5-SUN
 xmldsig2ed-tests/xpointer-6-SUN
     Checking required transforms                          Skip
 aleksey-xmldsig-01/enveloping-dsa-x509chain
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-rsa-x509chain
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -64,7 +68,11 @@ aleksey-xmldsig-01/enveloping-sha512-hmac-sha512
 aleksey-xmldsig-01/enveloping-sha512-hmac-sha512-64
     Checking required transforms                          Skip
 aleksey-xmldsig-01/enveloping-md5-rsa-md5
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-ripemd160-rsa-ripemd160
     Checking required transforms                          Skip
 aleksey-xmldsig-01/enveloping-sha1-rsa-sha1
@@ -140,11 +148,23 @@ aleksey-xmldsig-01/x509data-sn-test
     Create new signature                                  Fail
     Verify new signature                                  Fail
 merlin-xmldsig-twenty-three/signature-enveloped-dsa
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
+    Create new signature                                  Fail
+    Verify new signature                                  Fail
 merlin-xmldsig-twenty-three/signature-enveloping-dsa
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
+    Create new signature                                  Fail
+    Verify new signature                                  Fail
 merlin-xmldsig-twenty-three/signature-enveloping-b64-dsa
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
+    Create new signature                                  Fail
+    Verify new signature                                  Fail
 merlin-xmldsig-twenty-three/signature-enveloping-hmac-sha1-40
     Checking required transforms                          Skip
 merlin-xmldsig-twenty-three/signature-enveloping-hmac-sha1
@@ -156,23 +176,51 @@ merlin-xmldsig-twenty-three/signature-enveloping-rsa
     Create new signature                                  Fail
     Verify new signature                                  Fail
 merlin-xmldsig-twenty-three/signature-external-b64-dsa
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
+    Create new signature                                  Fail
+    Verify new signature                                  Fail
 merlin-xmldsig-twenty-three/signature-external-dsa
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Create new signature                                  Fail
+    Verify new signature                                  Fail
 merlin-xmldsig-twenty-three/signature-keyname
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 merlin-xmldsig-twenty-three/signature-x509-crt
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 merlin-xmldsig-twenty-three/signature-x509-sn
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 merlin-xmldsig-twenty-three/signature-x509-is
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 merlin-xmldsig-twenty-three/signature-x509-ski
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 merlin-xmldsig-twenty-three/signature-retrievalmethod-rawx509crt
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Create new signature                                    OK
+    Verify new signature                                  Fail
 merlin-xmldsig-twenty-three/signature
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Create new signature                                  Fail
+    Verify new signature                                  Fail
 merlin-xmlenc-five/encsig-ripemd160-hmac-ripemd160-kw-tripledes
     Checking required transforms                          Skip
 merlin-xmlenc-five/encsig-sha256-hmac-sha256-kw-aes128
@@ -186,25 +234,45 @@ merlin-xmlenc-five/encsig-hmac-sha256-rsa-1_5
 merlin-xmlenc-five/encsig-hmac-sha256-rsa-oaep-mgf1p
     Checking required transforms                          Skip
 merlin-exc-c14n-one/exc-signature
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
+    Create new signature                                  Fail
+    Verify new signature                                  Fail
 merlin-exc-c14n-one/exc-signature
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 merlin-c14n-three/signature
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 merlin-xpath-filter2-three/sign-xfdl
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 merlin-xpath-filter2-three/sign-spec
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-big
     Checking required transforms                          Skip
 phaos-xmldsig-three/signature-dsa-detached
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-dsa-enveloped
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-dsa-enveloping
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-dsa-manifest
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
 phaos-xmldsig-three/signature-hmac-md5-c14n-enveloping
     Checking required transforms                          Skip
 phaos-xmldsig-three/signature-hmac-sha1-40-c14n-comments-detached
@@ -276,7 +344,9 @@ merlin-xmldsig-twenty-three/signature-x509-crt-crl
     Checking required key data                              OK
     Verify existing signature                               OK
 aleksey-xmldsig-01/enveloping-expired-cert
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 aleksey-xmldsig-01/dtd-hmac-91
     Checking required transforms                          Skip
 phaos-xmldsig-three/signature-rsa-detached-xslt-transform-bad-retrieval-method
