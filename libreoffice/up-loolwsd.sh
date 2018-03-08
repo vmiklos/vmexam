@@ -5,6 +5,7 @@ git pull -r
 ./configure \
     --prefix=$PWD/install \
     --enable-debug \
+    --with-parallelism=no \
     --with-lo-path=$HOME/git/libreoffice/master/instdir \
     --with-lokit-path=$HOME/git/libreoffice/master/include \
     CC="ccache $HOME/git/llvm/instdir/bin/clang" \
