@@ -9,3 +9,6 @@ endif
 
 check:
 	eslint main.js
+
+run:
+	python simple-https-server.py

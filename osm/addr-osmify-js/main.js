@@ -60,7 +60,7 @@ function queryNominatim(protocol, query, next)
     var url = protocol + '//nominatim.openstreetmap.org/search.php?';
     url += querystring.stringify({'q' : query, 'format' : 'json'});
     request({'method' : 'GET', 'url' : url, 'json' : true},
-            function(er, response, body) {
+            function(er, response, elements) {
                 var output = document.getElementById('output');
                 if (er)
                 {
@@ -68,13 +68,25 @@ function queryNominatim(protocol, query, next)
                     return;
                 }
 
-                var element = body[0];
-
-                if (element == null)
+                if (elements.length == 0)
                 {
                     output.value = 'No results from nominatim';
                     return;
                 }
+
+                if (elements.length > 1)
+                {
+                    // There are multiple elements, prefer buildings if
+                    // possible.
+                    var buildings = elements.filter(function(element) {
+                        return element['class'] == 'building';
+                    });
+                    if (buildings.length > 0)
+                        elements = buildings;
+                }
+
+                var element = elements[0];
+
                 next(protocol, element);
             });
 }
