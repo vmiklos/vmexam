@@ -41,12 +41,18 @@ def queryNominatim(query):
 
 def osmify(query):
     # Use nominatim to get the coordinates and the osm type/id.
-    j = json.loads(queryNominatim(query))
-    if not len(j):
+    elements = json.loads(queryNominatim(query))
+    if not len(elements):
         print("No results from nominatim")
         return
 
-    element = j[0]
+    if len(elements) > 1:
+        # There are multiple elements, prefer buildings if possible.
+        buildings = [i for i in elements if "class" in i.keys() and i["class"] == "building"]
+        if len(buildings):
+            elements = buildings
+
+    element = elements[0]
     lat = element["lat"]
     lon = element["lon"]
     objectType = element["osm_type"]
