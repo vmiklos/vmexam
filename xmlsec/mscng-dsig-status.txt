@@ -132,13 +132,13 @@ aleksey-xmldsig-01/enveloping-sha512-ecdsa-sha512
 aleksey-xmldsig-01/enveloping-expired-cert
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 aleksey-xmldsig-01/dtd-hmac-91
     Checking required transforms                          Skip
 aleksey-xmldsig-01/x509data-test
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
     Create new signature                                  Fail
     Verify new signature                                  Fail
 aleksey-xmldsig-01/x509data-sn-test
@@ -260,15 +260,15 @@ phaos-xmldsig-three/signature-big
 phaos-xmldsig-three/signature-dsa-detached
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-dsa-enveloped
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-dsa-enveloping
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-dsa-manifest
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -290,7 +290,7 @@ phaos-xmldsig-three/signature-rsa-detached-b64-transform
 phaos-xmldsig-three/signature-rsa-detached
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-detached-xpath-transform
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -302,19 +302,19 @@ phaos-xmldsig-three/signature-rsa-detached-xslt-transform
 phaos-xmldsig-three/signature-rsa-enveloped
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-enveloping
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-manifest-x509-data-cert-chain
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-manifest-x509-data-cert
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-manifest-x509-data-issuer-serial
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -334,7 +334,7 @@ phaos-xmldsig-three/signature-rsa-manifest
 phaos-xmldsig-three/signature-rsa-xpath-transform-enveloped
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 --------- These tests CAN FAIL (extra OS config required) ----------
 aleksey-xmldsig-01/enveloped-gost
     Checking required transforms                          Skip

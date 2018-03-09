@@ -45,7 +45,6 @@ clang-tidy:
 
 TODO:
 - diff-backend dsig problems
-  - phaos-xmldsig-three/signature-rsa-enveloped
 - ecdsa-sha384? might be interesting from test-case (works in openssl)/nss point of view
   - ecdsa-md5? no testcase/openssl/nss for that
 - decrypt
@@ -75,8 +74,6 @@ win32/binaries/xmlsec.exe check-transforms  --crypto mscng --crypto-config win32
 win32/binaries/xmlsec.exe check-key-data --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config ecdsa x509
 win32/binaries/xmlsec.exe verify --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config --trusted-der tests/keys/cacert.der --enabled-key-data x509 tests/aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256.xml
 win32/binaries/xmlsec.exe sign --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config --pkcs12-persist --pkcs12 tests/keys/ecdsa-secp256r1-key.p12 --pwd secret123 --output win32/tmp/output.xml tests/aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256.tmpl
-
-win32/binaries/xmlsec.exe verify  --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config --trusted-der tests/phaos-xmldsig-three/certs/rsa-ca-cert.der --X509-skip-strict-checks --verification-time 2009-01-01+10:00:00 tests/phaos-xmldsig-three/signature-rsa-enveloped.xml
 ----
 
 How to debug:

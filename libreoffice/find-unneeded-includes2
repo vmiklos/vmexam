@@ -134,6 +134,8 @@ def ignoreRemoval(include, toAdd, currentFileName):
         return True
     if currentFileName.endswith("sw/inc/bparr.hxx") and include == "array":
         return True
+    if currentFileName.endswith("sw/inc/shellres.hxx") and include == "memory":
+        return True
     if currentFileName.endswith("sw/inc/docary.hxx") and include in ("fldbas.hxx", "numrule.hxx", "tox.hxx"):
         # Complete type is needed here:
         # fldbas.hxx brings in SwTOXType, which is needed by SwTOXTypes, as SwVectorModifyBase's dtor wants to delete it
