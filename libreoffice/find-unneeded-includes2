@@ -13,6 +13,7 @@
 # you can generate one with 'make vim-ide-integration'.
 #
 
+import os
 import re
 import sys
 
@@ -37,7 +38,7 @@ def getFwdDecl(include, keyword):
     return forwardDecl
 
 
-def ignoreRemoval(include, toAdd, currentFileName):
+def ignoreRemoval(include, toAdd, absFileName):
     # global rules
 
     # Avoid replacing .hpp with .hdl in the com::sun::star namespace.
@@ -100,88 +101,131 @@ def ignoreRemoval(include, toAdd, currentFileName):
     if include in toAdd:
         return True
 
+    fileName = os.path.relpath(absFileName, os.getcwd())
+
+    # sw rules
+
+    if fileName == "sw/inc/PostItMgr.hxx":
+        if include == "list":
+            return True
+
+    if fileName == "sw/inc/finalthreadmanager.hxx":
+        if include == "list":
+            return True
+
+    if fileName == "sw/inc/frmfmt.hxx":
+        if include == "list":
+            return True
+
+    if fileName == "sw/inc/extinput.hxx":
+        if include == "vector":
+            return True
+
+    if fileName == "sw/inc/fmtmeta.hxx":
+        if include == "vector":
+            return True
+
+    if fileName == "sw/inc/istyleaccess.hxx":
+        if include == "vector":
+            return True
+
+    if fileName == "sw/inc/acmplwrd.hxx":
+        if include == "deque":
+            return True
+
+    if fileName == "sw/inc/accmap.hxx":
+        if include == "list":
+            return True
+
+    if fileName == "sw/inc/dcontact.hxx":
+        if include == "list":
+            return True
+
+    if fileName == "sw/inc/bparr.hxx":
+        if include == "array":
+            return True
+
+    if fileName == "sw/inc/shellres.hxx":
+        if include == "memory":
+            return True
+
+    if fileName == "sw/inc/docary.hxx":
+        # Complete type is needed here:
+        # fldbas.hxx brings in SwTOXType, which is needed by SwTOXTypes, as SwVectorModifyBase's dtor wants to delete it
+        # numrule.hxx brings in SwNumRule, which is needed by SwNumRuleTable, as SwVectorModifyBase's dtor wants to delete it
+        # tox.hxx brings in SwTOXType, which is needed by SwTOXTypes, as SwVectorModifyBase's dtor wants to delete it
+        if include in ("fldbas.hxx", "numrule.hxx", "tox.hxx"):
+            return True
+
+    if fileName == "sw/inc/docfac.hxx":
+        # Complete type is needed by rtl::Reference<SwDoc>.
+        if include == "doc.hxx":
+            return True
+
+    if fileName == "sw/inc/accmap.hxx":
+        if include == "o3tl/typed_flags_set.hxx":
+            return True
+
+    if fileName == "sw/inc/crsrsh.hxx":
+        if include == "o3tl/typed_flags_set.hxx":
+            return True
+
+    if fileName == "sw/inc/cshtyp.hxx":
+        if include == "o3tl/typed_flags_set.hxx":
+            return True
+
+    if fileName == "sw/inc/fesh.hxx":
+        if include == "o3tl/typed_flags_set.hxx":
+            return True
+
+    if fileName == "sw/inc/modcfg.hxx":
+        if include == "o3tl/typed_flags_set.hxx":
+            return True
+
+    if fileName == "sw/inc/ndtyp.hxx":
+        if include == "o3tl/typed_flags_set.hxx":
+            return True
+
+    if fileName == "sw/inc/swtypes.hxx":
+        if include == "o3tl/typed_flags_set.hxx":
+            return True
+
+    if fileName == "sw/inc/doc.hxx":
+        if include == "o3tl/deleter.hxx":
+            return True
+
+    if fileName == "sw/inc/list.hxx":
+        if include == "o3tl/deleter.hxx":
+            return True
+
+    if fileName == "sw/inc/IDocumentLinksAdministration.hxx":
+        if include == "sal/types.h":
+            return True
+
+    if fileName == "sw/inc/pagedesc.hxx":
+        if include == "boost/multi_index/identity.hpp":
+            return True
+
+    if fileName == "sw/inc/rdfhelper.hxx":
+        if include == "com/sun/star/uno/Reference.h":
+            return True
+
+    if fileName == "sw/inc/ring.hxx":
+        if include == "utility":
+            return True
+
+    if fileName == "sw/inc/shellid.hxx":
+        if include == "sfx2/shell.hxx":
+            return True
+
     # writerfilter rules
 
     # IWYU assumes std::stack<IncompleteType> in a header is OK, but that's not
     # the case for all of LO's supported platforms.
     # See <https://github.com/include-what-you-use/include-what-you-use/issues/175>.
-    if currentFileName.endswith("writerfilter/source/rtftok/rtfsdrimport.hxx") and include.endswith("dmapper/GraphicZOrderHelper.hxx"):
-        return True
-
-    # sw rules
-
-    if include == "list":
-        fileNames = [
-            "sw/inc/PostItMgr.hxx",
-            "sw/inc/finalthreadmanager.hxx",
-            "sw/inc/frmfmt.hxx",
-        ]
-        for fileName in fileNames:
-            if currentFileName.endswith(fileName):
-                return True
-    if include == "vector":
-        fileNames = [
-            "sw/inc/extinput.hxx",
-            "sw/inc/fmtmeta.hxx",
-            "sw/inc/istyleaccess.hxx",
-        ]
-        for fileName in fileNames:
-            if currentFileName.endswith(fileName):
-                return True
-    if currentFileName.endswith("sw/inc/acmplwrd.hxx") and include == "deque":
-        return True
-    if (currentFileName.endswith("sw/inc/accmap.hxx") or currentFileName.endswith("sw/inc/dcontact.hxx")) and include == "list":
-        return True
-    if currentFileName.endswith("sw/inc/bparr.hxx") and include == "array":
-        return True
-    if currentFileName.endswith("sw/inc/shellres.hxx") and include == "memory":
-        return True
-    if currentFileName.endswith("sw/inc/docary.hxx") and include in ("fldbas.hxx", "numrule.hxx", "tox.hxx"):
-        # Complete type is needed here:
-        # fldbas.hxx brings in SwTOXType, which is needed by SwTOXTypes, as SwVectorModifyBase's dtor wants to delete it
-        # numrule.hxx brings in SwNumRule, which is needed by SwNumRuleTable, as SwVectorModifyBase's dtor wants to delete it
-        # tox.hxx brings in SwTOXType, which is needed by SwTOXTypes, as SwVectorModifyBase's dtor wants to delete it
-        return True
-    if currentFileName.endswith("sw/inc/docfac.hxx") and include == "doc.hxx":
-        # Complete type is needed by rtl::Reference<SwDoc>.
-        return True
-    if include == "o3tl/typed_flags_set.hxx":
-        # Inheritance from o3tl::is_typed_flags<>, include is needed.
-        fileNames = [
-            "sw/inc/accmap.hxx",
-            "sw/inc/crsrsh.hxx",
-            "sw/inc/cshtyp.hxx",
-            "sw/inc/fesh.hxx",
-            "sw/inc/modcfg.hxx",
-            "sw/inc/ndtyp.hxx",
-        ]
-        for fileName in fileNames:
-            if currentFileName.endswith(fileName):
-                return True
-    if include == "o3tl/deleter.hxx":
-        # o3tl::default_delete<> usage, include is needed.
-        fileNames = [
-            "sw/inc/doc.hxx",
-            "sw/inc/list.hxx",
-        ]
-        for fileName in fileNames:
-            if currentFileName.endswith(fileName):
-                return True
-    if currentFileName.endswith("sw/inc/IDocumentLinksAdministration.hxx") and include.endswith("sal/types.h"):
-        # css namespace alias is declared there.
-        return True
-    if currentFileName.endswith("sw/inc/pagedesc.hxx") and include == "boost/multi_index/identity.hpp":
-        # boost::multi_index::identity<> usage.
-        return True
-    if currentFileName.endswith("sw/inc/rdfhelper.hxx") and include == "com/sun/star/uno/Reference.h":
-        # uno::Reference<> usage.
-        return True
-    if currentFileName.endswith("sw/inc/ring.hxx") and include == "utility":
-        # std::wap<> usage.
-        return True
-    if currentFileName.endswith("sw/inc/shellid.hxx") and include == "sfx2/shell.hxx":
-        # SFX_INTERFACE_SW_START usage.
-        return True
+    if fileName == "writerfilter/source/rtftok/rtfsdrimport.hxx":
+        if include == "dmapper/GraphicZOrderHelper.hxx":
+            return True
 
     return False
 

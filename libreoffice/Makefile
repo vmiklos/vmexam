@@ -6,6 +6,7 @@ REGRESSIONS_BLAME_NAME_URL = https://bugs.documentfoundation.org/buglist.cgi?f1=
 
 PYTHON_FILES = \
 	       find-unneeded-includes \
+	       find-unneeded-includes2 \
 	       find-unsorted-includes \
 	       includetools.py \
 	       qa/empty-atom.py
