@@ -51,6 +51,9 @@ TODO:
 - encrypt
 - mingw
 - experiment with -W4, -WX, clang-cl, drmemory
+- smaller things:
+  - duplicate of cert-less pubkey: perhaps do reference counting instead of export+import?
+  - avoid malloc and always use buffers?
 
 Doc entry point: https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx
 

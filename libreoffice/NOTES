@@ -2634,6 +2634,17 @@ all these are needed?
 - DomainMapper_Impl::finishParagraph -> half of that is needed
 - DomainMapper_Impl::PushFieldContext
 
+=== 2018-03-16
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=116269
+
+- problem seems to be that deduplication is necessary for margins inherited from lists as well
+  - at least the part where not repeated formatting means reset-to-default
+
+- plan: get access to the abstract numbering
+  - see if left/right/first margin is there
+  - if not, inject 0 to the para prop set
+
 <<<
 
 Problematic bugs:
