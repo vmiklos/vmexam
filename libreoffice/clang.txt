@@ -22,9 +22,9 @@ clang-apply-replacements -remove-change-desc-files /tmp/rename
 
 ----
 # Touch the header of the relevant class.
-make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-class-name=SwFieldPortion -yaml" 2>&1 |tee ~/rename.yaml
+make -sr -j8 build COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-class-name=SwFieldPortion -yaml" 2>&1 |tee ~/rename.yaml
 # Touch the header of the relevant class.
-make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=clang-rename-wrapper RENAME_ARGS="-input=$HOME/rename.yaml"
+make -sr -j8 build COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=clang-rename-wrapper RENAME_ARGS="-input=$HOME/rename.yaml"
 clang-apply-replacements -remove-change-desc-files /tmp/rename
 ----
 

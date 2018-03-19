@@ -45,13 +45,12 @@ clang-tidy:
 
 TODO:
 - diff-backend dsig problems
-- ecdsa-sha384? might be interesting from test-case (works in openssl)/nss point of view
-  - ecdsa-md5? no testcase/openssl/nss for that
 - decrypt
 - encrypt
 - mingw
-- experiment with -W4, -WX, clang-cl, drmemory
+- experiment with clang-cl, drmemory
 - smaller things:
+  - see what {rsa,*dsa}-{md5,sha*} combox are supported by openssl and make sure all of them are covered by tests
   - duplicate of cert-less pubkey: perhaps do reference counting instead of export+import?
   - avoid malloc and always use buffers?
 
