@@ -6,17 +6,31 @@
 
 var domready = require('domready');
 
-function mailArchiveClick()
+function mailArchiveJump()
 {
     var msgid = document.getElementById('msgid').value;
     document.location.href =
         'https://www.mail-archive.com/search?l=mid&q=' + msgid;
 }
 
-function debianClick()
+function debianJump()
 {
     var msgid = document.getElementById('msgid').value;
     document.location.href = 'https://lists.debian.org/msgid-search/' + msgid;
+}
+
+function mailArchiveShow()
+{
+    var msgidElement = document.getElementById('msgid');
+    var msgid = msgidElement.value;
+    msgidElement.value = 'https://www.mail-archive.com/search?l=mid&q=' + msgid;
+}
+
+function debianShow()
+{
+    var msgidElement = document.getElementById('msgid');
+    var msgid = msgidElement.value;
+    msgidElement.value = 'https://lists.debian.org/msgid-search/' + msgid;
 }
 
 domready(function() {
@@ -34,18 +48,33 @@ domready(function() {
     msgidInput.placeholder = 'Message-ID';
     msgidInput.style.width = '50%';
     input.appendChild(msgidInput);
+
+    input.appendChild(document.createElement('br'));
+    var mailArchiveLink = document.createElement('input');
+    mailArchiveLink.type = 'button';
+    mailArchiveLink.value = 'Mail Archive Link';
+    mailArchiveLink.onclick = mailArchiveShow;
+    input.appendChild(mailArchiveLink);
+    input.appendChild(document.createTextNode(' '));
+    var debianLink = document.createElement('input');
+    debianLink.type = 'button';
+    debianLink.value = 'Debian Link';
+    debianLink.onclick = debianShow;
+    input.appendChild(debianLink);
+
     input.appendChild(document.createElement('br'));
     var mailArchive = document.createElement('input');
     mailArchive.type = 'button';
-    mailArchive.value = 'Mail Archive';
-    mailArchive.onclick = mailArchiveClick;
+    mailArchive.value = 'Mail Archive Jump';
+    mailArchive.onclick = mailArchiveJump;
     input.appendChild(mailArchive);
     input.appendChild(document.createTextNode(' '));
     var debian = document.createElement('input');
     debian.type = 'button';
-    debian.value = 'Debian';
-    debian.onclick = debianClick;
+    debian.value = 'Debian Jump';
+    debian.onclick = debianJump;
     input.appendChild(debian);
+
     body.appendChild(input);
 
     var maExample = document.createElement('p');
