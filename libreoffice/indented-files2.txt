@@ -1,6 +1,7 @@
 cui/qa/uitest/dialogs/pastedlg.py
 filter/qa/unit/textfilterdetect.cxx
 filter/source/msfilter/rtfutil.cxx
+include/vcl/filter/pdfdocument.hxx
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
 svtools/qa/unit/testHtmlReader.cxx
@@ -20,6 +21,9 @@ sw/source/filter/ww8/rtfsdrexport.cxx
 sw/source/filter/ww8/rtfsdrexport.hxx
 sw/source/filter/ww8/rtfstringbuffer.cxx
 sw/source/filter/ww8/rtfstringbuffer.hxx
+vcl/inc/pdfread.hxx
+vcl/source/filter/ipdf/pdfdocument.cxx
+vcl/source/filter/ipdf/pdfread.cxx
 writerfilter/inc/rtftok/RTFDocument.hxx
 writerfilter/qa/cppunittests/rtftok/testrtftok.cxx
 writerfilter/source/ooxml/factory_ns.py
@@ -60,6 +64,10 @@ writerfilter/source/rtftok/rtfvalue.cxx
 writerfilter/source/rtftok/rtfvalue.hxx
 writerperfect/qa/uitest/epubexport/epubexport.py
 xmlsecurity/inc/documentsignaturemanager.hxx
+xmlsecurity/inc/pdfio/pdfdocument.hxx
 xmlsecurity/inc/pdfsignaturehelper.hxx
+xmlsecurity/qa/unit/pdfsigning/pdfsigning.cxx
 xmlsecurity/source/helper/documentsignaturemanager.cxx
 xmlsecurity/source/helper/pdfsignaturehelper.cxx
+xmlsecurity/source/pdfio/pdfdocument.cxx
+xmlsecurity/workben/pdfverify.cxx

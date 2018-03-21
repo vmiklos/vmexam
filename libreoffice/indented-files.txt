@@ -18,7 +18,6 @@ drawinglayer/qa/unit/border.cxx
 framework/qa/cppunit/dispatchtest.cxx
 include/comphelper/propertyvalue.hxx
 include/svl/grabbagitem.hxx
-include/vcl/filter/pdfdocument.hxx
 oox/source/drawingml/customshapepresetdata.cxx
 oox/source/shape/LockedCanvasContext.cxx
 oox/source/shape/LockedCanvasContext.hxx
@@ -36,9 +35,6 @@ sw/source/filter/ww8/docxtablestyleexport.hxx
 sw/source/filter/ww8/sprmids.hxx
 sw/source/uibase/docvw/SidebarScrollBar.cxx
 sw/source/uibase/docvw/SidebarScrollBar.hxx
-vcl/inc/pdfread.hxx
-vcl/source/filter/ipdf/pdfdocument.cxx
-vcl/source/filter/ipdf/pdfread.cxx
 writerfilter/inc/dmapper/DomainMapperFactory.hxx
 writerfilter/inc/dmapper/GraphicZOrderHelper.hxx
 writerfilter/source/dmapper/LatentStyleHandler.cxx
@@ -91,10 +87,6 @@ writerperfect/source/writer/exp/xmltbli.hxx
 writerperfect/source/writer/exp/xmltext.cxx
 writerperfect/source/writer/exp/xmltext.hxx
 xmlsecurity/inc/certificate.hxx
-xmlsecurity/inc/pdfio/pdfdocument.hxx
-xmlsecurity/qa/unit/pdfsigning/pdfsigning.cxx
 xmlsecurity/qa/unit/signing/signing.cxx
 xmlsecurity/source/helper/ooxmlsecexporter.cxx
 xmlsecurity/source/helper/ooxmlsecexporter.hxx
-xmlsecurity/source/pdfio/pdfdocument.cxx
-xmlsecurity/workben/pdfverify.cxx
