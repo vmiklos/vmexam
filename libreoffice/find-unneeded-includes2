@@ -65,10 +65,14 @@ def ignoreRemoval(include, toAdd, absFileName):
 
     # Avoid debug STL.
     debugStl = {
-        "vector": "debug/vector",
-        "set": "debug/set.h",
+        "array": "debug/array",
+        "deque": "debug/deque",
+        "list": "debug/list",
         "map": "debug/map.h",
-        "unordered_map": "debug/unordered_map"
+        "set": "debug/set.h",
+        "unordered_map": "debug/unordered_map",
+        "unordered_set": "debug/unordered_set",
+        "vector": "debug/vector",
     }
     for k, v in debugStl.items():
         if include == k and v in toAdd:
@@ -105,18 +109,6 @@ def ignoreRemoval(include, toAdd, absFileName):
 
     # sw rules
 
-    if fileName == "sw/inc/PostItMgr.hxx":
-        if include == "list":
-            return True
-
-    if fileName == "sw/inc/finalthreadmanager.hxx":
-        if include == "list":
-            return True
-
-    if fileName == "sw/inc/frmfmt.hxx":
-        if include == "list":
-            return True
-
     if fileName == "sw/inc/extinput.hxx":
         if include == "vector":
             return True
@@ -127,22 +119,6 @@ def ignoreRemoval(include, toAdd, absFileName):
 
     if fileName == "sw/inc/istyleaccess.hxx":
         if include == "vector":
-            return True
-
-    if fileName == "sw/inc/acmplwrd.hxx":
-        if include == "deque":
-            return True
-
-    if fileName == "sw/inc/accmap.hxx":
-        if include == "list":
-            return True
-
-    if fileName == "sw/inc/dcontact.hxx":
-        if include == "list":
-            return True
-
-    if fileName == "sw/inc/bparr.hxx":
-        if include == "array":
             return True
 
     if fileName == "sw/inc/shellres.hxx":
@@ -216,6 +192,22 @@ def ignoreRemoval(include, toAdd, absFileName):
 
     if fileName == "sw/inc/shellid.hxx":
         if include == "sfx2/shell.hxx":
+            return True
+
+    if fileName == "sw/inc/swurl.hxx":
+        if include == "o3tl/typed_flags_set.hxx":
+            return True
+
+    if fileName == "sw/inc/tblenum.hxx":
+        if include == "o3tl/typed_flags_set.hxx":
+            return True
+
+    if fileName == "sw/inc/tox.hxx":
+        if include == "o3tl/typed_flags_set.hxx":
+            return True
+
+    if fileName == "sw/inc/undobj.hxx":
+        if include == "o3tl/typed_flags_set.hxx":
             return True
 
     # writerfilter rules

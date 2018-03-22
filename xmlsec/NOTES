@@ -59,7 +59,7 @@ Doc entry point: https://msdn.microsoft.com/en-us/library/windows/desktop/aa3762
 How to build:
 
 ----
-cscript configure.js crypto=mscng xslt=no iconv=no static=no debug=yes
+cscript configure.js crypto=mscng xslt=no iconv=no static=no debug=yes werror=yes
 nmake
 ----
 
