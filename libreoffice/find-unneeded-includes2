@@ -16,6 +16,7 @@
 import os
 import re
 import sys
+import json
 
 
 def unwrapInclude(include):
@@ -107,116 +108,14 @@ def ignoreRemoval(include, toAdd, absFileName):
 
     fileName = os.path.relpath(absFileName, os.getcwd())
 
-    # sw rules
+    # json rules
 
-    if fileName == "sw/inc/extinput.hxx":
-        if include == "vector":
-            return True
+    moduleName = fileName.split("/")[0]
 
-    if fileName == "sw/inc/fmtmeta.hxx":
-        if include == "vector":
-            return True
-
-    if fileName == "sw/inc/istyleaccess.hxx":
-        if include == "vector":
-            return True
-
-    if fileName == "sw/inc/shellres.hxx":
-        if include == "memory":
-            return True
-
-    if fileName == "sw/inc/docary.hxx":
-        # Complete type is needed here:
-        # fldbas.hxx brings in SwTOXType, which is needed by SwTOXTypes, as SwVectorModifyBase's dtor wants to delete it
-        # numrule.hxx brings in SwNumRule, which is needed by SwNumRuleTable, as SwVectorModifyBase's dtor wants to delete it
-        # tox.hxx brings in SwTOXType, which is needed by SwTOXTypes, as SwVectorModifyBase's dtor wants to delete it
-        if include in ("fldbas.hxx", "numrule.hxx", "tox.hxx"):
-            return True
-
-    if fileName == "sw/inc/docfac.hxx":
-        # Complete type is needed by rtl::Reference<SwDoc>.
-        if include == "doc.hxx":
-            return True
-
-    if fileName == "sw/inc/accmap.hxx":
-        if include == "o3tl/typed_flags_set.hxx":
-            return True
-
-    if fileName == "sw/inc/crsrsh.hxx":
-        if include == "o3tl/typed_flags_set.hxx":
-            return True
-
-    if fileName == "sw/inc/cshtyp.hxx":
-        if include == "o3tl/typed_flags_set.hxx":
-            return True
-
-    if fileName == "sw/inc/fesh.hxx":
-        if include == "o3tl/typed_flags_set.hxx":
-            return True
-
-    if fileName == "sw/inc/modcfg.hxx":
-        if include == "o3tl/typed_flags_set.hxx":
-            return True
-
-    if fileName == "sw/inc/ndtyp.hxx":
-        if include == "o3tl/typed_flags_set.hxx":
-            return True
-
-    if fileName == "sw/inc/swtypes.hxx":
-        if include == "o3tl/typed_flags_set.hxx":
-            return True
-
-    if fileName == "sw/inc/doc.hxx":
-        if include == "o3tl/deleter.hxx":
-            return True
-
-    if fileName == "sw/inc/list.hxx":
-        if include == "o3tl/deleter.hxx":
-            return True
-
-    if fileName == "sw/inc/IDocumentLinksAdministration.hxx":
-        if include == "sal/types.h":
-            return True
-
-    if fileName == "sw/inc/pagedesc.hxx":
-        if include == "boost/multi_index/identity.hpp":
-            return True
-
-    if fileName == "sw/inc/rdfhelper.hxx":
-        if include == "com/sun/star/uno/Reference.h":
-            return True
-
-    if fileName == "sw/inc/ring.hxx":
-        if include == "utility":
-            return True
-
-    if fileName == "sw/inc/shellid.hxx":
-        if include == "sfx2/shell.hxx":
-            return True
-
-    if fileName == "sw/inc/swurl.hxx":
-        if include == "o3tl/typed_flags_set.hxx":
-            return True
-
-    if fileName == "sw/inc/tblenum.hxx":
-        if include == "o3tl/typed_flags_set.hxx":
-            return True
-
-    if fileName == "sw/inc/tox.hxx":
-        if include == "o3tl/typed_flags_set.hxx":
-            return True
-
-    if fileName == "sw/inc/undobj.hxx":
-        if include == "o3tl/typed_flags_set.hxx":
-            return True
-
-    # writerfilter rules
-
-    # IWYU assumes std::stack<IncompleteType> in a header is OK, but that's not
-    # the case for all of LO's supported platforms.
-    # See <https://github.com/include-what-you-use/include-what-you-use/issues/175>.
-    if fileName == "writerfilter/source/rtftok/rtfsdrimport.hxx":
-        if include == "dmapper/GraphicZOrderHelper.hxx":
+    rulePath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "IwyuFilter_" + moduleName + ".json")
+    moduleRules = json.load(open(rulePath))
+    if fileName in moduleRules.keys():
+        if include in moduleRules[fileName]:
             return True
 
     return False
