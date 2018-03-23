@@ -9,6 +9,8 @@ sw/inc/textboxhelper.hxx
 sw/qa/extras/rtfexport/rtfexport.cxx
 sw/qa/extras/rtfimport/rtfimport.cxx
 sw/source/core/doc/textboxhelper.cxx
+sw/source/filter/html/htmlreqifreader.cxx
+sw/source/filter/html/htmlreqifreader.hxx
 sw/source/filter/rtf/swparrtf.cxx
 sw/source/filter/ww8/docxsdrexport.cxx
 sw/source/filter/ww8/rtfattributeoutput.cxx
