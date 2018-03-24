@@ -5,6 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
+import glob
 import os
 import subprocess
 import sys
@@ -25,12 +26,15 @@ def getIndentedPaths():
     return ret
 
 
-def tidy(paths):
+def tidy(paths, assume=None):
     for path in paths:
         iwyu_tool = os.path.join(os.environ["HOME"], "git/include-what-you-use/iwyu_tool.py")
         find_unneeded_includes = os.path.join(os.environ["HOME"], "git/vmexam/libreoffice/find-unneeded-includes")
 
-        invocation1 = [iwyu_tool, "-p", ".", path]
+        invocation1 = [iwyu_tool, "-p", "."]
+        if assume is not None:
+            invocation1 += ["-a", assume]
+        invocation1 += [path]
         invocation2 = [find_unneeded_includes]
         print(" ".join(invocation1) + " | " + " ".join(invocation2))
         p1 = subprocess.Popen(invocation1, stdout=subprocess.PIPE)
@@ -40,6 +44,13 @@ def tidy(paths):
         if p2.returncode != 0:
             break
 
-tidy(getIndentedPaths())
+if __name__ == '__main__':
+    area = None
+    if len(sys.argv) > 1:
+        area = sys.argv[1]
+    if area == "sw-inc":
+        tidy(glob.glob("sw/inc/*.hxx"), "sw/source/core/doc/docnew.cxx")
+    else:
+        tidy(getIndentedPaths())
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
