@@ -196,7 +196,7 @@ aleksey-xmldsig-01/enveloping-expired-cert
 aleksey-xmldsig-01/dtd-hmac-91
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
     Create new signature                                    OK
     Verify new signature                                    OK
 aleksey-xmldsig-01/x509data-test
