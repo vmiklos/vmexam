@@ -10,21 +10,37 @@ Copyright (C) Microsoft Corporation.  All rights reserved.
 --- LTDL_LIBRARY_PATH=
 --------- Positive Testing ----------
 xmldsig2ed-tests/defCan-1
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 xmldsig2ed-tests/defCan-2
     Checking required transforms                          Skip
 xmldsig2ed-tests/xpointer-1-SUN
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 xmldsig2ed-tests/xpointer-2-SUN
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 xmldsig2ed-tests/xpointer-3-SUN
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 xmldsig2ed-tests/xpointer-4-SUN
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 xmldsig2ed-tests/xpointer-5-SUN
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 xmldsig2ed-tests/xpointer-6-SUN
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 aleksey-xmldsig-01/enveloping-dsa-x509chain
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -38,35 +54,79 @@ aleksey-xmldsig-01/enveloping-rsa-x509chain
     Create new signature                                    OK
     Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-md5-hmac-md5
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-md5-hmac-md5-64
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-ripemd160-hmac-ripemd160
     Checking required transforms                          Skip
 aleksey-xmldsig-01/enveloping-ripemd160-hmac-ripemd160-64
     Checking required transforms                          Skip
 aleksey-xmldsig-01/xpointer-hmac
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-sha1-hmac-sha1
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-sha1-hmac-sha1-64
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-sha224-hmac-sha224
     Checking required transforms                          Skip
 aleksey-xmldsig-01/enveloping-sha224-hmac-sha224-64
     Checking required transforms                          Skip
 aleksey-xmldsig-01/enveloping-sha256-hmac-sha256
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-sha256-hmac-sha256-64
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-sha384-hmac-sha384
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-sha384-hmac-sha384-64
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-sha512-hmac-sha512
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-sha512-hmac-sha512-64
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/enveloping-md5-rsa-md5
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -134,7 +194,11 @@ aleksey-xmldsig-01/enveloping-expired-cert
     Checking required key data                              OK
     Verify existing signature                               OK
 aleksey-xmldsig-01/dtd-hmac-91
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                             Fail
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/x509data-test
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -166,9 +230,17 @@ merlin-xmldsig-twenty-three/signature-enveloping-b64-dsa
     Create new signature                                    OK
     Verify new signature                                    OK
 merlin-xmldsig-twenty-three/signature-enveloping-hmac-sha1-40
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 merlin-xmldsig-twenty-three/signature-enveloping-hmac-sha1
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 merlin-xmldsig-twenty-three/signature-enveloping-rsa
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -274,15 +346,25 @@ phaos-xmldsig-three/signature-dsa-manifest
     Checking required key data                              OK
     Verify existing signature                               OK
 phaos-xmldsig-three/signature-hmac-md5-c14n-enveloping
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-hmac-sha1-40-c14n-comments-detached
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-hmac-sha1-40-exclusive-c14n-comments-detached
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-hmac-sha1-exclusive-c14n-comments-detached
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-hmac-sha1-exclusive-c14n-enveloped
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-detached-b64-transform
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -348,7 +430,9 @@ aleksey-xmldsig-01/enveloping-expired-cert
     Checking required key data                              OK
     Verify existing signature                               OK
 aleksey-xmldsig-01/dtd-hmac-91
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-detached-xslt-transform-bad-retrieval-method
     Checking required transforms                          Skip
 phaos-xmldsig-three/signature-rsa-enveloped-bad-digest-val

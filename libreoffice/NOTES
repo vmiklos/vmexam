@@ -2645,6 +2645,12 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=116269
   - see if left/right/first margin is there
   - if not, inject 0 to the para prop set
 
+=== 2018-03-23
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=116410
+
+- seems the old hackaround is only needed for multiple shapes, so just disable the single-shape case
+
 <<<
 
 Problematic bugs:
