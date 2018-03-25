@@ -56,7 +56,7 @@ def tidy(paths, assume=None):
 
         for path in sorted(paths):
             iwyu_tool = os.path.join(os.environ["HOME"], "git/include-what-you-use/iwyu_tool.py")
-            find_unneeded_includes = os.path.join(os.environ["HOME"], "git/vmexam/libreoffice/find-unneeded-includes")
+            find_unneeded_includes = os.path.join(os.path.dirname(__file__), "find-unneeded-includes")
 
             invocation1 = [iwyu_tool, "-p", "."]
             if assume is not None:
