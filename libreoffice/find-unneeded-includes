@@ -16,7 +16,7 @@
 import os
 import re
 import sys
-import json
+import yaml
 
 
 def unwrapInclude(include):
@@ -108,14 +108,14 @@ def ignoreRemoval(include, toAdd, absFileName):
 
     fileName = os.path.relpath(absFileName, os.getcwd())
 
-    # json rules
+    # yaml rules
 
     moduleName = fileName.split("/")[0]
 
-    rulePath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "IwyuFilter_" + moduleName + ".json")
+    rulePath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "IwyuFilter_" + moduleName + ".yaml")
     moduleRules = {}
     if os.path.exists(rulePath):
-        moduleRules = json.load(open(rulePath))
+        moduleRules = yaml.load(open(rulePath))
     if fileName in moduleRules.keys():
         if include in moduleRules[fileName]:
             return True
