@@ -8,10 +8,15 @@ sw/inc/istyleaccess.hxx:
 sw/inc/shellres.hxx:
 - memory
 sw/inc/docary.hxx:
+# Complete type is needed here:
+# fldbas.hxx brings in SwTOXType, which is needed by SwTOXTypes, as SwVectorModifyBase's dtor wants to delete it
+# numrule.hxx brings in SwNumRule, which is needed by SwNumRuleTable, as SwVectorModifyBase's dtor wants to delete it
+# tox.hxx brings in SwTOXType, which is needed by SwTOXTypes, as SwVectorModifyBase's dtor wants to delete it
 - fldbas.hxx
 - numrule.hxx
 - tox.hxx
 sw/inc/docfac.hxx:
+# Complete type is needed by rtl::Reference<SwDoc>.
 - doc.hxx
 sw/inc/accmap.hxx:
 - o3tl/typed_flags_set.hxx
