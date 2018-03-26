@@ -6,6 +6,7 @@
 #
 
 import glob
+import json
 import multiprocessing
 import os
 import queue
@@ -33,8 +34,8 @@ def run_tool(assume, task_queue, failed_files):
     while True:
         invocation1, invocation2 = task_queue.get()
         if not len(failed_files):
-            print(" ".join(invocation1) + " | " + " ".join(invocation2))
-            p1 = subprocess.Popen(invocation1, stdout=subprocess.PIPE)
+            print(invocation1 + " | " + " ".join(invocation2))
+            p1 = subprocess.Popen(invocation1, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             p2 = subprocess.Popen(invocation2, stdin=p1.stdout, stdout=subprocess.PIPE)
             p1.stdout.close()
             sys.stdout.write(p2.communicate()[0].decode('utf-8'))
@@ -43,8 +44,10 @@ def run_tool(assume, task_queue, failed_files):
         task_queue.task_done()
 
 
-def tidy(paths, assume=None):
+def tidy(compileCommands, paths, assume=None):
     return_code = 0
+    if assume:
+        assumeAbs = os.path.abspath(assume)
     try:
         max_task = multiprocessing.cpu_count()
         task_queue = queue.Queue(max_task)
@@ -55,13 +58,22 @@ def tidy(paths, assume=None):
             t.start()
 
         for path in sorted(paths):
-            iwyu_tool = os.path.join(os.environ["HOME"], "git/include-what-you-use/iwyu_tool.py")
+            pathAbs = os.path.abspath(path)
+            if assume:
+                compileFile = assumeAbs
+            else:
+                compileFile = pathAbs
+            matches = [i for i in compileCommands if i["file"] == compileFile]
+            if not len(matches):
+                print("WARNING: no compile commands for '" + path + "'")
+                continue
+
+            _, _, args = matches[0]["command"].partition(" ")
+            if assume:
+                args = args.replace(assumeAbs, "-x c++ " + pathAbs)
             find_unneeded_includes = os.path.join(os.path.dirname(__file__), "find-unneeded-includes")
 
-            invocation1 = [iwyu_tool, "-p", "."]
-            if assume is not None:
-                invocation1 += ["-a", assume]
-            invocation1 += [path]
+            invocation1 = "include-what-you-use " + args
             invocation2 = [find_unneeded_includes]
             task_queue.put((invocation1, invocation2))
 
@@ -76,12 +88,15 @@ def tidy(paths, assume=None):
     sys.exit(return_code)
 
 if __name__ == '__main__':
+    with open("compile_commands.json", 'r') as compileCommandsSock:
+        compileCommands = json.load(compileCommandsSock)
+
     area = None
     if len(sys.argv) > 1:
         area = sys.argv[1]
     if area == "sw-inc":
-        tidy(glob.glob("sw/inc/*.hxx"), "sw/source/core/doc/docnew.cxx")
+        tidy(compileCommands, glob.glob("sw/inc/*.hxx"), "sw/source/core/doc/docnew.cxx")
     else:
-        tidy(getIndentedPaths())
+        tidy(compileCommands, getIndentedPaths())
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
