@@ -2651,6 +2651,12 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=116410
 
 - seems the old hackaround is only needed for multiple shapes, so just disable the single-shape case
 
+=== 2018-03-29
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=116265
+
+Looks like this wants list <-> paragraph dedup
+
 <<<
 
 Problematic bugs:

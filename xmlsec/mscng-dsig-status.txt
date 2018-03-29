@@ -203,14 +203,14 @@ aleksey-xmldsig-01/x509data-test
     Checking required transforms                            OK
     Checking required key data                              OK
     Verify existing signature                               OK
-    Create new signature                                  Fail
-    Verify new signature                                  Fail
+    Create new signature                                    OK
+    Verify new signature                                    OK
 aleksey-xmldsig-01/x509data-sn-test
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
-    Create new signature                                  Fail
-    Verify new signature                                  Fail
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 merlin-xmldsig-twenty-three/signature-enveloped-dsa
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -400,15 +400,15 @@ phaos-xmldsig-three/signature-rsa-manifest-x509-data-cert
 phaos-xmldsig-three/signature-rsa-manifest-x509-data-issuer-serial
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-manifest-x509-data-ski
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-manifest-x509-data-subject-name
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-manifest
     Checking required transforms                            OK
     Checking required key data                              OK
