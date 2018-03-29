@@ -54,7 +54,7 @@ def getFwdDecl(include, keyword):
     return forwardDecl
 
 
-def ignoreRemoval(include, toAdd, absFileName):
+def ignoreRemoval(include, toAdd, absFileName, moduleRules):
     # global rules
 
     # Avoid replacing .hpp with .hdl in the com::sun::star namespace.
@@ -125,15 +125,11 @@ def ignoreRemoval(include, toAdd, absFileName):
 
     # yaml rules
 
-    moduleName = fileName.split("/")[0]
-
-    rulePath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "IwyuFilter_" + moduleName + ".yaml")
-    moduleRules = {}
-    if os.path.exists(rulePath):
-        moduleRules = yaml.load(open(rulePath))["blacklist"]
-    if fileName in moduleRules.keys():
-        if include in moduleRules[fileName]:
-            return True
+    if "blacklist" in moduleRules.keys():
+        blacklistRules = moduleRules["blacklist"]
+        if fileName in blacklistRules.keys():
+            if include in blacklistRules[fileName]:
+                return True
 
     return False
 
@@ -143,7 +139,7 @@ def unwrapInclude(include):
     return include[1:-1]
 
 
-def processIWYUOutput(iwyuOutput):
+def processIWYUOutput(iwyuOutput, moduleRules):
     inAdd = False
     toAdd = []
     inRemove = False
@@ -186,7 +182,7 @@ def processIWYUOutput(iwyuOutput):
             if match:
                 include = unwrapInclude(match.group(1))
                 lineno = match.group(2)
-                if not ignoreRemoval(include, toAdd, currentFileName):
+                if not ignoreRemoval(include, toAdd, currentFileName, moduleRules):
                     toRemove.append("%s:%s: %s" % (currentFileName, lineno, include))
                 continue
 
@@ -197,21 +193,19 @@ def processIWYUOutput(iwyuOutput):
 
 def run_tool(task_queue, failed_files):
     while True:
-        invocation = task_queue.get()
+        invocation, moduleRules = task_queue.get()
         if not len(failed_files):
             print("[IWYU] " + invocation.split(' ')[-1])
             p = subprocess.Popen(invocation, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            retcode = processIWYUOutput(p.communicate()[0].decode('utf-8').splitlines())
+            retcode = processIWYUOutput(p.communicate()[0].decode('utf-8').splitlines(), moduleRules)
             if retcode != 0:
                 print("ERROR: '" + invocation + "' failed.")
                 failed_files.append(invocation)
         task_queue.task_done()
 
 
-def tidy(compileCommands, paths, assume=None):
+def tidy(compileCommands, paths):
     return_code = 0
-    if assume:
-        assumeAbs = os.path.abspath(assume)
     try:
         max_task = multiprocessing.cpu_count()
         task_queue = queue.Queue(max_task)
@@ -222,7 +216,18 @@ def tidy(compileCommands, paths, assume=None):
             t.start()
 
         for path in sorted(paths):
+            assume = None
+            moduleName = path.split("/")[0]
+
+            rulePath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "IwyuFilter_" + moduleName + ".yaml")
+            moduleRules = {}
+            if os.path.exists(rulePath):
+                moduleRules = yaml.load(open(rulePath))
+            if "assumeFilename" in moduleRules.keys():
+                assume = moduleRules["assumeFilename"]
             pathAbs = os.path.abspath(path)
+            if assume:
+                assumeAbs = os.path.abspath(assume)
             if assume:
                 compileFile = assumeAbs
             else:
@@ -237,7 +242,7 @@ def tidy(compileCommands, paths, assume=None):
                 args = args.replace(assumeAbs, "-x c++ " + pathAbs)
 
             invocation1 = "include-what-you-use " + args
-            task_queue.put(invocation1)
+            task_queue.put((invocation1, moduleRules))
 
         task_queue.join()
         if len(failed_files):
@@ -257,7 +262,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         area = sys.argv[1]
     if area == "sw-inc":
-        tidy(compileCommands, glob.glob("sw/inc/*.hxx"), "sw/source/core/doc/docnew.cxx")
+        tidy(compileCommands, glob.glob("sw/inc/*.hxx"))
     else:
         tidy(compileCommands, getIndentedPaths())
 
