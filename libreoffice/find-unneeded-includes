@@ -11,6 +11,11 @@
 # It assumes you have a 'compile_commands.json' around (similar to clang-tidy),
 # you can generate one with 'make vim-ide-integration'.
 #
+# Benefits over bin/gen-iwyu-dummy-lib in core.git:
+# - blacklist mechanism, so a warning is either fixed or blacklisted
+# - works in a plugins-enabled clang build
+# - no custom configure options required
+# - does not create untracked files in $BUILDDIR
 
 import glob
 import json
@@ -22,21 +27,6 @@ import subprocess
 import sys
 import threading
 import yaml
-
-
-def getIndentedPaths():
-    ret = []
-
-    for fileList in [".git/indented-files.cache", ".git/indented-files2.cache"]:
-        sock = open(fileList)
-        for line in sock.readlines():
-            path = line.strip()
-            if not path.endswith("cxx"):
-                continue
-
-            ret.append(path)
-
-    return ret
 
 
 def getFwdDecl(include, keyword):
@@ -253,16 +243,18 @@ def tidy(compileCommands, paths):
 
     sys.exit(return_code)
 
-if __name__ == '__main__':
+
+def main(argv):
+    if not len(argv):
+        print("usage: find-unneeded-includes [FILE]...")
+        return
+
     with open("compile_commands.json", 'r') as compileCommandsSock:
         compileCommands = json.load(compileCommandsSock)
 
-    area = None
-    if len(sys.argv) > 1:
-        area = sys.argv[1]
-    if area == "sw-inc":
-        tidy(compileCommands, glob.glob("sw/inc/*.hxx"))
-    else:
-        tidy(compileCommands, getIndentedPaths())
+    tidy(compileCommands, paths=argv)
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:

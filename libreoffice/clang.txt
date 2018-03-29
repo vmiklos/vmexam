@@ -112,4 +112,12 @@ for i in *.cpp; do echo $i; clang-tidy -header-filter=^$PWD.* $i || break; done
 
 Core (exclude tests for now): see `clang-tidy.sh`.
 
+== IWYU
+
+----
+$HOME/git/vmexam/libreoffice/find-unneeded-includes $(cat .git/indented-files.cache .git/indented-files2.cache|grep cxx$)
+$HOME/git/vmexam/libreoffice/find-unneeded-includes sw/inc/*.hxx
+$HOME/git/vmexam/libreoffice/find-unneeded-includes writerfilter/inc/{dmapper,ooxml,rtftok}/*.hxx
+----
+
 // vim: ft=asciidoc
