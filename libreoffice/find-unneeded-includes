@@ -228,7 +228,6 @@ def tidy(compileCommands, paths):
             pathAbs = os.path.abspath(path)
             if assume:
                 assumeAbs = os.path.abspath(assume)
-            if assume:
                 compileFile = assumeAbs
             else:
                 compileFile = pathAbs
