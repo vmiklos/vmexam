@@ -130,7 +130,7 @@ def ignoreRemoval(include, toAdd, absFileName):
     rulePath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "IwyuFilter_" + moduleName + ".yaml")
     moduleRules = {}
     if os.path.exists(rulePath):
-        moduleRules = yaml.load(open(rulePath))
+        moduleRules = yaml.load(open(rulePath))["blacklist"]
     if fileName in moduleRules.keys():
         if include in moduleRules[fileName]:
             return True
