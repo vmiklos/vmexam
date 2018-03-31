@@ -15,7 +15,7 @@
 # - blacklist mechanism, so a warning is either fixed or blacklisted
 # - works in a plugins-enabled clang build
 # - no custom configure options required
-# - does not create untracked files in $BUILDDIR
+# - no need to generate a dummy library to build a header
 
 import glob
 import json
