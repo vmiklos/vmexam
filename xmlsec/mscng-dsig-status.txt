@@ -244,9 +244,9 @@ merlin-xmldsig-twenty-three/signature-enveloping-hmac-sha1
 merlin-xmldsig-twenty-three/signature-enveloping-rsa
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
-    Create new signature                                  Fail
-    Verify new signature                                  Fail
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 merlin-xmldsig-twenty-three/signature-external-b64-dsa
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -368,7 +368,7 @@ phaos-xmldsig-three/signature-hmac-sha1-exclusive-c14n-enveloped
 phaos-xmldsig-three/signature-rsa-detached-b64-transform
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-detached
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -376,7 +376,7 @@ phaos-xmldsig-three/signature-rsa-detached
 phaos-xmldsig-three/signature-rsa-detached-xpath-transform
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-detached-xslt-transform-retrieval-method
     Checking required transforms                          Skip
 phaos-xmldsig-three/signature-rsa-detached-xslt-transform
@@ -412,7 +412,7 @@ phaos-xmldsig-three/signature-rsa-manifest-x509-data-subject-name
 phaos-xmldsig-three/signature-rsa-manifest
     Checking required transforms                            OK
     Checking required key data                              OK
-    Verify existing signature                             Fail
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-xpath-transform-enveloped
     Checking required transforms                            OK
     Checking required key data                              OK
