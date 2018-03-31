@@ -11,7 +11,7 @@
 # It assumes you have a 'compile_commands.json' around (similar to clang-tidy),
 # you can generate one with 'make vim-ide-integration'.
 #
-# Benefits over bin/gen-iwyu-dummy-lib in core.git:
+# Design goals:
 # - blacklist mechanism, so a warning is either fixed or blacklisted
 # - works in a plugins-enabled clang build
 # - no custom configure options required
