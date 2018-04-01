@@ -234,8 +234,8 @@ def tidy(compileCommands, paths):
             if assume:
                 args = args.replace(assumeAbs, "-x c++ " + pathAbs)
 
-            invocation1 = "include-what-you-use " + args
-            task_queue.put((invocation1, moduleRules))
+            invocation = "include-what-you-use " + args
+            task_queue.put((invocation, moduleRules))
 
         task_queue.join()
         if len(failed_files):
