@@ -206,25 +206,29 @@ def tidy(compileCommands, paths):
             t.start()
 
         for path in sorted(paths):
-            assume = None
             moduleName = path.split("/")[0]
 
             rulePath = os.path.join(moduleName, "IwyuFilter_" + moduleName + ".yaml")
             moduleRules = {}
             if os.path.exists(rulePath):
                 moduleRules = yaml.load(open(rulePath))
-            if "assumeFilename" in moduleRules.keys():
-                assume = moduleRules["assumeFilename"]
+            assume = None
             pathAbs = os.path.abspath(path)
-            if assume:
-                assumeAbs = os.path.abspath(assume)
-                compileFile = assumeAbs
-            else:
-                compileFile = pathAbs
+            compileFile = pathAbs
             matches = [i for i in compileCommands if i["file"] == compileFile]
             if not len(matches):
-                print("WARNING: no compile commands for '" + path + "'")
-                continue
+                if "assumeFilename" in moduleRules.keys():
+                    assume = moduleRules["assumeFilename"]
+                if assume:
+                    assumeAbs = os.path.abspath(assume)
+                    compileFile = assumeAbs
+                    matches = [i for i in compileCommands if i["file"] == compileFile]
+                    if not len(matches):
+                        print("WARNING: no compile commands for '" + path + "' (assumed filename: '" + assume + "'")
+                        continue
+                else:
+                    print("WARNING: no compile commands for '" + path + "'")
+                    continue
 
             _, _, args = matches[0]["command"].partition(" ")
             if assume:
