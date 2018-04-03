@@ -1,0 +1,34 @@
+
+Microsoft (R) Program Maintenance Utility Version 14.00.24210.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	cd ..
+	if not exist win32\tmp mkdir win32\tmp
+	set TMPFOLDER=win32/tmp
+	sh ./tests/testrun.sh ./tests/testKeys.sh "mscrypto" ./tests win32/binaries/xmlsec.exe der
+--- LD_LIBRARY_PATH=
+--- LTDL_LIBRARY_PATH=
+--------- Positive Testing ----------
+Test: hmac-192 (success)
+    Checking required key data                               OK
+    Creating new key                                         OK
+Test: rsa-1024 (success)
+    Checking required key data                               OK
+    Creating new key                                         OK
+Test: dsa-1024 (success)
+    Checking required key data                               OK
+    Creating new key                                         OK
+Test: des-192  (success)
+    Checking required key data                               OK
+    Creating new key                                         OK
+Test: aes-128  (success)
+    Checking required key data                               OK
+    Creating new key                                         OK
+Test: aes-192  (success)
+    Checking required key data                               OK
+    Creating new key                                         OK
+Test: aes-256  (success)
+    Checking required key data                               OK
+    Creating new key                                         OK
+--- testKeys finished ---
+	cd win32

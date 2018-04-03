@@ -44,8 +44,8 @@ clang-tidy:
 === CNG effort
 
 TODO:
-- diff-backend dsig problems
-  - next: merlin-xmldsig-twenty-three/signature-enveloping-rsa (raw RSA keys)
+- diff-backend dsig problems: seems the remaining ones are actually encryption
+- key creation
 - decrypt
 - encrypt
 - mingw
