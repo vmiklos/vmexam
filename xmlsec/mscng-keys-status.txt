@@ -11,13 +11,13 @@ Copyright (C) Microsoft Corporation.  All rights reserved.
 --------- Positive Testing ----------
 Test: hmac-192 (success)
     Checking required key data                               OK
-    Creating new key                                       Fail
+    Creating new key                                         OK
 Test: rsa-1024 (success)
     Checking required key data                               OK
-    Creating new key                                       Fail
+    Creating new key                                         OK
 Test: dsa-1024 (success)
     Checking required key data                               OK
-    Creating new key                                       Fail
+    Creating new key                                         OK
 Test: des-192  (success)
     Checking required key data                             Skip
 Test: aes-128  (success)

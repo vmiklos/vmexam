@@ -46,7 +46,7 @@ clang-tidy:
 TODO:
 - diff-backend dsig problems: seems the remaining ones are actually encryption
 - key creation
-- decrypt
+- decrypt: first could be 01-phaos-xmlenc-3/enc-content-aes256-kt-rsa1_5
 - encrypt
 - mingw
 - experiment with clang-cl, drmemory
@@ -55,7 +55,10 @@ TODO:
   - duplicate of cert-less pubkey: perhaps do reference counting instead of export+import?
   - avoid malloc and always use buffers?
 
-Doc entry point: https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx
+Resources:
+
+- Doc entry point: https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx
+- Samples repo: https://github.com/Microsoft/Windows-classic-samples/
 
 How to build:
 
@@ -68,6 +71,7 @@ How to test:
 
 ----
 XMLSEC_TEST_NAME="aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256" nmake check-dsig
+XMLSEC_TEST_NAME="test-rsa      " nmake check-keys
 ----
 
 How to run:
@@ -77,6 +81,7 @@ win32/binaries/xmlsec.exe check-transforms  --crypto mscng --crypto-config win32
 win32/binaries/xmlsec.exe check-key-data --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config ecdsa x509
 win32/binaries/xmlsec.exe verify --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config --trusted-der tests/keys/cacert.der --enabled-key-data x509 tests/aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256.xml
 win32/binaries/xmlsec.exe sign --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config --pkcs12-persist --pkcs12 tests/keys/ecdsa-secp256r1-key.p12 --pwd secret123 --output win32/tmp/output.xml tests/aleksey-xmldsig-01/enveloping-sha256-ecdsa-sha256.tmpl
+win32/binaries/xmlsec.exe keys --gen-key:test-rsa rsa-1024 --crypto mscng --crypto-config win32/tmp/xmlsec-crypto-config win32/tmp/xmlsec-crypto-config/keys.xml
 ----
 
 How to debug:
