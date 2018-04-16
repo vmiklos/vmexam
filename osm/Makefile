@@ -26,6 +26,7 @@ update-addr-interpolation: addr-interpolation.txt workdir/street-housenumbers-ga
 	./overpass-query workdir/addr-interpolation-gazdagret.txt > workdir/addr-interpolation-gazdagret.csv
 	./overpass-query workdir/addr-interpolation-sashegy.txt > workdir/addr-interpolation-sashegy.csv
 	./overpass-query workdir/addr-interpolation-nemetvolgy.txt > workdir/addr-interpolation-nemetvolgy.csv
+	./overpass-query workdir/addr-interpolation-ormezo.txt > workdir/addr-interpolation-ormezo.csv
 
 # At the end this check found no problems, so this is not part of 'make check'.
 update-postcodes:
@@ -53,6 +54,7 @@ check: check-style download
 	qa/interpolated-addresses.py -gazdagret
 	qa/interpolated-addresses.py -sashegy
 	qa/interpolated-addresses.py -nemetvolgy
+	qa/interpolated-addresses.py -ormezo
 	qa/streets-nomaxspeed.py
 	qa/suspicious-streets.py
 	qa/suspicious-streets.py -gazdagret
@@ -78,6 +80,10 @@ workdir/addr-interpolation-sashegy.txt: addr-interpolation.txt
 workdir/addr-interpolation-nemetvolgy.txt: addr-interpolation.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602806940/' addr-interpolation.txt > workdir/addr-interpolation-nemetvolgy.txt
+
+workdir/addr-interpolation-ormezo.txt: addr-interpolation.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3602713749/' addr-interpolation.txt > workdir/addr-interpolation-ormezo.txt
 
 workdir/streets-sashegy.txt: streets.txt
 	@mkdir -p workdir
