@@ -48,7 +48,7 @@ check: check-style download
 	qa/houseless-streets.py -sashegy
 	qa/houseless-streets.py -nemetvolgy
 	qa/houseless-streets.py -martonhegy
-	#qa/houseless-streets.py -ormezo
+	qa/houseless-streets.py -ormezo
 	qa/interpolated-addresses.py
 	qa/interpolated-addresses.py -gazdagret
 	qa/interpolated-addresses.py -sashegy
