@@ -113,6 +113,7 @@ class HTMLHouseNumberParser(html.parser.HTMLParser):
 # Gets known house numbers for a single street
 def getReferenceHouseNumbers(street, prefix):
     url = getStreetURL(street, prefix)
+    print("considering '" + url + "'")
     urlHash = getURLHash(url)
 
     if not os.path.exists("workdir/cache"):

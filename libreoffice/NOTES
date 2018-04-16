@@ -2657,6 +2657,19 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=116265
 
 Looks like this wants list <-> paragraph dedup
 
+=== 2018-04-06
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=116555
+
+is this .uno:NewHtmlDoc? -> FN_NEW_HTML_DOC
+
+=== 2018-04-13
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=116848
+
+- perhaps the problem is that we try to split sections in headers
+- CppunitTest_sw_uiwriter fails after initial fix
+
 <<<
 
 Problematic bugs:
