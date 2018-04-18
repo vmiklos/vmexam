@@ -6,6 +6,9 @@
 #
 
 import unittest
+import sys
+
+suffix = ""
 
 
 class Test(unittest.TestCase):
@@ -15,7 +18,7 @@ class Test(unittest.TestCase):
 
         self.maxDiff = None
         ways = []
-        with open("workdir/streets-nomaxspeed.csv") as sock:
+        with open("workdir/streets-nomaxspeed%s.csv" % suffix) as sock:
             for line in sock.readlines():
                 if line.startswith("@"):
                     continue
@@ -27,6 +30,8 @@ class Test(unittest.TestCase):
             self.assertEqual([], ways)
 
 if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        suffix = sys.argv[1]
     unittest.main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
