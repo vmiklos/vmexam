@@ -44,15 +44,12 @@ clang-tidy:
 === CNG effort
 
 TODO:
-- diff-backend dsig problems: seems the remaining ones are actually encryption
-- key creation
-- decrypt: first could be 01-phaos-xmlenc-3/enc-content-aes256-kt-rsa1_5
-- encrypt
+- diff-backend problems
 - mingw
 - experiment with clang-cl, drmemory
+- fix warnings in the mscrypto backend
 - smaller things:
-  - see what {rsa,*dsa}-{md5,sha*} combox are supported by openssl and make sure all of them are covered by tests
-  - duplicate of cert-less pubkey: perhaps do reference counting instead of export+import?
+  - see what {rsa,*dsa}-{md5,sha*} combos are supported by openssl and make sure all of them are covered by tests
   - avoid malloc and always use buffers?
 
 Resources:

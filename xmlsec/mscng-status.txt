@@ -499,7 +499,10 @@ aleksey-xmlenc-01/enc-des3cbc-keyname
 aleksey-xmlenc-01/enc-des3cbc-keyname2
     Checking required transforms                          Skip
 aleksey-xmlenc-01/enc-aes128cbc-keyname
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 aleksey-xmlenc-01/enc-aes192cbc-keyname
     Checking required transforms                          Skip
 aleksey-xmlenc-01/enc-aes192cbc-keyname-ref
@@ -518,7 +521,10 @@ aleksey-xmlenc-01/enc-des3cbc-keyname-element-root
 aleksey-xmlenc-01/enc-des3cbc-aes192-keyname
     Checking required transforms                          Skip
 merlin-xmlenc-five/encrypt-data-aes128-cbc
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 merlin-xmlenc-five/encrypt-content-tripledes-cbc
     Checking required transforms                          Skip
 merlin-xmlenc-five/encrypt-content-aes256-cbc-prop
@@ -529,7 +535,10 @@ merlin-xmlenc-five/encrypt-content-aes256-cbc-prop
 merlin-xmlenc-five/encrypt-element-aes192-cbc-ref
     Checking required transforms                          Skip
 merlin-xmlenc-five/encrypt-element-aes128-cbc-rsa-1_5
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 merlin-xmlenc-five/encrypt-data-tripledes-cbc-rsa-oaep-mgf1p
     Checking required transforms                          Skip
 merlin-xmlenc-five/encrypt-data-aes256-cbc-kw-tripledes
@@ -547,7 +556,10 @@ merlin-xmlenc-five/encrypt-element-aes256-cbc-retrieved-kw-aes256
 01-phaos-xmlenc-3/enc-element-3des-kt-rsa_oaep_sha1
     Checking required transforms                          Skip
 01-phaos-xmlenc-3/enc-element-aes128-kt-rsa1_5
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 01-phaos-xmlenc-3/enc-element-aes128-kt-rsa_oaep_sha1
     Checking required transforms                          Skip
 01-phaos-xmlenc-3/enc-element-aes192-kt-rsa_oaep_sha1
