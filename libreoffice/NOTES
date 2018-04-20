@@ -2670,6 +2670,19 @@ https://bugs.documentfoundation.org/show_bug.cgi?id=116848
 - perhaps the problem is that we try to split sections in headers
 - CppunitTest_sw_uiwriter fails after initial fix
 
+=== 2018-04-20
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=116841
+
+- ParaLeftMargin should be 1270, is 0
+
+docx token order: ooxml:CT_Ind_left then ooxml:CT_Ind_hanging=431
+rtf token order: ooxml:CT_Ind_firstLine=-431 then ooxml:CT_Ind_left
+
+fix breaks testTdf106953 -> probably best to do that testing at a layout level, it looks OK
+
+56a695fddb915bcba13b088b5b2b4e0841d4acbc tweaked that test, now can undo part of those changes in sw/qa/extras/rtfexport/rtfexport2.cxx
+
 <<<
 
 Problematic bugs:

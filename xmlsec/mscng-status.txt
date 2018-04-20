@@ -19,7 +19,8 @@ Test: dsa-1024 (success)
     Checking required key data                               OK
     Creating new key                                         OK
 Test: des-192  (success)
-    Checking required key data                             Skip
+    Checking required key data                               OK
+    Creating new key                                         OK
 Test: aes-128  (success)
     Checking required key data                               OK
     Creating new key                                         OK
@@ -334,7 +335,8 @@ merlin-xmlenc-five/encsig-hmac-sha256-rsa-1_5
     Checking required transforms                            OK
     Checking required key data                              OK
 merlin-xmlenc-five/encsig-hmac-sha256-rsa-oaep-mgf1p
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
 merlin-exc-c14n-one/exc-signature
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -495,29 +497,48 @@ aleksey-xmldsig-01/enveloping-sha256-rsa-sha256-verify
 --- LTDL_LIBRARY_PATH=
 --------- Positive Testing ----------
 aleksey-xmlenc-01/enc-des3cbc-keyname
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 aleksey-xmlenc-01/enc-des3cbc-keyname2
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 aleksey-xmlenc-01/enc-aes128cbc-keyname
     Checking required transforms                            OK
     Decrypt existing document                               OK
     Encrypt document                                        OK
     Decrypt new document                                    OK
 aleksey-xmlenc-01/enc-aes192cbc-keyname
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 aleksey-xmlenc-01/enc-aes192cbc-keyname-ref
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
 aleksey-xmlenc-01/enc-aes256cbc-keyname
     Checking required transforms                            OK
     Decrypt existing document                               OK
     Encrypt document                                        OK
     Decrypt new document                                    OK
 aleksey-xmlenc-01/enc-des3cbc-keyname-content
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 aleksey-xmlenc-01/enc-des3cbc-keyname-element
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 aleksey-xmlenc-01/enc-des3cbc-keyname-element-root
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 aleksey-xmlenc-01/enc-des3cbc-aes192-keyname
     Checking required transforms                          Skip
 merlin-xmlenc-five/encrypt-data-aes128-cbc
@@ -526,21 +547,28 @@ merlin-xmlenc-five/encrypt-data-aes128-cbc
     Encrypt document                                        OK
     Decrypt new document                                    OK
 merlin-xmlenc-five/encrypt-content-tripledes-cbc
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 merlin-xmlenc-five/encrypt-content-aes256-cbc-prop
     Checking required transforms                            OK
     Decrypt existing document                               OK
     Encrypt document                                        OK
     Decrypt new document                                    OK
 merlin-xmlenc-five/encrypt-element-aes192-cbc-ref
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
 merlin-xmlenc-five/encrypt-element-aes128-cbc-rsa-1_5
     Checking required transforms                            OK
     Decrypt existing document                               OK
     Encrypt document                                        OK
     Decrypt new document                                    OK
 merlin-xmlenc-five/encrypt-data-tripledes-cbc-rsa-oaep-mgf1p
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 merlin-xmlenc-five/encrypt-data-aes256-cbc-kw-tripledes
     Checking required transforms                          Skip
 merlin-xmlenc-five/encrypt-content-aes128-cbc-kw-aes192
@@ -552,27 +580,45 @@ merlin-xmlenc-five/encrypt-element-tripledes-cbc-kw-aes128
 merlin-xmlenc-five/encrypt-element-aes256-cbc-retrieved-kw-aes256
     Checking required transforms                          Skip
 01-phaos-xmlenc-3/enc-element-3des-kt-rsa1_5
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 01-phaos-xmlenc-3/enc-element-3des-kt-rsa_oaep_sha1
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 01-phaos-xmlenc-3/enc-element-aes128-kt-rsa1_5
     Checking required transforms                            OK
     Decrypt existing document                               OK
     Encrypt document                                        OK
     Decrypt new document                                    OK
 01-phaos-xmlenc-3/enc-element-aes128-kt-rsa_oaep_sha1
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 01-phaos-xmlenc-3/enc-element-aes192-kt-rsa_oaep_sha1
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 01-phaos-xmlenc-3/enc-text-aes192-kt-rsa1_5
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 01-phaos-xmlenc-3/enc-content-aes256-kt-rsa1_5
     Checking required transforms                            OK
     Decrypt existing document                               OK
     Encrypt document                                        OK
     Decrypt new document                                    OK
 01-phaos-xmlenc-3/enc-text-aes256-kt-rsa_oaep_sha1
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Decrypt existing document                               OK
+    Encrypt document                                        OK
+    Decrypt new document                                    OK
 01-phaos-xmlenc-3/enc-element-3des-kw-3des
     Checking required transforms                          Skip
 01-phaos-xmlenc-3/enc-content-aes128-kw-3des
