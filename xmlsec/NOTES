@@ -44,13 +44,14 @@ clang-tidy:
 === CNG effort
 
 TODO:
-- diff-backend problems
-- mingw
-- experiment with clang-cl, drmemory
-- fix warnings in the mscrypto backend
+- system certs
+- audit API
 - smaller things:
+  - mingw / mscng
   - see what {rsa,*dsa}-{md5,sha*} combos are supported by openssl and make sure all of them are covered by tests
   - avoid malloc and always use buffers?
+  - experiment with clang-cl, drmemory
+  - fix warnings in the mscrypto backend
 
 Resources:
 
