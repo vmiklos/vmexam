@@ -98,6 +98,14 @@ What works:
 XMLSEC_TEST_REPRODUCIBLE=y nmake check 2>&1 |tee mscng-status.txt
 ----
 
+==== API usage
+
+How to list LO-used symbols:
+
+----
+git grep 'xmlSecMSCrypto[_a-zA-Z0-9]\+' xmlsecurity/|sed 's/.*\(xmlSecMSCrypto[_a-zA-Z0-9]\+\).*/\1/g'|sort -u
+----
+
 === ECDSA verification
 
 after initial patch, the verification:

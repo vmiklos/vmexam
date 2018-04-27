@@ -1,0 +1,8 @@
+xmlSecMSCngAppInit
+xmlSecMSCngAppShutdown
+xmlSecMSCngKeysMngrInit
+xmlSecMSCngKeysStoreId
+xmlSecMSCngX509StoreAdoptKeyStore
+xmlSecMSCngX509StoreAdoptTrustedStore
+xmlSecMSCngX509StoreAdoptUntrustedStore
+xmlSecMSCngX509StoreId
