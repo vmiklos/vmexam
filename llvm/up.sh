@@ -17,7 +17,6 @@ cmake \
     -DCMAKE_BUILD_TYPE=Release \
     -DLLVM_ENABLE_ASSERTIONS=ON \
     -DLLVM_ENABLE_SPHINX=ON \
-    -DBUILD_SHARED_LIBS=ON \
     -DCMAKE_C_COMPILER="clang" \
     -DCMAKE_CXX_COMPILER="clang++" \
     ..
@@ -28,5 +27,6 @@ make install
 ~/git/vmexam/llvm/llvm-style-check-files
 
 # How to enable symbols for profiling: -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_C_FLAGS='-fno-omit-frame-pointer' -DCMAKE_CXX_FLAGS='-fno-omit-frame-pointer'
+# How to enable shared libs: -DBUILD_SHARED_LIBS=ON
 
 # vim:set shiftwidth=4 expandtab:

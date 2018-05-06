@@ -99,6 +99,20 @@ What works:
 XMLSEC_TEST_REPRODUCIBLE=y nmake check 2>&1 |tee mscng-status.txt
 ----
 
+==== keysstore feature
+
+Sign:
+
+----
+win32/binaries/xmlsec.exe sign  --crypto mscrypto --output out.xml keysstore.xml
+----
+
+Verify:
+
+----
+win32/binaries/xmlsec.exe verify --crypto mscrypto out.xml
+----
+
 ==== API usage
 
 How to list LO-used symbols:

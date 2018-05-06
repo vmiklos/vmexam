@@ -8,7 +8,10 @@ cd include-what-you-use
 git checkout --track origin/clang_3.8
 mkdir workdir
 cd workdir
-cmake -G "Unix Makefiles" -DIWYU_LLVM_ROOT_PATH=/usr/lib64 -DCMAKE_INSTALL_PREFIX=$PWD/../instdir ..
+#cmake -G "Unix Makefiles" -DIWYU_LLVM_ROOT_PATH=/usr/lib64 -DCMAKE_INSTALL_PREFIX=$PWD/../instdir ..
+cmake -G "Unix Makefiles" -DIWYU_LLVM_ROOT_PATH=$HOME/git/llvm/instdir -DCMAKE_INSTALL_PREFIX=$PWD/../instdir ..
+make -j8
+make install
 cd ../instdir
 ln -s /usr/lib64
 ----
