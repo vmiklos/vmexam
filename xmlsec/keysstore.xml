@@ -11,7 +11,7 @@
   <SignatureValue>
   </SignatureValue>
   <KeyInfo>
-    <KeyName>xmlsecurity-alice-rsa</KeyName>
+    <KeyName>My-RSA-Key</KeyName>
   </KeyInfo>
   <Object Id="object">some text</Object>
 </Signature>
