@@ -7,6 +7,9 @@
 #include <DHT.h>
 #include <RTClib.h>
 #include <SD.h>
+#ifdef THERMODUMP_CONFIG
+#include <SDConfigFile.h>
+#endif
 #include <Wire.h>
 
 /**
@@ -21,7 +24,11 @@
 // The AM2302/AM2321 thermo sensor is connected to D3.
 DHT dht(/*pin=*/3, /*type=*/DHT22);
 
+File csv;
+
 RTC_DS1307 rtc;
+// Default value in ms in case of no config on the sd card.
+int delayMS = 10000;
 
 // The led is connected to D5.
 constexpr int ledPin = 5;
@@ -45,12 +52,35 @@ void setup()
     }
     Serial.println("setup: sd done");
 
+#ifdef THERMODUMP_CONFIG
+    SDConfigFile config;
+    const uint8_t configLineLength = 127;
+    const char* configFile = "thermo.cfg";
+    if (!config.begin(configFile, configLineLength))
+    {
+        Serial.println("setup: sd config failed");
+        return;
+    }
+
+    while (config.readNextSetting())
+    {
+        if (config.nameIs("delay"))
+        {
+            delayMS = config.getIntValue();
+            Serial.print("setup, sd config: delay is ");
+            Serial.print(delayMS);
+            Serial.println(".");
+        }
+    }
+    Serial.println("setup: sd config done");
+#endif
+
     Wire.begin();
     rtc.begin();
     if (!rtc.isrunning())
     {
         Serial.println("setup: rtc init");
-        // TODO make this configurable.
+        // This could be made configurable similar to delayMS.
         rtc.adjust(DateTime(__DATE__, __TIME__));
     }
     Serial.println("setup: rtc done");
@@ -62,8 +92,7 @@ void setup()
 void loop()
 {
     // Pause between two measures.
-    // TODO make this configurable.
-    delay(2000);
+    delay(delayMS);
 
     // Led on.
     digitalWrite(ledPin, HIGH);
@@ -81,7 +110,7 @@ void loop()
 
     // Write them out to the SD card.
     const char* csvName = "thermo.csv";
-    File csv = SD.open(csvName, FILE_WRITE);
+    csv = SD.open(csvName, FILE_WRITE);
     if (!csv)
     {
         Serial.println("loop, sd: failed to open");

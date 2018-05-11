@@ -1,0 +1,4 @@
+SDConfigFile is <https://github.com/bneedhamia/sdconfigfile>.
+
+Warning: this tiny lib itself was large enough so that the project failed to
+use the thermo sensor on the nano device I had.
