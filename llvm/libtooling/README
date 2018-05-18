@@ -16,4 +16,20 @@ Obsoleted by loplugin:constmethod.
 
 Demo tool to show how AST matching and fixit generation works.
 
+== bugprone-suspicious-xmlsec
+
+Tool that tries to flag misuses of the libxmlsec xmlSecError() API.
+
+Run the self-test with:
+
+----
+bin/bugprone-suspicious-xmlsec qa/xmlsec.c --
+----
+
+Run it on the actual code with e.g.:
+
+----
+~/run-clang-tidy.py -j1 -clang-tidy-binary ~/git/vmexam/llvm/libtooling/bin/bugprone-suspicious-xmlsec src/transforms.c
+----
+
 // vim: ft=asciidoc
