@@ -19,6 +19,12 @@ cert, so using that in LO would be nice.
 
 == Misc notes
 
+- run to opt-in for CNG:
+
+----
+SVL_CRYPTO_CNG=1 instdir/program/soffice.exe
+----
+
 - push from Windows VM to host:
 
 ----
