@@ -1,0 +1,28 @@
+= ECDSA support in LibreOffice
+
+Personal motivation: Hungarian eID cards come with a gov-trusted ECDSA (x509)
+cert, so using that in LO would be nice.
+
+== Test matrix
+
+- Linux, PDF, verify: worked out of the box
+- Linux, PDF, sign: worked out of the box
+- Linux, ODF, verify: libxmlsec patch to support it (2017-02-25)
+- Linux, ODF, sign: libreoffice patch to support it (2018-05-15)
+- Linux, OOXML, verify / sign: TODO
+- Windows, PDF, verify: surprisingly this worked out of the box
+- Windows, PDF, sign: TODO
+- Windows, ODF, verify: TODO
+- Windows, ODF, sign: TODO
+- Windows, OOXML, verify: TODO
+- Windows, OOXML, sign: TODO
+
+== Misc notes
+
+- push from Windows VM to host:
+
+----
+git push -f /cygdrive/z/libreoffice/master HEAD:cng-wip
+----
+
+// vim: ft=asciidoc
