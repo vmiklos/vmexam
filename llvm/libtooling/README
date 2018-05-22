@@ -29,7 +29,7 @@ bin/bugprone-suspicious-xmlsec qa/xmlsec.c --
 Run it on the actual code with e.g.:
 
 ----
-~/run-clang-tidy.py -j1 -clang-tidy-binary ~/git/vmexam/llvm/libtooling/bin/bugprone-suspicious-xmlsec src/transforms.c
+~/git/llvm/tools/clang/tools/extra/clang-tidy/tool/run-clang-tidy.py -j1 -clang-tidy-binary ~/git/vmexam/llvm/libtooling/bin/bugprone-suspicious-xmlsec src/transforms.c
 ----
 
 // vim: ft=asciidoc

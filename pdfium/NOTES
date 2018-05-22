@@ -65,4 +65,10 @@ download:
 
 https://dev-www.libreoffice.org/bin/ is where we host these binaries
 
+== New APIs
+
+=== Added after 3426
+
+- https://pdfium-review.googlesource.com/c/pdfium/+/32770 FPDFPageObj_GetStrokeWidth() [2018-05-21]
+
 // vim: ft=asciidoc

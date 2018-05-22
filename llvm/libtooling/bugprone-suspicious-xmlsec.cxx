@@ -93,6 +93,15 @@ clang::ast_matchers::StatementMatcher makeMatcher()
 llvm::cl::extrahelp
     aCommonHelp(clang::tooling::CommonOptionsParser::HelpMessage);
 llvm::cl::OptionCategory aCategory("suspicious-xmlsec options");
+
+// Stubs for clang-tidy compatibility.
+llvm::cl::opt<bool> aListChecks("list-checks", llvm::cl::desc("ignored"),
+                                llvm::cl::init(false),
+                                llvm::cl::cat(aCategory));
+llvm::cl::opt<std::string> aHeaderFilter("header-filter",
+                                         llvm::cl::desc("ignored"),
+                                         llvm::cl::init(""),
+                                         llvm::cl::cat(aCategory));
 }
 
 int main(int argc, const char** argv)
