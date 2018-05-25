@@ -1,3 +1,9 @@
+/*
+ * This is free software; see Copyright file in the xmlsec source distribution
+ * for preciese wording.
+ */
+
+#include <fstream>
 #include <iostream>
 #include <sstream>
 
@@ -12,20 +18,56 @@
 
 namespace
 {
-bool startsWith(const std::string& s, const std::string& t)
+bool startsWith(const std::string& str, const std::string& prefix)
 {
-    return s.length() >= t.length() &&
-           memcmp(s.c_str(), t.c_str(), t.length()) == 0;
+    return str.size() >= prefix.size() &&
+           str.compare(0, prefix.size(), prefix) == 0;
+}
+
+bool endsWith(const std::string& str, const std::string& suffix)
+{
+    return str.size() >= suffix.size() &&
+           str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
+bool readLines(const std::string& rPath, std::vector<std::string>& rLines)
+{
+    std::ifstream aStream(rPath);
+    if (!aStream.is_open())
+    {
+        std::cerr << "parseLines: failed to open " << rPath << std::endl;
+        return false;
+    }
+
+    std::string aLine;
+    while (std::getline(aStream, aLine))
+        rLines.push_back(aLine);
+
+    return true;
 }
 
 class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
 {
   public:
+    Callback(const std::vector<std::string>& rWhitelist)
+        : m_rWhitelist(rWhitelist)
+    {
+    }
+
     void
     run(const clang::ast_matchers::MatchFinder::MatchResult& rResult) override
     {
         if (const auto pExpr = rResult.Nodes.getNodeAs<clang::CallExpr>("expr"))
         {
+            clang::SourceLocation aExpansionLocation =
+                rResult.Context->getSourceManager().getExpansionLoc(
+                    pExpr->getLocStart());
+            std::string aFilename = rResult.Context->getSourceManager()
+                                        .getPresumedLoc(aExpansionLocation)
+                                        .getFilename();
+            if (whitelist(aFilename))
+                return;
+
             const clang::FunctionDecl* pFunction = pExpr->getDirectCallee();
             if (!pFunction)
                 return;
@@ -81,7 +123,17 @@ class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
             rEngine.getDiagnosticIDs()->getCustomDiagID(eLevel, aString));
     }
 
+    bool whitelist(const std::string& rFilename)
+    {
+        for (const auto& rItem : m_rWhitelist)
+            if (endsWith(rFilename, rItem))
+                return true;
+
+        return false;
+    }
+
     std::string m_aLastCalledFunction;
+    const std::vector<std::string>& m_rWhitelist;
 };
 
 clang::ast_matchers::StatementMatcher makeMatcher()
@@ -108,10 +160,20 @@ int main(int argc, const char** argv)
 {
     llvm::sys::PrintStackTraceOnErrorSignal();
     clang::tooling::CommonOptionsParser aOptionsParser(argc, argv, aCategory);
+    if (aListChecks)
+        return 0;
+
     clang::tooling::RefactoringTool aTool(aOptionsParser.getCompilations(),
                                           aOptionsParser.getSourcePathList());
     clang::ast_matchers::MatchFinder aFinder;
-    Callback aCallback;
+    std::vector<std::string> aWhitelist;
+    if (const char* pWhitelist = getenv("WHITELIST_FILE"))
+    {
+        if (!readLines(pWhitelist, aWhitelist))
+            return 1;
+    }
+
+    Callback aCallback(aWhitelist);
     aFinder.addMatcher(makeMatcher(), &aCallback);
     int nRet =
         aTool.run(clang::tooling::newFrontendActionFactory(&aFinder).get());

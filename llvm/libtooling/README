@@ -29,7 +29,8 @@ bin/bugprone-suspicious-xmlsec qa/xmlsec.c --
 Run it on the actual code with e.g.:
 
 ----
-~/git/llvm/tools/clang/tools/extra/clang-tidy/tool/run-clang-tidy.py -j1 -clang-tidy-binary ~/git/vmexam/llvm/libtooling/bin/bugprone-suspicious-xmlsec src/transforms.c
+WHITELIST_FILE="bugprone-suspicious-xmlsec.whitelist" ~/git/llvm/tools/clang/tools/extra/clang-tidy/tool/run-clang-tidy.py -j1 -clang-tidy-binary ~/git/vmexam/llvm/libtooling/bin/bugprone-suspicious-xmlsec 2>&1 |tee log
+grep error: log|sort -u
 ----
 
 // vim: ft=asciidoc

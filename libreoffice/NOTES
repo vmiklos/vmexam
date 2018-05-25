@@ -2683,6 +2683,45 @@ fix breaks testTdf106953 -> probably best to do that testing at a layout level, 
 
 56a695fddb915bcba13b088b5b2b4e0841d4acbc tweaked that test, now can undo part of those changes in sw/qa/extras/rtfexport/rtfexport2.cxx
 
+=== 2018-05-25
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=117503
+
+- orig doc: 4 pages
+- save to doc, open in Word: 4 pages
+- load back: 4 pages
+- reported for 2018-05-07 (1e2afc9bd3062cfba6b65b45c17a08f298014239)
+- can't reproduce it as of 2018-05-23?
+
+daily.git:
+- 1943d73efb7c0f9431e82bc2ae26473750ff26a4 / 2018-05-23 is good
+- 72ac05c52121680c356f4dae7ab322ac23788c3d / 2018-05-06 is 
+
+can't reproduce, but can reproduce the 2nd bugdoc
+regression from a16275a3647a2fba9913ed23e8329e45b02123b4 (repoted)
+
+idea: we emit a section break after the table finished -- but that causes more problems than it solves
+c916152d8562cab868d4c522748ac30029fad179 is the problem perhaps
+
+huh, indeed a docx import problem after all (doc import is fine)
+
+perhaps only need to sync HeaderHeight as well?
+
+idea: copy enough props so that HdFtDistanceGlue::StrictEqualTopBottom() returns true
+
+debug:14840:14840: HdFtDistanceGlue::StrictEqualTopBottom: header mismatch: 1440 vs other: 1915
+
+965 + 475 = 1440 (1702 mm100 + 838 mm100)
+
+doc: 2nd page top margin is 1.70cm
+docx: 2nd page top margin is 
+
+tests:
+- breaks CppunitTest_sw_ooxmlexport8, testN780843
+  - expected: 2 pages, have only 1
+- breaks CppunitTest_sw_ooxmlexport6, testVMLData and testImageData
+- breaks CppunitTest_sw_rtfexport2, testFdo44176
+
 <<<
 
 Problematic bugs:
