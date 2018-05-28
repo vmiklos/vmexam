@@ -20,6 +20,7 @@
 export PATH=/c/msys32/mingw64/bin:$PATH
 autoreconf -fi
 ./configure --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32 --enable-mscrypto --without-openssl --enable-static-linking
+./configure --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32 --enable-mscng --disable-mscrypto --without-openssl --enable-static-linking
 make
 make check 2>&1 |tee out
 ----
