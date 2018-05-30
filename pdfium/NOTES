@@ -29,6 +29,17 @@ pdf_is_complete_lib = true
 #system_libjpeg_config = true
 ----
 
+incremental build:
+
+----
+git pull -r
+gclient sync
+ninja -C workdir
+# exclude workdir and other automatically
+ctags --c++-kinds=+p --fields=+iaS --extra=+q -R --totals=yes $(git ls-files|grep /|sed 's|/.*||'|sort -u)
+workdir/pdfium_embeddertests --gtest_filter=FPDFEditEmbeddertest.AddPaths
+----
+
 == path API
 
 - first goal: expose # of points in a path -> patch is at https://pdfium-review.googlesource.com/c/pdfium/+/13592
@@ -69,6 +80,21 @@ https://dev-www.libreoffice.org/bin/ is where we host these binaries
 
 === Added after 3426
 
-- https://pdfium-review.googlesource.com/c/pdfium/+/32770 FPDFPageObj_GetStrokeWidth() [2018-05-21]
+- https://pdfium-review.googlesource.com/32770 FPDFPageObj_GetStrokeWidth() [2018-05-21]
+- https://pdfium-review.googlesource.com/33010 FPDFPath_GetDrawMode() [2018-05-30]
+
+Other goals:
+
+- FPDFPath_GetMatrix -> next?
+- FPDFTextObj_CountChars
+- FPDFTextObj_GetFontSize
+- FPDFTextObj_GetMatrix
+- FPDFTextObj_GetUnicode
+- FPDFTextObj_GetText
+- FPDFTextObj_GetColor
+- FPDFFormObj_CountSubObjects
+- FPDFFormObj_GetSubObject
+- FPDFText_GetMatrix
+- FPDFImageObj_GetBitmapBgra -> looks redundant, have FPDFImageObj_GetBitmap() already
 
 // vim: ft=asciidoc
