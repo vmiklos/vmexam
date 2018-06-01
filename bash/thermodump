@@ -30,7 +30,7 @@ if [ ${ret} != 0 ]; then
     today="$(date +%Y%m%d)"
     # Send email only once a day.
     if ! grep -q "${today}" errors.log; then
-        echo "Error code ${ret}" |~/bin/pymail -r "$(git config user.email|sed "s/.*@/$(hostname)@/")" -s "thermodump error for ${today}" $(git config user.email)
+        #echo "Error code ${ret}" |~/bin/pymail -r "$(git config user.email|sed "s/.*@/$(hostname)@/")" -s "thermodump error for ${today}" $(git config user.email)
         echo "${today}" >> errors.log
     fi
     exit

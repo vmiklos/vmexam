@@ -1,6 +1,15 @@
 {
     "source": "survey",
     "filters": {
+        "kero_utca": {
+            "ranges": [
+                {
+                    "start": "2",
+                    "end": "20",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "rimaszombati_ut": {
             "ranges": [
                 {
