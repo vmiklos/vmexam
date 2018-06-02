@@ -158,7 +158,7 @@ llvm::cl::opt<std::string> aHeaderFilter("header-filter",
 
 int main(int argc, const char** argv)
 {
-    llvm::sys::PrintStackTraceOnErrorSignal();
+    llvm::sys::PrintStackTraceOnErrorSignal(argv[0]);
     clang::tooling::CommonOptionsParser aOptionsParser(argc, argv, aCategory);
     if (aListChecks)
         return 0;

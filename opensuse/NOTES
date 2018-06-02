@@ -176,4 +176,9 @@ kstart plasmashell #to restart it
   - need to find the values in /dev/disk/by-uuid/ (root) and /dev/disk/by-id/ (rd.md.uuid)
   - then update these in /boot/boot.script + run mkimage, reboot, then mdadm can stop the old raid1 and re-assign the now unused disk to the new one
 
+=== openSUSE Leap 42.3 -> openSUSE Leap 15.0 (x86_64)
+
+- the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (sed the config, zypper ref, zypper dup)
+- konsole: font antialiasing seems to be rather aggressive now, settings -> edit current profile -> appearance -> smooth fonts -> disable is a workaround
+
 // vim: ft=asciidoc paste
