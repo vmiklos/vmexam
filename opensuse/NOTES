@@ -180,5 +180,6 @@ kstart plasmashell #to restart it
 
 - the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (sed the config, zypper ref, zypper dup)
 - konsole: font antialiasing seems to be rather aggressive now, settings -> edit current profile -> appearance -> smooth fonts -> disable is a workaround
+- usual fix with html5 video codecs: https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support
 
 // vim: ft=asciidoc paste
