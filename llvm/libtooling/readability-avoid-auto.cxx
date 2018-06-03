@@ -14,8 +14,8 @@ namespace
 class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
 {
   public:
-    Callback(clang::tooling::Replacements* pReplacements)
-        : m_pReplacements(pReplacements)
+    Callback(std::map<std::string, clang::tooling::Replacements>& rReplacements)
+        : m_rReplacements(rReplacements)
     {
     }
 
@@ -29,8 +29,8 @@ class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
             clang::QualType aType = pDecl->getType();
             clang::FixItHint aFixIt =
                 fixit(rResult.Context, aRange, aType.getAsString());
-            report(rResult.Context, "avoid auto", aRange.getBegin()) << aRange
-                                                                     << aFixIt;
+            report(rResult.Context, "avoid auto", aRange.getBegin())
+                << aRange << aFixIt;
         }
     }
 
@@ -55,13 +55,18 @@ class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
     {
         clang::FixItHint aFixIt =
             clang::FixItHint::CreateReplacement(rRange, rString);
-        m_pReplacements->insert(clang::tooling::Replacement(
-            pContext->getSourceManager(), aFixIt.RemoveRange,
-            aFixIt.CodeToInsert));
+        clang::tooling::Replacement aReplacement(pContext->getSourceManager(),
+                                                 aFixIt.RemoveRange,
+                                                 aFixIt.CodeToInsert);
+        llvm::Error aError =
+            m_rReplacements[aReplacement.getFilePath()].add(aReplacement);
+        if (aError)
+            llvm::errs() << "Replacing failed in " << aReplacement.getFilePath()
+                         << "! " << llvm::toString(std::move(aError)) << "\n";
         return aFixIt;
     }
 
-    clang::tooling::Replacements* m_pReplacements;
+    std::map<std::string, clang::tooling::Replacements>& m_rReplacements;
 };
 
 clang::ast_matchers::StatementMatcher makeMatcher()
@@ -81,12 +86,12 @@ llvm::cl::opt<std::string>
 
 int main(int argc, const char** argv)
 {
-    llvm::sys::PrintStackTraceOnErrorSignal();
+    llvm::sys::PrintStackTraceOnErrorSignal(argv[0]);
     clang::tooling::CommonOptionsParser aOptionsParser(argc, argv, aCategory);
     clang::tooling::RefactoringTool aTool(aOptionsParser.getCompilations(),
                                           aOptionsParser.getSourcePathList());
     clang::ast_matchers::MatchFinder aFinder;
-    Callback aCallback(&aTool.getReplacements());
+    Callback aCallback(aTool.getReplacements());
     aFinder.addMatcher(makeMatcher(), &aCallback);
     int nRet =
         aTool.run(clang::tooling::newFrontendActionFactory(&aFinder).get());
@@ -103,10 +108,12 @@ int main(int argc, const char** argv)
         }
 
         clang::tooling::TranslationUnitReplacements aTUR;
-        const clang::tooling::Replacements& rReplacements =
-            aTool.getReplacements();
-        aTUR.Replacements.insert(aTUR.Replacements.end(), rReplacements.begin(),
-                                 rReplacements.end());
+        const std::map<std::string, clang::tooling::Replacements>&
+            rReplacements = aTool.getReplacements();
+        for (const auto& rEntry : rReplacements)
+            aTUR.Replacements.insert(aTUR.Replacements.end(),
+                                     rEntry.second.begin(),
+                                     rEntry.second.end());
         llvm::yaml::Output aYAML(aOS);
         aYAML << aTUR;
         aOS.close();
