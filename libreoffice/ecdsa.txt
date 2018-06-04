@@ -11,7 +11,7 @@ cert, so using that in LO would be nice.
 - Linux, ODF, sign: libreoffice patch to support it (2018-05-15)
 - Linux, OOXML, verify / sign: libreoffice patch to support it (2018-05-25)
 - Windows, PDF, verify: surprisingly this worked out of the box
-- Windows, PDF, sign: TODO
+- Windows, PDF, sign: libreoffice patch to support it (2018-05-29)
 - Windows, ODF, verify: TODO
 - Windows, ODF, sign: TODO
 - Windows, OOXML, verify: TODO
