@@ -88,7 +88,7 @@ Other goals:
 
 - FPDFTextObj_CountChars
 - FPDFTextObj_GetFontSize
-- FPDFTextObj_GetMatrix
+- FPDFTextObj_GetMatrix -> next?
 - FPDFTextObj_GetUnicode
 - FPDFTextObj_GetText
 - FPDFTextObj_GetColor

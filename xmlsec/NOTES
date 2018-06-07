@@ -31,7 +31,7 @@ make check 2>&1 |tee out
 == Linux building
 
 ----
-./configure --with-pic --disable-shared --disable-crypto-dl --without-libxslt --without-gnutls --enable-silent-rules --without-openssl --without-gcrypt --enable-debugging --enable-werror --enable-pedantic
+./configure --with-pic --disable-shared --disable-crypto-dl --without-libxslt --without-gnutls --enable-silent-rules --without-openssl --without-gcrypt --enable-debugging --enable-werror --enable-pedantic --disable-docs
 ----
 
 clang-tidy:

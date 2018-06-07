@@ -3,9 +3,9 @@
 == How to import our patches into a git branch?
 
 ----
-for i in $(grep 'xmlsec_patches +=' ~/git/libreoffice/master/external/libxmlsec/UnpackedTarball_xmlsec.mk|sed 's/.*+= //')
+for i in $(grep 'xmlsec_patches +=' ~/git/libreoffice/master/external/xmlsec/UnpackedTarball_xmlsec.mk|sed 's/.*+= //')
 do
-    git am ~/git/libreoffice/master/external/libxmlsec/$i
+    git am ~/git/libreoffice/master/external/xmlsec/$i
 done
 ----
 
@@ -16,11 +16,11 @@ Create the patches with git-format-patch, then:
 ----
 git format-patch -N -$(($(git rev-list HEAD|wc -l)-1))
 c=0
-for i in $(grep 'xmlsec_patches +=' ~/git/libreoffice/master/external/libxmlsec/UnpackedTarball_xmlsec.mk|sed 's/.*+= //')
+for i in $(grep 'xmlsec_patches +=' ~/git/libreoffice/master/external/xmlsec/UnpackedTarball_xmlsec.mk|sed 's/.*+= //')
 do
     c=$(($c+1))
     prefix=$(printf "%04d" $c)
-    mv $prefix*patch ~/git/libreoffice/master/external/libxmlsec/$i
+    mv $prefix*patch ~/git/libreoffice/master/external/xmlsec/$i
 done
 ----
 
