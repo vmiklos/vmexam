@@ -2,6 +2,7 @@ cui/qa/uitest/dialogs/pastedlg.py
 filter/qa/unit/textfilterdetect.cxx
 filter/source/msfilter/rtfutil.cxx
 include/vcl/filter/pdfdocument.hxx
+include/vcl/pdfread.hxx
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
 svtools/qa/unit/testHtmlReader.cxx
@@ -24,7 +25,6 @@ sw/source/filter/ww8/rtfsdrexport.cxx
 sw/source/filter/ww8/rtfsdrexport.hxx
 sw/source/filter/ww8/rtfstringbuffer.cxx
 sw/source/filter/ww8/rtfstringbuffer.hxx
-vcl/inc/pdfread.hxx
 vcl/source/filter/ipdf/pdfdocument.cxx
 vcl/source/filter/ipdf/pdfread.cxx
 writerfilter/inc/rtftok/RTFDocument.hxx
