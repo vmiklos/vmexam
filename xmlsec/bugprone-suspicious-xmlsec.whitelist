@@ -1,2 +1,3 @@
 src/transforms.c
+src/xmltree.c
 src/xpath.c

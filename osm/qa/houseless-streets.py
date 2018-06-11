@@ -61,6 +61,7 @@ class Test(unittest.TestCase):
         in the downloaded area."""
         finder = Finder()
 
+        self.maxDiff = None
         self.assertEqual([], finder.warnings)
         self.assertEqual([], finder.streetsWithoutHouses)
 
