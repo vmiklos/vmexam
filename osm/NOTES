@@ -19,6 +19,17 @@ Ideas what to do in your region:
 - check for addr:interpolation -> could also check Gazdagrét
 - check for missing maxspeed tags -> in progress for Sasad
 
+What to collect next to house numbers:
+
+- speed limits
+- road surface
+- highway=stop
+- highway=give_way
+- barrier=bollard
+- oneway=yes
+- turn restrictions
+- highway=steps
+
 == Historic data
 
 Overpass supports this as well, just need to include that in the first line of the query, e.g. replace:
