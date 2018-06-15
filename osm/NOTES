@@ -23,12 +23,13 @@ What to collect next to house numbers:
 
 - speed limits
 - road surface
-- highway=stop
-- highway=give_way
+- highway=stop (highway=give_way)
 - barrier=bollard
 - oneway=yes
 - turn restrictions
 - highway=steps
+- pedestrian crossings
+- traffic calmings
 
 == Historic data
 
