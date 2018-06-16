@@ -2725,7 +2725,7 @@ tests:
 === 2018-06-15
 
 - signing docx files is broken
-- b9ebabd675f916a0151ec3893a59131f3a8b2a05..8fae8a6cd73b7262c3739bd4acc5c72b54934ff1 is the bibisect range (daily.git 2018-05-23 vs yesterday range)
+- regression from 13596e704e4b48e8b0892867b3f3fc351a2729f9
 
 <<<
 
