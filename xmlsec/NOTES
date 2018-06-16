@@ -62,8 +62,8 @@ Resources:
 How to build:
 
 ----
-cscript configure.js crypto=mscng xslt=no iconv=no static=no debug=yes werror=yes
-cscript configure.js crypto=mscng xslt=no iconv=no static=no cc=clang-cl.exe debug=yes werror=yes
+cscript configure.js crypto=mscng iconv=no static=no debug=yes werror=yes
+cscript configure.js crypto=mscng iconv=no static=no cc=clang-cl.exe debug=yes werror=yes
 nmake
 ----
 

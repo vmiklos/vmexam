@@ -13,6 +13,7 @@
 msvcdir="c:/Program Files (x86)/Microsoft Visual Studio 14.0/VC"
 lodir="c:/lo/master"
 xml2dir="$lodir/workdir/UnpackedTarball/xml2"
+xsltdir="$lodir/workdir/UnpackedTarball/xslt"
 icudir="$lodir/workdir/UnpackedTarball/icu"
 sdkdir="c:/Program Files (x86)/Windows Kits/8.1"
 sdkdir10="c:/Program Files (x86)/Windows Kits/10"
@@ -22,6 +23,8 @@ libpath="$msvcdir/lib"
 
 incpath+=";$xml2dir/include"
 libpath+=";$xml2dir/win32/bin.msvc"
+incpath+=";$xsltdir"
+libpath+=";$xsltdir/win32/bin.msvc"
 
 incpath+=";$icudir/source/common"
 
@@ -36,11 +39,12 @@ git pull -r
 git clean -x -d -f
 export PATH="$(cygpath -u "$msvcdir/bin/")":"$PATH"
 cd win32
-cscript configure.js crypto=mscrypto xslt=no iconv=no static=no debug=yes
+cscript configure.js crypto=mscrypto iconv=no static=no debug=yes
 export LIB="$libpath"
 export INCLUDE="$incpath"
 nmake
 cp $lodir/instdir/program/libxml2.dll binaries/
+cp $lodir/instdir/program/libxslt.dll binaries/
 cp $lodir/instdir/program/icuuc*.dll binaries/
 cp $lodir/instdir/program/icudt*.dll binaries/
 
