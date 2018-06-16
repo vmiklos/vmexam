@@ -31,4 +31,8 @@ SVL_CRYPTO_CNG=1 instdir/program/soffice.exe
 git push -f /cygdrive/z/libreoffice/master HEAD:cng-wip
 ----
 
+== Testing with actual HW
+
+- Windows, ODF sign / verify: works after fixing ECDSA soft token
+
 // vim: ft=asciidoc
