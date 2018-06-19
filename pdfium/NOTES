@@ -83,12 +83,12 @@ https://dev-www.libreoffice.org/bin/ is where we host these binaries
 - https://pdfium-review.googlesource.com/32770 FPDFPageObj_GetStrokeWidth() [2018-05-21]
 - https://pdfium-review.googlesource.com/33010 FPDFPath_GetDrawMode() [2018-05-30]
 - https://pdfium-review.googlesource.com/33670 FPDFPath_GetMatrix() [2018-06-04]
+- https://pdfium-review.googlesource.com/35434 FPDFText_GetMatrix() [was FPDFTextObj_GetMatrix(), 2018-06-19]
 
 Other goals:
 
 - FPDFTextObj_CountChars
-- FPDFTextObj_GetFontSize
-- FPDFTextObj_GetMatrix -> next?
+- FPDFTextObj_GetFontSize -> next?
 - FPDFTextObj_GetUnicode
 - FPDFTextObj_GetText
 - FPDFTextObj_GetColor
