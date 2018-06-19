@@ -3,8 +3,8 @@ Microsoft (R) Program Maintenance Utility Version 14.00.24210.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 	cd ..
-	if not exist win32\tmp mkdir win32\tmp
-	set TMPFOLDER=win32/tmp
+	if not exist %MAKEDIR%\tmp mkdir %MAKEDIR%\tmp
+	set TMPFOLDER=%MAKEDIR%\tmp
 	sh ./tests/testrun.sh ./tests/testKeys.sh "mscng" ./tests win32/binaries/xmlsec.exe der
 --- LD_LIBRARY_PATH=
 --- LTDL_LIBRARY_PATH=
@@ -31,10 +31,11 @@ Test: aes-256  (success)
     Checking required key data                               OK
     Creating new key                                         OK
 --- testKeys finished ---
+--- TOTAL OK: 7; TOTAL FAILED: 0; TOTAL SKIPPED: 0
 	cd win32
 	cd ..
-	if not exist win32\tmp mkdir win32\tmp
-	set TMPFOLDER=win32/tmp
+	if not exist %MAKEDIR%\tmp mkdir %MAKEDIR%\tmp
+	set TMPFOLDER=%MAKEDIR%\tmp
 	sh ./tests/testrun.sh ./tests/testDSig.sh "mscng" ./tests win32/binaries/xmlsec.exe der
 --- LD_LIBRARY_PATH=
 --- LTDL_LIBRARY_PATH=
@@ -46,7 +47,11 @@ xmldsig2ed-tests/defCan-1
     Create new signature                                    OK
     Verify new signature                                    OK
 xmldsig2ed-tests/defCan-2
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
+    Create new signature                                    OK
+    Verify new signature                                    OK
 xmldsig2ed-tests/xpointer-1-SUN
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -321,8 +326,8 @@ merlin-xmldsig-twenty-three/signature-retrievalmethod-rawx509crt
 merlin-xmldsig-twenty-three/signature
     Checking required transforms                            OK
     Checking required key data                              OK
-    Create new signature                                  Fail
-    Verify new signature                                  Fail
+    Create new signature                                    OK
+    Verify new signature                                    OK
 merlin-xmlenc-five/encsig-ripemd160-hmac-ripemd160-kw-tripledes
     Checking required transforms                          Skip
 merlin-xmlenc-five/encsig-sha256-hmac-sha256-kw-aes128
@@ -363,7 +368,9 @@ merlin-xpath-filter2-three/sign-spec
     Checking required key data                              OK
     Verify existing signature                               OK
 phaos-xmldsig-three/signature-big
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-dsa-detached
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -413,9 +420,13 @@ phaos-xmldsig-three/signature-rsa-detached-xpath-transform
     Checking required key data                              OK
     Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-detached-xslt-transform-retrieval-method
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-detached-xslt-transform
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-enveloped
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -469,7 +480,9 @@ aleksey-xmldsig-01/dtd-hmac-91
     Checking required key data                              OK
     Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-detached-xslt-transform-bad-retrieval-method
-    Checking required transforms                          Skip
+    Checking required transforms                            OK
+    Checking required key data                              OK
+    Verify existing signature                               OK
 phaos-xmldsig-three/signature-rsa-enveloped-bad-digest-val
     Checking required transforms                            OK
     Checking required key data                              OK
@@ -491,10 +504,11 @@ aleksey-xmldsig-01/enveloping-sha256-rsa-sha256-verify
     Checking required key data                              OK
     Verify existing signature                               OK
 --- testDSig finished
+--- TOTAL OK: 165; TOTAL FAILED: 0; TOTAL SKIPPED: 10
 	cd win32
 	cd ..
-	if not exist win32\tmp mkdir win32\tmp
-	set TMPFOLDER=win32/tmp
+	if not exist %MAKEDIR%\tmp mkdir %MAKEDIR%\tmp
+	set TMPFOLDER=%MAKEDIR%\tmp
 	sh ./tests/testrun.sh ./tests/testEnc.sh "mscng" ./tests win32/binaries/xmlsec.exe der
 --- LD_LIBRARY_PATH=
 --- LTDL_LIBRARY_PATH=
@@ -696,4 +710,5 @@ aleksey-xmlenc-01/enc-aes192cbc-keyname-ref
 01-phaos-xmlenc-3/enc-content-aes256-kt-rsa1_5
     Decrypt existing document                               OK
 --- testEnc finished
+--- TOTAL OK: 114; TOTAL FAILED: 0; TOTAL SKIPPED: 0
 	cd win32
