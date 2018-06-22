@@ -21,15 +21,15 @@ Ideas what to do in your region:
 
 What to collect next to house numbers:
 
-- speed limits
-- road surface
-- highway=stop (highway=give_way)
+- maxspeed=
+- surface=asphalt
+- highway=stop/give_way
 - barrier=bollard
 - oneway=yes
 - turn restrictions
 - highway=steps
-- pedestrian crossings
-- traffic calmings
+- highway=crossing, crossing=traffic_signals/uncontrolled
+- traffic_calming=bump
 
 == Historic data
 
