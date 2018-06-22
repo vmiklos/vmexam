@@ -1,3 +1,4 @@
 src/transforms.c
+src/xmldsig.c
 src/xmltree.c
 src/xpath.c
