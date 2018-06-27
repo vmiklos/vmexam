@@ -12,8 +12,7 @@ cert, so using that in LO would be nice.
 - Linux, OOXML, verify / sign: libreoffice patch to support it (2018-05-25)
 - Windows, PDF, verify: surprisingly this worked out of the box
 - Windows, PDF, sign: libreoffice patch to support it (2018-05-29)
-- Windows, ODF, verify: TODO
-- Windows, ODF, sign: TODO
+- Windows, ODF, verify / sign: libreoffice patch to support it (2018-06-25)
 - Windows, OOXML, verify: TODO
 - Windows, OOXML, sign: TODO
 
@@ -30,9 +29,5 @@ SVL_CRYPTO_CNG=1 instdir/program/soffice.exe
 ----
 git push -f /cygdrive/z/libreoffice/master HEAD:cng-wip
 ----
-
-== Testing with actual HW
-
-- Windows, ODF sign / verify: works after fixing ECDSA soft token
 
 // vim: ft=asciidoc
