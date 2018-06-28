@@ -1,6 +1,29 @@
 {
     "source": "survey",
     "filters": {
+        "peterhegyi_ut": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "39",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "66",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "budaorsi_ut": {
+            "ranges": [
+                {
+                    "start": "60",
+                    "end": "156",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "cirmos_utca": {
             "ranges": [
                 {
