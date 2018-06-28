@@ -184,5 +184,7 @@ kstart plasmashell #to restart it
 - muttprint is no longer in server:mail for 15.0, 42.3 package needs patching from <https://aur.archlinux.org/cgit/aur.git/tree/regex.patch?h=muttprint>
 - pep8 disappears, 'zypper in python3-pep8' restores it
 - `zypper -p https://download.opensuse.org/repositories/devel:/libraries:/c_c++/openSUSE_Leap_15.0/ in poco-devel` installs a cxx11 poco, fixing link errors
+- gcontacts broken?
+- pdftk missing?
 
 // vim: ft=asciidoc paste
