@@ -185,6 +185,6 @@ kstart plasmashell #to restart it
 - pep8 disappears, 'zypper in python3-pep8' restores it
 - `zypper -p https://download.opensuse.org/repositories/devel:/libraries:/c_c++/openSUSE_Leap_15.0/ in poco-devel` installs a cxx11 poco, fixing link errors
 - gcontacts broken?
-- pdftk missing?
+- pdftk is no longer in the stock repos, but packman provides it
 
 // vim: ft=asciidoc paste
