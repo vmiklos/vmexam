@@ -8,12 +8,16 @@
 # CI queue. Useful as otherwise the web browser would show this info in a huge
 # tooltip that usually blinks + frequently reloads.
 #
+# The only optional parameter is a gerrit change integer, in that case it
+# checks for that change, instead of all your own changes.
+#
 
 from html.parser import HTMLParser
 import json
 import re
 import subprocess
 import urllib.request
+import sys
 
 
 def getGerritChanges():
@@ -53,17 +57,24 @@ def getCIChanges(changesHTML):
     parser.feed(changesHTML)
     return sorted(set(parser.changes))
 
-gerrit = getGerritChanges()
-
-changesHTML = downloadString("https://ci.libreoffice.org/ajaxBuildQueue")
-ci = getCIChanges(changesHTML)
-
-for gerritChange in gerrit:
-    line = gerritChange["url"] + " for " + gerritChange["branch"] + ": "
-    if gerritChange["url"] in ci:
-        line += "change is in the CI queue"
+def main():
+    if len(sys.argv) > 1:
+        gerrit = [{"url": "https://gerrit.libreoffice.org/" + sys.argv[1], "branch": "unknown"}]
     else:
-        line += "change is not in the CI queue"
-    print(line)
+        gerrit = getGerritChanges()
+
+    changesHTML = downloadString("https://ci.libreoffice.org/ajaxBuildQueue")
+    ci = getCIChanges(changesHTML)
+
+    for gerritChange in gerrit:
+        line = gerritChange["url"] + " for " + gerritChange["branch"] + ": "
+        if gerritChange["url"] in ci:
+            line += "change is in the CI queue"
+        else:
+            line += "change is not in the CI queue"
+        print(line)
+
+if __name__ == '__main__':
+    main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
