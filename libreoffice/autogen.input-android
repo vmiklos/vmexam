@@ -1,4 +1,3 @@
-# No --enable-dbgutil due to slow linking, but then otherwise non-debug and debug versions wouldn't overwrite each other.
---with-android-package-name=org.libreoffice
---enable-werror
 --with-distro=LibreOfficeAndroid
+--enable-werror
+--disable-c++17

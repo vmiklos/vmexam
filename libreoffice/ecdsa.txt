@@ -10,11 +10,9 @@ cert, so using that in LO would be nice.
 - Linux, ODF, verify: libxmlsec patch to support it (2017-02-25)
 - Linux, ODF, sign: libreoffice patch to support it (2018-05-15)
 - Linux, OOXML, verify / sign: libreoffice patch to support it (2018-05-25)
-- Windows, PDF, verify: surprisingly this worked out of the box
-- Windows, PDF, sign: libreoffice patch to support it (2018-05-29)
+- Windows, PDF, verify / sign: libreoffice patch to support it (2018-05-29)
 - Windows, ODF, verify / sign: libreoffice patch to support it (2018-06-25)
-- Windows, OOXML, verify: TODO
-- Windows, OOXML, sign: TODO
+- Windows, OOXML, verify / sign: libreoffice patch to support it (2018-06-28)
 
 == Misc notes
 

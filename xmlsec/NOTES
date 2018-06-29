@@ -45,13 +45,11 @@ clang-tidy:
 === CNG effort
 
 TODO:
-- system certs
-- audit API
 - smaller things:
-  - mingw / mscng
   - see what {rsa,*dsa}-{md5,sha*} combos are supported by openssl and make sure all of them are covered by tests
+    - git grep -E -i 'Transform(ecdsa|rsa|dsa)(sha|md).*getklass;' src/openssl/crypto.c -> 13 combinations
   - avoid malloc and always use buffers?
-  - experiment with clang-cl, drmemory
+  - experiment with clang-cl
   - fix warnings in the mscrypto backend
 
 Resources:

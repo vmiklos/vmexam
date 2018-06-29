@@ -1,0 +1,33 @@
+= My ODF proposals
+
+== Contextual spacing
+
+- Date: 2012-03-12
+- Proposal: https://issues.oasis-open.org/browse/OFFICE-3767
+- Status: will be in ODF 1.3
+
+== First page header/footer
+
+- Date: 2012-07-05
+- Proposal: https://issues.oasis-open.org/browse/OFFICE-3789
+- Status: will be in ODF 1.3
+
+== Comment initials
+
+- Date: 2012-07-16
+- Proposal: https://issues.oasis-open.org/browse/OFFICE-3776
+- Status: will be in ODF 1.3
+
+== Relative size relation
+
+- Date: 2014-01-30
+- Proposal: https://issues.oasis-open.org/browse/OFFICE-3854
+- Status: open
+
+== Complex content in shapes
+
+- Date: 2014-12-27
+- Proposal: https://issues.oasis-open.org/browse/OFFICE-3761
+- Status: open
+
+// vim: ft=asciidoc
