@@ -1,0 +1,10 @@
+= VS debugger for gdb users
+
+gdb commands, and their VS equivalent:
+
+- next: F10
+- step: F11
+- finish: Shift-F11
+- cont: F5
+
+// vim: ft=asciidoc
