@@ -1,6 +1,54 @@
 {
     "source": "survey",
     "filters": {
+        "neszmelyi_ut": {
+            "ranges": [
+                {
+                    "start": "9",
+                    "end": "13",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "31",
+                    "end": "37",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "10",
+                    "end": "44",
+                    "isOdd": "false"
+                },
+                {
+                    "start": "56",
+                    "end": "70",
+                    "isOdd": "false"
+                },
+                {
+                    "start": "74",
+                    "end": "82",
+                    "isOdd": "false"
+                },
+                {
+                    "start": "90",
+                    "end": "102",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "vizsla_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "3",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "4",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "peterhegyi_ut": {
             "ranges": [
                 {

@@ -90,11 +90,9 @@ https://dev-www.libreoffice.org/bin/ is where we host these binaries
 Other goals:
 
 - FPDFTextObj_CountChars
-- FPDFTextObj_GetUnicode
-- FPDFTextObj_GetText
+- FPDFTextObj_GetTextProcessed
 - FPDFFormObj_CountSubObjects -> next?
 - FPDFFormObj_GetSubObject
-- FPDFText_GetMatrix
-- FPDFImageObj_GetBitmapBgra -> looks redundant, have FPDFImageObj_GetBitmap() already
+- FPDFImageObj_GetBitmapBgra
 
 // vim: ft=asciidoc

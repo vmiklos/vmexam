@@ -110,7 +110,11 @@ Online (same set of checks as for libclang-vim, except modernize):
 for i in *.cpp; do echo $i; clang-tidy -header-filter=^$PWD.* $i || break; done
 ----
 
-Core (exclude tests for now): see `clang-tidy.sh`.
+Core (exclude tests for now):
+
+----
+~/git/vmexam/libreoffice/clang-tidy.py
+----
 
 == IWYU
 
