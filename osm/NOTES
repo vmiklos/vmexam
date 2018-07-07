@@ -31,6 +31,15 @@ What to collect next to house numbers:
 - highway=crossing, crossing=traffic_signals/uncontrolled
 - traffic_calming=bump
 
+== Python
+
+Get only even/odd house numbers from a list, with num sort:
+
+----
+sorted([i for i in l if int(i) % 2 == 0], key=lambda i: int(i))
+sorted([i for i in l if int(i) % 2 == 1], key=lambda i: int(i))
+----
+
 == Historic data
 
 Overpass supports this as well, just need to include that in the first line of the query, e.g. replace:

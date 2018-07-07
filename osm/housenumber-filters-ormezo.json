@@ -52,13 +52,8 @@
         "peterhegyi_ut": {
             "ranges": [
                 {
-                    "start": "1",
-                    "end": "39",
-                    "isOdd": "true"
-                },
-                {
-                    "start": "2",
-                    "end": "66",
+                    "start": "40",
+                    "end": "54",
                     "isOdd": "false"
                 }
             ]
