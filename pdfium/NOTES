@@ -84,15 +84,18 @@ https://dev-www.libreoffice.org/bin/ is where we host these binaries
 - https://pdfium-review.googlesource.com/33010 FPDFPath_GetDrawMode() [2018-05-30]
 - https://pdfium-review.googlesource.com/33670 FPDFPath_GetMatrix() [2018-06-04]
 - https://pdfium-review.googlesource.com/35434 FPDFText_GetMatrix() [was FPDFTextObj_GetMatrix(), 2018-06-19]
+
+snip, need to upgrade to 3473 at this point
+
 - https://pdfium-review.googlesource.com/35931 FPDFTextObj_GetFontSize() [2018-06-26]
 - https://pdfium-review.googlesource.com/36750 FPDFText_GetTextRenderMode() [was FPDFTextObj_GetColor(), 2018-07-03]
+- https://pdfium-review.googlesource.com/37316 FPDFFormObj_CountObjects() [2018-07-11]
 
 Other goals:
 
 - FPDFTextObj_CountChars
 - FPDFTextObj_GetTextProcessed
-- FPDFFormObj_CountSubObjects -> next?
-- FPDFFormObj_GetSubObject
+- FPDFFormObj_GetSubObject -> next?
 - FPDFImageObj_GetBitmapBgra
 
 // vim: ft=asciidoc
