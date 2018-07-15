@@ -10,34 +10,34 @@
 # The 'Developer Command Prompt' is a good source of hints when some path
 # changes.
 
-msvcdir="c:/Program Files (x86)/Microsoft Visual Studio 14.0/VC"
 lodir="c:/lo/master"
-xml2dir="$lodir/workdir/UnpackedTarball/xml2"
-xsltdir="$lodir/workdir/UnpackedTarball/xslt"
+xml2dir="$lodir/workdir/UnpackedTarball/libxml2"
+xsltdir="$lodir/workdir/UnpackedTarball/libxslt"
 icudir="$lodir/workdir/UnpackedTarball/icu"
-sdkdir="c:/Program Files (x86)/Windows Kits/8.1"
-sdkdir10="c:/Program Files (x86)/Windows Kits/10"
 
-incpath="$msvcdir/include"
-libpath="$msvcdir/lib"
+incpath=""
+libpath=""
+
+msvcbin="c:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.14.26428/bin/Hostx86/x86/"
+
+incpath+=";c:/Program Files (x86)/Windows Kits/10/Include/10.0.17134.0/shared"
+incpath+=";c:/Program Files (x86)/Windows Kits/10/Include/10.0.17134.0/ucrt"
+incpath+=";c:/Program Files (x86)/Windows Kits/10/Include/10.0.17134.0/um"
+libpath+=";c:/Program Files (x86)/Windows Kits/10/Lib/10.0.17134.0/ucrt/x86"
+libpath+=";c:/Program Files (x86)/Windows Kits/10/Lib/10.0.17134.0/um/x86"
+
+incpath+=";c:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.14.26428/include"
+libpath+=";c:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.14.26428/lib/x86/"
 
 incpath+=";$xml2dir/include"
 libpath+=";$xml2dir/win32/bin.msvc"
 incpath+=";$xsltdir"
 libpath+=";$xsltdir/win32/bin.msvc"
-
 incpath+=";$icudir/source/common"
-
-incpath+=";$sdkdir/Include/um"
-incpath+=";$sdkdir/Include/shared"
-libpath+=";$sdkdir/Lib/winv6.3/um/x86"
-
-incpath+=";$sdkdir10/Include/10.0.10240.0/ucrt"
-libpath+=";$sdkdir10/Lib/10.0.10240.0/ucrt/x86"
 
 git pull -r
 git clean -x -d -f
-export PATH="$(cygpath -u "$msvcdir/bin/")":"$PATH"
+export PATH="$(cygpath -u "$msvcbin/")":"$PATH"
 cd win32
 cscript configure.js crypto=mscng iconv=no static=no debug=yes werror=no
 export LIB="$libpath"
