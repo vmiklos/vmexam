@@ -39,7 +39,7 @@ git pull -r
 git clean -x -d -f
 export PATH="$(cygpath -u "$msvcdir/bin/")":"$PATH"
 cd win32
-cscript configure.js crypto=mscng iconv=no static=no debug=yes werror=yes
+cscript configure.js crypto=mscng iconv=no static=no debug=yes werror=no
 export LIB="$libpath"
 export INCLUDE="$incpath"
 nmake
