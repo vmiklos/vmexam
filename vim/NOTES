@@ -12,3 +12,18 @@ temporarily with:
 - za (fold auto) toggles between the two automatically
 
 http://vim.wikia.com/wiki/Syntax-based_folding
+
+== Hex editing
+
+Given a binary file:
+
+- :%!xxd turns binary into a hex dump
+- :%!xxd -r turns this back into binary
+
+Given a hexdump (raw one, except newlines):
+
+- :%!xxd -r -p turns this back to binary
+
+https://vi.stackexchange.com/questions/2232/how-can-i-use-vim-as-a-hex-editor
+
+// vim: ft=asciidoc
