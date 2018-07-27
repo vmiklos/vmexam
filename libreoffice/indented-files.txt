@@ -4,7 +4,6 @@ desktop/source/lib/lokclipboard.hxx
 drawinglayer/qa/unit/border.cxx
 framework/qa/cppunit/dispatchtest.cxx
 include/comphelper/propertyvalue.hxx
-include/svl/grabbagitem.hxx
 oox/source/drawingml/customshapepresetdata.cxx
 oox/source/shape/LockedCanvasContext.cxx
 oox/source/shape/LockedCanvasContext.hxx
@@ -14,7 +13,6 @@ oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
 starmath/source/unofilter.cxx
 starmath/source/wordexportbase.cxx
-svl/source/items/grabbagitem.cxx
 svx/qa/unit/xoutdev.cxx
 sw/source/filter/ww8/docxsdrexport.hxx
 sw/source/filter/ww8/docxtablestyleexport.cxx

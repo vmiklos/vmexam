@@ -14,10 +14,12 @@ connectivity/source/inc/writer/WTables.hxx
 cui/qa/uitest/dialogs/pastedlg.py
 filter/qa/unit/textfilterdetect.cxx
 filter/source/msfilter/rtfutil.cxx
+include/svl/grabbagitem.hxx
 include/vcl/filter/pdfdocument.hxx
 include/vcl/pdfread.hxx
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
+svl/source/items/grabbagitem.cxx
 svtools/qa/unit/testHtmlReader.cxx
 sw/inc/textboxhelper.hxx
 sw/qa/extras/layout/layout.cxx
