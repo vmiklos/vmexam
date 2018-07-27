@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script can be symlinked as a pre-commit hook in a git repo.
-# Additionally, it also supports passing in filenames as cmdline parameters, like e.g. pep8 does.
+# Additionally, it also supports passing in filenames as cmdline parameters, like e.g. pycodestyle does.
 
 new=$(mktemp)
 function finish

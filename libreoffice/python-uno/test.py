@@ -29,6 +29,7 @@ def main():
     endTime = int(time.time() * 1000)
     print("loadComponentFromURL() finished in %d ms" % (endTime - startTime))
 
+
 if __name__ == "__main__":
     main()
 

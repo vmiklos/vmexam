@@ -75,6 +75,7 @@ def check_project(project, packages=None):
     list_outdated(project, packages)
     list_failed(project, packages)
 
+
 verbose = "-v" in sys.argv
 check_project("home:vmiklos")
 check_project("devel:tools", ["lcov"])

@@ -44,6 +44,7 @@ class ContentHandler(xml.sax.handler.ContentHandler):
         if self.inParagraph:
             self.content.append(content)
 
+
 parser = xml.sax.make_parser()
 parser.setContentHandler(ContentHandler())
 parser.parse(sys.argv[1])

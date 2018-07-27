@@ -65,6 +65,7 @@ class Test(unittest.TestCase):
         self.assertEqual([], finder.warnings)
         self.assertEqual([], finder.streetsWithoutHouses)
 
+
 if __name__ == '__main__':
     if "-s" in sys.argv:
         finder = Finder()

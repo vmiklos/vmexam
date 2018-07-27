@@ -1,2 +1,2 @@
 check:
-	pep8 gammu2gcontacts
+	pycodestyle gammu2gcontacts

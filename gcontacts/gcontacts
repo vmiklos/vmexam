@@ -184,6 +184,7 @@ gcontacts <pattern>""")
         contacts.select(contacts.contactsXmlPath, argv[optIndex:])
         contacts.select(contacts.contactsLdapXmlPath, argv[optIndex:])
 
+
 if __name__ == "__main__":
     main(sys.argv[1:])
 

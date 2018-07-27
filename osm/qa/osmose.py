@@ -33,6 +33,7 @@ class Test(unittest.TestCase):
                 issues.append(parseDescription(description))
         self.assertEqual([], issues)
 
+
 if __name__ == '__main__':
     unittest.main()
 

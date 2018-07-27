@@ -45,7 +45,7 @@ update-osmose-$(USER):
 	curl -o workdir/osmose-$(USER).rss http://osmose.openstreetmap.fr/en/byuser/$(USER).rss
 
 check-style:
-	pep8 overpass-query generate-postcode-csv get-reference-housenumbers qa/suspicious-streets.py qa/houseless-streets.py qa/osmose.py addr-osmify
+	pycodestyle overpass-query generate-postcode-csv get-reference-housenumbers qa/suspicious-streets.py qa/houseless-streets.py qa/osmose.py addr-osmify
 
 check: check-style download
 	qa/osmose.py

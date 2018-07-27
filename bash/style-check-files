@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Runs astyle-check/pep8/etc on each file, which is tracked as an "indented file".
+# Runs astyle-check/pycodestyle/etc on each file, which is tracked as an "indented file".
 
 cdup=$(git rev-parse --show-cdup)
 
@@ -28,7 +28,7 @@ do
 		grep -H -n com::sun::star:: $file && exit 1
 		;;
 	*.py)
-		pep8 --ignore=E501 $file || exit 1
+		pycodestyle --ignore=E501 $file || exit 1
 
 		if echo $file |grep -q /uitest/; then
 			continue

@@ -1,3 +1,3 @@
 check:
-	pep8 ./diff-backend
+	pycodestyle ./diff-backend
 	./diff-backend mscrypto-status.txt mscng-status.txt

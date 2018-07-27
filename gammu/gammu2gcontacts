@@ -45,6 +45,7 @@ class Contact:
             pos += 1
         return "".join(ret)
 
+
 config = ConfigParser.ConfigParser()
 config.read("backup.gammu")
 

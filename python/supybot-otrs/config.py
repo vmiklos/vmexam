@@ -11,6 +11,7 @@ import supybot.conf as conf
 def configure(advanced):
     conf.registerPlugin('Otrs', True)
 
+
 Otrs = conf.registerPlugin('Otrs')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:

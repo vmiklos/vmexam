@@ -161,6 +161,7 @@ class Test(unittest.TestCase):
 
         self.assertEqual([], finder.suspiciousStreets)
 
+
 if __name__ == '__main__':
     normalizers = {}
     if len(sys.argv) > 1:
@@ -170,10 +171,10 @@ if __name__ == '__main__':
         normalizersJson = json.load(jsonSock)
     filtersJson = normalizersJson["filters"]
     for street in filtersJson.keys():
-        l = []
+        i = []
         for r in filtersJson[street]["ranges"]:
-            l.append(Range(int(r["start"]), int(r["end"]), r["isOdd"] == "true"))
-        normalizers[street] = Ranges(l)
+            i.append(Range(int(r["start"]), int(r["end"]), r["isOdd"] == "true"))
+        normalizers[street] = Ranges(i)
     unittest.main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:

@@ -1,2 +1,2 @@
 check:
-	pep8 chkworld
+	pycodestyle chkworld

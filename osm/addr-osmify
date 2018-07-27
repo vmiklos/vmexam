@@ -80,6 +80,7 @@ out body;""" % (objectType, objectId)
     # Print the result.
     print("geo:%s,%s (%s)" % (lat, lon, addr))
 
+
 if len(sys.argv) > 1:
     osmify(sys.argv[1])
 else:

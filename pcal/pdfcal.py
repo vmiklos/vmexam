@@ -42,6 +42,7 @@ def pcal(args):
 
     return bufPs
 
+
 # Don't refuse loading certain JPEG files if imagemagick is doing so.
 PIL.ImageFile.LOAD_TRUNCATED_IMAGES = True
 

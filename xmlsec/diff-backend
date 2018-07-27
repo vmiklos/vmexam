@@ -63,6 +63,7 @@ def main(argv):
         print("ERROR: some tests only pass on " + baselineName)
         return 1
 
+
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
 
