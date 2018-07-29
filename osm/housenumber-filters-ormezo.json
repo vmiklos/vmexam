@@ -1,6 +1,39 @@
 {
     "source": "survey",
     "filters": {
+        "letra_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "1",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "5",
+                    "end": "9",
+                    "isOdd": "true"
+                }
+            ]
+        },
+        "igmandi_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "65",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "30",
+                    "isOdd": "false"
+                },
+                {
+                    "start": "34",
+                    "end": "44",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "majus_utca": {
             "ranges": [
                 {
