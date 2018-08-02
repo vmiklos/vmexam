@@ -181,6 +181,7 @@ kstart plasmashell #to restart it
 - the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (sed the config, zypper ref, zypper dup)
 - konsole: font antialiasing seems to be rather aggressive now, settings -> edit current profile -> appearance -> smooth fonts -> disable is a workaround
 - usual fix with html5 video codecs in firefox/chromium: https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support
+  - if it still doesn't work, try to remove libavcodecN packages; the ones that are actually neeeded should be from packman
 - muttprint is no longer in server:mail for 15.0 -> patch sent as https://build.opensuse.org/request/show/615320 -> merged
 - `zypper -p https://download.opensuse.org/repositories/devel:/libraries:/c_c++/openSUSE_Leap_15.0/ in poco-devel` installs a cxx11 poco, fixing link errors
 - gcontacts broken, `zypper in python2-gdata` fixes it
