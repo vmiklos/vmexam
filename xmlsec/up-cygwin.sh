@@ -40,7 +40,7 @@ git clean -x -d -f
 export PATH="$(cygpath -u "$msvcbin/")":"$PATH"
 cd win32
 # The cruntime= used for libxml2 and xmlsec should match.
-cscript configure.js crypto=mscng iconv=no static=no debug=yes cruntime=/MDd werror=no
+cscript configure.js crypto=mscng iconv=no static=no debug=yes cruntime=/MDd werror=yes
 export LIB="$libpath"
 export INCLUDE="$incpath"
 nmake

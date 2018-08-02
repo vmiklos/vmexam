@@ -92,13 +92,12 @@ snip, need to upgrade to 3473 at this point
 - https://pdfium-review.googlesource.com/36750 FPDFText_GetTextRenderMode() [was FPDFTextObj_GetColor(), 2018-07-03]
 - https://pdfium-review.googlesource.com/37316 FPDFFormObj_CountObjects() [2018-07-11]
 - https://pdfium-review.googlesource.com/37890 FPDFFormObj_GetObject() [2018-07-16]
+- https://pdfium-review.googlesource.com/38870 FPDFText_GetFontName() [2018-08-01]
 
 Other goals:
 
 - FPDFFormObj_GetMatrix
 - FPDFImageObj_GetBitmapBgra
-- FPDFTextObj_CountChars
-- FPDFTextObj_GetFontName
-- FPDFTextObj_GetTextProcessed
+- FPDFTextObj_GetTextProcessed / FPDFTextObj_CountChars -> next?
 
 // vim: ft=asciidoc
