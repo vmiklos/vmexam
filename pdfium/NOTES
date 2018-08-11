@@ -93,11 +93,13 @@ snip, need to upgrade to 3473 at this point
 - https://pdfium-review.googlesource.com/37316 FPDFFormObj_CountObjects() [2018-07-11]
 - https://pdfium-review.googlesource.com/37890 FPDFFormObj_GetObject() [2018-07-16]
 - https://pdfium-review.googlesource.com/38870 FPDFText_GetFontName() [2018-08-01]
+- https://pdfium-review.googlesource.com/39530 FPDFTextObj_GetText() [2018-08-07]
+
+next planned upgrade: ardound 2018-09-17
 
 Other goals:
 
 - FPDFFormObj_GetMatrix
 - FPDFImageObj_GetBitmapBgra
-- FPDFTextObj_GetTextProcessed / FPDFTextObj_CountChars -> next?
 
 // vim: ft=asciidoc
