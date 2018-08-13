@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+from googleapiclient.discovery import build
+from httplib2 import Http
+from oauth2client import file, client, tools
+import getopt
+import json
+import os
+import sys
+
+scopes = 'https://www.googleapis.com/auth/calendar.readonly'
+
+
+def main(argv):
+    opts, dummy = getopt.getopt(argv, "dn", ["debug", "non-interactive"])
+    debug = False
+    interactive = True
+    optIndex = 0
+    for opt, dummy in opts:
+        if opt in ("-d", "--debug"):
+            debug = True
+        elif opt in ("-n", "--non-interactive"):
+            interactive = False
+        optIndex += 1
+
+    configPath = os.path.expanduser("~/.google-calendar")
+    clientSecretsPath = os.path.join(configPath, "client_secrets.json")
+    calendarJsonPath = os.path.join(configPath, "calendar.json")
+    oauth2ClientJsonPath = os.path.join(configPath, "oauth2client.json")
+
+    store = file.Storage(clientSecretsPath)
+    creds = store.get()
+    if not creds or creds.invalid:
+        if not interactive:
+            print("Please run this script interactively to update credentials.")
+            sys.exit(1)
+        flow = client.flow_from_clientsecrets(oauth2ClientJsonPath, scopes)
+        creds = tools.run_flow(flow, store)
+    service = build('calendar', 'v3', http=creds.authorize(Http()))
+
+    pageToken = None
+    allEvents = []
+    count = 0
+    while True:
+        print("Downloading page #" + str(count) + "...")
+        events_result = service.events().list(calendarId='primary', pageToken=pageToken).execute()
+        events = events_result.get('items', [])
+        for event in events:
+            allEvents.append(event)
+
+        pageToken = events_result.get('nextPageToken', None)
+        if debug or not pageToken:
+            break
+        count += 1
+
+    calendarJson = open(calendarJsonPath, "w")
+    json.dump(allEvents, calendarJson, indent=4)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
