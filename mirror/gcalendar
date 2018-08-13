@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+# This script backs up your Google calendar.  To use, run 'backup' first
+# interactively.
+
+cd $(dirname $0)
+if ! ~/git/vmexam/google/calendar/backup -n; then
+    echo "backup failed, please run manually." |~/bin/pymail -r $(git config user.email|sed "s/.*@/$(hostname)@/") -s "google calendar backup error" $(git config user.email)
+    exit
+fi
+
+cp ~/.google-calendar/calendar.json .
+
+git add calendar.json && git commit -m "$(date +%Y-%m-%d)"
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
