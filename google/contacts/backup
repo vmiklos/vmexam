@@ -12,6 +12,7 @@ import getopt
 import json
 import os
 import sys
+import xml.etree.ElementTree as ElementTree
 
 scopes = 'https://www.googleapis.com/auth/contacts.readonly'
 personFields = ",".join([
@@ -62,6 +63,7 @@ def main(argv):
     configPath = os.path.expanduser("~/.google-contacts")
     clientSecretsPath = os.path.join(configPath, "client_secrets.json")
     contactsJsonPath = os.path.join(configPath, "contacts.json")
+    contactsXmlPath = os.path.join(configPath, "contacts.xml")
     oauth2ClientJsonPath = os.path.join(configPath, "oauth2client.json")
 
     store = file.Storage(clientSecretsPath)
@@ -76,6 +78,7 @@ def main(argv):
 
     pageToken = None
     allPersons = []
+    xmlPersons = {}
     count = 0
     while True:
         print("Downloading page #" + str(count) + "...")
@@ -83,6 +86,20 @@ def main(argv):
         connections = people_result.get('connections', [])
         for person in connections:
             allPersons.append(person)
+
+            # Save just names and emails as XML as well.
+            name = None
+            names = person.get("names", [])
+            if names:
+                name = names[0].get("displayName")
+
+            email = None
+            emails = person.get("emailAddresses", [])
+            if emails:
+                email = emails[0].get("value")
+
+            if name and email:
+                xmlPersons[name] = email
 
         pageToken = people_result.get('nextPageToken', None)
         if debug or not pageToken:
@@ -92,6 +109,15 @@ def main(argv):
     contactsJson = open(contactsJsonPath, "w")
     json.dump(allPersons, contactsJson, indent=4, sort_keys=True)
 
+    # Dump XML.
+    feed = ElementTree.Element("feed")
+    for k, v in xmlPersons.items():
+        entry = ElementTree.SubElement(feed, "entry")
+        name = ElementTree.SubElement(entry, "name")
+        ElementTree.SubElement(name, "fullName").text = k
+        ElementTree.SubElement(entry, "email", address=v)
+    tree = ElementTree.ElementTree(feed)
+    tree.write(contactsXmlPath)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
