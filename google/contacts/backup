@@ -1,0 +1,99 @@
+#!/usr/bin/env python3
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+from googleapiclient.discovery import build
+from httplib2 import Http
+from oauth2client import file, client, tools
+import getopt
+import json
+import os
+import sys
+
+scopes = 'https://www.googleapis.com/auth/contacts.readonly'
+personFields = ",".join([
+    "addresses",
+    "ageRanges",
+    "biographies",
+    "birthdays",
+    "braggingRights",
+    "coverPhotos",
+    "emailAddresses",
+    "events",
+    "genders",
+    "imClients",
+    "interests",
+    "locales",
+    "memberships",
+    "metadata",
+    "names",
+    "nicknames",
+    "occupations",
+    "organizations",
+    "phoneNumbers",
+    "photos",
+    "relations",
+    "relationshipInterests",
+    "relationshipStatuses",
+    "residences",
+    "sipAddresses",
+    "skills",
+    "taglines",
+    "urls",
+    "userDefined",
+])
+
+
+def main(argv):
+    opts, dummy = getopt.getopt(argv, "dn", ["debug", "non-interactive"])
+    debug = False
+    interactive = True
+    optIndex = 0
+    for opt, dummy in opts:
+        if opt in ("-d", "--debug"):
+            debug = True
+        elif opt in ("-n", "--non-interactive"):
+            interactive = False
+        optIndex += 1
+
+    configPath = os.path.expanduser("~/.google-contacts")
+    clientSecretsPath = os.path.join(configPath, "client_secrets.json")
+    contactsJsonPath = os.path.join(configPath, "contacts.json")
+    oauth2ClientJsonPath = os.path.join(configPath, "oauth2client.json")
+
+    store = file.Storage(clientSecretsPath)
+    creds = store.get()
+    if not creds or creds.invalid:
+        if not interactive:
+            print("Please run this script interactively to update credentials.")
+            sys.exit(1)
+        flow = client.flow_from_clientsecrets(oauth2ClientJsonPath, scopes)
+        creds = tools.run_flow(flow, store)
+    service = build('people', 'v1', http=creds.authorize(Http()))
+
+    pageToken = None
+    allPersons = []
+    count = 0
+    while True:
+        print("Downloading page #" + str(count) + "...")
+        people_result = service.people().connections().list(resourceName='people/me', personFields=personFields, pageToken=pageToken).execute()
+        connections = people_result.get('connections', [])
+        for person in connections:
+            allPersons.append(person)
+
+        pageToken = people_result.get('nextPageToken', None)
+        if debug or not pageToken:
+            break
+        count += 1
+
+    contactsJson = open(contactsJsonPath, "w")
+    json.dump(allPersons, contactsJson, indent=4, sort_keys=True)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
