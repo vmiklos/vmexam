@@ -186,6 +186,5 @@ kstart plasmashell #to restart it
 - `zypper -p https://download.opensuse.org/repositories/devel:/libraries:/c_c++/openSUSE_Leap_15.0/ in poco-devel` installs a cxx11 poco, fixing link errors
 - gcontacts broken, `zypper in python2-gdata` fixes it
 - pdftk is no longer in the stock repos, but packman provides it
-- if boot hangs after upgrade: use the kernel param `systemd.unit=multi-user.target`, then `systemctl isolate graphical.target`
 
 // vim: ft=asciidoc paste
