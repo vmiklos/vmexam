@@ -10,6 +10,9 @@
 #
 # The opposite is possible with:
 # exiftool "-FileModifyDate<DateTimeOriginal" *.jpg
+# Possibly followed by something like:
+# c=0; for i in $(ls -1 -tr *.jpg); do c=$((c+1)); p=$(printf "%03d" $c); mv $i $p-$i; done
+# (make sort by name match sort by fs date)
 
 for i in "$@"
 do
