@@ -1,0 +1,4 @@
+The 'backup' script aims to back up just name-email pairs from your ldap
+contacts into an XML, something you can configure as address book source.
+
+This is intentionally written in Python3 (not 2).

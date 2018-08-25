@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+import json
+import os
+import xml.etree.ElementTree as ElementTree
+
+
+def main():
+    configPath = os.path.expanduser("~/.ldap-contacts")
+    # The JSON is expected to have the following keys:
+    # - binddn: a Distinguished Name, e.g. uid=john,dc=example,dc=co,dc=hu
+    # - ldapuri: refers to the LDAP server, e.g. ldaps://ldap.example.co.hu/
+    # - searchbase: the starting point for the search, e.g. dc=example,dc=co,dc=hu
+    # - password
+    secretsPath = os.path.join(configPath, "secrets.json")
+    contactsPath = os.path.join(configPath, "contacts.xml")
+
+    # Parse the credentials.
+    with open(secretsPath) as jsonSock:
+        secrets = json.load(jsonSock)
+
+    # Parse the input from LDAP.
+    with os.popen("ldapsearch -D %s -H %s -b %s -x -w %s" % (secrets["binddn"], secrets["ldapuri"], secrets["searchbase"], secrets["password"])) as ldapSock:
+        data = {}
+        contacts = {}
+        for line in ldapSock.readlines():
+            line = line.strip()
+            if not len(line):
+                if "displayName" in data.keys() and "mail" in data.keys():
+                    contacts[data["displayName"]] = data["mail"]
+                data = {}
+            else:
+                tokens = line.split(': ')
+                if len(tokens) > 1:
+                    data[tokens[0]] = tokens[1]
+
+    # Dump XML.
+    feed = ElementTree.Element("feed")
+    for k, v in contacts.items():
+        entry = ElementTree.SubElement(feed, "entry")
+        name = ElementTree.SubElement(entry, "name")
+        ElementTree.SubElement(name, "fullName").text = k
+        ElementTree.SubElement(entry, "email", address=v)
+    tree = ElementTree.ElementTree(feed)
+    tree.write(contactsPath)
+
+
+if __name__ == "__main__":
+    main()
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
