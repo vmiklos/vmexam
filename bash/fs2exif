@@ -7,6 +7,9 @@
 
 # Write the filesystem timestamp into the image file. Useful when e.g. the fs
 # timestamp is sane, still Picasa considers your picture as taken in 1970...
+#
+# The opposite is possible with:
+# exiftool "-FileModifyDate<DateTimeOriginal" *.jpg
 
 for i in "$@"
 do
