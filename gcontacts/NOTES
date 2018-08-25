@@ -1,3 +1,0 @@
-Python3 would be nice, but:
-- gdata-python-client needs patching to work with Python3
-- google-api-python-client has no Python3 package (at least on openSUSE 13.2)

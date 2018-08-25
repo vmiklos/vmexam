@@ -8,8 +8,8 @@
 " Usage example:
 " augroup Mutt
 "     autocmd!
-"     if filereadable($HOME . "/path/to/gcontacts/gcontacts.vim")
-"             source $HOME/path/to/gcontacts/gcontacts.vim
+"     if filereadable($HOME . "/path/to/mutt/contacts/search.vim")
+"             source $HOME/path/to/mutt/contacts/search.vim
 "     endif
 "     autocmd Filetype mail set omnifunc=MuttContactsCompletion
 " augroup END
@@ -29,7 +29,7 @@ function! MuttContactsCompletion(findstart, base)
     let l:ret = []
 
     if a:base != ""
-        let l:ret = systemlist("gcontacts -q -t " .  shellescape(a:base))
+        let l:ret = systemlist($HOME . "/git/vmexam/mutt/contacts/search " .  shellescape(a:base))
     endif
 
     return l:ret

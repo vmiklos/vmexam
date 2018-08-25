@@ -20,6 +20,10 @@ class Match(object):
         # Intentionally ignore name here.
         return self.email == other.email
 
+    def __lt__(self, other):
+        # Intentionally ignore name here.
+        return self.email < other.email
+
     def __hash__(self):
         # Intentionally ignore name here.
         return hash(self.email)
