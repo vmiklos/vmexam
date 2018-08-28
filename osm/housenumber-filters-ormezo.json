@@ -207,6 +207,30 @@
                     "isOdd": "false"
                 }
             ]
+        },
+        "menyecske_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "11",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "15",
+                    "end": "37",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "2",
+                    "isOdd": "false"
+                },
+                {
+                    "start": "10",
+                    "end": "16",
+                    "isOdd": "false"
+                }
+            ]
         }
     }
 }
