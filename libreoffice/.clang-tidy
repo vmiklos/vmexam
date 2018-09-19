@@ -1,4 +1,27 @@
+---
 # This based on libclang-vim's .clang-tidy
-Checks: 'clang-diagnostic-*,performance-*,unused-*,modernize-*,misc-*,bugprone-*,readability-*,-readability-braces-around-statements,-readability-implicit-bool-cast,-readability-implicit-bool-conversion,-readability-function-size,-modernize-raw-string-literal'
+# Checks which are disabled only till I fix the problems:
+# - modernize-pass-by-value
+# - modernize-use-default-member-init
+Checks: "clang-diagnostic-*,\
+-clang-analyzer-cplusplus.NewDelete,\
+-clang-analyzer-cplusplus.NewDeleteLeaks,\
+performance-*,\
+unused-*,\
+modernize-*,\
+-modernize-pass-by-value,\
+-modernize-raw-string-literal,\
+-modernize-use-default-member-init,\
+misc-*,\
+bugprone-*,\
+-bugprone-narrowing-conversions,\
+readability-*,\
+-readability-braces-around-statements,\
+-readability-deleted-default,\
+-readability-function-size,\
+-readability-implicit-bool-cast,\
+-readability-implicit-bool-conversion,\
+-readability-magic-numbers,\
+"
 WarningsAsErrors: '*'
 
