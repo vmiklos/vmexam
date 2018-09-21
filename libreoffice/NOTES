@@ -2727,6 +2727,16 @@ tests:
 - signing docx files is broken
 - regression from 13596e704e4b48e8b0892867b3f3fc351a2729f9
 
+=== 2018-09-21
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=119599
+
+const Id LN_EG_RPrBase_sz = 92522
+regression from 1970a686273c5d4fc1eeb4430283e37085d9f647
+
+idea: for char props: deduplicate from both para and char; but for para props: deduplicate only from para -> done, fixes the regression
+but: cd sw; make -sr CppunitTest_sw_rtfexport CPPUNIT_TEST_NAME="testTdf113408" fails, why? -> fixed
+
 <<<
 
 Problematic bugs:

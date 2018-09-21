@@ -282,4 +282,8 @@ LD_LIBRARY_PATH=/home/vmiklos/scm/hg/dist/Linux4.4_x86_64_cc_glibc_PTH_64_DBG.OB
 
 - currently fails in VFY_EndWithSignature() -> decodeECorDSASignature() -> ... -> DSAU_ConvertSignedToFixedUnsigned() fails in dsautil.c:199
 
+== ubsan on Linux
+
+make check-crypto-nss XMLSEC_TEST_NAME="aleksey-xmldsig-01/x509data-sn-test"
+
 // vim: ft=asciidoc

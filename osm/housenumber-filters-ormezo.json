@@ -1,6 +1,30 @@
 {
     "source": "survey",
     "filters": {
+        "ormezei_ut": {
+            "ranges": [
+                {
+                    "start": "23",
+                    "end": "27",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "39",
+                    "end": "43",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "47",
+                    "end": "49",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "53",
+                    "end": "61",
+                    "isOdd": "true"
+                }
+            ]
+        },
         "letra_utca": {
             "ranges": [
                 {
