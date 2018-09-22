@@ -3,7 +3,7 @@
 " License, v. 2.0. If a copy of the MPL was not distributed with this
 " file, You can obtain one at http://mozilla.org/MPL/2.0/.
 "
-" VIM integration for gcontacts.
+" VIM integration for mutt/contacts/search.
 "
 " Usage example:
 " augroup Mutt
@@ -14,7 +14,7 @@
 "     autocmd Filetype mail set omnifunc=MuttContactsCompletion
 " augroup END
 
-" Completion wrapper around gcontacts.
+" Completion wrapper around mutt/contacts/search.
 function! MuttContactsCompletion(findstart, base)
     if a:findstart == 1
         " In findstart mode, look for the beginning of the current identifier
