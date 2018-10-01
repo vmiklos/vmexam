@@ -184,7 +184,8 @@ kstart plasmashell #to restart it
   - if it still doesn't work, try to remove libavcodecN packages; the ones that are actually neeeded should be from packman
 - muttprint is no longer in server:mail for 15.0 -> patch sent as https://build.opensuse.org/request/show/615320 -> merged
 - `zypper -p https://download.opensuse.org/repositories/devel:/libraries:/c_c++/openSUSE_Leap_15.0/ in poco-devel` installs a cxx11 poco, fixing link errors
-- gcontacts broken, `zypper in python2-gdata` fixes it
+- `zypper in python2-gdata` is uninstalled by the upgrade, `python3-google-api-python-client` is the replacement package
 - pdftk is no longer in the stock repos, but packman provides it
+- `convert` to PDF is blacklisted by default, need to remove the blacklist from `/etc/ImageMagick-7_Q16HDRI6/policy.xml` manually
 
 // vim: ft=asciidoc paste
