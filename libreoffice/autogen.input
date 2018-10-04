@@ -1,3 +1,5 @@
+# Make sure that /etc/alternatives/ld points to ld.gold for faster linking (and
+# not to ld.bfd).
 --enable-dbgutil
 --enable-werror
 --with-gdrive-client-id=457862564325.apps.googleusercontent.com
