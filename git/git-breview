@@ -6,7 +6,7 @@
 #
 
 style-check-files
-if git-review; then
+if git-review -R; then
     rev=$(git rev-parse HEAD)
     host=$(git config -f .gitreview gerrit.host)
     ssh $host gerrit review --code-review=2 $rev
