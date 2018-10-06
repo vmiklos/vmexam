@@ -104,13 +104,14 @@ make -j8 CCACHE_PREFIX=find-harmful-auto-wrapper CCACHE_DISABLE=1
 
 == clang-tidy
 
-Online (same set of checks as for libclang-vim, except modernize):
+Online:
 
 ----
-for i in *.cpp; do echo $i; clang-tidy -header-filter=^$PWD.* $i || break; done
+~/git/llvm/tools/clang/tools/extra/clang-tidy/tool/run-clang-tidy.py 2>&1 |tee log
+grep error: log|sort -u |grep -v /test/
 ----
 
-Core (exclude tests for now):
+Core:
 
 ----
 ~/git/vmexam/libreoffice/clang-tidy.py
