@@ -132,7 +132,22 @@
         "budaorsi_ut": {
             "ranges": [
                 {
-                    "start": "60",
+                    "start": "62",
+                    "end": "64",
+                    "isOdd": "false"
+                },
+                {
+                    "start": "78",
+                    "end": "78",
+                    "isOdd": "false"
+                },
+                {
+                    "start": "88",
+                    "end": "90",
+                    "isOdd": "false"
+                },
+                {
+                    "start": "96",
                     "end": "156",
                     "isOdd": "false"
                 }
