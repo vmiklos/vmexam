@@ -3,6 +3,8 @@
 # Checks which are disabled only till I fix the problems:
 # - modernize-pass-by-value
 # - modernize-use-default-member-init
+# Would be nice, but depends on C++17:
+# - modernize-concat-nested-namespaces
 Checks: "clang-diagnostic-*,\
 -clang-analyzer-cplusplus.NewDelete,\
 -clang-analyzer-cplusplus.NewDeleteLeaks,\
@@ -12,6 +14,7 @@ modernize-*,\
 -modernize-pass-by-value,\
 -modernize-raw-string-literal,\
 -modernize-use-default-member-init,\
+-modernize-concat-nested-namespaces,\
 misc-*,\
 bugprone-*,\
 -bugprone-narrowing-conversions,\
