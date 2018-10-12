@@ -7,6 +7,7 @@ update-streets: streets.txt workdir/streets-gazdagret.txt workdir/streets-sasheg
 	./overpass-query workdir/streets-nemetvolgy.txt > workdir/streets-nemetvolgy.csv
 	./overpass-query workdir/streets-martonhegy.txt > workdir/streets-martonhegy.csv
 	./overpass-query workdir/streets-ormezo.txt > workdir/streets-ormezo.csv
+	./overpass-query workdir/streets-farkasvolgy.txt > workdir/streets-farkasvolgy.csv
 	./overpass-query workdir/streets-krisztinavaros.txt > workdir/streets-krisztinavaros.csv
 	./overpass-query workdir/streets-balatonboglar.txt > workdir/streets-balatonboglar.csv
 	./overpass-query workdir/streets-szigetmonostor.txt > workdir/streets-szigetmonostor.csv
@@ -22,6 +23,7 @@ update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdag
 	./overpass-query workdir/street-housenumbers-nemetvolgy.txt > workdir/street-housenumbers-nemetvolgy.csv
 	./overpass-query workdir/street-housenumbers-martonhegy.txt > workdir/street-housenumbers-martonhegy.csv
 	./overpass-query workdir/street-housenumbers-ormezo.txt > workdir/street-housenumbers-ormezo.csv
+	./overpass-query workdir/street-housenumbers-farkasvolgy.txt > workdir/street-housenumbers-farkasvolgy.csv
 	./overpass-query workdir/street-housenumbers-balatonboglar.txt > workdir/street-housenumbers-balatonboglar.csv
 	./overpass-query workdir/street-housenumbers-szigetmonostor.txt > workdir/street-housenumbers-szigetmonostor.csv
 	./overpass-query workdir/street-housenumbers-krisztinavaros.txt > workdir/street-housenumbers-krisztinavaros.csv
@@ -57,6 +59,7 @@ check: check-style download
 	qa/houseless-streets.py -nemetvolgy
 	qa/houseless-streets.py -martonhegy
 	qa/houseless-streets.py -ormezo
+	#qa/houseless-streets.py -farkasvolgy
 	#qa/houseless-streets.py -balatonboglar
 	#qa/houseless-streets.py -szigetmonostor
 	#qa/houseless-streets.py -krisztinavaros
@@ -133,6 +136,10 @@ workdir/streets-ormezo.txt: streets.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602713749/' streets.txt > workdir/streets-ormezo.txt
 
+workdir/streets-farkasvolgy.txt: streets.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3602788020/' streets.txt > workdir/streets-farkasvolgy.txt
+
 workdir/streets-krisztinavaros.txt: streets.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602786310/' streets.txt > workdir/streets-krisztinavaros.txt
@@ -152,6 +159,10 @@ workdir/street-housenumbers-martonhegy.txt: street-housenumbers.txt
 workdir/street-housenumbers-ormezo.txt: street-housenumbers.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602713749/' street-housenumbers.txt > workdir/street-housenumbers-ormezo.txt
+
+workdir/street-housenumbers-farkasvolgy.txt: street-housenumbers.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3602788020/' street-housenumbers.txt > workdir/street-housenumbers-farkasvolgy.txt
 
 workdir/street-housenumbers-krisztinavaros.txt: street-housenumbers.txt
 	@mkdir -p workdir

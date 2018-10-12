@@ -2737,6 +2737,14 @@ regression from 1970a686273c5d4fc1eeb4430283e37085d9f647
 idea: for char props: deduplicate from both para and char; but for para props: deduplicate only from para -> done, fixes the regression
 but: cd sw; make -sr CppunitTest_sw_rtfexport CPPUNIT_TEST_NAME="testTdf113408" fails, why? -> fixed
 
+=== 2018-10-12
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=112520
+
+what is the bug? the white boxes disappear
+
+regression from 4cde2a01be75552a0b7d37f65cc4134cb48fea26
+
 <<<
 
 Problematic bugs:
