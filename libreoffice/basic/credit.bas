@@ -17,7 +17,7 @@ oPosition.Y = oPosition.Y + oSize.Height
 oText.Position = oPosition
 oSize.Height = 500 ' ~14pt in mm100
 oText.Size = oSize
-ThisComponent.DrawPages(0).add(oText)
+oSelectedShape.Parent.add(oText)
 oText.String = "(via )"
 oText.TextHorizontalAdjust = 1 ' center
 oText.CharHeight = 14 ' 60%, assuming 24pt default
