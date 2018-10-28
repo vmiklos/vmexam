@@ -59,7 +59,7 @@ check: check-style download
 	qa/houseless-streets.py -nemetvolgy
 	qa/houseless-streets.py -martonhegy
 	qa/houseless-streets.py -ormezo
-	#qa/houseless-streets.py -farkasvolgy
+	qa/houseless-streets.py -farkasvolgy
 	#qa/houseless-streets.py -balatonboglar
 	#qa/houseless-streets.py -szigetmonostor
 	#qa/houseless-streets.py -krisztinavaros
