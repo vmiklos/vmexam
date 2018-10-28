@@ -9,6 +9,7 @@ import configparser
 import hashlib
 import html.parser
 import io
+import json
 import os
 import sys
 import urllib.error
@@ -41,7 +42,7 @@ def getStreets():
 
 # Returns URL of a street based on config.
 def getStreetURL(street, prefix):
-    simplifiedStreet = simplify(street)
+    simplifiedStreet = simplify(street, spaceDecode=True)
     if simplifiedStreet == "zolyomi_koz":
         # Really strange, survey confirms OSM is correct here, so map it
         # instead.
@@ -54,7 +55,9 @@ def getStreetURL(street, prefix):
         district = "xii"
     elif suffix == "-nemetvolgy":
         district = "xii"
-    return prefix + "/budapest%20" + district + ".%20kerulet_" + simplifiedStreet + ".html"
+    elif suffix == "-farkasvolgy":
+        district = "xii"
+    return prefix + "/budapest%20" + district + ".ker./" + simplifiedStreet + "/all.json"
 
 
 # Returns SHA256 hash of an URL.
@@ -63,7 +66,7 @@ def getURLHash(url):
 
 
 # Handles normalization of a street name.
-def simplify(s):
+def simplify(s, spaceDecode=False):
     s = s.replace('Á', 'A').replace('á', 'a')
     s = s.replace('É', 'E').replace('é', 'e')
     s = s.replace('Í', 'I').replace('í', 'i')
@@ -73,41 +76,12 @@ def simplify(s):
     s = s.replace('Ú', 'U').replace('ú', 'u')
     s = s.replace('Ü', 'U').replace('ü', 'u')
     s = s.replace('Ű', 'U').replace('ű', 'u')
-    s = s.replace(' ', '_').lower()
+    if spaceDecode:
+        s = s.replace(' ', '%20')
+    else:
+        s = s.replace(' ', '_')
+    s = s.lower()
     return s
-
-
-# Extracts a list of house numbers from a HTML page.
-class HTMLHouseNumberParser(html.parser.HTMLParser):
-    def __init__(self):
-        html.parser.HTMLParser.__init__(self)
-        self.inCell = False
-        self.inLink = False
-        self.housenumbers = []
-
-    def handle_starttag(self, tag, attrs):
-        if tag == "td":
-            self.inCell = True
-        elif tag == "a":
-            self.inLink = True
-
-    def handle_endtag(self, tag):
-        if tag == "td":
-            self.inCell = False
-        elif tag == "a":
-            self.inLink = False
-
-    def handle_data(self, data):
-        if (not self.inCell) or self.inLink:
-            return
-
-        houseNumber = data.strip()
-        if not len(houseNumber):
-            return
-
-        # Needed by -nemetvolgy.
-        simplified = simplify(houseNumber).replace("altb.", "altabornagy")
-        self.housenumbers.append(simplified)
 
 
 # Gets known house numbers for a single street
@@ -143,10 +117,8 @@ def getReferenceHouseNumbers(street, prefix):
     sock = open(cachePath)
     buf = sock.read()
 
-    parser = HTMLHouseNumberParser()
-    if len(buf):
-        parser.feed(buf)
-    return parser.housenumbers
+    j = json.loads(buf)
+    return [simplify(street + " " + i["label"]) for i in j]
 
 
 # Gets known house numbers (not their coordinates) from a reference site, based
