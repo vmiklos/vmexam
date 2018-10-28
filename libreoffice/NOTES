@@ -2745,6 +2745,19 @@ what is the bug? the white boxes disappear
 
 regression from 4cde2a01be75552a0b7d37f65cc4134cb48fea26
 
+=== 2018-10-26
+
+https://bugs.documentfoundation.org/show_bug.cgi?id=120735
+
+old: memory usage after file open: 401264 (res, kb)
+- 2 "xxx" layout calls
+
+new poc: avoiding all lcl_CreateLayout() calls: 360348
+
+5da57ff00b23fd9969a2bfcf4e6e1e8245dfc1a3 was the last similar fix
+
+new real fix: 366972 (res, kb) 91% of baseline
+
 <<<
 
 Problematic bugs:
