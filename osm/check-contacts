@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,42 +9,37 @@
 #
 
 import os
-from xml.dom import minidom
+import json
 
 
 class GContacts(object):
     def __init__(self):
-        configPath = os.path.expanduser("~/.gcontacts")
-        self.contactsXmlPath = os.path.join(configPath, "contacts.xml")
+        configPath = os.path.expanduser("~/.google-contacts")
+        self.contactsJsonPath = os.path.join(configPath, "contacts.json")
 
     def check(self):
-        def getName(entryNode):
-            nameNodes = [i for i in entryNode.childNodes if i.localName == "name"]
-            for nameNode in nameNodes:
-                fullNameNodes = [i for i in nameNode.childNodes if i.localName == "fullName"]
-                for fullNameNode in fullNameNodes:
-                    return fullNameNode.childNodes[0].wholeText
+        def getName(contact):
+            for name in contact["names"]:
+                if "displayName" in name.keys():
+                    return name["displayName"]
 
-        def getAddress(entryNode):
+        def getAddress(contact):
             addresses = []
-            structNodes = [i for i in entryNode.childNodes if i.localName == "structuredPostalAddress"]
-            formatNodes = []
-            for structNode in structNodes:
-                formatNodes.extend([i for i in structNode.childNodes if i.localName == "formattedAddress"])
-            for formatNode in formatNodes:
-                if len(formatNode.childNodes):
-                    addresses.append(formatNode.childNodes[0].wholeText)
+            if "addresses" not in contact.keys():
+                return addresses
+
+            for address in contact["addresses"]:
+                if "formattedValue" in address.keys():
+                    addresses.append(address["formattedValue"])
             return addresses
 
-        if not os.path.exists(self.contactsXmlPath):
+        if not os.path.exists(self.contactsJsonPath):
             return
-        contacts = minidom.parse(self.contactsXmlPath)
-        feedNode = [i for i in contacts.childNodes if i.localName == "feed"][0]
-        contactNodes = [i for i in feedNode.childNodes if i.localName == "entry"]
+        contacts = json.load(open(self.contactsJsonPath))
         matches = []
-        for contactNode in contactNodes:
-            name = getName(contactNode)
-            addresses = getAddress(contactNode)
+        for contact in contacts:
+            name = getName(contact)
+            addresses = getAddress(contact)
             if not len(addresses):
                 continue
 
@@ -55,13 +50,13 @@ class GContacts(object):
             matches.append("%s: %s" % (name, address))
         matches = sorted(set(matches))
         for i in matches:
-            print(i.encode('utf-8'))
+            print(i)
 
 
 def main():
-
     contacts = GContacts()
     contacts.check()
+
 
 if __name__ == "__main__":
     main()
