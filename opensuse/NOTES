@@ -187,5 +187,6 @@ kstart plasmashell #to restart it
 - `zypper in python2-gdata` is uninstalled by the upgrade, `python3-google-api-python-client` is the replacement package
 - pdftk is no longer in the stock repos, but packman provides it
 - `convert` to PDF is blacklisted by default, need to remove the blacklist from `/etc/ImageMagick-7_Q16HDRI6/policy.xml` manually
+- also swithced to tmpfs for /tmp, fstab line is `tmpfs /tmp tmpfs defaults,noatime,mode=1777 0 0`
 
 // vim: ft=asciidoc paste
