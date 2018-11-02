@@ -23,7 +23,6 @@ cmake \
 make -j8
 make -j8 check-clang-tools
 make install
-~/git/vmexam/llvm/llvm-style-check-files
 
 # How to enable symbols for profiling: -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_C_FLAGS='-fno-omit-frame-pointer' -DCMAKE_CXX_FLAGS='-fno-omit-frame-pointer'
 # How to enable shared libs: -DBUILD_SHARED_LIBS=ON
