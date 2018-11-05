@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stack>
 
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Frontend/FrontendActions.h>
@@ -9,6 +10,12 @@
 namespace
 {
 
+struct Entry
+{
+    clang::SourceLocation m_aLoc;
+    std::string m_aMacroName;
+};
+
 class RedundantPPCallbacks : public clang::PPCallbacks
 {
   public:
@@ -17,9 +24,17 @@ class RedundantPPCallbacks : public clang::PPCallbacks
                 const clang::MacroDefinition& rMacroDefinition) override;
     void Endif(clang::SourceLocation aLoc,
                clang::SourceLocation aIfLoc) override;
+    ~RedundantPPCallbacks() override;
 
   private:
+    clang::DiagnosticBuilder reportWarning(llvm::StringRef aString,
+                                           clang::SourceLocation aLocation);
+    clang::DiagnosticBuilder report(clang::DiagnosticIDs::Level eLevel,
+                                    llvm::StringRef aString,
+                                    clang::SourceLocation aLocation);
+
     clang::Preprocessor& m_rPP;
+    std::vector<Entry> m_aStack;
 };
 
 RedundantPPCallbacks::RedundantPPCallbacks(clang::Preprocessor& rPP)
@@ -27,24 +42,62 @@ RedundantPPCallbacks::RedundantPPCallbacks(clang::Preprocessor& rPP)
 {
 }
 
+RedundantPPCallbacks::~RedundantPPCallbacks() {}
+
 void RedundantPPCallbacks::Ifndef(
     clang::SourceLocation aLoc, const clang::Token& rMacroNameTok,
     const clang::MacroDefinition& /*rMacroDefinition*/)
 {
-    std::cerr << "debug, RedundantPPCallbacks::Ifndef: aLoc is ";
-    aLoc.dump(m_rPP.getSourceManager());
-    std::cerr << ", rMacroNameTok is '" << m_rPP.getSpelling(rMacroNameTok)
-              << "'" << std::endl;
+    if (m_rPP.getSourceManager().isInMainFile(aLoc))
+    {
+        std::string aMacroName = m_rPP.getSpelling(rMacroNameTok);
+        for (const auto& rEntry : m_aStack)
+        {
+            if (rEntry.m_aMacroName == aMacroName)
+            {
+                reportWarning("nested ifdef", aLoc);
+                report(clang::DiagnosticIDs::Note, "previous ifdef",
+                       rEntry.m_aLoc);
+            }
+        }
+    }
+
+    Entry aEntry;
+    aEntry.m_aLoc = aLoc;
+    aEntry.m_aMacroName = m_rPP.getSpelling(rMacroNameTok);
+    m_aStack.push_back(aEntry);
 }
 
-void RedundantPPCallbacks::Endif(clang::SourceLocation aLoc,
+void RedundantPPCallbacks::Endif(clang::SourceLocation /*aLoc*/,
                                  clang::SourceLocation aIfLoc)
 {
-    std::cerr << "debug, RedundantPPCallbacks::Endif: aLoc is ";
-    aLoc.dump(m_rPP.getSourceManager());
-    std::cerr << ", IfLoc is ";
-    aIfLoc.dump(m_rPP.getSourceManager());
-    std::cerr << std::endl;
+    if (m_aStack.empty())
+        return;
+
+    if (aIfLoc == m_aStack.back().m_aLoc)
+        m_aStack.pop_back();
+}
+
+clang::DiagnosticBuilder
+RedundantPPCallbacks::reportWarning(llvm::StringRef aString,
+                                    clang::SourceLocation aLocation)
+{
+    clang::DiagnosticsEngine& rEngine = m_rPP.getDiagnostics();
+    clang::DiagnosticIDs::Level eLevel = clang::DiagnosticIDs::Level::Warning;
+    if (rEngine.getWarningsAsErrors())
+        eLevel = clang::DiagnosticIDs::Level::Error;
+    return report(eLevel, aString, aLocation);
+}
+
+clang::DiagnosticBuilder
+RedundantPPCallbacks::report(clang::DiagnosticIDs::Level eLevel,
+                             llvm::StringRef aString,
+                             clang::SourceLocation aLocation)
+{
+    clang::DiagnosticsEngine& rEngine = m_rPP.getDiagnostics();
+    return rEngine.Report(
+        aLocation,
+        rEngine.getDiagnosticIDs()->getCustomDiagID(eLevel, aString));
 }
 
 class RedundantPPConsumer : public clang::ASTConsumer
