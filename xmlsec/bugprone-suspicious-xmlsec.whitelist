@@ -1,3 +1,11 @@
+src/dl.c
+src/io.c
+src/keyinfo.c
+src/keysdata.c
+src/keysmngr.c
+src/kw_aes_des.c
+src/list.c
+src/parser.c
 src/transforms.c
 src/xmldsig.c
 src/xmltree.c

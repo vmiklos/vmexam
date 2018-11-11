@@ -1,5 +1,28 @@
 {
     "source": "survey",
     "filters": {
+        "kulacs_utca": {
+            "ranges": [
+                {
+                    "start": "2",
+                    "end": "20",
+                    "isOdd": "false"
+                }
+            ]
+        },
+        "hajnalka_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "19",
+                    "isOdd": "false"
+                },
+                {
+                    "start": "2",
+                    "end": "30",
+                    "isOdd": "false"
+                }
+            ]
+        }
     }
 }
