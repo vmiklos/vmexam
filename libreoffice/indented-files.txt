@@ -33,6 +33,5 @@ writerfilter/source/dmapper/domainmapperfactory.cxx
 writerfilter/source/filter/RtfFilter.cxx
 writerfilter/source/filter/WriterFilter.cxx
 xmlsecurity/inc/certificate.hxx
-xmlsecurity/qa/unit/signing/signing.cxx
 xmlsecurity/source/helper/ooxmlsecexporter.cxx
 xmlsecurity/source/helper/ooxmlsecexporter.hxx
