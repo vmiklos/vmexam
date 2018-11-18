@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import csv
 import os
@@ -29,12 +29,12 @@ def get_osc_version(project, pkg):
         try:
             tries += 1
             spec = read_from_pipe("osc cat %s %s %s.spec 2>/dev/null" % (project, pkg, pkg))
-            line = filter(lambda x: x.startswith("Version"), spec.split('\n'))[0]
+            line = [x for x in spec.split('\n') if x.startswith("Version")][0]
             read = True
         except IndexError:
             pass
     if not len(line):
-        print "WARNING: empty output from 'osc cat home:%s %s %s.spec'" % (project, pkg, pkg)
+        print("WARNING: empty output from 'osc cat home:%s %s %s.spec'" % (project, pkg, pkg))
     return re.sub('Version:\s+', '', line)
 
 
@@ -45,7 +45,7 @@ def list_outdated(project, packages):
         downstream = get_osc_version(project, i)
         upstream = read_from_pipe(up2dates[i])
         if upstream != downstream or verbose:
-            print "%s: %s != %s" % (i, downstream, upstream)
+            print("%s: %s != %s" % (i, downstream, upstream))
 
 
 def list_failed(project, packages):
@@ -57,18 +57,18 @@ def list_failed(project, packages):
     for row in reader:
         j = 0
         for cell in row:
-            if i not in table.keys():
+            if i not in list(table.keys()):
                 table[i] = {}
             table[i][j] = cell
             j += 1
         i += 1
     sock.close()
 
-    for i in range(1, len(table.keys())):
-        for j in range(1, len(table[i].keys())):
+    for i in range(1, len(list(table.keys()))):
+        for j in range(1, len(list(table[i].keys()))):
             if (not (table[i][j] in ("succeeded", "scheduled", "disabled", "blocked"))) or verbose:
                 if (not packages) or table[i][0] in packages:
-                    print "%s: %s on %s" % (table[i][0], table[i][j], table[0][j])
+                    print("%s: %s on %s" % (table[i][0], table[i][j], table[0][j]))
 
 
 def check_project(project, packages=None):
