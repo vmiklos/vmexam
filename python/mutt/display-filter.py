@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import time, rfc822, sys, re
-from email.Utils import formatdate
+import time, sys, re
+import email.utils
 
 def get_zone():
 	now = time.localtime()
@@ -21,10 +21,10 @@ def improve_date(input):
 	if mytz[1:-1] in time.tzname or mytz == get_zone():
 		return input
 	else:
-		tz = rfc822.parsedate_tz(input)
+		tz = email.utils.parsedate_tz(input)
 		if not tz or not tz[9]:
 			return input
-		return "%s (%s)" % (formatdate(time.mktime(tz[:9])-tz[9]-(time.timezone), True), input)
+		return "%s (%s)" % (email.utils.formatdate(time.mktime(tz[:9])-tz[9]-(time.timezone), True), input)
 
 lines = sys.stdin.readlines()
 
@@ -40,7 +40,7 @@ for i in lines:
 	if i.startswith("Date: "):
 		date = i[6:-1]
 		try:
-			ym = time.strftime("%Y-%m", rfc822.parsedate_tz(date)[:-1])
+			ym = time.strftime("%Y-%m", email.utils.parsedate_tz(date)[:-1])
 		except TypeError:
 			pass
 		o.append("Date: %s\n" % improve_date(date))
