@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import json
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import os
 
 
@@ -10,8 +10,8 @@ def system(cmd):
 
 
 os.chdir(os.path.dirname(__file__))
-sock = urllib.urlopen('https://api.github.com/users/%s/repos?per_page=100' % os.environ['USER'])
-repos = json.load(sock)
+sock = urllib.request.urlopen('https://api.github.com/users/%s/repos?per_page=100' % os.environ['USER'])
+repos = json.loads(sock.read().decode('utf-8'))
 for i in repos:
     if os.path.exists("%s.git" % i['name']):
         system("echo Updating existing repo %s" % i['name'])
