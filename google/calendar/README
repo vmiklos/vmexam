@@ -1,6 +1,6 @@
 The 'backup' script aims to back up your google calendar events into a
 pretty-printed JSON, i.e. something you can check into git.
 
-Documentation: https://developers.google.com/calendar/quickstart/python
+Documentation: <https://developers.google.com/calendar/quickstart/python>.
 
 This is intentionally written in Python3 (not 2).

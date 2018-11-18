@@ -4,7 +4,7 @@
 	type /py load prefix to load it
 
 	changelog:
-	- 0.2: rewritten in python
+	- 0.2: rewritten from perl
 	- 0.1: initial perl script by Gabor Adam TOTH
 """
 

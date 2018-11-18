@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: iso-8859-2 -*-
 
 """
@@ -8,7 +7,7 @@
 
 	changelog:
 	- 2.1: added /nounaccent command
-	- 2.0: rewritten in python
+	- 2.0: rewritten from perl
 	- 1.34: initial perl script by Tamas SZERB
 """
 

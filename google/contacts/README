@@ -3,6 +3,6 @@ pretty-printed JSON, i.e. something you can check into git. Additionally it
 dumps just name-email pairs into a separate XML, something you can configure
 as address book source.
 
-Documentation: https://developers.google.com/people/quickstart/python
+Documentation: <https://developers.google.com/people/quickstart/python>.
 
 This is intentionally written in Python3 (not 2).

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: iso-8859-2 -*-
 
 # enforces a ban on a given channel if the unbanner matches regex
