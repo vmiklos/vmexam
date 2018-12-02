@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "zsigmondy_vilmos_utca": {
+            "ranges": [
+                {
+                    "start": "2",
+                    "end": "10",
+                    "isOdd": "false"
+                },
+                {
+                    "start": "1",
+                    "end": "29",
+                    "isOdd": "true"
+                }
+            ]
+        },
         "kulacs_utca": {
             "ranges": [
                 {
