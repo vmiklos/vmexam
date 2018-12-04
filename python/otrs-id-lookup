@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,14 +18,14 @@
 # Usage: ./otrs-id-lookup bug#12345
 #
 
-import ConfigParser
+import configparser
 import os
 import base64
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import sys
 from xml.dom import minidom
 
-config = ConfigParser.RawConfigParser()
+config = configparser.RawConfigParser()
 config.read(os.path.expanduser('~/.otrsrc'))
 url = config.sections()[0]
 user = config.get(url, "soap_user")
@@ -36,7 +36,7 @@ for prefix in prefixes:
 	number = number.replace(prefix, '')
 
 headers = {}
-headers['Authorization'] = 'Basic ' + base64.encodestring('%s:%s' % (user, password)).strip()
+headers['Authorization'] = 'Basic ' + base64.encodestring(('%s:%s' % (user, password)).encode('utf-8')).decode('utf-8').strip()
 headers['SOAPAction'] = '"Core#Dispatch"'
 headers['Content-Type'] = 'text/xml; charset=utf-8'
 
@@ -54,9 +54,9 @@ body = """<?xml version="1.0" encoding="UTF-8"?>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>""" % (user, password, number)
 
-req = urllib2.Request(url, data=body, headers=headers)
-response = urllib2.urlopen(req)
+req = urllib.request.Request(url, data=body.encode('utf-8'), headers=headers)
+response = urllib.request.urlopen(req)
 doc = minidom.parseString(response.read())
 # root -> soap:Envelope -> soap:Body -> DispatchResponse -> s-gensym3
-id = doc.childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].toxml().encode('utf-8')
-print "%s/index.pl?Action=AgentTicketZoom;TicketID=%s" % (url.replace('/rpc.pl', ''), id)
+id = doc.childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].toxml()
+print("%s/index.pl?Action=AgentTicketZoom;TicketID=%s" % (url.replace('/rpc.pl', ''), id))
