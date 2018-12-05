@@ -1,3 +1,5 @@
+# sudo zypper -p https://download.opensuse.org/repositories/devel:/tools:/compiler/openSUSE_Leap_15.0/ in clang7-devel
+# as the default 5.0.1 on openSUSE Leap 15.0 is too old (<5.0.2)
 CC=clang
 CXX=clang++
 --enable-dbgutil
