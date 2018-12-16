@@ -56,4 +56,12 @@ with:
 
 to query the non-latest version.
 
+== Android apps
+
+- osmand (there is available for iOS as well)
+- keypad mapper
+- streetcomplete
+- open camera
+- vespucci
+
 // vim: ft=asciidoc
