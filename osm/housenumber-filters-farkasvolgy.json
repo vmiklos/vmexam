@@ -1,6 +1,15 @@
 {
     "source": "survey",
     "filters": {
+        "arato_koz": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "5",
+                    "isOdd": "true"
+                }
+            ]
+        },
         "zsigmondy_vilmos_utca": {
             "ranges": [
                 {
