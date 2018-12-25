@@ -10,6 +10,8 @@ cmake \
     -DCMAKE_INSTALL_PREFIX=$PWD/../instdir \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_PREFIX_PATH=/usr/lib/llvm-7 \
+    -DCMAKE_C_COMPILER="clang" \
+    -DCMAKE_CXX_COMPILER="clang++" \
     ..
 make -j8
 make install
