@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "arato_utca": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "45",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "44",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "arato_koz": {
             "ranges": [
                 {
