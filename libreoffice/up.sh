@@ -12,7 +12,7 @@ if [ -e Makefile ]; then
     make distclean
 fi
 ./autogen.sh
-make build-nocheck
+make build-nocheck || make build-nocheck
 if [ "$(git config libreoffice.bibisect)" == "true" ]; then
     sh ~/git/vmexam/libreoffice/daily.sh
 fi
