@@ -1,0 +1,12 @@
+Rust version of addr-osmify, mainly just because I wanted to practice Rurst on
+something real-word. Error handling is just panic all over the place to keep
+the code short.
+
+Pedantic error handling could be done like this:
+
+- return Result everywhere, as described in
+  <https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html>
+- use Result<(), Box<std::error::Error>> to mix multiple error types (example
+  is for void functions)
+- <https://internals.rust-lang.org/t/should-noneerror-implement-the-error-trait/6312/5>
+  mentions that ok_or() can turn a non-Error Option<> error into an Error
