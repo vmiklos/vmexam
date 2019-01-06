@@ -2,6 +2,29 @@ extern crate reqwest;
 extern crate serde_json;
 extern crate url;
 
+#[derive(Debug)]
+struct OsmifyError {
+    details: String
+}
+
+impl OsmifyError {
+    fn new(msg: &str) -> OsmifyError {
+        OsmifyError{details: msg.to_string()}
+    }
+}
+
+impl std::fmt::Display for OsmifyError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.details)
+    }
+}
+
+impl std::error::Error for OsmifyError {
+    fn description(&self) -> &str {
+        &self.details
+    }
+}
+
 fn query_turbo(query: &str) -> Result<String, Box<dyn std::error::Error>> {
     let url = "http://overpass-api.de/api/interpreter";
 
@@ -26,19 +49,20 @@ fn query_nominatim(query: &str) -> Result<String, Box<dyn std::error::Error>> {
 
     let mut buf = reqwest::get(url.as_str())?;
 
-    match buf.text() {
-        Ok(value) => Ok(value),
-        Err(error) => Err(Box::new(error)),
-    }
+    Ok(buf.text()?)
 }
 
-fn osmify(query: &str) -> Result<(), Box<dyn std::error::Error>> {
+fn osmify(query: &str) -> Result<String, Box<dyn std::error::Error>> {
     let nominatim = query_nominatim(query)?;
-    let json: serde_json::Value = serde_json::from_str(&nominatim)?;
+    let json: serde_json::Value = match serde_json::from_str(&nominatim) {
+        Ok(value) => value,
+        Err(error) => {
+            return Err(Box::new(OsmifyError::new(&format!("Failed to parse JSON from nominatim: {:?}", error))));
+        },
+    };
     let mut elements = json.as_array().ok_or("option::NoneError")?.clone();
     if elements.is_empty() {
-        println!("No results from nominatim");
-        return Ok(());
+        return Err(Box::new(OsmifyError::new("No results from nominatim")));
     }
 
     if elements.len() > 1 {
@@ -76,12 +100,16 @@ fn osmify(query: &str) -> Result<(), Box<dyn std::error::Error>> {
 );
 out body;"#, object_type, object_id);
     let turbo = query_turbo(&overpass_query)?;
-    let json: serde_json::Value = serde_json::from_str(&turbo)?;
+    let json: serde_json::Value = match serde_json::from_str(&turbo) {
+        Ok(value) => value,
+        Err(error) => {
+            return Err(Box::new(OsmifyError::new(&format!("Failed to parse JSON from overpass: {:?}", error))));
+        },
+    };
     let json = json.as_object().ok_or("option::NoneError")?;
     let elements = &json["elements"].as_array().ok_or("option::NoneError")?;
     if elements.is_empty() {
-        println!("No results from overpass");
-        return Ok(());
+        return Err(Box::new(OsmifyError::new("No results from overpass")));
     }
 
     let element = &elements[0];
@@ -93,15 +121,15 @@ out body;"#, object_type, object_id);
     let addr = format!("{} {}, {} {}", postcode, city, street, housenumber);
 
     // Print the result.
-    println!("geo:{},{} ({})", lat, lon, addr);
-    Ok(())
+    Ok(String::from(format!("geo:{},{} ({})", lat, lon, addr)))
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = std::env::args().collect();
 
     if args.len() > 1 {
-        osmify(&args[1])?;
+        let result = osmify(&args[1])?;
+        println!("{}", result);
     } else {
         println!("usage: addr-osmify <query>");
         println!("");
