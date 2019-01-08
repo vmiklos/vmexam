@@ -2,6 +2,8 @@ extern crate reqwest;
 extern crate serde_json;
 extern crate url;
 
+use std::io::Write;
+
 #[derive(Debug)]
 struct OsmifyError {
     details: String
@@ -124,12 +126,38 @@ out body;"#, object_type, object_id);
     Ok(String::from(format!("geo:{},{} ({})", lat, lon, addr)))
 }
 
+fn spinner(rx: std::sync::mpsc::Receiver<String>) -> Result<(), Box<dyn std::error::Error>> {
+    let spin_characters = vec!['\\', '|', '/', '-'];
+    let mut spin_index = 0;
+    loop {
+        match rx.try_recv() {
+            Ok(result) => {
+                println!("\r{}", result);
+                return Ok(());
+            },
+            Err(_) => {
+                print!("\r [{}] ", spin_characters[spin_index]);
+                std::io::stdout().flush()?;
+                spin_index = (spin_index + 1) % spin_characters.len();
+                std::thread::sleep(std::time::Duration::from_millis(100));
+            }
+        }
+    }
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = std::env::args().collect();
 
     if args.len() > 1 {
-        let result = osmify(&args[1])?;
-        println!("{}", result);
+        let (tx, rx) = std::sync::mpsc::channel();
+        std::thread::spawn(move || {
+            let result = osmify(&args[1]);
+            match result {
+                Ok(value) => tx.send(value),
+                Err(error) => tx.send(format!("Failed to osmify: {:?}", error)),
+            }
+        });
+        spinner(rx)?;
     } else {
         println!("usage: addr-osmify <query>");
         println!("");
