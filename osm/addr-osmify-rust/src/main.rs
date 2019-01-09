@@ -4,6 +4,8 @@ extern crate url;
 
 use std::io::Write;
 
+type BoxResult<T> = Result<T, Box<std::error::Error>>;
+
 #[derive(Debug)]
 struct OsmifyError {
     details: String
@@ -27,7 +29,7 @@ impl std::error::Error for OsmifyError {
     }
 }
 
-fn query_turbo(query: &str) -> Result<String, Box<dyn std::error::Error>> {
+fn query_turbo(query: &str) -> BoxResult<String> {
     let url = "http://overpass-api.de/api/interpreter";
 
     let client = reqwest::Client::new();
@@ -35,13 +37,10 @@ fn query_turbo(query: &str) -> Result<String, Box<dyn std::error::Error>> {
     let mut buf = client.post(url)
         .body(body)
         .send()?;
-    match buf.text() {
-        Ok(value) => Ok(value),
-        Err(error) => Err(Box::new(error)),
-    }
+    Ok(buf.text()?)
 }
 
-fn query_nominatim(query: &str) -> Result<String, Box<dyn std::error::Error>> {
+fn query_nominatim(query: &str) -> BoxResult<String> {
     let prefix = "http://nominatim.openstreetmap.org/search.php?";
     let encoded: String = url::form_urlencoded::Serializer::new(String::new())
         .append_pair("q", query)
@@ -54,7 +53,7 @@ fn query_nominatim(query: &str) -> Result<String, Box<dyn std::error::Error>> {
     Ok(buf.text()?)
 }
 
-fn osmify(query: &str) -> Result<String, Box<dyn std::error::Error>> {
+fn osmify(query: &str) -> BoxResult<String> {
     let nominatim = query_nominatim(query)?;
     let json: serde_json::Value = match serde_json::from_str(&nominatim) {
         Ok(value) => value,
@@ -126,13 +125,16 @@ out body;"#, object_type, object_id);
     Ok(String::from(format!("geo:{},{} ({})", lat, lon, addr)))
 }
 
-fn spinner(rx: std::sync::mpsc::Receiver<String>) -> Result<(), Box<dyn std::error::Error>> {
+fn spinner(rx: std::sync::mpsc::Receiver<Result<String, String>>) -> BoxResult<()> {
     let spin_characters = vec!['\\', '|', '/', '-'];
     let mut spin_index = 0;
     loop {
         match rx.try_recv() {
             Ok(result) => {
-                println!("\r{}", result);
+                print!("\r");
+                std::io::stdout().flush()?;
+                let result = result?;
+                println!("{}", result);
                 return Ok(());
             },
             Err(_) => {
@@ -145,7 +147,7 @@ fn spinner(rx: std::sync::mpsc::Receiver<String>) -> Result<(), Box<dyn std::err
     }
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> BoxResult<()> {
     let args: Vec<String> = std::env::args().collect();
 
     if args.len() > 1 {
@@ -153,8 +155,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         std::thread::spawn(move || {
             let result = osmify(&args[1]);
             match result {
-                Ok(value) => tx.send(value),
-                Err(error) => tx.send(format!("Failed to osmify: {:?}", error)),
+                Ok(value) => tx.send(Ok(value)),
+                Err(error) => tx.send(Err(format!("Failed to osmify: {:?}", error))),
             }
         });
         spinner(rx)?;
