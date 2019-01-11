@@ -1,8 +1,8 @@
 ---
-# Would be nice, but depends on C++17:
-# - modernize-concat-nested-namespaces
-# New check, will be interesting later:
-# - modernize-avoid-c-arrays
+# - modernize-concat-nested-namespaces: requires C++17, should be good by now
+#   in theory
+# - modernize-avoid-c-arrays: new check, get back to this later
+# - modernize-use-nodiscard: new check, get back to this later
 Checks: "clang-diagnostic-*,\
 -clang-analyzer-cplusplus.NewDelete,\
 -clang-analyzer-cplusplus.NewDeleteLeaks,\
@@ -12,6 +12,7 @@ modernize-*,\
 -modernize-raw-string-literal,\
 -modernize-concat-nested-namespaces,\
 -modernize-avoid-c-arrays,\
+-modernize-use-nodiscard,\
 misc-*,\
 bugprone-*,\
 -bugprone-narrowing-conversions,\
