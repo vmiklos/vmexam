@@ -27,6 +27,7 @@ update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdag
 	./overpass-query workdir/street-housenumbers-balatonboglar.txt > workdir/street-housenumbers-balatonboglar.csv
 	./overpass-query workdir/street-housenumbers-szigetmonostor.txt > workdir/street-housenumbers-szigetmonostor.csv
 	./overpass-query workdir/street-housenumbers-krisztinavaros.txt > workdir/street-housenumbers-krisztinavaros.csv
+	./overpass-query workdir/street-housenumbers-lagymanyos.txt > workdir/street-housenumbers-lagymanyos.csv
 
 update-addr-interpolation: addr-interpolation.txt workdir/street-housenumbers-gazdagret.txt workdir/street-housenumbers-sashegy.txt
 	@mkdir -p workdir
@@ -168,3 +169,7 @@ workdir/street-housenumbers-farkasvolgy.txt: street-housenumbers.txt
 workdir/street-housenumbers-krisztinavaros.txt: street-housenumbers.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602786310/' street-housenumbers.txt > workdir/street-housenumbers-krisztinavaros.txt
+
+workdir/street-housenumbers-lagymanyos.txt: street-housenumbers.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3602702615/' street-housenumbers.txt > workdir/street-housenumbers-lagymanyos.txt
