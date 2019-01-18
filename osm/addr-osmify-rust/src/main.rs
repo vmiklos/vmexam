@@ -87,7 +87,7 @@ fn osmify(query: &str) -> BoxResult<String> {
                 Some(value) => value == "building",
                 None => false,
             }
-        } ).map(|i| i.clone()).collect();
+        } ).cloned().collect();
 
         if !buildings.is_empty() {
             elements = buildings;
@@ -128,10 +128,10 @@ out body;"#, object_type, object_id);
     let addr = format!("{} {}, {} {}", postcode, city, street, housenumber);
 
     // Print the result.
-    Ok(String::from(format!("geo:{},{} ({})", lat, lon, addr)))
+    Ok(format!("geo:{},{} ({})", lat, lon, addr))
 }
 
-fn spinner(rx: std::sync::mpsc::Receiver<Result<String, String>>) -> BoxResult<()> {
+fn spinner(rx: &std::sync::mpsc::Receiver<Result<String, String>>) -> BoxResult<()> {
     let spin_characters = vec!['\\', '|', '/', '-'];
     let mut spin_index = 0;
     loop {
@@ -165,10 +165,10 @@ fn main() -> BoxResult<()> {
                 Err(error) => tx.send(Err(format!("Failed to osmify: {:?}", error))),
             }
         });
-        spinner(rx)?;
+        spinner(&rx)?;
     } else {
         println!("usage: addr-osmify <query>");
-        println!("");
+        println!();
         println!("e.g. addr-osmify 'Mészáros utca 58/a, Budapest'");
     }
 
