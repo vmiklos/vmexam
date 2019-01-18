@@ -39,10 +39,10 @@ update-addr-interpolation: addr-interpolation.txt workdir/street-housenumbers-ga
 
 # At the end this check found no problems, so this is not part of 'make check'.
 update-postcodes:
-	rm Iranyitoszam_Internet.*
-	wget https://posta.hu/static/internet/download/Iranyitoszam_Internet.XLS
-	libreoffice --headless --convert-to fods Iranyitoszam_Internet.XLS
-	./generate-postcode-csv Iranyitoszam_Internet.fods > workdir/postcodes.csv
+	rm -f Iranyitoszam-Internet_uj.*
+	wget https://www.posta.hu/static/internet/download/Iranyitoszam-Internet_uj.xlsx
+	libreoffice --headless --convert-to fods Iranyitoszam-Internet_uj.xlsx
+	./generate-postcode-csv Iranyitoszam-Internet_uj.fods > workdir/postcodes.csv
 
 update-osmose-$(USER):
 	@mkdir -p workdir
