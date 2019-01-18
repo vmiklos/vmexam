@@ -14,12 +14,14 @@ type BoxResult<T> = Result<T, Box<std::error::Error>>;
 
 #[derive(Debug)]
 struct OsmifyError {
-    details: String
+    details: String,
 }
 
 impl OsmifyError {
     fn new(msg: &str) -> OsmifyError {
-        OsmifyError{details: msg.to_string()}
+        OsmifyError {
+            details: msg.to_string(),
+        }
     }
 }
 
@@ -40,9 +42,7 @@ fn query_turbo(query: &str) -> BoxResult<String> {
 
     let client = reqwest::Client::new();
     let body = String::from(query);
-    let mut buf = client.post(url)
-        .body(body)
-        .send()?;
+    let mut buf = client.post(url).body(body).send()?;
     Ok(buf.text()?)
 }
 
@@ -64,8 +64,11 @@ fn osmify(query: &str) -> BoxResult<String> {
     let json: serde_json::Value = match serde_json::from_str(&nominatim) {
         Ok(value) => value,
         Err(error) => {
-            return Err(Box::new(OsmifyError::new(&format!("Failed to parse JSON from nominatim: {:?}", error))));
-        },
+            return Err(Box::new(OsmifyError::new(&format!(
+                "Failed to parse JSON from nominatim: {:?}",
+                error
+            ))));
+        }
     };
     let mut elements = json.as_array().ok_or("option::NoneError")?.clone();
     if elements.is_empty() {
@@ -74,20 +77,24 @@ fn osmify(query: &str) -> BoxResult<String> {
 
     if elements.len() > 1 {
         // There are multiple elements, prefer buildings if possible.
-        let buildings: Vec<serde_json::Value> = elements.iter().filter(|i| {
-            let i = match i.as_object() {
-                Some(value) => value,
-                None => return false,
-            };
-            let class = match i.get("class") {
-                Some(value) => value.as_str(),
-                None => return false,
-            };
-            match class {
-                Some(value) => value == "building",
-                None => false,
-            }
-        } ).cloned().collect();
+        let buildings: Vec<serde_json::Value> = elements
+            .iter()
+            .filter(|i| {
+                let i = match i.as_object() {
+                    Some(value) => value,
+                    None => return false,
+                };
+                let class = match i.get("class") {
+                    Some(value) => value.as_str(),
+                    None => return false,
+                };
+                match class {
+                    Some(value) => value == "building",
+                    None => false,
+                }
+            })
+            .cloned()
+            .collect();
 
         if !buildings.is_empty() {
             elements = buildings;
@@ -101,17 +108,23 @@ fn osmify(query: &str) -> BoxResult<String> {
     let object_id = element["osm_id"].as_str().ok_or("option::NoneError")?;
 
     // Use overpass to get the properties of the object.
-    let overpass_query = format!(r#"[out:json];
+    let overpass_query = format!(
+        r#"[out:json];
 (
     {}({});
 );
-out body;"#, object_type, object_id);
+out body;"#,
+        object_type, object_id
+    );
     let turbo = query_turbo(&overpass_query)?;
     let json: serde_json::Value = match serde_json::from_str(&turbo) {
         Ok(value) => value,
         Err(error) => {
-            return Err(Box::new(OsmifyError::new(&format!("Failed to parse JSON from overpass: {:?}", error))));
-        },
+            return Err(Box::new(OsmifyError::new(&format!(
+                "Failed to parse JSON from overpass: {:?}",
+                error
+            ))));
+        }
     };
     let json = json.as_object().ok_or("option::NoneError")?;
     let elements = &json["elements"].as_array().ok_or("option::NoneError")?;
@@ -122,7 +135,9 @@ out body;"#, object_type, object_id);
     let element = &elements[0];
     let tags = element["tags"].as_object().ok_or("option::NoneError")?;
     let city = tags["addr:city"].as_str().ok_or("option::NoneError")?;
-    let housenumber = tags["addr:housenumber"].as_str().ok_or("option::NoneError")?;
+    let housenumber = tags["addr:housenumber"]
+        .as_str()
+        .ok_or("option::NoneError")?;
     let postcode = tags["addr:postcode"].as_str().ok_or("option::NoneError")?;
     let street = tags["addr:street"].as_str().ok_or("option::NoneError")?;
     let addr = format!("{} {}, {} {}", postcode, city, street, housenumber);
@@ -142,7 +157,7 @@ fn spinner(rx: &std::sync::mpsc::Receiver<Result<String, String>>) -> BoxResult<
                 let result = result?;
                 println!("{}", result);
                 return Ok(());
-            },
+            }
             Err(_) => {
                 print!("\r [{}] ", spin_characters[spin_index]);
                 std::io::stdout().flush()?;
