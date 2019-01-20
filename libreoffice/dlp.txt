@@ -15,6 +15,14 @@ clang-apply-replacements -remove-change-desc-files clang
 git show|grep 'for.*m_.* :'
 ----
 
+- .clang-tidy template:
+
+----
+Checks: '-*,bugprone-too-small-loop-variable'
+WarningsAsErrors: '*'
+
+----
+
 == librevenge
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
@@ -23,22 +31,22 @@ git show|grep 'for.*m_.* :'
 == libodfgen
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept, bugprone-too-small-loop-variable
 
 == libepubgen
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept, bugprone-too-small-loop-variable
 
 == librvngabw
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept, bugprone-too-small-loop-variable
 
 == libwpd
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept, bugprone-too-small-loop-variable
 
 == libwpg
 
