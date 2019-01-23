@@ -41,6 +41,13 @@ ctags --c++-kinds=+p --fields=+iaS --extra=+q -R --totals=yes $(git ls-files|gre
 workdir/pdfium_embeddertests --gtest_filter=FPDFEditEmbeddertest.AddPaths
 ----
 
+compile commands:
+
+----
+cd workdir
+ninja -t compdb cc cxx >../compile_commands.json
+----
+
 == path API
 
 - first goal: expose # of points in a path -> patch is at https://pdfium-review.googlesource.com/c/pdfium/+/13592
