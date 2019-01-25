@@ -17,6 +17,8 @@ filter/source/msfilter/rtfutil.cxx
 include/svl/grabbagitem.hxx
 include/vcl/filter/pdfdocument.hxx
 include/vcl/pdfread.hxx
+oox/source/shape/WpsContext.cxx
+oox/source/shape/WpsContext.hxx
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
 svl/source/items/grabbagitem.cxx

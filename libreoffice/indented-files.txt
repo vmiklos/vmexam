@@ -9,8 +9,6 @@ oox/source/shape/LockedCanvasContext.cxx
 oox/source/shape/LockedCanvasContext.hxx
 oox/source/shape/WpgContext.cxx
 oox/source/shape/WpgContext.hxx
-oox/source/shape/WpsContext.cxx
-oox/source/shape/WpsContext.hxx
 starmath/source/unofilter.cxx
 starmath/source/wordexportbase.cxx
 svx/qa/unit/xoutdev.cxx
