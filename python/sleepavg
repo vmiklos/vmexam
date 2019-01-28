@@ -30,7 +30,7 @@ def main(argv):
             sum += int(sec)
 
     avg = sum / count
-    print("Average is " + str(datetime.timedelta(seconds=avg)))
+    print("Average is " + str(datetime.timedelta(seconds=avg)) + " (" + str(count) + " nigths)")
 
 
 if __name__ == "__main__":
