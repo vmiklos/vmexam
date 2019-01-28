@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+#
+# Copyright 2019 Miklos Vajna. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Takes a CSV dump of a sleep tracker in the format of
+# <https://play.google.com/store/apps/details?id=com.primenap>, i.e. 4th col
+# contains the sleep duration in seconds -- and prints out the average.
+
+import csv
+import datetime
+import sys
+
+
+def main(argv):
+    count = 0
+    sum = 0
+    with open(argv[0], newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        first = True
+        for row in reader:
+            sec = row[3]
+            if first:
+                first = False
+                assert sec == "Duration(sec)"
+                continue
+
+            count += 1
+            sum += int(sec)
+
+    avg = sum / count
+    print("Average is " + str(datetime.timedelta(seconds=avg)))
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
