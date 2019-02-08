@@ -1,0 +1,6 @@
+= objc notes
+
+== Linux
+
+- http://wiki.gnustep.org/index.php/GNUstep_under_Ubuntu_Linux this works in a 18.04 chroot
+- https://www.journaldev.com/9512/objective-c-hello-world-tutorial this hello world builds and runs
