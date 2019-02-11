@@ -86,27 +86,27 @@ WarningsAsErrors: '*'
 == libetonyek
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept, bugprone-too-small-loop-variable
 
 == libfreehand
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept, bugprone-too-small-loop-variable
 
 == libe-book
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept, bugprone-too-small-loop-variable
 
 == libpagemaker
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept, bugprone-too-small-loop-variable
 
 == libzmf
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept, bugprone-too-small-loop-variable
 
 == libstaroffice
 
