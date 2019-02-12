@@ -111,6 +111,6 @@ WarningsAsErrors: '*'
 == libstaroffice
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept, bugprone-too-small-loop-variable
 
 // vim: ft=asciidoc paste
