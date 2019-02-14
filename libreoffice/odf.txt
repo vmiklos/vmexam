@@ -30,4 +30,10 @@
 - Proposal: https://issues.oasis-open.org/browse/OFFICE-3761
 - Status: open
 
+== btlr text direction
+
+- Date: 2019-02-14
+- Proposal: https://issues.oasis-open.org/browse/OFFICE-4030
+- Status: open
+
 // vim: ft=asciidoc
