@@ -1,6 +1,15 @@
 {
     "source": "survey",
     "filters": {
+        "edvi_illes_ut": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "49",
+                    "isOdd": "true"
+                }
+            ]
+        },
         "amor_utca": {
             "ranges": [
                 {
