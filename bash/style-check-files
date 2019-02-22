@@ -25,7 +25,7 @@ do
 		fi
 		find-unsorted-includes $file || exit 1
 		# Use css:: instead.
-		grep -H -n com::sun::star:: $file && exit 1
+		grep -H -n using.*com::sun::star:: $file && exit 1
 		;;
 	*.py)
 		pycodestyle --ignore=E501 $file || exit 1
