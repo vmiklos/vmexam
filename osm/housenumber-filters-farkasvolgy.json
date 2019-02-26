@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "kazmer_ut": {
+            "ranges": [
+                {
+                    "start": "1",
+                    "end": "37",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "54",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "edvi_illes_ut": {
             "ranges": [
                 {
