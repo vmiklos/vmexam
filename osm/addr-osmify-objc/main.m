@@ -91,7 +91,19 @@ void osmify(NSString* query)
     if ([elements count] > 1)
     {
         // There are multiple elements, prefer buildings if possible.
-        // TODO
+        // Example where this is useful: 'Karinthy Frigyes út 18, Budapest'.
+        NSMutableArray* buildings = [NSMutableArray new];
+        for (NSDictionary* element in elements)
+        {
+            NSString* class = [element objectForKey:@"class"];
+            if (!class || ![class isEqualToString:@"building"])
+                continue;
+
+            [buildings addObject:element];
+        }
+
+        if ([buildings count] > 0)
+            elements = buildings;
     }
     NSDictionary* element = elements[0];
     NSString* lat = [element objectForKey:@"lat"];
