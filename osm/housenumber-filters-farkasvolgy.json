@@ -1,6 +1,20 @@
 {
     "source": "survey",
     "filters": {
+        "racz_aladar_ut": {
+            "ranges": [
+                {
+                    "start": "5",
+                    "end": "95",
+                    "isOdd": "true"
+                },
+                {
+                    "start": "2",
+                    "end": "154",
+                    "isOdd": "false"
+                }
+            ]
+        },
         "kazmer_ut": {
             "ranges": [
                 {
