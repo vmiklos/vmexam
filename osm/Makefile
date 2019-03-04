@@ -76,7 +76,7 @@ check: check-style download
 	qa/suspicious-streets.py -sashegy
 	qa/suspicious-streets.py -nemetvolgy
 	qa/suspicious-streets.py -ormezo
-	#qa/suspicious-streets.py -farkasvolgy
+	qa/suspicious-streets.py -farkasvolgy
 
 workdir/streets-balatonboglar.txt: streets.txt
 	@mkdir -p workdir
