@@ -4,6 +4,7 @@
  * found in the LICENSE file.
  */
 
+extern crate atty;
 extern crate reqwest;
 extern crate serde_json;
 extern crate url;
@@ -152,14 +153,18 @@ fn spinner(rx: &std::sync::mpsc::Receiver<Result<String, String>>) -> BoxResult<
     loop {
         match rx.try_recv() {
             Ok(result) => {
-                print!("\r");
+                if atty::is(atty::Stream::Stdout) {
+                    print!("\r");
+                }
                 std::io::stdout().flush()?;
                 let result = result?;
                 println!("{}", result);
                 return Ok(());
             }
             Err(_) => {
-                print!("\r [{}] ", spin_characters[spin_index]);
+                if atty::is(atty::Stream::Stdout) {
+                    print!("\r [{}] ", spin_characters[spin_index]);
+                }
                 std::io::stdout().flush()?;
                 spin_index = (spin_index + 1) % spin_characters.len();
                 std::thread::sleep(std::time::Duration::from_millis(100));

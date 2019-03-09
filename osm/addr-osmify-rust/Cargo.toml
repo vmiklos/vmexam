@@ -1,10 +1,11 @@
 [package]
 name = "addr-osmify-rust"
 version = "0.1.0"
-authors = ["Miklos Vajna <vmiklos@collabora.com>"]
+authors = ["Miklos Vajna <vmiklos@vmiklos.hu>"]
 edition = "2018"
 
 [dependencies]
+atty = "0.2"
 reqwest = "0.9.5"
 serde_json = "1.0"
 url = "1.7.2"
