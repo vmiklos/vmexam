@@ -103,10 +103,10 @@ fn osmify(query: &str) -> BoxResult<String> {
     }
 
     let element = elements[0].as_object().ok_or("option::NoneError")?;
-    let lat = element["lat"].as_str().ok_or("option::NoneError")?;
-    let lon = element["lon"].as_str().ok_or("option::NoneError")?;
-    let object_type = element["osm_type"].as_str().ok_or("option::NoneError")?;
-    let object_id = element["osm_id"].as_str().ok_or("option::NoneError")?;
+    let lat = element["lat"].as_str().ok_or("no lat in json from nominatim")?;
+    let lon = element["lon"].as_str().ok_or("no lon in json from nominatim")?;
+    let object_type = element["osm_type"].as_str().ok_or("no osm_type in json from nominatim")?;
+    let object_id = element["osm_id"].as_u64().ok_or("no osm_id in json from nominatim")?;
 
     // Use overpass to get the properties of the object.
     let overpass_query = format!(
