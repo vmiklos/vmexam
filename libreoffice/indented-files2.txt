@@ -23,10 +23,13 @@ starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
 svl/source/items/grabbagitem.cxx
 svtools/qa/unit/testHtmlReader.cxx
+svx/qa/unit/unodraw.cxx
 sw/inc/textboxhelper.hxx
 sw/qa/extras/layout/layout.cxx
 sw/qa/extras/rtfexport/rtfexport.cxx
 sw/qa/extras/rtfimport/rtfimport.cxx
+sw/qa/extras/uiwriter/uiwriter2.cxx
+sw/qa/extras/unowriter/unowriter.cxx
 sw/source/core/doc/textboxhelper.cxx
 sw/source/filter/html/htmlreqifreader.cxx
 sw/source/filter/html/htmlreqifreader.hxx
@@ -44,6 +47,7 @@ sw/source/filter/ww8/rtfsdrexport.cxx
 sw/source/filter/ww8/rtfsdrexport.hxx
 sw/source/filter/ww8/rtfstringbuffer.cxx
 sw/source/filter/ww8/rtfstringbuffer.hxx
+vcl/qa/cppunit/gen/gen.cxx
 vcl/source/filter/ipdf/pdfdocument.cxx
 vcl/source/filter/ipdf/pdfread.cxx
 writerfilter/inc/rtftok/RTFDocument.hxx
