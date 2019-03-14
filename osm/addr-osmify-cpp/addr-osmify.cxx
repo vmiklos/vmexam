@@ -4,10 +4,15 @@
  * found in the LICENSE file.
  */
 
+#include <chrono>
+#include <condition_variable>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <sstream>
 #include <string>
+#include <thread>
+#include <vector>
 
 #include <Poco/Dynamic/Var.h>
 #include <Poco/Exception.h>
@@ -27,6 +32,11 @@
 #include <Poco/StreamCopier.h>
 #include <Poco/URI.h>
 #include <Poco/URIStreamOpener.h>
+
+std::mutex mutex;
+std::condition_variable conditionVariable;
+std::stringstream result;
+bool processed = false;
 
 /// Handles SSL state lifecycle.
 class SslContext
@@ -105,14 +115,14 @@ void osmify(const std::string& query)
     }
     catch (const Poco::Exception& exception)
     {
-        std::cerr << "Failed to parse JSON from nominatim: "
-                  << exception.message() << std::endl;
+        result << "Failed to parse JSON from nominatim: "
+               << exception.message();
         return;
     }
     auto elementsArray = elements.extract<Poco::JSON::Array::Ptr>();
     if (elementsArray->size() == 0)
     {
-        std::cerr << "No results from nominatim" << std::endl;
+        result << "No results from nominatim";
         return;
     }
 
@@ -142,8 +152,7 @@ void osmify(const std::string& query)
     }
     catch (const Poco::Exception& exception)
     {
-        std::cerr << "Failed to parse JSON from overpass: "
-                  << exception.message() << std::endl;
+        result << "Failed to parse JSON from overpass: " << exception.message();
         return;
     }
     auto jObject = j.extract<Poco::JSON::Object::Ptr>();
@@ -151,7 +160,7 @@ void osmify(const std::string& query)
     elementsArray = elements.extract<Poco::JSON::Array::Ptr>();
     if (elementsArray->size() == 0)
     {
-        std::cerr << "No results from overpass" << std::endl;
+        result << "No results from overpass";
         return;
     }
 
@@ -167,24 +176,56 @@ void osmify(const std::string& query)
         postcode + " " + city + ", " + street + " " + housenumber;
 
     // Print the result.
-    std::cerr << "geo:" << lat << "," << lon << " (" << addr << ")"
-              << std::endl;
+    result << "geo:" << lat << "," << lon << " (" << addr << ")";
+}
+
+void spinner()
+{
+    std::vector<char> spinCharacters = {'\\', '|', '/', '-'};
+    std::size_t spinIndex = 0;
+    while (true)
+    {
+        std::unique_lock<std::mutex> lock(mutex);
+        const int sleep = 100;
+        conditionVariable.wait_for(lock, std::chrono::milliseconds(sleep),
+                                   [] { return processed; });
+
+        if (processed)
+        {
+            std::cout << "\r";
+            std::cout.flush();
+            std::cout << result.str() << std::endl;
+            return;
+        }
+
+        std::cout << "\r [" << spinCharacters[spinIndex] << "] ";
+        std::cout.flush();
+        spinIndex = (spinIndex + 1) % spinCharacters.size();
+    }
 }
 
 int main(int argc, char** argv)
 {
     if (argc > 1)
     {
-        try
-        {
-            // TODO spinner
-            osmify(argv[1]);
-        }
-        catch (const Poco::Exception& exception)
-        {
-            std::cerr << "Failed to osmify: " << exception.message()
-                      << std::endl;
-        }
+        std::thread worker([argv] {
+            try
+            {
+                osmify(argv[1]);
+            }
+            catch (const Poco::Exception& exception)
+            {
+                result << "Failed to osmify: " << exception.message();
+            }
+
+            std::unique_lock<std::mutex> lock(mutex);
+            processed = true;
+            lock.unlock();
+            conditionVariable.notify_one();
+        });
+
+        spinner();
+        worker.join();
     }
     else
     {

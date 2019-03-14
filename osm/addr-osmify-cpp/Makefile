@@ -1,5 +1,5 @@
 CXXFLAGS = -g -std=c++17 -Werror -Wall -Wextra
-LDFLAGS = -lPocoFoundation -lPocoJSON -lPocoNet -lPocoNetSSL
+LDFLAGS = -pthread -lPocoFoundation -lPocoJSON -lPocoNet -lPocoNetSSL
 
 addr-osmify: addr-osmify.cxx Makefile
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o addr-osmify addr-osmify.cxx
