@@ -1,0 +1,11 @@
+---
+Checks: "clang-diagnostic-*,\
+performance-*,\
+unused-*,\
+modernize-*,\
+misc-*,\
+bugprone-*,\
+readability-*,\
+"
+WarningsAsErrors: '*'
+
