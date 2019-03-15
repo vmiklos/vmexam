@@ -33,10 +33,14 @@
 #include <Poco/URI.h>
 #include <Poco/URIStreamOpener.h>
 
-std::mutex mutex;
-std::condition_variable conditionVariable;
-std::stringstream result;
-bool processed = false;
+struct SpinnerContext
+{
+    std::string _query;
+    std::mutex _mutex;
+    std::condition_variable _conditionVariable;
+    std::stringstream _result;
+    bool _processed = false;
+};
 
 /// Handles SSL state lifecycle.
 class SslContext
@@ -102,7 +106,7 @@ std::string queryNominatim(const std::string& query)
 }
 
 /// Turns an address into a coodinate + normalized address combo.
-void osmify(const std::string& query)
+void osmify(SpinnerContext& spinnerContext)
 {
     SslContext sslContext;
 
@@ -111,18 +115,18 @@ void osmify(const std::string& query)
     Poco::Dynamic::Var elements;
     try
     {
-        elements = parser.parse(queryNominatim(query));
+        elements = parser.parse(queryNominatim(spinnerContext._query));
     }
     catch (const Poco::Exception& exception)
     {
-        result << "Failed to parse JSON from nominatim: "
-               << exception.message();
+        spinnerContext._result << "Failed to parse JSON from nominatim: "
+                               << exception.message();
         return;
     }
     auto elementsArray = elements.extract<Poco::JSON::Array::Ptr>();
     if (elementsArray->size() == 0)
     {
-        result << "No results from nominatim";
+        spinnerContext._result << "No results from nominatim";
         return;
     }
 
@@ -176,7 +180,8 @@ void osmify(const std::string& query)
     }
     catch (const Poco::Exception& exception)
     {
-        result << "Failed to parse JSON from overpass: " << exception.message();
+        spinnerContext._result << "Failed to parse JSON from overpass: "
+                               << exception.message();
         return;
     }
     auto jObject = j.extract<Poco::JSON::Object::Ptr>();
@@ -184,7 +189,7 @@ void osmify(const std::string& query)
     elementsArray = elements.extract<Poco::JSON::Array::Ptr>();
     if (elementsArray->size() == 0)
     {
-        result << "No results from overpass";
+        spinnerContext._result << "No results from overpass";
         return;
     }
 
@@ -200,25 +205,27 @@ void osmify(const std::string& query)
         postcode + " " + city + ", " + street + " " + housenumber;
 
     // Print the result.
-    result << "geo:" << lat << "," << lon << " (" << addr << ")";
+    spinnerContext._result << "geo:" << lat << "," << lon << " (" << addr
+                           << ")";
 }
 
-void spinner()
+void spinner(SpinnerContext& spinnerContext)
 {
     std::vector<char> spinCharacters = {'\\', '|', '/', '-'};
     std::size_t spinIndex = 0;
     while (true)
     {
-        std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(spinnerContext._mutex);
         const int sleep = 100;
-        conditionVariable.wait_for(lock, std::chrono::milliseconds(sleep),
-                                   [] { return processed; });
+        spinnerContext._conditionVariable.wait_for(
+            lock, std::chrono::milliseconds(sleep),
+            [&spinnerContext] { return spinnerContext._processed; });
 
-        if (processed)
+        if (spinnerContext._processed)
         {
             std::cout << "\r";
             std::cout.flush();
-            std::cout << result.str() << std::endl;
+            std::cout << spinnerContext._result.str() << std::endl;
             return;
         }
 
@@ -232,23 +239,26 @@ int main(int argc, char** argv)
 {
     if (argc > 1)
     {
-        std::thread worker([argv] {
+        SpinnerContext spinnerContext;
+        spinnerContext._query = argv[1];
+        std::thread worker([&spinnerContext] {
             try
             {
-                osmify(argv[1]);
+                osmify(spinnerContext);
             }
             catch (const Poco::Exception& exception)
             {
-                result << "Failed to osmify: " << exception.message();
+                spinnerContext._result << "Failed to osmify: "
+                                       << exception.message();
             }
 
-            std::unique_lock<std::mutex> lock(mutex);
-            processed = true;
+            std::unique_lock<std::mutex> lock(spinnerContext._mutex);
+            spinnerContext._processed = true;
             lock.unlock();
-            conditionVariable.notify_one();
+            spinnerContext._conditionVariable.notify_one();
         });
 
-        spinner();
+        spinner(spinnerContext);
         worker.join();
     }
     else
