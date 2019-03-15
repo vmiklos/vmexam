@@ -128,8 +128,32 @@ void osmify(const std::string& query)
 
     if (elementsArray->size() > 1)
     {
+// Work around clang-analyzer-cplusplus.NewDeleteLeaks false positive.
+#ifndef __clang_analyzer__
         // There are multiple elements, prefer buildings if possible.
-        // TODO
+        // Example where this is useful: 'Karinthy Frigyes út 18, Budapest'.
+        Poco::SharedPtr buildings(new Poco::JSON::Array());
+        for (const auto& element : *elementsArray)
+        {
+            auto elementObject = element.extract<Poco::JSON::Object::Ptr>();
+            if (!elementObject->has("class"))
+            {
+                continue;
+            }
+
+            if (elementObject->getValue<std::string>("class") != "building")
+            {
+                continue;
+            }
+
+            buildings->add(element);
+        }
+
+        if (buildings->size() > 0)
+        {
+            elementsArray = buildings;
+        }
+#endif
     }
 
     Poco::Dynamic::Var element = elementsArray->get(0);
