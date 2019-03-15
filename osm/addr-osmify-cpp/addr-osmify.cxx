@@ -33,6 +33,8 @@
 #include <Poco/URI.h>
 #include <Poco/URIStreamOpener.h>
 
+/// Contains state to know when to stop the spinner and show result from
+/// osmify().
 struct SpinnerContext
 {
     std::string _query;
