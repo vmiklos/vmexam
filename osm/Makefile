@@ -62,7 +62,7 @@ check: check-style download
 	qa/houseless-streets.py -martonhegy
 	qa/houseless-streets.py -ormezo
 	qa/houseless-streets.py -farkasvolgy
-	#qa/houseless-streets.py -magasut
+	qa/houseless-streets.py -magasut
 	#qa/houseless-streets.py -balatonboglar
 	#qa/houseless-streets.py -szigetmonostor
 	#qa/houseless-streets.py -krisztinavaros
@@ -79,6 +79,7 @@ check: check-style download
 	qa/suspicious-streets.py -nemetvolgy
 	qa/suspicious-streets.py -ormezo
 	qa/suspicious-streets.py -farkasvolgy
+	#qa/suspicious-streets.py -magasut
 
 workdir/streets-balatonboglar.txt: streets.txt
 	@mkdir -p workdir
