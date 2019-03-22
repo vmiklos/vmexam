@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+#
+# Copyright 2019 Miklos Vajna. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Takes an OSM way ID and turns it into a string that is readable and
+# e.g. OsmAnd can parse it as well.
+#
+
+function queryNominatim()
+{
+    local -r query="${1}"
+    local -r url="http://nominatim.openstreetmap.org/search.php"
+    curl -G -L --data-urlencode "q=${query}" --data-urlencode "format=json" -s "${url}"
+}
+
+function queryTurbo()
+{
+    local -r query="${1}"
+    local -r url="http://overpass-api.de/api/interpreter"
+    curl -d "${1}" -s "${url}"
+}
+
+function osmify()
+{
+    local query="${1}"
+
+    # Use nominatim to get the coordinates and the osm type/id.
+    local -r elements="${CWD}/elements"
+    queryNominatim "${query}" > "${elements}"
+    local lenElements
+    lenElements=$(jq '. | length' "${elements}")
+    if [ "${lenElements}" -le 0 ]; then
+        echo "No results from nominatim"
+        return
+    fi
+
+    if [ "${lenElements}" -gt 1 ]; then
+        # There are multiple elements, prefer buildings if possible.
+        # Example where this is useful: 'Karinthy Frigyes út 18, Budapest'.
+        local -r buildings="${CWD}/buildings"
+        jq '[ .[] | select(.class == "building") ]' "${elements}" > "${buildings}"
+        local -r lenBuildings=$(jq '. | length' "${buildings}")
+        if [ "${lenBuildings}" -gt 0 ]; then
+            cp "${buildings}" "${elements}"
+        fi
+    fi
+
+    local -r element="${CWD}/element"
+    jq '.[0]' "${elements}" > "${element}"
+    local -r lat="$(jq -r '.lat' "${element}")"
+    local -r lon="$(jq -r '.lon' "${element}")"
+    local -r objectType="$(jq -r '.osm_type' "${element}")"
+    local -r objectId="$(jq -r '.osm_id' "${element}")"
+
+    # Use overpass to get the properties of the object.
+    local -r overpassQuery="[out:json]; (${objectType}(${objectId});); out body;"
+    local -r j="${CWD}/j"
+    queryTurbo "${overpassQuery}" > "${j}"
+    jq '.elements' "${j}" > "${elements}"
+    lenElements=$(jq '. | length' "${elements}")
+    if [ "${lenElements}" -le 0 ]; then
+        echo "No results from overpass"
+        return
+    fi
+
+    jq '.[0]' "${elements}" > "${element}"
+    local -r city="$(jq -r '.tags."addr:city"' "${element}")"
+    local -r housenumber="$(jq -r '.tags."addr:housenumber"' "${element}")"
+    local -r postcode="$(jq -r '.tags."addr:postcode"' "${element}")"
+    local -r street="$(jq -r '.tags."addr:street"' "${element}")"
+    local -r addr="${postcode} ${city}, ${street} ${housenumber}"
+
+    # Print the result.
+    echo "geo:${lat},${lon} (${addr})"
+}
+
+if [ -n "$1" ]; then
+    if [ -z "$(type -p curl)" ]; then
+        echo "addr-osmify needs curl"
+        exit 1
+    fi
+
+    if [ -z "$(type -p jq)" ]; then
+        echo "addr-osmify needs jq"
+        exit 1
+    fi
+
+    CWD=$(mktemp -d)
+    osmify "${1}"
+    rm -rf "${CWD}"
+else
+    echo "usage: addr-osmify <query>"
+    echo
+    echo "e.g. addr-osmify 'Mészáros utca 58/a, Budapest'"
+fi
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:

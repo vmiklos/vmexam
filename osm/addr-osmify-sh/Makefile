@@ -1,0 +1,2 @@
+check:
+	shellcheck addr-osmify
