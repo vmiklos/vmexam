@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+#
+# Copyright 2019 Miklos Vajna. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Takes input posts from <https://github.com/artagnon/rejourn> (asciidoc backend) and converts them
+# to <https://github.com/getpelican/pelican> (asciidoc backend).
+
+import glob
+import os
+import sys
+
+
+# Converts one post.
+def convert(froFile, buf):
+    ret = []
+    froHeader, rest = buf.split("<<<\n")
+
+    headers = {}
+    for h in froHeader.split('\n'):
+        k, _, v = h.partition(': ')
+        headers[k] = v
+
+    toHeader = []
+    toHeader.append("= " + headers["title"] + "\n\n")
+    toHeader.append(":slug: " + froFile.split('/')[-1].replace(".txt", "") + "\n")
+    tags = headers["tags"].split(", ")
+    toHeader.append(":category: " + tags[-1] + "\n")
+    if len(tags) > 1:
+        toHeader.append(":tags: " + ", ".join(tags[:-1]) + "\n")
+    toHeader.append(":date: " + headers["pubdate"] + "\n")
+
+    ret.append("".join(toHeader))
+    ret.append(rest)
+    return "".join(ret)
+
+
+# Converts all posts from multiple years.
+def main(argv):
+    fro = argv[0]
+    to = argv[1]
+
+    # Assume input has subdirs for each year.
+    for dir in sorted(glob.glob(os.path.join(fro, "[0-9]*"))):
+        # Process each file for a year.
+        for froFile in sorted(glob.glob(os.path.join(dir, "*.txt"))):
+            toFile = os.path.join(to, froFile[len(fro) + 1:]).replace(".txt", ".adoc")
+            sock = open(froFile)
+            buf = sock.read()
+            sock.close()
+            buf = convert(froFile, buf)
+            if not os.path.exists(os.path.dirname(toFile)):
+                os.makedirs(os.path.dirname(toFile))
+            sock = open(toFile, "w")
+            sock.write(buf)
+            sock.close()
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
