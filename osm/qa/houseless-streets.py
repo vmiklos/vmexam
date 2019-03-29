@@ -5,7 +5,6 @@
 # found in the LICENSE file.
 #
 
-import os
 import sys
 import unittest
 

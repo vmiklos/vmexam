@@ -7,7 +7,6 @@
 
 import configparser
 import hashlib
-import html.parser
 import io
 import json
 import os

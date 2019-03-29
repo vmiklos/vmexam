@@ -14,7 +14,7 @@ import urllib.parse
 import urllib.request
 
 
-def queryTurbo(query):
+def queryTurbo(query: str) -> str:
     url = "http://overpass-api.de/api/interpreter"
 
     sock = urllib.request.urlopen(url, bytes(query, "utf-8"))
@@ -24,7 +24,7 @@ def queryTurbo(query):
     return buf.decode("utf-8")
 
 
-def queryNominatim(query):
+def queryNominatim(query: str) -> str:
     url = "http://nominatim.openstreetmap.org/search.php?"
     d = {
         "q": query,
@@ -39,7 +39,7 @@ def queryNominatim(query):
     return buf.decode("utf-8")
 
 
-def osmify(query):
+def osmify(query: str) -> None:
     # Use nominatim to get the coordinates and the osm type/id.
     elements = json.loads(queryNominatim(query))
     if not len(elements):

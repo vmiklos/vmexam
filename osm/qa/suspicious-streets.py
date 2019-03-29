@@ -45,7 +45,7 @@ class Range:
 
 
 def getArea():
-        return suffix
+    return suffix
 
 
 def simplify(s):
