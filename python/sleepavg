@@ -8,12 +8,13 @@
 # <https://play.google.com/store/apps/details?id=com.primenap>, i.e. 4th col
 # contains the sleep duration in seconds -- and prints out the average.
 
+from typing import List
 import csv
 import datetime
 import sys
 
 
-def main(argv):
+def main(argv: List[str]) -> None:
     count = 0
     sum = 0
     with open(argv[0], newline='') as csvfile:

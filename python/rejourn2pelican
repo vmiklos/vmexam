@@ -7,13 +7,14 @@
 # Takes input posts from <https://github.com/artagnon/rejourn> (asciidoc backend) and converts them
 # to <https://github.com/getpelican/pelican> (asciidoc backend).
 
+from typing import List
 import glob
 import os
 import sys
 
 
 # Converts one post.
-def convert(froFile, buf):
+def convert(froFile: str, buf: str) -> str:
     ret = []
     froHeader, rest = buf.split("<<<\n")
 
@@ -37,7 +38,7 @@ def convert(froFile, buf):
 
 
 # Converts all posts from multiple years.
-def main(argv):
+def main(argv: List[str]) -> None:
     fro = argv[0]
     to = argv[1]
 
