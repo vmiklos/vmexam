@@ -194,4 +194,9 @@ kstart plasmashell #to restart it
 - `convert` to PDF is blacklisted by default, need to remove the blacklist from `/etc/ImageMagick-7_Q16HDRI6/policy.xml` manually
 - also swithced to tmpfs for /tmp, fstab line is `tmpfs /tmp tmpfs defaults,noatime,mode=1777 0 0`
 
+=== openSUSE Leap 42.3 -> openSUSE Leap 15.0 (armv7l)
+
+- repo-update url changed to <http://download.opensuse.org/ports/update/leap/15.0/oss>
+- ifconfig and route is no more, see <https://dougvitale.wordpress.com/2011/12/21/deprecated-linux-networking-commands-and-their-replacements/> for their replacements
+
 // vim: ft=asciidoc paste
