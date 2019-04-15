@@ -5,6 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
+import base64
 import json
 import os
 import xml.etree.ElementTree as ElementTree
@@ -35,9 +36,15 @@ def main():
                     contacts[data["displayName"]] = data["mail"]
                 data = {}
             else:
-                tokens = line.split(': ')
-                if len(tokens) > 1:
-                    data[tokens[0]] = tokens[1]
+                if ': ' in line:
+                    tokens = line.split(': ')
+                    if len(tokens) > 1:
+                        data[tokens[0]] = tokens[1]
+                if ':: ' in line:
+                    # Non-ascii names are base64-encoded utf-8.
+                    tokens = line.split(':: ')
+                    if len(tokens) > 1:
+                        data[tokens[0]] = base64.b64decode(tokens[1]).decode('utf-8')
 
     # Dump XML.
     feed = ElementTree.Element("feed")
