@@ -167,12 +167,12 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         suffix = sys.argv[1]
         sys.argv = sys.argv[:1]
-    with open("housenumber-filters%s.json" % getArea()) as jsonSock:
-        normalizersJson = json.load(jsonSock)
-    filtersJson = normalizersJson["filters"]
-    for street in filtersJson.keys():
+    with open("housenumber-filters%s.json" % getArea()) as sock:
+        normalizers = json.load(sock)
+    filters = normalizers["filters"]
+    for street in filters.keys():
         i = []
-        for r in filtersJson[street]["ranges"]:
+        for r in filters[street]["ranges"]:
             i.append(Range(int(r["start"]), int(r["end"]), r["isOdd"] == "true"))
         normalizers[street] = Ranges(i)
     unittest.main()
