@@ -1,18 +1,18 @@
 /*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * Copyright 2019 Miklos Vajna. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  *
  * Code completion prototype.
  */
 
-#include <iostream>
-#include <sstream>
 #include <fstream>
+#include <iostream>
+#include <set>
+#include <sstream>
 #include <stack>
 #include <string>
 #include <vector>
-#include <set>
 
 #include <clang-c/CXCompilationDatabase.h>
 
@@ -29,7 +29,8 @@ int main(int argc, char** argv)
     std::string aDirectory = aFile.substr(0, nFound);
     while (true)
     {
-        std::string aJSON = aDirectory + aFile.substr(nFound, 1) + "compile_commands.json";
+        std::string aJSON =
+            aDirectory + aFile.substr(nFound, 1) + "compile_commands.json";
         std::ifstream aStream(aJSON.c_str());
         if (aStream.good())
             break;
@@ -49,14 +50,18 @@ int main(int argc, char** argv)
     }
 
     CXCompilationDatabase_Error eError;
-    CXCompilationDatabase pDatabase = clang_CompilationDatabase_fromDirectory(aDirectory.c_str(), &eError);
+    CXCompilationDatabase pDatabase =
+        clang_CompilationDatabase_fromDirectory(aDirectory.c_str(), &eError);
     if (eError == CXCompilationDatabase_NoError)
     {
-        CXCompileCommands pCommands = clang_CompilationDatabase_getCompileCommands(pDatabase, aFile.c_str());
+        CXCompileCommands pCommands =
+            clang_CompilationDatabase_getCompileCommands(pDatabase,
+                                                         aFile.c_str());
         unsigned nCommandsSize = clang_CompileCommands_getSize(pCommands);
         if (nCommandsSize >= 1)
         {
-            CXCompileCommand pCommand = clang_CompileCommands_getCommand(pCommands, 0);
+            CXCompileCommand pCommand =
+                clang_CompileCommands_getCommand(pCommands, 0);
             unsigned nArgs = clang_CompileCommand_getNumArgs(pCommand);
             std::stringstream ss;
             for (unsigned i = 0; i < nArgs; ++i)
@@ -73,11 +78,13 @@ int main(int argc, char** argv)
             std::cout << ss.str() << std::endl;
         }
         else
-            std::cerr << "clang_CompileCommands_getSize() returned " << nCommandsSize << std::endl;
+            std::cerr << "clang_CompileCommands_getSize() returned "
+                      << nCommandsSize << std::endl;
         clang_CompileCommands_dispose(pCommands);
     }
     else
-        std::cerr << "clang_CompilationDatabase_fromDirectory() returned " << eError << std::endl;
+        std::cerr << "clang_CompilationDatabase_fromDirectory() returned "
+                  << eError << std::endl;
     clang_CompilationDatabase_dispose(pDatabase);
 }
 

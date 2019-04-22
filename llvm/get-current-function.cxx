@@ -1,7 +1,7 @@
 /*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * Copyright 2019 Miklos Vajna. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  *
  * libclang version of
  * <http://vim.wikia.com/wiki/Show_current_function_name_in_C_programs>, i.e.
@@ -38,11 +38,14 @@ int main(int argc, char** argv)
 {
     if (argc < 5)
     {
-        std::cerr << "usage: " << argv[0] << " <file> <linenum> <colnum> <compiler args...>" << std::endl;
+        std::cerr << "usage: " << argv[0]
+                  << " <file> <linenum> <colnum> <compiler args...>"
+                  << std::endl;
         return 1;
     }
 
-    CXIndex pIndex = clang_createIndex(/*excludeDeclsFromPCH=*/1, /*displayDiagnostics=*/0);
+    CXIndex pIndex =
+        clang_createIndex(/*excludeDeclsFromPCH=*/1, /*displayDiagnostics=*/0);
 
     std::string aFile = argv[1];
     std::vector<std::string> aArgs;
@@ -51,7 +54,9 @@ int main(int argc, char** argv)
     std::vector<const char*> aArgPtrs(aArgs.size());
     for (size_t i = 0; i < aArgs.size(); ++i)
         aArgPtrs[i] = aArgs[i].c_str();
-    CXTranslationUnit pUnit = clang_parseTranslationUnit(pIndex, aFile.c_str(), aArgPtrs.data(), aArgPtrs.size(), nullptr, 0, CXTranslationUnit_Incomplete);
+    CXTranslationUnit pUnit = clang_parseTranslationUnit(
+        pIndex, aFile.c_str(), aArgPtrs.data(), aArgPtrs.size(), nullptr, 0,
+        CXTranslationUnit_Incomplete);
 
     if (pUnit)
     {
@@ -63,10 +68,13 @@ int main(int argc, char** argv)
         CXCursorKind eKind;
         while (true)
         {
-            CXSourceLocation aLocation = clang_getLocation(pUnit, pFile, nLine, nColumn);
+            CXSourceLocation aLocation =
+                clang_getLocation(pUnit, pFile, nLine, nColumn);
             aCursor = clang_getCursor(pUnit, aLocation);
             eKind = clang_getCursorKind(aCursor);
-            if (clang_getCursorKind(clang_getCursorSemanticParent(aCursor)) != CXCursor_InvalidFile || nColumn <= 1)
+            if (clang_getCursorKind(clang_getCursorSemanticParent(aCursor)) !=
+                    CXCursor_InvalidFile ||
+                nColumn <= 1)
                 break;
 
             // This happens with e.g. CXCursor_TypeRef, work it around by going

@@ -1,17 +1,17 @@
 /*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * Copyright 2019 Miklos Vajna. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  *
  * Code completion prototype.
  */
 
 #include <iostream>
+#include <set>
 #include <sstream>
 #include <stack>
 #include <string>
 #include <vector>
-#include <set>
 
 #include <clang-c/Index.h>
 
@@ -19,11 +19,14 @@ int main(int argc, char** argv)
 {
     if (argc < 5)
     {
-        std::cerr << "usage: " << argv[0] << " <file> <linenum> <colnum> <compiler args...>" << std::endl;
+        std::cerr << "usage: " << argv[0]
+                  << " <file> <linenum> <colnum> <compiler args...>"
+                  << std::endl;
         return 1;
     }
 
-    CXIndex pIndex = clang_createIndex(/*excludeDeclsFromPCH=*/1, /*displayDiagnostics=*/0);
+    CXIndex pIndex =
+        clang_createIndex(/*excludeDeclsFromPCH=*/1, /*displayDiagnostics=*/0);
 
     std::string aFile = argv[1];
     std::vector<std::string> aArgs;
@@ -32,26 +35,34 @@ int main(int argc, char** argv)
     std::vector<const char*> aArgPtrs(aArgs.size());
     for (size_t i = 0; i < aArgs.size(); ++i)
         aArgPtrs[i] = aArgs[i].c_str();
-    CXTranslationUnit pUnit = clang_parseTranslationUnit(pIndex, aFile.c_str(), aArgPtrs.data(), aArgPtrs.size(), nullptr, 0, CXTranslationUnit_Incomplete);
+    CXTranslationUnit pUnit = clang_parseTranslationUnit(
+        pIndex, aFile.c_str(), aArgPtrs.data(), aArgPtrs.size(), nullptr, 0,
+        CXTranslationUnit_Incomplete);
 
     if (pUnit)
     {
         unsigned nLine = std::stoi(argv[2]);
         unsigned nColumn = std::stoi(argv[3]);
-        CXCodeCompleteResults* pResults = clang_codeCompleteAt(pUnit, aFile.c_str(), nLine, nColumn, nullptr, 0, clang_defaultCodeCompleteOptions());
+        CXCodeCompleteResults* pResults =
+            clang_codeCompleteAt(pUnit, aFile.c_str(), nLine, nColumn, nullptr,
+                                 0, clang_defaultCodeCompleteOptions());
         std::set<std::string> aSet;
         if (pResults)
         {
             for (unsigned i = 0; i < pResults->NumResults; ++i)
             {
-                const CXCompletionString& rCompletionString = pResults->Results[i].CompletionString;
+                const CXCompletionString& rCompletionString =
+                    pResults->Results[i].CompletionString;
                 std::stringstream ss;
-                for (unsigned j = 0; j < clang_getNumCompletionChunks(rCompletionString); ++j)
+                for (unsigned j = 0;
+                     j < clang_getNumCompletionChunks(rCompletionString); ++j)
                 {
-                    if (clang_getCompletionChunkKind(rCompletionString, j) != CXCompletionChunk_TypedText)
+                    if (clang_getCompletionChunkKind(rCompletionString, j) !=
+                        CXCompletionChunk_TypedText)
                         continue;
 
-                    const CXString& rString = clang_getCompletionChunkText(rCompletionString, j);
+                    const CXString& rString =
+                        clang_getCompletionChunkText(rCompletionString, j);
                     ss << clang_getCString(rString);
                 }
                 aSet.insert(ss.str());

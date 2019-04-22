@@ -1,7 +1,7 @@
 /*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * Copyright 2019 Miklos Vajna. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
 
 #include <iostream>
@@ -16,11 +16,13 @@ int main(int argc, char** argv)
 {
     if (argc < 3)
     {
-        std::cerr << "usage: " << argv[0] << " <file> <compiler args...>" << std::endl;
+        std::cerr << "usage: " << argv[0] << " <file> <compiler args...>"
+                  << std::endl;
         return 1;
     }
 
-    CXIndex pIndex = clang_createIndex(/*excludeDeclsFromPCH=*/1, /*displayDiagnostics=*/0);
+    CXIndex pIndex =
+        clang_createIndex(/*excludeDeclsFromPCH=*/1, /*displayDiagnostics=*/0);
 
     std::string aFile = argv[1];
     std::vector<std::string> aArgs;
@@ -29,7 +31,9 @@ int main(int argc, char** argv)
     std::vector<const char*> aArgPtrs(aArgs.size());
     for (size_t i = 0; i < aArgs.size(); ++i)
         aArgPtrs[i] = aArgs[i].c_str();
-    CXTranslationUnit pUnit = clang_parseTranslationUnit(pIndex, aFile.c_str(), aArgPtrs.data(), aArgPtrs.size(), nullptr, 0, CXTranslationUnit_Incomplete);
+    CXTranslationUnit pUnit = clang_parseTranslationUnit(
+        pIndex, aFile.c_str(), aArgPtrs.data(), aArgPtrs.size(), nullptr, 0,
+        CXTranslationUnit_Incomplete);
 
     if (pUnit)
     {
@@ -52,14 +56,22 @@ int main(int argc, char** argv)
                     break;
                 }
 
-                CXSourceLocation aDiagnosticLocation = clang_getDiagnosticLocation(pDiagnostic);
+                CXSourceLocation aDiagnosticLocation =
+                    clang_getDiagnosticLocation(pDiagnostic);
                 CXFile pDiagnosticFile;
                 unsigned nDiagnosticLine;
                 unsigned nDiagnosticCol;
-                clang_getExpansionLocation(aDiagnosticLocation, &pDiagnosticFile, &nDiagnosticLine, &nDiagnosticCol, nullptr);
-                CXString aDiagnosticFileName = clang_getFileName(pDiagnosticFile);
-                CXString aFormattedDiagnistic = clang_formatDiagnostic(pDiagnostic, clang_defaultDiagnosticDisplayOptions());
-                std::cerr << clang_getCString(aDiagnosticFileName) << ":" << nDiagnosticLine << ":" << nDiagnosticCol << ": " << clang_getCString(aFormattedDiagnistic) << std::endl;
+                clang_getExpansionLocation(aDiagnosticLocation,
+                                           &pDiagnosticFile, &nDiagnosticLine,
+                                           &nDiagnosticCol, nullptr);
+                CXString aDiagnosticFileName =
+                    clang_getFileName(pDiagnosticFile);
+                CXString aFormattedDiagnistic = clang_formatDiagnostic(
+                    pDiagnostic, clang_defaultDiagnosticDisplayOptions());
+                std::cerr << clang_getCString(aDiagnosticFileName) << ":"
+                          << nDiagnosticLine << ":" << nDiagnosticCol << ": "
+                          << clang_getCString(aFormattedDiagnistic)
+                          << std::endl;
                 clang_disposeString(aFormattedDiagnistic);
                 clang_disposeString(aDiagnosticFileName);
             }
