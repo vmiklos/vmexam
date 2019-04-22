@@ -10,9 +10,11 @@
 # as lots of house numbers are probably missing.
 
 import json
+import os
 import re
 import sys
 import unittest
+import yaml
 
 suffix = ""
 
@@ -167,8 +169,12 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         suffix = sys.argv[1]
         sys.argv = sys.argv[:1]
-    with open("housenumber-filters%s.json" % getArea()) as sock:
-        normalizers = json.load(sock)
+    if os.path.exists("housenumber-filters%s.yaml" % getArea()):
+        with open("housenumber-filters%s.yaml" % getArea()) as sock:
+            normalizers = yaml.load(sock)
+    else:
+        with open("housenumber-filters%s.json" % getArea()) as sock:
+            normalizers = json.load(sock)
     filters = normalizers["filters"]
     for street in filters.keys():
         i = []
