@@ -3,12 +3,9 @@ CLANGWARNS=-Werror -Wall -Wno-missing-braces -Wnon-virtual-dtor -Wendif-labels -
 CLANGFLAGS = $(CLANGDEFS) $(CLANGWARNS) -g -std=c++11
 CLANGLIBS = -lclangAST -lclangBasic -lclangFrontend -lclangRewrite -lclangTooling -lclangToolingCore -lclangASTMatchers -lclangLex -lLLVM
 
-all: bin/readability-avoid-auto bin/bugprone-suspicious-xmlsec bin/readability-redundant-pp
+all: bin/readability-avoid-auto bin/bugprone-suspicious-xmlsec
 
 bin/readability-avoid-auto: readability-avoid-auto.cxx Makefile
-	clang++ $(CLANGFLAGS) $(CLANGLIBS) -ldl -lpthread -o $@ $<
-
-bin/readability-redundant-pp: readability-redundant-pp.cxx Makefile
 	clang++ $(CLANGFLAGS) $(CLANGLIBS) -ldl -lpthread -o $@ $<
 
 bin/bugprone-suspicious-xmlsec: bugprone-suspicious-xmlsec.cxx Makefile
