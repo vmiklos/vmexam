@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+#
+# Copyright 2019 Miklos Vajna. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Python implementation of now gone <https://www.harry-b.de/dokuwiki/doku.php?id=harry:cpm>.
+# The DB format is really just compressed and encrypted XML.
+
+from typing import List
+import os
+import subprocess
+import sys
+import tempfile
+
+
+def main(argv: List[str]) -> None:
+    # Read the DB into tempPath:
+    cpmDb = os.path.expanduser("~/.cpmdb")
+    if not os.path.exists(cpmDb):
+        print("can't find '%s'" % cpmDb)
+        return
+
+    decrypt = subprocess.run(["gpg", "--decrypt", "-a", cpmDb], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if decrypt.returncode != 0:
+        print("gpg decode failed: %s" % decrypt.stderr.decode('utf-8').strip())
+        return
+
+    uncompress = subprocess.run(["gunzip", "--stdout"], input=decrypt.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if uncompress.returncode != 0:
+        print("uncompress failed: %s" % uncompress.stderr.decode('utf-8').strip())
+        return
+
+    pretty = subprocess.run(["xmllint", "--format", "-"], input=uncompress.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if pretty.returncode != 0:
+        print("xmllint before edit failed: %s" % pretty.stderr.decode('utf-8').strip())
+        return
+
+    db = pretty.stdout
+
+    if len(argv):
+        # Search.
+        # TODO implement this
+        pass
+    else:
+        # Edit in an editor:
+        try:
+            fd, tempPath = tempfile.mkstemp(prefix="cpm-", suffix=".xml")
+            with os.fdopen(fd, mode="w+b") as tempSock:
+                tempSock.write(db)
+
+            edit = subprocess.run(["vi", tempPath])
+            if edit.returncode != 0:
+                print("vi failed with return code %d" % edit.returncode)
+                return
+
+            lint = subprocess.run(["xmllint", "--format", tempPath], stdout=subprocess.DEVNULL)
+            if lint.returncode != 0:
+                print("xmllint after edit failed with return code %d" % lint.returncode)
+                # TODO allow going back to the editor to fix the problem
+                return
+
+            with open(tempPath, mode="r+b") as tempSock:
+                db = tempSock.read()
+        finally:
+            os.unlink(tempPath)
+
+    # Write the DB:
+    compress = subprocess.run(["gzip", "--stdout"], input=db, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if compress.returncode != 0:
+        print("compress failed: %s" % compress.stderr.decode('utf-8').strip())
+        return
+
+    # TODO allow customizing the private key id
+    encrypt = subprocess.run(["gpg", "--encrypt", "--sign", "-a", "-r", "03915096"], input=compress.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if encrypt.returncode != 0:
+        print("gpg encode failed: %s" % encrypt.stderr.decode('utf-8').strip())
+        return
+
+    with open(cpmDb, mode="w+b") as dbSock:
+        dbSock.write(encrypt.stdout)
+
+    if os.path.exists(os.path.expanduser("~/.git")):
+        cwd = os.getcwd()
+        os.chdir(os.path.expanduser("~"))
+        gitAdd = subprocess.run(["git", "add", cpmDb])
+        if gitAdd.returncode != 0:
+            print("git add failed with return code %d" % gitAdd.returncode)
+            return
+
+        gitCommit = subprocess.run(["git", "commit"])
+        if gitCommit.returncode != 0:
+            print("git commit failed with return code %d" % gitCommit.returncode)
+            return
+        os.chdir(cwd)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:

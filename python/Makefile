@@ -1,4 +1,4 @@
-PYFILES := sleepavg rejourn2pelican
+PYFILES := sleepavg rejourn2pelican cpm
 
 check:
 	pycodestyle $(PYFILES)
@@ -6,6 +6,3 @@ check:
 	for i in $(PYFILES); do \
 		mypy --strict $$i; \
 	done
-
-sleepavg.bin: sleepavg.cxx
-	g++ -std=c++11 -o sleepavg.bin sleepavg.cxx
