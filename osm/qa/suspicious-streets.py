@@ -172,15 +172,16 @@ if __name__ == '__main__':
     if os.path.exists("housenumber-filters%s.yaml" % getArea()):
         with open("housenumber-filters%s.yaml" % getArea()) as sock:
             normalizers = yaml.load(sock)
-    else:
+    elif os.path.exists("housenumber-filters%s.json" % getArea()):
         with open("housenumber-filters%s.json" % getArea()) as sock:
             normalizers = json.load(sock)
-    filters = normalizers["filters"]
-    for street in filters.keys():
-        i = []
-        for r in filters[street]["ranges"]:
-            i.append(Range(int(r["start"]), int(r["end"]), r["isOdd"] == "true"))
-        normalizers[street] = Ranges(i)
+    if "filters" in normalizers.keys():
+        filters = normalizers["filters"]
+        for street in filters.keys():
+            i = []
+            for r in filters[street]["ranges"]:
+                i.append(Range(int(r["start"]), int(r["end"]), r["isOdd"] == "true"))
+            normalizers[street] = Ranges(i)
     unittest.main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:

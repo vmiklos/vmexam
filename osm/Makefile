@@ -9,6 +9,7 @@ update-streets: streets.txt workdir/streets-gazdagret.txt workdir/streets-sasheg
 	./overpass-query workdir/streets-ormezo.txt > workdir/streets-ormezo.csv
 	./overpass-query workdir/streets-farkasvolgy.txt > workdir/streets-farkasvolgy.csv
 	./overpass-query workdir/streets-magasut.txt > workdir/streets-magasut.csv
+	./overpass-query workdir/streets-terezvaros.txt > workdir/streets-terezvaros.csv
 	./overpass-query workdir/streets-krisztinavaros.txt > workdir/streets-krisztinavaros.csv
 	./overpass-query workdir/streets-balatonboglar.txt > workdir/streets-balatonboglar.csv
 	./overpass-query workdir/streets-szigetmonostor.txt > workdir/streets-szigetmonostor.csv
@@ -25,6 +26,7 @@ update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdag
 	./overpass-query workdir/street-housenumbers-martonhegy.txt > workdir/street-housenumbers-martonhegy.csv
 	./overpass-query workdir/street-housenumbers-ormezo.txt > workdir/street-housenumbers-ormezo.csv
 	./overpass-query workdir/street-housenumbers-magasut.txt > workdir/street-housenumbers-magasut.csv
+	./overpass-query workdir/street-housenumbers-terezvaros.txt > workdir/street-housenumbers-terezvaros.csv
 	./overpass-query workdir/street-housenumbers-balatonboglar.txt > workdir/street-housenumbers-balatonboglar.csv
 	./overpass-query workdir/street-housenumbers-szigetmonostor.txt > workdir/street-housenumbers-szigetmonostor.csv
 	./overpass-query workdir/street-housenumbers-krisztinavaros.txt > workdir/street-housenumbers-krisztinavaros.csv
@@ -67,6 +69,7 @@ check: check-style download
 	qa/houseless-streets.py -ormezo
 	qa/houseless-streets.py -farkasvolgy
 	qa/houseless-streets.py -magasut
+	#qa/houseless-streets.py -terezvaros
 	#qa/houseless-streets.py -balatonboglar
 	#qa/houseless-streets.py -szigetmonostor
 	#qa/houseless-streets.py -krisztinavaros
@@ -83,6 +86,7 @@ check: check-style download
 	qa/suspicious-streets.py -nemetvolgy
 	qa/suspicious-streets.py -ormezo
 	qa/suspicious-streets.py -farkasvolgy
+	#qa/suspicious-streets.py -terezvaros
 	#qa/suspicious-streets.py -magasut
 
 workdir/streets-balatonboglar.txt: streets.txt
@@ -153,6 +157,10 @@ workdir/streets-magasut.txt: streets.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602805999/' streets.txt > workdir/streets-magasut.txt
 
+workdir/streets-terezvaros.txt: streets.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3603229919/' streets.txt > workdir/streets-terezvaros.txt
+
 workdir/streets-krisztinavaros.txt: streets.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602786310/' streets.txt > workdir/streets-krisztinavaros.txt
@@ -180,6 +188,10 @@ workdir/street-housenumbers-farkasvolgy.txt: street-housenumbers.txt
 workdir/street-housenumbers-magasut.txt: street-housenumbers.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602805999/' street-housenumbers.txt > workdir/street-housenumbers-magasut.txt
+
+workdir/street-housenumbers-terezvaros.txt: street-housenumbers.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3603229919/' street-housenumbers.txt > workdir/street-housenumbers-terezvaros.txt
 
 workdir/street-housenumbers-krisztinavaros.txt: street-housenumbers.txt
 	@mkdir -p workdir
