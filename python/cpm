@@ -7,11 +7,48 @@
 # Python implementation of now gone <https://www.harry-b.de/dokuwiki/doku.php?id=harry:cpm>.
 # The DB format is really just compressed and encrypted XML.
 
+from typing import Dict
 from typing import List
 import os
+import re
 import subprocess
 import sys
 import tempfile
+import xml.sax
+
+
+class ContentHandler(xml.sax.handler.ContentHandler):
+    def __init__(self) -> None:
+        self.depth = 0
+        self.currentHost = ""
+        self.currentService = ""
+        self.currentUser = ""
+        self.items: List[str] = []
+
+    def startElement(self, name: str, attrs: Dict) -> None:
+        if name != "node":
+            return
+
+        self.depth += 1
+
+        for k, v in attrs.items():
+            if k != "label":
+                continue
+
+            if self.depth == 1:
+                self.currentHost = v
+            elif self.depth == 2:
+                self.currentService = v
+            elif self.depth == 3:
+                self.currentUser = v
+            elif self.depth == 4:
+                self.items.append("%s %s@%s %s" % (self.currentService, self.currentUser, self.currentHost, v))
+
+    def endElement(self, name: str) -> None:
+        if name != "node":
+            return
+
+        self.depth -= 1
 
 
 def main(argv: List[str]) -> None:
@@ -40,8 +77,26 @@ def main(argv: List[str]) -> None:
 
     if len(argv):
         # Search.
-        # TODO implement this
-        pass
+        quiet = False
+        if argv[0] == "--quiet":
+            quiet = True
+            argv.remove("--quiet")
+        dbString = db.decode('utf-8')
+        # Strip header which just breaks our XML parser.
+        start = "<root "
+        dbString = start + dbString.split(start)[1]
+        handler = ContentHandler()
+        xml.sax.parseString(dbString, handler)
+
+        for item in sorted(handler.items):
+            if re.match(argv[0], item):
+                if quiet:
+                    print(item.split(' ')[-1])
+                else:
+                    print(item)
+
+        # No need to compress / encrypt.
+        return
     else:
         # Edit in an editor:
         try:
