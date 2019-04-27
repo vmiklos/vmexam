@@ -57,6 +57,35 @@ def handleStreets(requestUri, workdir):
     return output
 
 
+# Expected requestUri: e.g. /osm/street-housenumbers/ormezo/view-query
+def handleStreetHousenumbers(requestUri, workdir):
+    output = ""
+
+    tokens = requestUri.split("/")
+    relation = tokens[-2]
+    action = tokens[-1]
+
+    if action == "view-query":
+        output += "<pre>"
+        with open(os.path.join(workdir, "street-housenumbers-%s.txt" % relation)) as sock:
+            output += sock.read()
+        output += "</pre>"
+    elif action == "view-result":
+        output += "<pre>"
+        with open(os.path.join(workdir, "street-housenumbers-%s.csv" % relation)) as sock:
+            output += sock.read()
+        output += "</pre>"
+    elif action == "update-result":
+        with open(os.path.join(workdir, "street-housenumbers-%s.txt" % relation)) as sock:
+            query = sock.read()
+        result = overpass_query.overpassQuery(query)
+        with open(os.path.join(workdir, "street-housenumbers-%s.csv" % relation), mode="w") as sock:
+            sock.write(result)
+            output += "update finished. <a href=\"/osm/street-housenumbers/" + relation + "/view-result\">view</a>"
+
+    return output
+
+
 def handleMain(relations):
     output = ""
 
@@ -112,6 +141,8 @@ def application(environ, start_response):
 
     if requestUri.startswith("/osm/streets/"):
         output = handleStreets(requestUri, workdir)
+    if requestUri.startswith("/osm/street-housenumbers/"):
+        output = handleStreetHousenumbers(requestUri, workdir)
     else:
         output = handleMain(relations)
 
