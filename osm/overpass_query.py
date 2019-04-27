@@ -8,6 +8,7 @@
 from urllib.request import urlopen
 import sys
 
+
 def overpassQuery(query):
     url = "http://overpass-api.de/api/interpreter"
 
@@ -16,6 +17,7 @@ def overpassQuery(query):
     sock.close()
 
     return buf.decode('utf-8')
+
 
 if __name__ == "__main__":
     sock = open(sys.argv[1])

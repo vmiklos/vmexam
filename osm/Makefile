@@ -52,7 +52,7 @@ update-osmose-$(USER):
 	@mkdir -p workdir
 	curl -o workdir/osmose-$(USER).rss http://osmose.openstreetmap.fr/en/byuser/$(USER).rss
 
-PYFILES = overpass_query.py generate-postcode-csv get_reference_housenumbers.py qa/suspicious-streets.py qa/houseless-streets.py qa/osmose.py addr-osmify
+PYFILES = overpass_query.py generate-postcode-csv get_reference_housenumbers.py qa/suspicious_streets.py qa/houseless-streets.py qa/osmose.py addr-osmify
 
 check-style:
 	pycodestyle $(PYFILES)
@@ -80,14 +80,14 @@ check: check-style download
 	qa/interpolated-addresses.py -martonhegy
 	qa/interpolated-addresses.py -ormezo
 	qa/streets-nomaxspeed.py
-	qa/suspicious-streets.py
-	qa/suspicious-streets.py -gazdagret
-	qa/suspicious-streets.py -sashegy
-	qa/suspicious-streets.py -nemetvolgy
-	qa/suspicious-streets.py -ormezo
-	qa/suspicious-streets.py -farkasvolgy
-	#qa/suspicious-streets.py -terezvaros
-	#qa/suspicious-streets.py -magasut
+	qa/suspicious_streets.py
+	qa/suspicious_streets.py -gazdagret
+	qa/suspicious_streets.py -sashegy
+	qa/suspicious_streets.py -nemetvolgy
+	qa/suspicious_streets.py -ormezo
+	qa/suspicious_streets.py -farkasvolgy
+	#qa/suspicious_streets.py -terezvaros
+	#qa/suspicious_streets.py -magasut
 
 workdir/streets-balatonboglar.txt: streets.txt
 	@mkdir -p workdir

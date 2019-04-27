@@ -83,7 +83,7 @@ def normalize(houseNumbers, streetName):
 
 def getHouseNumbersFromCsv(streetName):
     houseNumbers = []
-    streetHouseNumbersSock = open("workdir/street-housenumbers%s.csv" % getArea())
+    streetHouseNumbersSock = open("street-housenumbers%s.csv" % getArea())
     first = True
     for line in streetHouseNumbersSock.readlines():
         if first:
@@ -103,7 +103,7 @@ def getHouseNumbersFromLst(streetName):
     houseNumbers = []
     lstStreetName = simplify(streetName)
     prefix = lstStreetName + "_"
-    sock = open("workdir/street-housenumbers-reference%s.lst" % getArea())
+    sock = open("street-housenumbers-reference%s.lst" % getArea())
     for line in sock.readlines():
         line = line.strip()
         if line.startswith(prefix):
@@ -122,7 +122,7 @@ def getOnlyInFirst(first, second):
 
 class Finder:
     def __init__(self):
-        streetsSock = open("workdir/streets%s.csv" % getArea())
+        streetsSock = open("streets%s.csv" % getArea())
         streetNames = []
         firstStreet = True
         for streetLine in streetsSock.readlines():
@@ -147,19 +147,19 @@ class Finder:
         # Sort by length.
         results.sort(key=lambda result: len(result[1]), reverse=True)
 
-        for result in results:
-            if len(result[1]):
-                # House number, # of onlyInReference items.
-                print("%s\t%s" % (result[0], len(result[1])))
-                # onlyInReference items.
-                print(result[1])
-
         self.suspiciousStreets = results
 
 
 class Test(unittest.TestCase):
     def test_none(self):
         finder = Finder()
+
+        for result in finder.suspiciousStreets:
+            if len(result[1]):
+                # House number, # of onlyInReference items.
+                print("%s\t%s" % (result[0], len(result[1])))
+                # onlyInReference items.
+                print(result[1])
 
         self.assertEqual([], finder.suspiciousStreets)
 
@@ -182,6 +182,7 @@ if __name__ == '__main__':
             for r in filters[street]["ranges"]:
                 i.append(Range(int(r["start"]), int(r["end"]), r["isOdd"] == "true"))
             normalizers[street] = Ranges(i)
+    os.chdir("workdir")
     unittest.main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:

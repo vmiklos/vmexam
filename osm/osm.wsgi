@@ -10,7 +10,9 @@ import os
 import sys
 import yaml
 sys.path.append(os.path.dirname(__file__))
+from qa import suspicious_streets
 import overpass_query
+
 
 def getWorkdir():
     config = configparser.ConfigParser()
@@ -86,6 +88,32 @@ def handleStreetHousenumbers(requestUri, workdir):
     return output
 
 
+# Expected requestUri: e.g. /osm/suspicious-streets/ormezo/view-result
+def handleSuspiciousStreets(requestUri, workdir):
+    output = ""
+
+    tokens = requestUri.split("/")
+    relation = tokens[-2]
+    action = tokens[-1]
+
+    if action == "view-result":
+        output += "<pre>"
+        # TODO this API is far from nice
+        os.chdir(workdir)
+        suspicious_streets.suffix = "-%s" % relation
+        suspicious_streets.normalizers = {}
+        finder = suspicious_streets.Finder()
+        for result in finder.suspiciousStreets:
+            if len(result[1]):
+                # House number, # of onlyInReference items.
+                output += "%s\t%s\n" % (result[0], len(result[1]))
+                # onlyInReference items.
+                output += str(result[1]) + "\n"
+        output += "</pre>"
+
+    return output
+
+
 def handleMain(relations):
     output = ""
 
@@ -96,7 +124,7 @@ def handleMain(relations):
     output += "<ul>"
     for k, v in relations.items():
         output += "<li>"
-        output += "<a href=\"https://www.openstreetmap.org/relation/" + str(v) + "\">" + k + "</a>:"
+        output += "<a href=\"https://www.openstreetmap.org/relation/" + str(v) + "\">" + k + "</a>: "
         output += "<a href=\"/osm/streets/" + k + "/view-query\">view query</a>, "
         output += "<a href=\"/osm/streets/" + k + "/view-result\">view result</a>, "
         output += "<a href=\"/osm/streets/" + k + "/update-result\">update result</a>"
@@ -108,7 +136,7 @@ def handleMain(relations):
     output += "<ul>"
     for k, v in relations.items():
         output += "<li>"
-        output += "<a href=\"https://www.openstreetmap.org/relation/" + str(v) + "\">" + k + "</a>:"
+        output += "<a href=\"https://www.openstreetmap.org/relation/" + str(v) + "\">" + k + "</a>: "
         output += "<a href=\"/osm/street-housenumbers/" + k + "/view-query\">view query</a>, "
         output += "<a href=\"/osm/street-housenumbers/" + k + "/view-result\">view result</a>, "
         output += "<a href=\"/osm/street-housenumbers/" + k + "/update-result\">update result</a>"
@@ -120,7 +148,7 @@ def handleMain(relations):
     output += "<ul>"
     for k, v in relations.items():
         output += "<li>"
-        output += "<a href=\"https://www.openstreetmap.org/relation/" + str(v) + "\">" + k + "</a>:"
+        output += "<a href=\"https://www.openstreetmap.org/relation/" + str(v) + "\">" + k + "</a>: "
         output += "<a href=\"/osm/suspicious-streets/" + k + "/view-result\">view result</a>"
         output += "</li>"
     output += "</ul>"
@@ -141,8 +169,10 @@ def application(environ, start_response):
 
     if requestUri.startswith("/osm/streets/"):
         output = handleStreets(requestUri, workdir)
-    if requestUri.startswith("/osm/street-housenumbers/"):
+    elif requestUri.startswith("/osm/street-housenumbers/"):
         output = handleStreetHousenumbers(requestUri, workdir)
+    elif requestUri.startswith("/osm/suspicious-streets/"):
+        output = handleSuspiciousStreets(requestUri, workdir)
     else:
         output = handleMain(relations)
 
