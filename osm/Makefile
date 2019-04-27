@@ -52,7 +52,7 @@ update-osmose-$(USER):
 	@mkdir -p workdir
 	curl -o workdir/osmose-$(USER).rss http://osmose.openstreetmap.fr/en/byuser/$(USER).rss
 
-PYFILES = overpass-query generate-postcode-csv get-reference-housenumbers qa/suspicious-streets.py qa/houseless-streets.py qa/osmose.py addr-osmify
+PYFILES = overpass-query generate-postcode-csv get_reference_housenumbers.py qa/suspicious-streets.py qa/houseless-streets.py qa/osmose.py addr-osmify
 
 check-style:
 	pycodestyle $(PYFILES)

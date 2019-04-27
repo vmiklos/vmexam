@@ -122,7 +122,7 @@ def getReferenceHouseNumbers(street, prefix):
 
     try:
         j = json.loads(buf)
-    except:
+    except Exception:
         return []
     return [simplify(street + " " + i["label"]) for i in j]
 
