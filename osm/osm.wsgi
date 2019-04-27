@@ -9,7 +9,8 @@ import configparser
 import os
 import sys
 import yaml
-
+sys.path.append(os.path.dirname(__file__))
+import overpass_query
 
 def getWorkdir():
     config = configparser.ConfigParser()
@@ -46,7 +47,12 @@ def handleStreets(requestUri, workdir):
             output += sock.read()
         output += "</pre>"
     elif action == "update-result":
-        pass
+        with open(os.path.join(workdir, "streets-%s.txt" % relation)) as sock:
+            query = sock.read()
+        result = overpass_query.overpassQuery(query)
+        with open(os.path.join(workdir, "streets-%s.csv" % relation), mode="w") as sock:
+            sock.write(result)
+            output += "update finished. <a href=\"/osm/streets/" + relation + "/view-result\">view</a>"
 
     return output
 
