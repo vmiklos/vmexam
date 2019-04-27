@@ -1,45 +1,45 @@
 download: update-streets update-house-numbers update-addr-interpolation update-streets-nomaxspeed update-osmose-$(USER)
 
 update-streets: streets.txt workdir/streets-gazdagret.txt workdir/streets-sashegy.txt workdir/streets-nemetvolgy.txt workdir/streets-martonhegy.txt workdir/streets-ormezo.txt workdir/streets-krisztinavaros.txt
-	./overpass-query streets.txt > workdir/streets.csv
-	./overpass-query workdir/streets-gazdagret.txt > workdir/streets-gazdagret.csv
-	./overpass-query workdir/streets-sashegy.txt > workdir/streets-sashegy.csv
-	./overpass-query workdir/streets-nemetvolgy.txt > workdir/streets-nemetvolgy.csv
-	./overpass-query workdir/streets-martonhegy.txt > workdir/streets-martonhegy.csv
-	./overpass-query workdir/streets-ormezo.txt > workdir/streets-ormezo.csv
-	./overpass-query workdir/streets-farkasvolgy.txt > workdir/streets-farkasvolgy.csv
-	./overpass-query workdir/streets-magasut.txt > workdir/streets-magasut.csv
-	./overpass-query workdir/streets-terezvaros.txt > workdir/streets-terezvaros.csv
-	./overpass-query workdir/streets-krisztinavaros.txt > workdir/streets-krisztinavaros.csv
-	./overpass-query workdir/streets-balatonboglar.txt > workdir/streets-balatonboglar.csv
-	./overpass-query workdir/streets-szigetmonostor.txt > workdir/streets-szigetmonostor.csv
+	./overpass_query.py streets.txt > workdir/streets.csv
+	./overpass_query.py workdir/streets-gazdagret.txt > workdir/streets-gazdagret.csv
+	./overpass_query.py workdir/streets-sashegy.txt > workdir/streets-sashegy.csv
+	./overpass_query.py workdir/streets-nemetvolgy.txt > workdir/streets-nemetvolgy.csv
+	./overpass_query.py workdir/streets-martonhegy.txt > workdir/streets-martonhegy.csv
+	./overpass_query.py workdir/streets-ormezo.txt > workdir/streets-ormezo.csv
+	./overpass_query.py workdir/streets-farkasvolgy.txt > workdir/streets-farkasvolgy.csv
+	./overpass_query.py workdir/streets-magasut.txt > workdir/streets-magasut.csv
+	./overpass_query.py workdir/streets-terezvaros.txt > workdir/streets-terezvaros.csv
+	./overpass_query.py workdir/streets-krisztinavaros.txt > workdir/streets-krisztinavaros.csv
+	./overpass_query.py workdir/streets-balatonboglar.txt > workdir/streets-balatonboglar.csv
+	./overpass_query.py workdir/streets-szigetmonostor.txt > workdir/streets-szigetmonostor.csv
 
 update-streets-nomaxspeed: streets-nomaxspeed.txt
-	./overpass-query streets-nomaxspeed.txt > workdir/streets-nomaxspeed.csv
+	./overpass_query.py streets-nomaxspeed.txt > workdir/streets-nomaxspeed.csv
 
 update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdagret.txt workdir/street-housenumbers-sashegy.txt workdir/street-housenumbers-nemetvolgy.txt workdir/street-housenumbers-martonhegy.txt workdir/street-housenumbers-ormezo.txt workdir/street-housenumbers-krisztinavaros.txt
 	@mkdir -p workdir
-	./overpass-query street-housenumbers.txt > workdir/street-housenumbers.csv
-	./overpass-query workdir/street-housenumbers-gazdagret.txt > workdir/street-housenumbers-gazdagret.csv
-	./overpass-query workdir/street-housenumbers-sashegy.txt > workdir/street-housenumbers-sashegy.csv
-	./overpass-query workdir/street-housenumbers-nemetvolgy.txt > workdir/street-housenumbers-nemetvolgy.csv
-	./overpass-query workdir/street-housenumbers-martonhegy.txt > workdir/street-housenumbers-martonhegy.csv
-	./overpass-query workdir/street-housenumbers-ormezo.txt > workdir/street-housenumbers-ormezo.csv
-	./overpass-query workdir/street-housenumbers-magasut.txt > workdir/street-housenumbers-magasut.csv
-	./overpass-query workdir/street-housenumbers-terezvaros.txt > workdir/street-housenumbers-terezvaros.csv
-	./overpass-query workdir/street-housenumbers-balatonboglar.txt > workdir/street-housenumbers-balatonboglar.csv
-	./overpass-query workdir/street-housenumbers-szigetmonostor.txt > workdir/street-housenumbers-szigetmonostor.csv
-	./overpass-query workdir/street-housenumbers-krisztinavaros.txt > workdir/street-housenumbers-krisztinavaros.csv
-	./overpass-query workdir/street-housenumbers-lagymanyos.txt > workdir/street-housenumbers-lagymanyos.csv
+	./overpass_query.py street-housenumbers.txt > workdir/street-housenumbers.csv
+	./overpass_query.py workdir/street-housenumbers-gazdagret.txt > workdir/street-housenumbers-gazdagret.csv
+	./overpass_query.py workdir/street-housenumbers-sashegy.txt > workdir/street-housenumbers-sashegy.csv
+	./overpass_query.py workdir/street-housenumbers-nemetvolgy.txt > workdir/street-housenumbers-nemetvolgy.csv
+	./overpass_query.py workdir/street-housenumbers-martonhegy.txt > workdir/street-housenumbers-martonhegy.csv
+	./overpass_query.py workdir/street-housenumbers-ormezo.txt > workdir/street-housenumbers-ormezo.csv
+	./overpass_query.py workdir/street-housenumbers-magasut.txt > workdir/street-housenumbers-magasut.csv
+	./overpass_query.py workdir/street-housenumbers-terezvaros.txt > workdir/street-housenumbers-terezvaros.csv
+	./overpass_query.py workdir/street-housenumbers-balatonboglar.txt > workdir/street-housenumbers-balatonboglar.csv
+	./overpass_query.py workdir/street-housenumbers-szigetmonostor.txt > workdir/street-housenumbers-szigetmonostor.csv
+	./overpass_query.py workdir/street-housenumbers-krisztinavaros.txt > workdir/street-housenumbers-krisztinavaros.csv
+	./overpass_query.py workdir/street-housenumbers-lagymanyos.txt > workdir/street-housenumbers-lagymanyos.csv
 
 update-addr-interpolation: addr-interpolation.txt workdir/street-housenumbers-gazdagret.txt workdir/street-housenumbers-sashegy.txt
 	@mkdir -p workdir
-	./overpass-query addr-interpolation.txt > workdir/addr-interpolation.csv
-	./overpass-query workdir/addr-interpolation-gazdagret.txt > workdir/addr-interpolation-gazdagret.csv
-	./overpass-query workdir/addr-interpolation-sashegy.txt > workdir/addr-interpolation-sashegy.csv
-	./overpass-query workdir/addr-interpolation-nemetvolgy.txt > workdir/addr-interpolation-nemetvolgy.csv
-	./overpass-query workdir/addr-interpolation-martonhegy.txt > workdir/addr-interpolation-martonhegy.csv
-	./overpass-query workdir/addr-interpolation-ormezo.txt > workdir/addr-interpolation-ormezo.csv
+	./overpass_query.py addr-interpolation.txt > workdir/addr-interpolation.csv
+	./overpass_query.py workdir/addr-interpolation-gazdagret.txt > workdir/addr-interpolation-gazdagret.csv
+	./overpass_query.py workdir/addr-interpolation-sashegy.txt > workdir/addr-interpolation-sashegy.csv
+	./overpass_query.py workdir/addr-interpolation-nemetvolgy.txt > workdir/addr-interpolation-nemetvolgy.csv
+	./overpass_query.py workdir/addr-interpolation-martonhegy.txt > workdir/addr-interpolation-martonhegy.csv
+	./overpass_query.py workdir/addr-interpolation-ormezo.txt > workdir/addr-interpolation-ormezo.csv
 
 # At the end this check found no problems, so this is not part of 'make check'.
 update-postcodes:
@@ -52,7 +52,7 @@ update-osmose-$(USER):
 	@mkdir -p workdir
 	curl -o workdir/osmose-$(USER).rss http://osmose.openstreetmap.fr/en/byuser/$(USER).rss
 
-PYFILES = overpass-query generate-postcode-csv get_reference_housenumbers.py qa/suspicious-streets.py qa/houseless-streets.py qa/osmose.py addr-osmify
+PYFILES = overpass_query.py generate-postcode-csv get_reference_housenumbers.py qa/suspicious-streets.py qa/houseless-streets.py qa/osmose.py addr-osmify
 
 check-style:
 	pycodestyle $(PYFILES)
