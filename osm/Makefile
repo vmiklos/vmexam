@@ -86,8 +86,8 @@ check: check-style download
 	qa/suspicious_streets.py -nemetvolgy
 	qa/suspicious_streets.py -ormezo
 	qa/suspicious_streets.py -farkasvolgy
+	qa/suspicious_streets.py -magasut
 	#qa/suspicious_streets.py -terezvaros
-	#qa/suspicious_streets.py -magasut
 
 workdir/streets-balatonboglar.txt: streets.txt
 	@mkdir -p workdir
