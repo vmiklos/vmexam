@@ -1,3 +1,6 @@
+server:
+	uwsgi --plugins http,python3 --http :8000 --wsgi-file wsgi.py
+
 download: update-streets update-house-numbers update-addr-interpolation update-streets-nomaxspeed update-osmose-$(USER)
 
 update-streets: streets.txt workdir/streets-gazdagret.txt workdir/streets-sashegy.txt workdir/streets-nemetvolgy.txt workdir/streets-martonhegy.txt workdir/streets-ormezo.txt workdir/streets-krisztinavaros.txt

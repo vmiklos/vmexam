@@ -53,10 +53,12 @@ def embed(arg: str) -> None:
         print("Failed to extract url from Open Graph tags.")
     else:
         tokens = url.split("=w")
-        assert len(tokens) == 2
-        # 640 comes from
-        # <https://github.com/gfidente/pelican-svbhack/blob/master/static/css/style.css#L67>.
-        print(tokens[0] + "=w640")
+        if len(tokens) == 2:
+            # 640 comes from
+            # <https://github.com/gfidente/pelican-svbhack/blob/master/static/css/style.css#L67>.
+            print(tokens[0] + "=w640")
+        else:
+            print(url)
 
 
 if len(sys.argv) > 1:
