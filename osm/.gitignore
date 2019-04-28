@@ -1,3 +1,2 @@
 .*.swp
 .mypy_cache
-wsgi.ini
