@@ -1,7 +1,7 @@
 download: update-streets update-house-numbers update-addr-interpolation update-streets-nomaxspeed update-osmose-$(USER)
 
 update-streets: streets.txt workdir/streets-gazdagret.txt workdir/streets-sashegy.txt workdir/streets-nemetvolgy.txt workdir/streets-martonhegy.txt workdir/streets-ormezo.txt workdir/streets-krisztinavaros.txt
-	../../osm-gimmisn/overpass_query.py streets.txt > workdir/streets.csv
+	../../osm-gimmisn/overpass_query.py streets.txt > workdir/streets-sasad.csv
 	../../osm-gimmisn/overpass_query.py workdir/streets-gazdagret.txt > workdir/streets-gazdagret.csv
 	../../osm-gimmisn/overpass_query.py workdir/streets-sashegy.txt > workdir/streets-sashegy.csv
 	../../osm-gimmisn/overpass_query.py workdir/streets-nemetvolgy.txt > workdir/streets-nemetvolgy.csv
@@ -20,7 +20,7 @@ update-streets-nomaxspeed: streets-nomaxspeed.txt
 
 update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdagret.txt workdir/street-housenumbers-sashegy.txt workdir/street-housenumbers-nemetvolgy.txt workdir/street-housenumbers-martonhegy.txt workdir/street-housenumbers-ormezo.txt workdir/street-housenumbers-krisztinavaros.txt
 	@mkdir -p workdir
-	../../osm-gimmisn/overpass_query.py street-housenumbers.txt > workdir/street-housenumbers.csv
+	../../osm-gimmisn/overpass_query.py street-housenumbers.txt > workdir/street-housenumbers-sasad.csv
 	../../osm-gimmisn/overpass_query.py workdir/street-housenumbers-gazdagret.txt > workdir/street-housenumbers-gazdagret.csv
 	../../osm-gimmisn/overpass_query.py workdir/street-housenumbers-sashegy.txt > workdir/street-housenumbers-sashegy.csv
 	../../osm-gimmisn/overpass_query.py workdir/street-housenumbers-nemetvolgy.txt > workdir/street-housenumbers-nemetvolgy.csv
@@ -83,7 +83,7 @@ check: check-style download
 	qa/interpolated-addresses.py -martonhegy
 	qa/interpolated-addresses.py -ormezo
 	qa/streets-nomaxspeed.py
-	../../osm-gimmisn/suspicious_streets.py
+	../../osm-gimmisn/suspicious_streets.py -sasad
 	../../osm-gimmisn/suspicious_streets.py -gazdagret
 	../../osm-gimmisn/suspicious_streets.py -sashegy
 	../../osm-gimmisn/suspicious_streets.py -nemetvolgy
