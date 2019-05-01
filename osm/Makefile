@@ -10,6 +10,7 @@ update-streets: streets.txt workdir/streets-gazdagret.txt workdir/streets-sasheg
 	../../osm-gimmisn/overpass_query.py workdir/streets-farkasvolgy.txt > workdir/streets-farkasvolgy.csv
 	../../osm-gimmisn/overpass_query.py workdir/streets-magasut.txt > workdir/streets-magasut.csv
 	../../osm-gimmisn/overpass_query.py workdir/streets-farkasret.txt > workdir/streets-farkasret.csv
+	../../osm-gimmisn/overpass_query.py workdir/streets-hosszuret.txt > workdir/streets-hosszuret.csv
 	../../osm-gimmisn/overpass_query.py workdir/streets-terezvaros.txt > workdir/streets-terezvaros.csv
 	../../osm-gimmisn/overpass_query.py workdir/streets-krisztinavaros.txt > workdir/streets-krisztinavaros.csv
 	../../osm-gimmisn/overpass_query.py workdir/streets-balatonboglar.txt > workdir/streets-balatonboglar.csv
@@ -28,6 +29,7 @@ update-house-numbers: street-housenumbers.txt workdir/street-housenumbers-gazdag
 	../../osm-gimmisn/overpass_query.py workdir/street-housenumbers-ormezo.txt > workdir/street-housenumbers-ormezo.csv
 	../../osm-gimmisn/overpass_query.py workdir/street-housenumbers-magasut.txt > workdir/street-housenumbers-magasut.csv
 	../../osm-gimmisn/overpass_query.py workdir/street-housenumbers-farkasret.txt > workdir/street-housenumbers-farkasret.csv
+	../../osm-gimmisn/overpass_query.py workdir/street-housenumbers-hosszuret.txt > workdir/street-housenumbers-hosszuret.csv
 	../../osm-gimmisn/overpass_query.py workdir/street-housenumbers-terezvaros.txt > workdir/street-housenumbers-terezvaros.csv
 	../../osm-gimmisn/overpass_query.py workdir/street-housenumbers-balatonboglar.txt > workdir/street-housenumbers-balatonboglar.csv
 	../../osm-gimmisn/overpass_query.py workdir/street-housenumbers-szigetmonostor.txt > workdir/street-housenumbers-szigetmonostor.csv
@@ -72,6 +74,7 @@ check: check-style download
 	qa/houseless-streets.py -farkasvolgy
 	qa/houseless-streets.py -magasut
 	qa/houseless-streets.py -farkasret
+	#qa/houseless-streets.py -hosszuret
 	#qa/houseless-streets.py -terezvaros
 	#qa/houseless-streets.py -balatonboglar
 	#qa/houseless-streets.py -szigetmonostor
@@ -165,6 +168,10 @@ workdir/streets-farkasret.txt: streets.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602787964/' streets.txt > workdir/streets-farkasret.txt
 
+workdir/streets-hosszuret.txt: streets.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3602713782/' streets.txt > workdir/streets-hosszuret.txt
+
 workdir/streets-terezvaros.txt: streets.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3603229919/' streets.txt > workdir/streets-terezvaros.txt
@@ -200,6 +207,10 @@ workdir/street-housenumbers-magasut.txt: street-housenumbers.txt
 workdir/street-housenumbers-farkasret.txt: street-housenumbers.txt
 	@mkdir -p workdir
 	sed 's/3602714372/3602787964/' street-housenumbers.txt > workdir/street-housenumbers-farkasret.txt
+
+workdir/street-housenumbers-hosszuret.txt: street-housenumbers.txt
+	@mkdir -p workdir
+	sed 's/3602714372/3602713782/' street-housenumbers.txt > workdir/street-housenumbers-hosszuret.txt
 
 workdir/street-housenumbers-terezvaros.txt: street-housenumbers.txt
 	@mkdir -p workdir
