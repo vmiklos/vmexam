@@ -90,7 +90,7 @@ check: check-style download
 	../../osm-gimmisn/suspicious_streets.py -ormezo
 	../../osm-gimmisn/suspicious_streets.py -farkasvolgy
 	../../osm-gimmisn/suspicious_streets.py -magasut
-	#../../osm-gimmisn/suspicious_streets.py -farkasret
+	../../osm-gimmisn/suspicious_streets.py -farkasret
 	#../../osm-gimmisn/suspicious_streets.py -terezvaros
 
 workdir/streets-balatonboglar.txt: streets.txt
