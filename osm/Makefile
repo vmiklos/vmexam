@@ -71,7 +71,7 @@ check: check-style download
 	qa/houseless-streets.py -ormezo
 	qa/houseless-streets.py -farkasvolgy
 	qa/houseless-streets.py -magasut
-	#qa/houseless-streets.py -farkasret
+	qa/houseless-streets.py -farkasret
 	#qa/houseless-streets.py -terezvaros
 	#qa/houseless-streets.py -balatonboglar
 	#qa/houseless-streets.py -szigetmonostor
