@@ -1,6 +1,4 @@
 cppcanvas/qa/extras/emfplus/emfplus.cxx
-desktop/source/lib/lokclipboard.cxx
-desktop/source/lib/lokclipboard.hxx
 drawinglayer/qa/unit/border.cxx
 framework/qa/cppunit/dispatchtest.cxx
 include/comphelper/propertyvalue.hxx
