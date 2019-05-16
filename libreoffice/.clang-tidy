@@ -3,9 +3,12 @@
 #   in theory
 # - modernize-avoid-c-arrays: new check, get back to this later
 # - modernize-use-nodiscard: new check, get back to this later
+# - clang-analyzer-optin.cplusplus.UninitializedObject: new check, seems to emit false positive on
+#   boost::optional
 Checks: "clang-diagnostic-*,\
 -clang-analyzer-cplusplus.NewDelete,\
 -clang-analyzer-cplusplus.NewDeleteLeaks,\
+-clang-analyzer-optin.cplusplus.UninitializedObject,\
 performance-*,\
 unused-*,\
 modernize-*,\
