@@ -89,7 +89,7 @@ def main(argv: List[str]) -> None:
         xml.sax.parseString(dbString, handler)
 
         for item in sorted(handler.items):
-            if re.match(argv[0], item):
+            if re.match(".*" + argv[0] + ".*", item):
                 if quiet:
                     print(item.split(' ')[-1])
                 else:
