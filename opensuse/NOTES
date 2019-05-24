@@ -200,4 +200,8 @@ kstart plasmashell #to restart it
 - ifconfig and route is no more, see <https://dougvitale.wordpress.com/2011/12/21/deprecated-linux-networking-commands-and-their-replacements/> for their replacements
 - rss2email broke: `.config/rss2email.cfg` has to be updated: `smtp-ssl-protocol` needs to be `TLSv1` (while `SSLv3` was fine previously)
 
+=== openSUSE Leap 15.0 -> openSUSE Leap 15.1 (x86_64)
+
+- usual fix with html5 video codecs in firefox/chromium: https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support
+
 // vim: ft=asciidoc paste
