@@ -5,6 +5,7 @@
 # - modernize-use-nodiscard: new check, get back to this later
 # - clang-analyzer-optin.cplusplus.UninitializedObject: new check, seems to emit false positive on
 #   boost::optional
+# - modernize-use-trailing-return-type: signal/noise ratio looks low
 Checks: "clang-diagnostic-*,\
 -clang-analyzer-cplusplus.NewDelete,\
 -clang-analyzer-cplusplus.NewDeleteLeaks,\
@@ -16,6 +17,7 @@ modernize-*,\
 -modernize-concat-nested-namespaces,\
 -modernize-avoid-c-arrays,\
 -modernize-use-nodiscard,\
+-modernize-use-trailing-return-type,\
 misc-*,\
 bugprone-*,\
 -bugprone-narrowing-conversions,\
