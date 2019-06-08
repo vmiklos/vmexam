@@ -3,15 +3,7 @@
 time (
     git pull -r
     mkdir -p workdir
-    cd projects/compiler-rt
-    git pull -r
-    cd ../../tools/clang
-    git pull -r
-    git svn rebase -l
-    cd tools/extra
-    git pull -r
-    git svn rebase -l
-    cd ../../../../workdir
+    cd workdir
     cmake \
         -G 'Unix Makefiles' \
         -DCMAKE_INSTALL_PREFIX=$PWD/../instdir \
@@ -20,7 +12,8 @@ time (
         -DLLVM_ENABLE_SPHINX=ON \
         -DCMAKE_C_COMPILER="clang" \
         -DCMAKE_CXX_COMPILER="clang++" \
-        ..
+        -DLLVM_ENABLE_PROJECTS="compiler-rt;clang;clang-tools-extra" \
+        ../llvm
     make -j8
     make install
     make -j8 check-clang-tools
