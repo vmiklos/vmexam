@@ -107,8 +107,8 @@ make -j8 CCACHE_PREFIX=find-harmful-auto-wrapper CCACHE_DISABLE=1
 Online:
 
 ----
-~/git/llvm/tools/clang/tools/extra/clang-tidy/tool/run-clang-tidy.py 2>&1 |tee log
-grep error: log|sort -u |grep -v /test/
+run-clang-tidy 2>&1 |tee log.clang-tidy
+grep error: log.clang-tidy |grep -v misc-non-private
 ----
 
 Core:
