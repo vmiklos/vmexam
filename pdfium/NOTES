@@ -11,8 +11,6 @@ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 export PATH=`pwd`/depot_tools:"$PATH"
 gclient config --unmanaged https://pdfium.googlesource.com/pdfium.git
 gclient sync
-sudo zypper in gyp
-build/linux/sysroot_scripts/install-sysroot.py --arch=amd64
 gn gen workdir
 gn args workdir
 ----
@@ -38,7 +36,7 @@ gclient sync
 ninja -C workdir
 # exclude workdir and other automatically
 ctags --c++-kinds=+p --fields=+iaS --extra=+q -R --totals=yes $(git ls-files|grep /|sed 's|/.*||'|sort -u)
-workdir/pdfium_embeddertests --gtest_filter=FPDFEditEmbeddertest.AddPaths
+workdir/pdfium_embeddertests --gtest_filter=FPDFEditEmbedderTest.AddPaths
 ----
 
 compile commands:
