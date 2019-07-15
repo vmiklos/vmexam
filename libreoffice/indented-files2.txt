@@ -54,6 +54,8 @@ vcl/source/filter/ipdf/pdfdocument.cxx
 vcl/source/filter/ipdf/pdfread.cxx
 writerfilter/inc/rtftok/RTFDocument.hxx
 writerfilter/qa/cppunittests/rtftok/testrtftok.cxx
+writerfilter/source/dmapper/SdtHelper.cxx
+writerfilter/source/dmapper/SdtHelper.hxx
 writerfilter/source/ooxml/factory_ns.py
 writerfilter/source/ooxml/factoryimpl.py
 writerfilter/source/ooxml/factoryimpl_ns.py
