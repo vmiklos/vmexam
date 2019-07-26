@@ -3,10 +3,11 @@
 # Copyright 2019 Miklos Vajna. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-#
-# Takes an OSM way ID and turns it into a string that is readable and
-# e.g. OsmAnd can parse it as well.
-#
+
+"""
+Takes an OSM way ID and turns it into a string that is readable and
+e.g. OsmAnd can parse it as well.
+"""
 
 import json
 import sys
@@ -14,7 +15,8 @@ import urllib.parse
 import urllib.request
 
 
-def queryTurbo(query: str) -> str:
+def query_turbo(query: str) -> str:
+    """Send query to overpass turbo."""
     url = "http://overpass-api.de/api/interpreter"
 
     sock = urllib.request.urlopen(url, bytes(query, "utf-8"))
@@ -24,13 +26,14 @@ def queryTurbo(query: str) -> str:
     return buf.decode("utf-8")
 
 
-def queryNominatim(query: str) -> str:
+def query_nominatim(query: str) -> str:
+    """Send query to nominatim."""
     url = "http://nominatim.openstreetmap.org/search.php?"
-    d = {
+    params = {
         "q": query,
         "format": "json"
     }
-    url += urllib.parse.urlencode(d)
+    url += urllib.parse.urlencode(params)
 
     sock = urllib.request.urlopen(url)
     buf = sock.read()
@@ -40,9 +43,10 @@ def queryNominatim(query: str) -> str:
 
 
 def osmify(query: str) -> None:
+    """Turn query into a coordinate + address string."""
     # Use nominatim to get the coordinates and the osm type/id.
-    elements = json.loads(queryNominatim(query))
-    if not len(elements):
+    elements = json.loads(query_nominatim(query))
+    if not elements:
         print("No results from nominatim")
         return
 
@@ -50,24 +54,24 @@ def osmify(query: str) -> None:
         # There are multiple elements, prefer buildings if possible.
         # Example where this is useful: 'Karinthy Frigyes út 18, Budapest'.
         buildings = [i for i in elements if "class" in i.keys() and i["class"] == "building"]
-        if len(buildings):
+        if buildings:
             elements = buildings
 
     element = elements[0]
     lat = element["lat"]
     lon = element["lon"]
-    objectType = element["osm_type"]
-    objectId = element["osm_id"]
+    object_type = element["osm_type"]
+    object_id = element["osm_id"]
 
     # Use overpass to get the properties of the object.
-    overpassQuery = """[out:json];
+    overpass_query = """[out:json];
 (
     %s(%s);
 );
-out body;""" % (objectType, objectId)
-    j = json.loads(queryTurbo(overpassQuery))
+out body;""" % (object_type, object_id)
+    j = json.loads(query_turbo(overpass_query))
     elements = j["elements"]
-    if not len(elements):
+    if not elements:
         print("No results from overpass")
         return
 
