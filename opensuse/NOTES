@@ -203,5 +203,7 @@ kstart plasmashell #to restart it
 === openSUSE Leap 15.0 -> openSUSE Leap 15.1 (x86_64)
 
 - usual fix with html5 video codecs in firefox/chromium: https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support
+- STL container pretty-printers do not work by default in gdb anymore:
+  - can be fixed with: 'zypper in libstdc++6-devel-gcc8'
 
 // vim: ft=asciidoc paste
