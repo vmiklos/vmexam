@@ -1,0 +1,5 @@
+--with-distro=Jenkins/Linux_ubsan_master
+--disable-firebird-sdbc
+--with-lang=en-US
+--without-myspell-dicts
+--without-help
