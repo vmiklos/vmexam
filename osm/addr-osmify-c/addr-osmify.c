@@ -221,7 +221,39 @@ int osmify(const char* query, char** err)
     {
         // There are multiple elements, prefer buildings if possible.
         // Example where this is useful: 'Karinthy Frigyes út 18, Budapest'.
-        // TODO
+        json_object* buildings = json_object_new_array();
+        for (int i = 0; i < nominatimLen; i++)
+        {
+            json_object* building = json_object_array_get_idx(nominatimJson, i);
+            if (json_object_get_type(building) != json_type_object)
+            {
+                continue;
+            }
+
+            const char* class = json_object_get_string(json_object_object_get(building, "class"));
+            if (!class)
+            {
+                continue;
+            }
+
+            if (strcmp(class, "building") != 0)
+            {
+                continue;
+            }
+
+            json_object_get(building);
+            json_object_array_add(buildings, building);
+        }
+
+        if (json_object_array_length(buildings) > 0)
+        {
+            json_object_put(nominatimJson);
+            nominatimJson = buildings;
+        }
+        else
+        {
+            json_object_put(buildings);
+        }
     }
 
     json_object* element = json_object_array_get_idx(nominatimJson, 0);
