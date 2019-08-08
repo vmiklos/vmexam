@@ -5,6 +5,10 @@
  */
 
 #define _GNU_SOURCE
+#include <assert.h>
+#include <errno.h>
+#include <pthread.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,12 +18,61 @@
 #include <json_object.h>
 #include <json_tokener.h>
 
+/// Used by curl to dynamically allocate download result.
 struct MemoryStruct
 {
     char* data;
     size_t size;
 };
 
+/// Used for communication between osmify() and spinner().
+struct SpinnerContext
+{
+    char* query;
+    pthread_mutex_t mutex;
+    pthread_cond_t conditionVariable;
+    char* result;
+    char* error;
+    bool processed;
+};
+
+/// SpinnerContext constructor.
+void spinnerContextInit(struct SpinnerContext* context)
+{
+    context->query = NULL;
+    pthread_mutex_init(&context->mutex, NULL);
+    pthread_cond_init(&context->conditionVariable, NULL);
+    context->result = NULL;
+    context->error = NULL;
+    context->processed = false;
+}
+
+/// SpinnerContext destructor.
+void spinnerContextDestroy(struct SpinnerContext* context)
+{
+    if (context->error)
+    {
+        free(context->error);
+        context->error = NULL;
+    }
+
+    if (context->result)
+    {
+        free(context->result);
+        context->result = NULL;
+    }
+
+    pthread_cond_destroy(&context->conditionVariable);
+    pthread_mutex_destroy(&context->mutex);
+
+    if (context->query)
+    {
+        free(context->query);
+        context->query = NULL;
+    }
+}
+
+/// curl's data write callback.
 static size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb,
                                   void* user)
 {
@@ -166,9 +219,8 @@ cleanup:
 }
 
 /// Turns an address into a coodinate + normalized address combo.
-int osmify(const char* query, char** err)
+void osmify(struct SpinnerContext* spinnerContext)
 {
-    int ret = 0;
     char* nominatimRet = NULL;
     char* overpassQuery = NULL;
     char* overpassRet = NULL;
@@ -181,39 +233,28 @@ int osmify(const char* query, char** err)
 
     // Use nominatim to get the coordinates and the osm type/id.
     char* nominatimErr = NULL;
-    nominatimRet = queryNominatim(query, &nominatimErr);
+    nominatimRet = queryNominatim(spinnerContext->query, &nominatimErr);
     if (!nominatimRet)
     {
         char* str = NULL;
         asprintf(&str, "failed to query nominatim: %s", nominatimErr);
         free(nominatimErr);
-        if (err)
-        {
-            *err = str;
-        }
-        ret = -1;
+        spinnerContext->error = str;
         goto cleanup;
     }
 
     nominatimJson = json_tokener_parse(nominatimRet);
     if (json_object_get_type(nominatimJson) != json_type_array)
     {
-        if (err)
-        {
-            *err = strdup("result from nominatim is not a json array");
-        }
-        ret = -1;
+        spinnerContext->error =
+            strdup("result from nominatim is not a json array");
         goto cleanup;
     }
 
     int nominatimLen = json_object_array_length(nominatimJson);
     if (nominatimLen == 0)
     {
-        if (err)
-        {
-            *err = strdup("no results from nominatim");
-        }
-        ret = -1;
+        spinnerContext->error = strdup("no results from nominatim");
         goto cleanup;
     }
 
@@ -230,7 +271,8 @@ int osmify(const char* query, char** err)
                 continue;
             }
 
-            const char* class = json_object_get_string(json_object_object_get(building, "class"));
+            const char* class = json_object_get_string(
+                json_object_object_get(building, "class"));
             if (!class)
             {
                 continue;
@@ -259,7 +301,7 @@ int osmify(const char* query, char** err)
     json_object* element = json_object_array_get_idx(nominatimJson, 0);
     if (json_object_get_type(element) != json_type_object)
     {
-        ret = -1;
+        spinnerContext->error = strdup("element type is not object");
         goto cleanup;
     }
 
@@ -281,7 +323,7 @@ int osmify(const char* query, char** err)
                  "out body;",
                  objectType, objectId) < 0)
     {
-        ret = -1;
+        spinnerContext->error = strdup("failed to build overpass query");
         goto cleanup;
     }
 
@@ -292,53 +334,43 @@ int osmify(const char* query, char** err)
         char* str = NULL;
         asprintf(&str, "failed to query overpass: %s", overpassErr);
         free(overpassErr);
-        if (err)
-        {
-            *err = str;
-        }
-        ret = -1;
+        spinnerContext->error = str;
         goto cleanup;
     }
     overpassJson = json_tokener_parse(overpassRet);
     if (json_object_get_type(overpassJson) != json_type_object)
     {
-        if (err)
-        {
-            *err = strdup("result from overpass is not a json object");
-        }
-        ret = -1;
+        spinnerContext->error =
+            strdup("result from overpass is not a json object");
         goto cleanup;
     }
 
     json_object* elements = json_object_object_get(overpassJson, "elements");
     if (json_object_get_type(elements) != json_type_array)
     {
-        ret = -1;
+        spinnerContext->error = strdup("elements type is not array");
         goto cleanup;
     }
 
     int overpassLen = json_object_array_length(elements);
     if (overpassLen == 0)
     {
-        if (err)
-        {
-            *err = strdup("no results from overpass");
-        }
-        ret = -1;
+        spinnerContext->error = strdup("no results from overpass");
         goto cleanup;
     }
 
     json_object* overpassElement = json_object_array_get_idx(elements, 0);
     if (json_object_get_type(overpassElement) != json_type_object)
     {
-        ret = -1;
+        spinnerContext->error =
+            strdup("overpassElement type type is not object");
         goto cleanup;
     }
 
     json_object* tags = json_object_object_get(overpassElement, "tags");
     if (json_object_get_type(tags) != json_type_object)
     {
-        ret = -1;
+        spinnerContext->error = strdup("tags type type is not object");
         goto cleanup;
     }
 
@@ -354,11 +386,15 @@ int osmify(const char* query, char** err)
     if (asprintf(&addr, "%s %s, %s %s", postcode, city, street, housenumber) <
         0)
     {
-        ret = -1;
+        spinnerContext->error = strdup("failed to build the address string");
         goto cleanup;
     }
 
-    printf("geo:%s,%s (%s)\n", lat, lon, addr);
+    if (asprintf(&spinnerContext->result, "geo:%s,%s (%s)", lat, lon, addr) < 0)
+    {
+        spinnerContext->error = strdup("failed to build the result string");
+        goto cleanup;
+    }
 
 cleanup:
     if (result)
@@ -401,30 +437,110 @@ cleanup:
         free(nominatimRet);
         nominatimRet = NULL;
     }
+}
 
-    return ret;
+/// Runs on a thread, invokes osmify().
+void* worker(void* context)
+{
+    struct SpinnerContext* spinnerContext = (struct SpinnerContext*)context;
+    osmify(spinnerContext);
+
+    pthread_mutex_lock(&spinnerContext->mutex);
+    spinnerContext->processed = true;
+    pthread_mutex_unlock(&spinnerContext->mutex);
+    pthread_cond_signal(&spinnerContext->conditionVariable);
+
+    return NULL;
+}
+
+/// Moral equivalent of C++'s std::condition_variable::wait_for().
+void wait_for(struct SpinnerContext* spinnerContext, int sleep)
+{
+    struct timespec abstime;
+    clock_gettime(CLOCK_REALTIME, &abstime);
+    // Larger values would require a while loop during normalize.
+    assert(sleep < 1000);
+    // Convert from milli to nano.
+    abstime.tv_nsec += sleep * 1000000;
+    // Normalize.
+    if (abstime.tv_nsec >= 1000000000)
+    {
+        abstime.tv_sec++;
+        abstime.tv_nsec -= 1000000000;
+    }
+    pthread_cond_timedwait(&spinnerContext->conditionVariable,
+                           &spinnerContext->mutex, &abstime);
+}
+
+/// Spinner that waits till osmify() completes.
+int spinner(struct SpinnerContext* spinnerContext)
+{
+    const char spinCharacters[] = "\\|/-";
+    size_t spinIndex = 0;
+
+    while (true)
+    {
+        pthread_mutex_lock(&spinnerContext->mutex);
+
+        const int sleep = 100;
+        wait_for(spinnerContext, sleep);
+
+        if (spinnerContext->processed)
+        {
+            printf("\r");
+            fflush(stdout);
+            if (spinnerContext->error != NULL)
+            {
+                fprintf(stderr, "failed to osmify: %s\n",
+                        spinnerContext->error);
+                pthread_mutex_unlock(&spinnerContext->mutex);
+                return -1;
+            }
+
+            printf("%s\n", spinnerContext->result);
+            pthread_mutex_unlock(&spinnerContext->mutex);
+            return 0;
+        }
+
+        printf("\r [%c] ", spinCharacters[spinIndex]);
+        fflush(stdout);
+        spinIndex = (spinIndex + 1) % strlen(spinCharacters);
+
+        pthread_mutex_unlock(&spinnerContext->mutex);
+    }
 }
 
 int main(int argc, char** argv)
 {
+    int ret = 0;
+    struct SpinnerContext spinnerContext;
+    spinnerContextInit(&spinnerContext);
+
     if (argc > 1)
     {
-        char* err = NULL;
-        // TODO show a spinner while this is running.
-        int ret = osmify(argv[1], &err);
-        if (ret < 0)
+        spinnerContext.query = strdup(argv[1]);
+        pthread_t thread;
+        if (pthread_create(&thread, NULL, worker, &spinnerContext))
         {
-            fprintf(stderr, "failed to osmify: %s\n", err);
-            free(err);
-            return 1;
+            fprintf(stderr, "pthread_create() failed\n");
+            goto cleanup;
         }
+
+        if (spinner(&spinnerContext) < 0)
+        {
+            ret = 1;
+        }
+        pthread_join(thread, NULL);
     }
     else
     {
         fprintf(stderr, "usage: addr-osmify <query>\n\n");
         fprintf(stderr, "e.g. addr-osmify 'Mészáros utca 58/a, Budapest'\n");
     }
-    return 0;
+
+cleanup:
+    spinnerContextDestroy(&spinnerContext);
+    return ret;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
