@@ -167,7 +167,7 @@ char* queryNominatim(const char* query, char** err)
         goto cleanup;
     }
 
-    escapedQuery = curl_easy_escape(curl, query, strlen(query));
+    escapedQuery = curl_easy_escape(curl, query, (int)strlen(query));
     if (asprintf(&url, "%s?q=%s&format=json", prefix, escapedQuery) < 0)
     {
         goto cleanup;
@@ -461,13 +461,14 @@ void wait_for(struct SpinnerContext* spinnerContext, int sleep)
     clock_gettime(CLOCK_REALTIME, &abstime);
     // Larger values would require a while loop during normalize.
     assert(sleep < 1000);
-    // Convert from milli to nano.
-    abstime.tv_nsec += sleep * 1000000;
+    const int milliToNano = 1000000;
+    abstime.tv_nsec += sleep * milliToNano;
     // Normalize.
-    if (abstime.tv_nsec >= 1000000000)
+    const int milliToSec = 1000000000;
+    if (abstime.tv_nsec >= milliToSec)
     {
         abstime.tv_sec++;
-        abstime.tv_nsec -= 1000000000;
+        abstime.tv_nsec -= milliToSec;
     }
     pthread_cond_timedwait(&spinnerContext->conditionVariable,
                            &spinnerContext->mutex, &abstime);

@@ -20,4 +20,5 @@ addr-osmify: addr-osmify.c Makefile
 iwyu:
 	include-what-you-use $(CXXFLAGS) -o addr-osmify addr-osmify.c
 
-# TODO tidy
+tidy:
+	clang-tidy addr-osmify.c

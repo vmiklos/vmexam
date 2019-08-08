@@ -1,0 +1,13 @@
+---
+# DeprecatedOrUnsafeBufferHandling would recommend Windows-only C11 functions
+Checks: "clang-diagnostic-*,\
+performance-*,\
+unused-*,\
+modernize-*,\
+misc-*,\
+bugprone-*,\
+readability-*,\
+-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,\
+"
+WarningsAsErrors: '*'
+
