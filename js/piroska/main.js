@@ -1,7 +1,7 @@
 /*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * Copyright 2019 Miklos Vajna. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
 
 var domready = require('domready');
@@ -40,20 +40,20 @@ domready(function() {
 
     var actors = [
         [
-          'Piroska', 'Piroskának', 'Piroskával', 'Piroskához', 'Piroska',
-          'Piroska'
+            'Piroska', 'Piroskának', 'Piroskával', 'Piroskához', 'Piroska',
+            'Piroska'
         ],
         [
-          'a nagymama', 'nagymamának', 'a nagymamával', 'a nagymamához',
-          'A nagymama', 'nagymama'
+            'a nagymama', 'nagymamának', 'a nagymamával', 'a nagymamához',
+            'A nagymama', 'nagymama'
         ],
         [
-          'a farkas', 'farkasnak', 'a farkassal', 'a farkashoz', 'A farkas',
-          'farkas'
+            'a farkas', 'farkasnak', 'a farkassal', 'a farkashoz', 'A farkas',
+            'farkas'
         ],
         [
-          'a vadász', 'vadásznak', 'a vadásszal', 'a vadászhoz', 'A vadász',
-          'vadász'
+            'a vadász', 'vadásznak', 'a vadásszal', 'a vadászhoz', 'A vadász',
+            'vadász'
         ]
     ];
 
