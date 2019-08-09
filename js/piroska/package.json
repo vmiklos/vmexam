@@ -1,0 +1,13 @@
+{
+  "name": "piroska",
+  "version": "1.0.0",
+  "description": "piroska",
+  "main": "main.js",
+  "author": "Miklos Vajna",
+  "license": "MIT",
+  "dependencies": {
+    "domready": "1.0.8",
+    "shuffle-array": "1.0.1",
+    "uglifyify": "5.0.1"
+  }
+}
