@@ -78,9 +78,8 @@ function queryNominatim(protocol, query, next)
                 {
                     // There are multiple elements, prefer buildings if
                     // possible.
-                    var buildings = elements.filter(function(element) {
-                        return element['class'] == 'building';
-                    });
+                    var buildings = elements.filter(function(
+                        element) { return element['class'] == 'building'; });
                     if (buildings.length > 0)
                         elements = buildings;
                 }
@@ -104,7 +103,6 @@ function osmify()
 /// Look up name as a key in the query string.
 function getParameterByName(name)
 {
-    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
     var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
         results = regex.exec(location.search);
     return results === null ? '' : results[1].replace(/\+/g, ' ');
@@ -154,7 +152,6 @@ domready(function() {
     {
         nominatimInput.value = decodeURIComponent(query);
     }
-
 });
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:
