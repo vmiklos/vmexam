@@ -1,0 +1,17 @@
+{
+  "name": "addr-osmify",
+  "version": "1.0.0",
+  "description": "Takes an nominatim query and turns it into a string",
+  "main": "main.js",
+  "scripts": {
+    "test": "make check"
+  },
+  "author": "Miklos Vajna",
+  "license": "MIT",
+  "dependencies": {
+    "browser-request": "0.3.3",
+    "domready": "1.0.8",
+    "querystring-browser": "1.0.4",
+    "uglifyify": "5.0.1"
+  }
+}
