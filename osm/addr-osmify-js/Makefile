@@ -11,4 +11,4 @@ check:
 	eslint main.js
 
 run:
-	python simple-https-server.py
+	python3 simple-https-server.py

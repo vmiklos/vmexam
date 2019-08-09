@@ -6,9 +6,9 @@
 # then in your browser, visit:
 #    https://localhost:4443
 
-import BaseHTTPServer, SimpleHTTPServer
+import http.server, http.server
 import ssl
 
-httpd = BaseHTTPServer.HTTPServer(('localhost', 4443), SimpleHTTPServer.SimpleHTTPRequestHandler)
+httpd = http.server.HTTPServer(('localhost', 4443), http.server.SimpleHTTPRequestHandler)
 httpd.socket = ssl.wrap_socket (httpd.socket, certfile='./server.pem', server_side=True)
 httpd.serve_forever()
