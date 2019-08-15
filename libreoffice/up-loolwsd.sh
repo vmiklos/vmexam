@@ -6,15 +6,21 @@ time (
         make distclean
     fi
     ./autogen.sh
+
+    # If sanitizers already set a CC/CXX, don't overwrite it.
+    if [ -z "$CC" ]; then
+        export CC="ccache $HOME/git/llvm/instdir/bin/clang"
+    fi
+    if [ -z "$CXX" ]; then
+        export CXX="ccache $HOME/git/llvm/instdir/bin/clang++"
+    fi
     ./configure \
         --prefix=$PWD/install \
         --enable-debug \
         --with-lo-path=$HOME/git/libreoffice/master/instdir \
         --with-lokit-path=$HOME/git/libreoffice/master/include \
-        CC="ccache $HOME/git/llvm/instdir/bin/clang" \
-        CXX="ccache $HOME/git/llvm/instdir/bin/clang++" \
-        CFLAGS='-g -O0' \
-        CXXFLAGS='-g -O0' \
+        CFLAGS="-g -O0 $CFLAGS" \
+        CXXFLAGS="-g -O0 $CXXFLAGS" \
 
     # Self-built poco:
     #    --with-poco-includes=$HOME/git/poco/install/include \
