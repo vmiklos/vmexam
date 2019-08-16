@@ -56,12 +56,11 @@ update-osmose-$(USER):
 	@mkdir -p workdir
 	curl -o workdir/osmose-$(USER).rss http://osmose.openstreetmap.fr/en/byuser/$(USER).rss
 
-PYFILES = generate-postcode-csv qa/houseless-streets.py qa/osmose.py addr_osmify
+PYFILES = generate-postcode-csv qa/houseless-streets.py qa/osmose.py
 
 check-style:
 	flake8 $(PYFILES)
 	pylint $(PYFILES)
-	mypy --strict addr_osmify
 
 check: check-style download
 	qa/osmose.py
