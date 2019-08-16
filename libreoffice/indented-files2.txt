@@ -14,6 +14,7 @@ connectivity/source/inc/writer/WTables.hxx
 cui/qa/uitest/dialogs/pastedlg.py
 desktop/source/lib/lokclipboard.cxx
 desktop/source/lib/lokclipboard.hxx
+embeddedobj/qa/cppunit/general.cxx
 filter/qa/unit/textfilterdetect.cxx
 filter/source/msfilter/rtfutil.cxx
 include/svl/grabbagitem.hxx
