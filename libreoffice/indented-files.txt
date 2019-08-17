@@ -10,7 +10,6 @@ oox/source/shape/WpgContext.hxx
 starmath/source/unofilter.cxx
 starmath/source/wordexportbase.cxx
 svx/qa/unit/xoutdev.cxx
-sw/source/filter/ww8/docxsdrexport.hxx
 sw/source/filter/ww8/sprmids.hxx
 sw/source/uibase/docvw/SidebarScrollBar.cxx
 sw/source/uibase/docvw/SidebarScrollBar.hxx
