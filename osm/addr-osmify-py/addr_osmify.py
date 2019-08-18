@@ -86,11 +86,17 @@ out body;""" % (object_type, object_id)
     print("geo:%s,%s (%s)" % (lat, lon, addr))
 
 
-if len(sys.argv) > 1:
-    osmify(sys.argv[1])
-else:
-    print("usage: addr-osmify <query>")
-    print()
-    print("e.g. addr-osmify 'Mészáros utca 58/a, Budapest'")
+def main() -> None:
+    """Commandline interface to this module."""
+    if len(sys.argv) > 1:
+        osmify(sys.argv[1])
+    else:
+        print("usage: addr-osmify <query>")
+        print()
+        print("e.g. addr-osmify 'Mészáros utca 58/a, Budapest'")
+
+
+if __name__ == "__main__":
+    main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
