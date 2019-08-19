@@ -1,4 +1,4 @@
-check: check-flake8 check-mypy check-pylint
+check: check-unit check-flake8 check-mypy check-pylint
 
 check-flake8:
 	flake8 addr_osmify.py
@@ -14,4 +14,4 @@ check-pylint:
 
 check-unit:
 	coverage run --branch --module unittest test_addr_osmify.py
-	coverage report --show-missing --fail-under=100 addr_osmify.py
+	coverage report --show-missing --fail-under=100 addr_osmify.py test_addr_osmify.py
