@@ -37,7 +37,8 @@ class TestMain(unittest.TestCase):
                 with unittest.mock.patch('sys.stdout', buf):
                     addr_osmify.main()
                 buf.seek(0)
-                self.assertTrue(buf.read(), "foo")
+                expected = "geo:47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n"
+                self.assertEqual(buf.read(), expected)
 
 
 if __name__ == '__main__':
