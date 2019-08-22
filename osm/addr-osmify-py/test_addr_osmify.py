@@ -11,6 +11,7 @@ from typing import Callable
 from typing import Optional
 import io
 import os
+import time
 import unittest
 import unittest.mock
 import urllib
@@ -35,6 +36,8 @@ class TestMain(unittest.TestCase):
                 buf = io.BytesIO()
                 buf.write(stream.read())
                 buf.seek(0)
+                # Make sure that the 100ms progressbar spins at least once.
+                time.sleep(0.2)
                 return buf
         return mock_urlopen_with_suffix
 

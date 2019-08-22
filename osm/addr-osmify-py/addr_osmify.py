@@ -11,8 +11,10 @@ e.g. OsmAnd can parse it as well.
 
 import json
 import sys
+import threading
 import urllib.parse
 import urllib.request
+from typing import Dict
 
 
 def query_turbo(query: str) -> str:
@@ -42,13 +44,12 @@ def query_nominatim(query: str) -> str:
     return buf.decode("utf-8")
 
 
-def osmify(query: str) -> None:
+def osmify(query: str) -> str:
     """Turn query into a coordinate + address string."""
     # Use nominatim to get the coordinates and the osm type/id.
     elements = json.loads(query_nominatim(query))
     if not elements:
-        print("No results from nominatim")
-        return
+        return "No results from nominatim"
 
     if len(elements) > 1:
         # There are multiple elements, prefer buildings if possible.
@@ -72,8 +73,7 @@ out body;""" % (object_type, object_id)
     j = json.loads(query_turbo(overpass_query))
     elements = j["elements"]
     if not elements:
-        print("No results from overpass")
-        return
+        return "No results from overpass"
 
     element = elements[0]
     city = element['tags']['addr:city']
@@ -83,13 +83,39 @@ out body;""" % (object_type, object_id)
     addr = "%s %s, %s %s" % (postcode, city, street, housenumber)
 
     # Print the result.
-    print("geo:%s,%s (%s)" % (lat, lon, addr))
+    return "geo:%s,%s (%s)" % (lat, lon, addr)
+
+
+def worker(context: Dict[str, str]) -> None:
+    """Wrapper around osmify() that has no return value."""
+    context["out"] = osmify(context["in"])
+
+
+def spinner(context: Dict[str, str], thread: threading.Thread) -> None:
+    """Shows a spinner while osmify() is in progress."""
+    spin_characters = "\\|/-"
+    spin_index = 0
+    while True:
+        thread.join(timeout=0.1)
+        if thread.is_alive():
+            sys.stderr.write("\r [%s] " % spin_characters[spin_index])
+            sys.stderr.flush()
+            spin_index = (spin_index + 1) % len(spin_characters)
+            continue
+
+        sys.stderr.write("\r")
+        sys.stderr.flush()
+        print(context["out"])
+        break
 
 
 def main() -> None:
     """Commandline interface to this module."""
     if len(sys.argv) > 1:
-        osmify(sys.argv[1])
+        context = {"in": sys.argv[1]}
+        thread = threading.Thread(target=worker, args=(context,))
+        thread.start()
+        spinner(context, thread)
     else:
         print("usage: addr-osmify <query>")
         print()
