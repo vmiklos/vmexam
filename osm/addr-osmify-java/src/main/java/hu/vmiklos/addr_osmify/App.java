@@ -7,7 +7,6 @@
 package hu.vmiklos.addr_osmify;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -21,48 +20,8 @@ import java.util.List;
 import java.util.Collection;
 import org.apache.commons.io.IOUtils;
 
-public class App
+public final class App
 {
-    /**
-     * NominatimResult represents one element in the result array from
-     * Nominatim.
-     */
-    class NominatimResult
-    {
-        @SerializedName("class") public String clazz;
-        public String lat;
-        public String lon;
-        @SerializedName("osm_type") public String osmType;
-        @SerializedName("osm_id") public String osmId;
-    }
-
-    /**
-     * TurboTags contains various tags about one Overpass element.
-     */
-    class TurboTags
-    {
-        @SerializedName("addr:city") public String city;
-        @SerializedName("addr:housenumber") public String houseNumber;
-        @SerializedName("addr:postcode") public String postCode;
-        @SerializedName("addr:street") public String street;
-    }
-
-    /**
-     * TurboElement represents one result from Overpass.
-     */
-    class TurboElement
-    {
-        public TurboTags tags;
-    }
-
-    /**
-     * TurboResult is the result from Overpass.
-     */
-    class TurboResult
-    {
-        public List<TurboElement> elements;
-    }
-
     /**
      * Send query to overpass turbo.
      */
@@ -117,7 +76,7 @@ public class App
     /**
      * Turn query into a coordinate + address string.
      */
-    private static void osmify(String query) throws Exception
+    public static String osmify(String query) throws Exception
     {
         // Use nominatim to get the coordinates and the osm type/id.
         String nominatim = queryNominatim(query);
@@ -128,8 +87,7 @@ public class App
             gson.fromJson(nominatim, collectionType);
         if (elements.isEmpty())
         {
-            System.out.println("No results from nominatim");
-            return;
+            return "No results from nominatim";
         }
 
         if (elements.size() > 1)
@@ -169,8 +127,7 @@ public class App
         List<TurboElement> turboElements = turboResult.elements;
         if (turboElements.isEmpty())
         {
-            System.out.println("No results from overpass");
-            return;
+            return "No results from overpass";
         }
 
         TurboElement turboElement = turboElements.get(0);
@@ -181,21 +138,44 @@ public class App
         String addr = postCode + " " + city + ", " + street + " " + houseNumber;
 
         // Print the result.
-        System.out.println("geo:" + lat + "," + lon + " (" + addr + ")");
+        return "geo:" + lat + "," + lon + " (" + addr + ")";
     }
 
-    private App()
+    /**
+     * Shows a spinner while osmify() is in progress.
+     */
+    private static void spinner(Context context, Thread thread) throws Exception
     {
-        // This is a utility class.
+        char[] spinCharacters = "\\|/-".toCharArray();
+        int spinIndex = 0;
+        while (true)
+        {
+            thread.join(100, 0);
+            if (!thread.isAlive())
+            {
+                System.err.print("\r");
+                System.err.flush();
+                System.out.println(context.out);
+                break;
+            }
+
+            System.err.print("\r [" + spinCharacters[spinIndex] + "] ");
+            System.err.flush();
+            spinIndex = (spinIndex + 1) % spinCharacters.length;
+        }
     }
 
-    public static void main(String[] args)
+    private App(String[] args)
     {
         if (args.length > 0)
         {
             try
             {
-                osmify(args[0]);
+                Context context = new Context();
+                context.in = args[0];
+                Thread thread = new Thread(new Worker(context));
+                thread.start();
+                spinner(context, thread);
             }
             catch (Exception e)
             {
@@ -210,6 +190,8 @@ public class App
                 "e.g. addr-osmify 'Mészáros utca 58/a, Budapest'");
         }
     }
+
+    public static void main(String[] args) { new App(args); }
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
