@@ -3,6 +3,7 @@ Checks: "clang-diagnostic-*,\
 performance-*,\
 unused-*,\
 modernize-*,\
+-modernize-use-trailing-return-type,
 misc-*,\
 bugprone-*,\
 readability-*,\

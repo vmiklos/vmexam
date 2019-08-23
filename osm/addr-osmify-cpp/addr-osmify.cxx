@@ -71,17 +71,27 @@ SslContext::SslContext()
 
 SslContext::~SslContext() { Poco::Net::uninitializeSSL(); }
 
-/// Gets the properties of an OSM object from overpass.
-std::string queryTurbo(const std::string& query)
+/// Default urlopen(), using Poco::Net.
+std::string defaultUrlopen(const Poco::URI& uri, const std::string& data)
 {
-    Poco::URI uri("https://overpass-api.de/api/interpreter");
+    if (data.empty())
+    {
+        std::unique_ptr<std::istream> responseStream(
+            Poco::URIStreamOpener::defaultOpener().open(uri));
+
+        std::stringstream stringStream;
+        Poco::StreamCopier::copyStream(*responseStream, stringStream);
+
+        return stringStream.str();
+    }
+
     Poco::Net::HTTPSClientSession session(uri.getHost(), uri.getPort());
     Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_POST,
                                    uri.getPath(),
                                    Poco::Net::HTTPMessage::HTTP_1_1);
-    request.setContentLength(query.length());
+    request.setContentLength(data.length());
     std::ostream& requestStream = session.sendRequest(request);
-    requestStream << query;
+    requestStream << data;
     Poco::Net::HTTPResponse response;
     std::istream& responseStream = session.receiveResponse(response);
 
@@ -91,6 +101,17 @@ std::string queryTurbo(const std::string& query)
     return stringStream.str();
 }
 
+using urlopenType = std::string (*)(const Poco::URI& uri,
+                                    const std::string& data);
+static urlopenType urlopen = defaultUrlopen;
+
+/// Gets the properties of an OSM object from overpass.
+std::string queryTurbo(const std::string& query)
+{
+    Poco::URI uri("https://overpass-api.de/api/interpreter");
+    return urlopen(uri, query);
+}
+
 /// Gets the OSM object from nominatim.
 std::string queryNominatim(const std::string& query)
 {
@@ -98,13 +119,7 @@ std::string queryNominatim(const std::string& query)
     uri.addQueryParameter("q", query);
     uri.addQueryParameter("format", "json");
 
-    std::unique_ptr<std::istream> responseStream(
-        Poco::URIStreamOpener::defaultOpener().open(uri));
-
-    std::stringstream stringStream;
-    Poco::StreamCopier::copyStream(*responseStream, stringStream);
-
-    return stringStream.str();
+    return urlopen(uri, "");
 }
 
 /// Turns an address into a coodinate + normalized address combo.
