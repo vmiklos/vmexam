@@ -41,6 +41,7 @@ if [ -n "$run_iwyu" ]; then
 else
     make -j$(getconf _NPROCESSORS_ONLN)
 fi
+make check
 make install
 cd ..
 ln -s workdir/compile_commands.json .

@@ -31,13 +31,44 @@ endif()
 
 find_package(Poco REQUIRED Foundation JSON Net NetSSL)
 
-add_executable(addr-osmify addr-osmify.cxx)
-target_link_libraries(addr-osmify
+add_library(osmifycore
+    lib.cxx
+    )
+target_link_libraries(osmifycore
     Poco::Foundation
     Poco::JSON
     Poco::Net
     Poco::NetSSL
     )
+
+add_executable(addr-osmify
+    main.cxx
+    )
+target_link_libraries(addr-osmify
+    osmifycore
+    )
 install(TARGETS addr-osmify DESTINATION bin)
+
+enable_testing()
+find_package(GTest REQUIRED)
+add_executable(osmifytest
+    test.cxx
+    )
+target_link_libraries(osmifytest
+    osmifycore
+    ${GTEST_BOTH_LIBRARIES}
+    )
+add_test(NAME osmfiy
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND osmifytest
+    )
+
+set(CMAKE_CTEST_COMMAND ctest -V)
+add_custom_target(check
+    COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIG>
+    )
+add_dependencies(check
+    osmifytest
+    )
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:

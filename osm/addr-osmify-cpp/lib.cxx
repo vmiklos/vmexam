@@ -4,6 +4,8 @@
  * found in the LICENSE file.
  */
 
+#include "lib.hxx"
+
 #include <chrono>
 #include <condition_variable>
 #include <iostream>
@@ -12,7 +14,6 @@
 #include <sstream>
 #include <string>
 #include <thread>
-#include <vector>
 
 #include <Poco/Dynamic/Var.h>
 #include <Poco/Exception.h>
@@ -32,6 +33,46 @@
 #include <Poco/StreamCopier.h>
 #include <Poco/URI.h>
 #include <Poco/URIStreamOpener.h>
+
+namespace osmify
+{
+
+/// Default urlopen(), using Poco::Net.
+std::string defaultUrlopen(const std::string& url, const std::string& data)
+{
+    Poco::URI uri(url);
+    if (data.empty())
+    {
+        std::unique_ptr<std::istream> responseStream(
+            Poco::URIStreamOpener::defaultOpener().open(uri));
+
+        std::stringstream stringStream;
+        Poco::StreamCopier::copyStream(*responseStream, stringStream);
+
+        return stringStream.str();
+    }
+
+    Poco::Net::HTTPSClientSession session(uri.getHost(), uri.getPort());
+    Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_POST,
+                                   uri.getPath(),
+                                   Poco::Net::HTTPMessage::HTTP_1_1);
+    request.setContentLength(data.length());
+    std::ostream& requestStream = session.sendRequest(request);
+    requestStream << data;
+    Poco::Net::HTTPResponse response;
+    std::istream& responseStream = session.receiveResponse(response);
+
+    std::stringstream stringStream;
+    Poco::StreamCopier::copyStream(responseStream, stringStream);
+
+    return stringStream.str();
+}
+
+static urlopenType urlopen = defaultUrlopen;
+
+urlopenType getUrlopen() { return urlopen; }
+
+void setUrlopen(urlopenType custom) { urlopen = custom; }
 
 /// Contains state to know when to stop the spinner and show result from
 /// osmify().
@@ -71,45 +112,11 @@ SslContext::SslContext()
 
 SslContext::~SslContext() { Poco::Net::uninitializeSSL(); }
 
-/// Default urlopen(), using Poco::Net.
-std::string defaultUrlopen(const Poco::URI& uri, const std::string& data)
-{
-    if (data.empty())
-    {
-        std::unique_ptr<std::istream> responseStream(
-            Poco::URIStreamOpener::defaultOpener().open(uri));
-
-        std::stringstream stringStream;
-        Poco::StreamCopier::copyStream(*responseStream, stringStream);
-
-        return stringStream.str();
-    }
-
-    Poco::Net::HTTPSClientSession session(uri.getHost(), uri.getPort());
-    Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_POST,
-                                   uri.getPath(),
-                                   Poco::Net::HTTPMessage::HTTP_1_1);
-    request.setContentLength(data.length());
-    std::ostream& requestStream = session.sendRequest(request);
-    requestStream << data;
-    Poco::Net::HTTPResponse response;
-    std::istream& responseStream = session.receiveResponse(response);
-
-    std::stringstream stringStream;
-    Poco::StreamCopier::copyStream(responseStream, stringStream);
-
-    return stringStream.str();
-}
-
-using urlopenType = std::string (*)(const Poco::URI& uri,
-                                    const std::string& data);
-static urlopenType urlopen = defaultUrlopen;
-
 /// Gets the properties of an OSM object from overpass.
 std::string queryTurbo(const std::string& query)
 {
-    Poco::URI uri("https://overpass-api.de/api/interpreter");
-    return urlopen(uri, query);
+    std::string url("https://overpass-api.de/api/interpreter");
+    return urlopen(url, query);
 }
 
 /// Gets the OSM object from nominatim.
@@ -119,7 +126,7 @@ std::string queryNominatim(const std::string& query)
     uri.addQueryParameter("q", query);
     uri.addQueryParameter("format", "json");
 
-    return urlopen(uri, "");
+    return urlopen(uri.toString(), "");
 }
 
 /// Turns an address into a coodinate + normalized address combo.
@@ -223,7 +230,7 @@ void osmify(SpinnerContext& spinnerContext)
                            << ")";
 }
 
-void spinner(SpinnerContext& spinnerContext)
+void spinner(SpinnerContext& spinnerContext, std::ostream& ostream)
 {
     std::vector<char> spinCharacters = {'\\', '|', '/', '-'};
     std::size_t spinIndex = 0;
@@ -237,24 +244,24 @@ void spinner(SpinnerContext& spinnerContext)
 
         if (spinnerContext._processed)
         {
-            std::cout << "\r";
-            std::cout.flush();
-            std::cout << spinnerContext._result.str() << std::endl;
+            ostream << "\r";
+            ostream.flush();
+            ostream << spinnerContext._result.str() << std::endl;
             return;
         }
 
-        std::cout << "\r [" << spinCharacters[spinIndex] << "] ";
-        std::cout.flush();
+        ostream << "\r [" << spinCharacters[spinIndex] << "] ";
+        ostream.flush();
         spinIndex = (spinIndex + 1) % spinCharacters.size();
     }
 }
 
-int main(int argc, char** argv)
+int main(const std::vector<const char*>& args, std::ostream& ostream)
 {
-    if (argc > 1)
+    if (args.size() > 1)
     {
         SpinnerContext spinnerContext;
-        spinnerContext._query = argv[1];
+        spinnerContext._query = args[1];
         std::thread worker([&spinnerContext] {
             try
             {
@@ -272,7 +279,7 @@ int main(int argc, char** argv)
             spinnerContext._conditionVariable.notify_one();
         });
 
-        spinner(spinnerContext);
+        spinner(spinnerContext, ostream);
         worker.join();
     }
     else
@@ -282,6 +289,8 @@ int main(int argc, char** argv)
         std::cerr << "e.g. addr-osmify 'Mészáros utca 58/a, Budapest'"
                   << std::endl;
     }
+    return 0;
 }
+} // namespace osmify
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
