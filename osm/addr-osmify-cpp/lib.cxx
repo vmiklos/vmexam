@@ -244,14 +244,14 @@ void spinner(SpinnerContext& spinnerContext, std::ostream& ostream)
 
         if (spinnerContext._processed)
         {
-            ostream << "\r";
-            ostream.flush();
+            std::cerr << "\r";
+            std::cerr.flush();
             ostream << spinnerContext._result.str() << std::endl;
             return;
         }
 
-        ostream << "\r [" << spinCharacters[spinIndex] << "] ";
-        ostream.flush();
+        std::cerr << "\r [" << spinCharacters[spinIndex] << "] ";
+        std::cerr.flush();
         spinIndex = (spinIndex + 1) % spinCharacters.size();
     }
 }
