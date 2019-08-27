@@ -110,7 +110,11 @@ SslContext::SslContext()
                                                        netContext);
 }
 
-SslContext::~SslContext() { Poco::Net::uninitializeSSL(); }
+SslContext::~SslContext()
+{
+    Poco::Net::HTTPSStreamFactory::unregisterFactory();
+    Poco::Net::uninitializeSSL();
+}
 
 /// Gets the properties of an OSM object from overpass.
 std::string queryTurbo(const std::string& query)

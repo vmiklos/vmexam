@@ -77,4 +77,15 @@ TEST(TestMain, testHappy)
     ASSERT_EQ(expected, out.str());
 }
 
+TEST(TestMain, testPreferBuildings)
+{
+    MockUrlopen mu(mockUrlopen, "-prefer-buildings");
+    std::vector<const char*> args{"", "Karinthy Frigyes út 18, Budapest"};
+    std::stringstream out;
+    ASSERT_EQ(0, osmify::main(args, out));
+    std::string expected = "geo:47.47690895,19.0512550758533 (1111 Budapest, "
+                           "Karinthy Frigyes út 18)\n";
+    ASSERT_EQ(expected, out.str());
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
