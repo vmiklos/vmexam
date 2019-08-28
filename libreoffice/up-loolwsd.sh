@@ -2,7 +2,8 @@
 
 time (
     git pull -r
-    if [ -e Makefile ]; then
+    # make distclean/clean is broken
+    if [ -e Makefile ] && false; then
         make distclean
     fi
     ./autogen.sh
