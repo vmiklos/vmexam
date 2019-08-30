@@ -29,6 +29,11 @@ if(OSMIFY_IWYU)
     "${IWYU_COMMAND};-Xiwyu;--mapping_file=${CMAKE_SOURCE_DIR}/mapping.imp")
 endif()
 
+option(OSMIFY_ENABLE_GCOV "Measure code coverage of tests." OFF)
+if (OSMIFY_ENABLE_GCOV)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+endif ()
+
 find_package(Poco REQUIRED Foundation JSON Net NetSSL)
 
 add_library(osmifycore

@@ -88,4 +88,44 @@ TEST(TestMain, testPreferBuildings)
     ASSERT_EQ(expected, out.str());
 }
 
+TEST(TestMain, testNoBuildings)
+{
+    MockUrlopen mu(mockUrlopen, "-no-buildings");
+    std::vector<const char*> args{"", "Karinthy Frigyes út 18, Budapest"};
+    std::stringstream out;
+    ASSERT_EQ(0, osmify::main(args, out));
+    std::string expected = "geo:47.47690895,19.0512550758533 (1111 Budapest, "
+                           "Karinthy Frigyes út 18)\n";
+    ASSERT_EQ(expected, out.str());
+}
+
+TEST(TestMain, testNoResult)
+{
+    MockUrlopen mu(mockUrlopen, "-no-result");
+    std::vector<const char*> args{"", "Mészáros utca 58/a, Budapestt"};
+    std::stringstream out;
+    ASSERT_EQ(0, osmify::main(args, out));
+    std::string expected = "No results from nominatim\n";
+    ASSERT_EQ(expected, out.str());
+}
+
+TEST(TestMain, testOverpassNoResult)
+{
+    MockUrlopen mu(mockUrlopen, "-overpass-noresult");
+    std::vector<const char*> args{"", "Mészáros utca 58/a, Budapest"};
+    std::stringstream out;
+    ASSERT_EQ(0, osmify::main(args, out));
+    std::string expected = "No results from overpass\n";
+    ASSERT_EQ(expected, out.str());
+}
+
+TEST(TestMain, testNoArgs)
+{
+    std::vector<const char*> args{""};
+    std::stringstream out;
+    ASSERT_EQ(0, osmify::main(args, out));
+    std::string expected = "usage:";
+    ASSERT_EQ(0, out.str().find(expected));
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

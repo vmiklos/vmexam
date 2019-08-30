@@ -288,10 +288,10 @@ int main(const std::vector<const char*>& args, std::ostream& ostream)
     }
     else
     {
-        std::cerr << "usage: addr-osmify <query>" << std::endl;
-        std::cerr << std::endl;
-        std::cerr << "e.g. addr-osmify 'Mészáros utca 58/a, Budapest'"
-                  << std::endl;
+        ostream << "usage: addr-osmify <query>" << std::endl;
+        ostream << std::endl;
+        ostream << "e.g. addr-osmify 'Mészáros utca 58/a, Budapest'"
+                << std::endl;
     }
     return 0;
 }
