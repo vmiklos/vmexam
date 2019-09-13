@@ -118,10 +118,18 @@ Core:
 
 == IWYU
 
+Core:
+
 ----
 bin/find-unneeded-includes $(cat .git/indented-files.cache .git/indented-files2.cache|grep cxx$)
 bin/find-unneeded-includes sw/inc/*.hxx
 bin/find-unneeded-includes writerfilter/inc/{dmapper,ooxml,rtftok}/*.hxx
+----
+
+Online:
+
+----
+~/git/include-what-you-use/iwyu_tool.py -p . test/UnitTiffLoad.cpp
 ----
 
 // vim: ft=asciidoc
