@@ -9,7 +9,7 @@ There are two modes:
 - prefix the largest classes (this happens when large-scale changes are
   welcome)
 
-=== Handling the first non-conforming class
+=== Handling the first non-conforming class in a module
 
 ----
 make -sr -j8 -O gb_SUPPRESS_TESTS=y FORCE_COMPILE_ALL=1 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD -yaml" 2>&1 |tee ~/rename.yaml

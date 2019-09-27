@@ -8,53 +8,25 @@ package hu.vmiklos.addr_osmify;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collection;
-import org.apache.commons.io.IOUtils;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 public final class App
 {
+    public static Urlopener urlopener = new DefaultUrlopener();
+
     /**
      * Send query to overpass turbo.
      */
     private static String queryTurbo(String query) throws Exception
     {
-        StringReader reader = new StringReader(query);
-        OutputStream outputStream = null;
-        try
-        {
-            URL url = new URL("http://overpass-api.de/api/interpreter");
-            HttpURLConnection connection =
-                (HttpURLConnection)url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            outputStream = connection.getOutputStream();
-            IOUtils.copy(reader, outputStream);
-
-            StringWriter writer = new StringWriter();
-            IOUtils.copy(connection.getInputStream(), writer);
-            return writer.toString();
-        }
-        catch (Exception e)
-        {
-            throw e;
-        }
-        finally
-        {
-            reader.close();
-            if (outputStream != null)
-            {
-                outputStream.close();
-            }
-        }
+        return App.urlopener.urlopen("http://overpass-api.de/api/interpreter",
+                                     query);
     }
 
     /**
@@ -66,11 +38,7 @@ public final class App
         urlString += "?q=" + URLEncoder.encode(query, "UTF-8");
         urlString += "&format=json";
 
-        URL url = new URL(urlString);
-        HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-        StringWriter writer = new StringWriter();
-        IOUtils.copy(connection.getInputStream(), writer);
-        return writer.toString();
+        return App.urlopener.urlopen(urlString, "");
     }
 
     /**
@@ -144,7 +112,8 @@ public final class App
     /**
      * Shows a spinner while osmify() is in progress.
      */
-    private static void spinner(Context context, Thread thread) throws Exception
+    private void spinner(Context context, Thread thread, OutputStream out)
+        throws Exception
     {
         char[] spinCharacters = "\\|/-".toCharArray();
         int spinIndex = 0;
@@ -155,7 +124,8 @@ public final class App
             {
                 System.err.print("\r");
                 System.err.flush();
-                System.out.println(context.out);
+                out.write(
+                    (context.out + "\n").getBytes(Charset.forName("UTF-8")));
                 break;
             }
 
@@ -165,22 +135,15 @@ public final class App
         }
     }
 
-    private App(String[] args)
+    public App(String[] args, OutputStream out) throws Exception
     {
         if (args.length > 0)
         {
-            try
-            {
-                Context context = new Context();
-                context.in = args[0];
-                Thread thread = new Thread(new Worker(context));
-                thread.start();
-                spinner(context, thread);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
+            Context context = new Context();
+            context.in = args[0];
+            Thread thread = new Thread(new Worker(context));
+            thread.start();
+            spinner(context, thread, out);
         }
         else
         {
@@ -191,7 +154,17 @@ public final class App
         }
     }
 
-    public static void main(String[] args) { new App(args); }
+    public static void main(String[] args)
+    {
+        try
+        {
+            new App(args, System.out);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
