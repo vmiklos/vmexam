@@ -1,0 +1,181 @@
+#!/usr/bin/env python3
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+# Quick&dirty script to turn an 'SW_DEBUG=1 ./soffice' layout dump (produced by pressing F12) into
+# an SVG file, which visualizes the relations between the layout frames.
+
+from xml.dom import minidom
+import sys
+
+FONT_SIZE = 12
+RECTANGLE_STYLE = "stroke: black; fill: none;"
+
+def get_by_name(node, child_name):
+    return [i for i in node.childNodes if i.localName == child_name][0]
+
+
+def twip_to_pt(fro):
+    return fro / 20
+
+
+def print_text(x, y, text):
+    print('  <text x="{}pt" y="{}pt" font-size="{}pt" dominant-baseline="hanging">{}</text>'.format(x, y, FONT_SIZE, text))
+
+
+def print_rect(identifier, left, top, width, height):
+    print('  <rect id="{}" x="{}pt" y="{}pt" width="{}pt" height="{}pt" style="{}"/>'.format(identifier, left, top, width, height, RECTANGLE_STYLE))
+
+
+def handle_txt(parent, frame):
+    identifier = ""
+    symbol = ""
+    for k, v in list(frame.attributes.items()):
+        if k == "id":
+            identifier = v
+        elif k == "symbol":
+            symbol = v
+    infos = get_by_name(frame, "infos")
+    infos_bounds = get_by_name(infos, "bounds")
+    left = 0
+    top = 0
+    width = 0
+    height = 0
+    for k, v in list(infos_bounds.attributes.items()):
+        if k == "left":
+            left = twip_to_pt(float(v))
+        elif k == "top":
+            top = twip_to_pt(float(v))
+        elif k == "width":
+            width = twip_to_pt(float(v))
+        elif k == "height":
+            height = twip_to_pt(float(v))
+
+    if parent["left"] == left:
+        left += FONT_SIZE
+        width -= FONT_SIZE * 2
+    if parent["top"] == top:
+        top += FONT_SIZE
+        height -= FONT_SIZE * 2
+        if height < FONT_SIZE:
+            height = FONT_SIZE
+
+    print_rect(identifier, left, top, width, height)
+    print_text(left, top, "{} {}".format(symbol, identifier))
+
+
+def handle_body(frame):
+    identifier = ""
+    symbol = ""
+    for k, v in list(frame.attributes.items()):
+        if k == "id":
+            identifier = v
+        elif k == "symbol":
+            symbol = v
+    infos = get_by_name(frame, "infos")
+    infos_bounds = get_by_name(infos, "bounds")
+    left = 0
+    top = 0
+    width = 0
+    height = 0
+    for k, v in list(infos_bounds.attributes.items()):
+        if k == "left":
+            left = twip_to_pt(float(v))
+        elif k == "top":
+            top = twip_to_pt(float(v))
+        elif k == "width":
+            width = twip_to_pt(float(v))
+        elif k == "height":
+            height = twip_to_pt(float(v))
+
+    print_rect(identifier, left, top, width, height)
+    print_text(left, top, "{} {}".format(symbol, identifier))
+
+    parent = {'left': left, 'top': top, 'width': width, 'height': height}
+    for child in [i for i in frame.childNodes if i.localName == "txt"]:
+        handle_txt(parent, child)
+
+
+def handle_page(parent, frame):
+    identifier = ""
+    symbol = ""
+    for k, v in list(frame.attributes.items()):
+        if k == "id":
+            identifier = v
+        elif k == "symbol":
+            symbol = v
+    infos = get_by_name(frame, "infos")
+    infos_bounds = get_by_name(infos, "bounds")
+    left = 0
+    top = 0
+    width = 0
+    height = 0
+    for k, v in list(infos_bounds.attributes.items()):
+        if k == "left":
+            left = twip_to_pt(float(v))
+        elif k == "top":
+            top = twip_to_pt(float(v))
+        elif k == "width":
+            width = twip_to_pt(float(v))
+        elif k == "height":
+            height = twip_to_pt(float(v))
+
+    if parent["left"] == left:
+        left += FONT_SIZE
+        width -= FONT_SIZE * 2
+    if parent["top"] == top:
+        top += FONT_SIZE
+        height -= FONT_SIZE * 2
+
+    print_rect(identifier, left, top, width, height)
+    print_text(left, top, "{} {}".format(symbol, identifier))
+
+    for body in [i for i in frame.childNodes if i.localName == "body"]:
+        handle_body(body)
+
+
+def main():
+    print('<?xml version="1.0"?>')
+    layout = minidom.parse(sys.argv[1])
+    root = get_by_name(layout, "root")
+    identifier = ""
+    symbol = ""
+    for k, v in list(root.attributes.items()):
+        if k == "id":
+            identifier = v
+        elif k == "symbol":
+            symbol = v
+
+    root_infos = get_by_name(root, "infos")
+    root_infos_bounds = get_by_name(root_infos, "bounds")
+    left = 0
+    top = 0
+    width = 0
+    height = 0
+    for k, v in list(root_infos_bounds.attributes.items()):
+        if k == "left":
+            left = twip_to_pt(float(v))
+        elif k == "top":
+            top = twip_to_pt(float(v))
+        elif k == "width":
+            width = twip_to_pt(float(v))
+        elif k == "height":
+            height = twip_to_pt(float(v))
+    # Root frame is the bounding box of all pages, canvas size is the same + the margins.
+    print('<svg width="{}pt" height="{}pt" xmlns="http://www.w3.org/2000/svg">'.format(width + 2 * left, height + 2 * top))
+    print_rect(identifier, left, top, width, height)
+    print_text(left, top, "{} {}".format(symbol, identifier))
+
+    parent = {'left': left, 'top': top, 'width': width, 'height': height}
+    for page in [i for i in root.childNodes if i.localName == "page"]:
+        handle_page(parent, page)
+
+    print('</svg>')
+
+if __name__ == '__main__':
+    main()
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
