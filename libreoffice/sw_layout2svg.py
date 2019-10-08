@@ -30,7 +30,11 @@ def print_rect(identifier, left, top, width, height):
     print('  <rect id="{}" x="{}pt" y="{}pt" width="{}pt" height="{}pt" style="{}"/>'.format(identifier, left, top, width, height, RECTANGLE_STYLE))
 
 
-def handle_txt(parent, frame):
+def is_frame_name(frame):
+    return frame in ("page", "header", "footer", "body", "txt")
+
+
+def handle_frame(parent, frame):
     identifier = ""
     symbol = ""
     for k, v in list(frame.attributes.items()):
@@ -66,75 +70,9 @@ def handle_txt(parent, frame):
     print_rect(identifier, left, top, width, height)
     print_text(left, top, "{} {}".format(symbol, identifier))
 
-
-def handle_body(frame):
-    identifier = ""
-    symbol = ""
-    for k, v in list(frame.attributes.items()):
-        if k == "id":
-            identifier = v
-        elif k == "symbol":
-            symbol = v
-    infos = get_by_name(frame, "infos")
-    infos_bounds = get_by_name(infos, "bounds")
-    left = 0
-    top = 0
-    width = 0
-    height = 0
-    for k, v in list(infos_bounds.attributes.items()):
-        if k == "left":
-            left = twip_to_pt(float(v))
-        elif k == "top":
-            top = twip_to_pt(float(v))
-        elif k == "width":
-            width = twip_to_pt(float(v))
-        elif k == "height":
-            height = twip_to_pt(float(v))
-
-    print_rect(identifier, left, top, width, height)
-    print_text(left, top, "{} {}".format(symbol, identifier))
-
     parent = {'left': left, 'top': top, 'width': width, 'height': height}
-    for child in [i for i in frame.childNodes if i.localName == "txt"]:
-        handle_txt(parent, child)
-
-
-def handle_page(parent, frame):
-    identifier = ""
-    symbol = ""
-    for k, v in list(frame.attributes.items()):
-        if k == "id":
-            identifier = v
-        elif k == "symbol":
-            symbol = v
-    infos = get_by_name(frame, "infos")
-    infos_bounds = get_by_name(infos, "bounds")
-    left = 0
-    top = 0
-    width = 0
-    height = 0
-    for k, v in list(infos_bounds.attributes.items()):
-        if k == "left":
-            left = twip_to_pt(float(v))
-        elif k == "top":
-            top = twip_to_pt(float(v))
-        elif k == "width":
-            width = twip_to_pt(float(v))
-        elif k == "height":
-            height = twip_to_pt(float(v))
-
-    if parent["left"] == left:
-        left += FONT_SIZE
-        width -= FONT_SIZE * 2
-    if parent["top"] == top:
-        top += FONT_SIZE
-        height -= FONT_SIZE * 2
-
-    print_rect(identifier, left, top, width, height)
-    print_text(left, top, "{} {}".format(symbol, identifier))
-
-    for body in [i for i in frame.childNodes if i.localName == "body"]:
-        handle_body(body)
+    for child in [i for i in frame.childNodes if is_frame_name(i.localName)]:
+        handle_frame(parent, child)
 
 
 def main():
@@ -170,8 +108,8 @@ def main():
     print_text(left, top, "{} {}".format(symbol, identifier))
 
     parent = {'left': left, 'top': top, 'width': width, 'height': height}
-    for page in [i for i in root.childNodes if i.localName == "page"]:
-        handle_page(parent, page)
+    for page in [i for i in root.childNodes if is_frame_name(i.localName)]:
+        handle_frame(parent, page)
 
     print('</svg>')
 
