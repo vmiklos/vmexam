@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
-<root ptr="0x1f43dc0" id="0" symbol="11SwRootFrame" lower="1">
+<root ptr="0x3d60910" id="0" symbol="11SwRootFrame" lower="1">
   <sfxViewShells>
     <SwView>
-      <SfxViewShell ptr="0x1c033b0" id="0"/>
+      <SfxViewShell ptr="0x3df6530" id="0"/>
       <SwCursorShell>
         <SwViewShell/>
         <m_pCurrentCursor>
           <SwPaM>
             <point>
-              <SwPosition nNode="15" nContent="0"/>
+              <SwPosition nNode="20" nContent="5"/>
             </point>
           </SwPaM>
         </m_pCurrentCursor>
@@ -19,18 +19,18 @@
     <bounds left="284" top="284" width="12265" height="15840" mbFixSize="false" mbValidPos="true" mbValidSize="true" mbValidPrtArea="true"/>
     <prtBounds left="0" top="0" width="12265" height="15840"/>
   </infos>
-  <page ptr="0x1f43210" id="1" symbol="11SwPageFrame" upper="0" lower="3">
+  <page ptr="0x3d60690" id="1" symbol="11SwPageFrame" upper="0" lower="3">
     <page_status ValidFlyLayout="true" ValidFlyContent="true" ValidFlyInCnt="true" ValidLayout="true" ValidContent="true"/>
     <infos>
       <bounds left="309" top="284" width="12240" height="15840" mbFixSize="true" mbValidPos="true" mbValidSize="true" mbValidPrtArea="true"/>
       <prtBounds left="1134" top="1134" width="9972" height="13572"/>
     </infos>
-    <header ptr="0x1f4bd20" id="3" symbol="13SwHeaderFrame" next="2" upper="1" lower="4" fmtName="Right header" fmtPtr="0x1f0ec90">
+    <header ptr="0x3d7b590" id="3" symbol="13SwHeaderFrame" next="2" upper="1" lower="4" fmtName="Right header" fmtPtr="0x3d16d80">
       <infos>
         <bounds left="1443" top="1418" width="9972" height="559" mbFixSize="false" mbValidPos="true" mbValidSize="true" mbValidPrtArea="true"/>
         <prtBounds left="0" top="0" width="9972" height="276"/>
       </infos>
-      <txt ptr="0x1f4bea0" id="4" symbol="11SwTextFrame" upper="3" txtNodeIndex="6" WritingMode="Horizontal">
+      <txt ptr="0x3d63c30" id="4" symbol="11SwTextFrame" upper="3" txtNodeIndex="6" WritingMode="Horizontal">
         <infos>
           <bounds left="1443" top="1418" width="9972" height="276" mbFixSize="false" mbValidPos="true" mbValidSize="true" mbValidPrtArea="true"/>
           <prtBounds left="0" top="0" width="9972" height="276"/>
@@ -40,27 +40,61 @@ header        <Text nLength="6" nType="PortionType::Para" nHeight="276" nWidth="
         <Finish/>
       </txt>
     </header>
-    <body ptr="0x1f46d40" id="2" symbol="11SwBodyFrame" next="5" prev="3" upper="1" lower="7">
+    <body ptr="0x3d7af60" id="2" symbol="11SwBodyFrame" next="5" prev="3" upper="1" lower="7">
       <infos>
         <bounds left="1443" top="1977" width="9972" height="12454" mbFixSize="true" mbValidPos="true" mbValidSize="true" mbValidPrtArea="true"/>
         <prtBounds left="0" top="0" width="9972" height="12454"/>
       </infos>
-      <txt ptr="0x1f60ca0" id="7" symbol="11SwTextFrame" upper="2" txtNodeIndex="15" WritingMode="Horizontal">
+      <txt ptr="0x3d80640" id="7" symbol="11SwTextFrame" next="10" upper="2" txtNodeIndex="18" WritingMode="Horizontal">
         <infos>
           <bounds left="1443" top="1977" width="9972" height="276" mbFixSize="false" mbValidPos="true" mbValidSize="true" mbValidPrtArea="true"/>
           <prtBounds left="0" top="0" width="9972" height="276"/>
         </infos>
-text        <Text nLength="4" nType="PortionType::Para" nHeight="276" nWidth="360" Portion="text"/>
-        <LineBreak nWidth="360" Line="text"/>
+        <anchored>
+          <fly ptr="0x3d7c8a0" id="8" symbol="19SwFlyAtContentFrame" lower="9">
+            <infos>
+              <bounds left="1396" top="1970" width="503" height="503" mbFixSize="true" mbValidPos="true" mbValidSize="true" mbValidPrtArea="true"/>
+              <prtBounds left="0" top="0" width="503" height="503"/>
+            </infos>
+            <notxt ptr="0x3d7c2d0" id="9" symbol="13SwNoTextFrame" upper="8">
+              <infos>
+                <bounds left="1396" top="1970" width="503" height="503" mbFixSize="false" mbValidPos="true" mbValidSize="true" mbValidPrtArea="true"/>
+                <prtBounds left="0" top="0" width="503" height="503"/>
+              </infos>
+            </notxt>
+          </fly>
+        </anchored>
+text1        <Special nLength="0" nType="PortionType::Fly" rText="" nHeight="276" nWidth="456"/>
+        <Text nLength="5" nType="PortionType::Text" nHeight="276" nWidth="480" Portion="text1"/>
+        <LineBreak nWidth="936" Line="text1"/>
+        <Finish/>
+      </txt>
+      <txt ptr="0x3d7c480" id="10" symbol="11SwTextFrame" next="11" prev="7" upper="2" txtNodeIndex="19" WritingMode="Horizontal">
+        <infos>
+          <bounds left="1443" top="2253" width="9972" height="276" mbFixSize="false" mbValidPos="true" mbValidSize="true" mbValidPrtArea="true"/>
+          <prtBounds left="0" top="0" width="9972" height="276"/>
+        </infos>
+text2        <Special nLength="0" nType="PortionType::Fly" rText="" nHeight="220" nWidth="456"/>
+        <Text nLength="5" nType="PortionType::Text" nHeight="276" nWidth="480" Portion="text2"/>
+        <LineBreak nWidth="936" Line="text2"/>
+        <Finish/>
+      </txt>
+      <txt ptr="0x3d81390" id="11" symbol="11SwTextFrame" prev="10" upper="2" txtNodeIndex="20" WritingMode="Horizontal">
+        <infos>
+          <bounds left="1443" top="2529" width="9972" height="276" mbFixSize="false" mbValidPos="true" mbValidSize="true" mbValidPrtArea="true"/>
+          <prtBounds left="0" top="0" width="9972" height="276"/>
+        </infos>
+text3        <Text nLength="5" nType="PortionType::Para" nHeight="276" nWidth="480" Portion="text3"/>
+        <LineBreak nWidth="480" Line="text3"/>
         <Finish/>
       </txt>
     </body>
-    <footer ptr="0x1f4c050" id="5" symbol="13SwFooterFrame" prev="2" upper="1" lower="6" fmtName="Right footer" fmtPtr="0x20149d0">
+    <footer ptr="0x3d7b790" id="5" symbol="13SwFooterFrame" prev="2" upper="1" lower="6" fmtName="Right footer" fmtPtr="0x39ab510">
       <infos>
         <bounds left="1443" top="14431" width="9972" height="559" mbFixSize="false" mbValidPos="true" mbValidSize="true" mbValidPrtArea="true"/>
         <prtBounds left="0" top="283" width="9972" height="276"/>
       </infos>
-      <txt ptr="0x1f4c1d0" id="6" symbol="11SwTextFrame" upper="5" txtNodeIndex="9" WritingMode="Horizontal">
+      <txt ptr="0x3d7b910" id="6" symbol="11SwTextFrame" upper="5" txtNodeIndex="9" WritingMode="Horizontal">
         <infos>
           <bounds left="1443" top="14714" width="9972" height="276" mbFixSize="false" mbValidPos="true" mbValidSize="true" mbValidPrtArea="true"/>
           <prtBounds left="0" top="0" width="9972" height="276"/>

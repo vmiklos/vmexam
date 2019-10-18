@@ -14,6 +14,7 @@ import sys
 FONT_SIZE = 12
 RECTANGLE_STYLE = "stroke: black; fill: none;"
 
+
 def get_by_name(node, child_name):
     return [i for i in node.childNodes if i.localName == child_name][0]
 
@@ -31,10 +32,10 @@ def print_rect(identifier, left, top, width, height):
 
 
 def is_frame_name(frame):
-    return frame in ("page", "header", "footer", "body", "txt")
+    return frame in ("page", "header", "footer", "body", "txt", "fly", "notxt")
 
 
-def handle_frame(parent, frame):
+def handle_frame(frame):
     identifier = ""
     symbol = ""
     for k, v in list(frame.attributes.items()):
@@ -58,21 +59,17 @@ def handle_frame(parent, frame):
         elif k == "height":
             height = twip_to_pt(float(v))
 
-    if parent["left"] == left:
-        left += FONT_SIZE
-        width -= FONT_SIZE * 2
-    if parent["top"] == top:
-        top += FONT_SIZE
-        height -= FONT_SIZE * 2
-        if height < FONT_SIZE:
-            height = FONT_SIZE
-
     print_rect(identifier, left, top, width, height)
     print_text(left, top, "{} {}".format(symbol, identifier))
 
-    parent = {'left': left, 'top': top, 'width': width, 'height': height}
     for child in [i for i in frame.childNodes if is_frame_name(i.localName)]:
-        handle_frame(parent, child)
+        handle_frame(child)
+
+    anchoreds = [i for i in frame.childNodes if i.localName == "anchored"]
+    if anchoreds:
+        anchored = anchoreds[0]
+        for child in [i for i in anchored.childNodes if is_frame_name(i.localName)]:
+            handle_frame(child)
 
 
 def main():
@@ -107,11 +104,11 @@ def main():
     print_rect(identifier, left, top, width, height)
     print_text(left, top, "{} {}".format(symbol, identifier))
 
-    parent = {'left': left, 'top': top, 'width': width, 'height': height}
     for page in [i for i in root.childNodes if is_frame_name(i.localName)]:
-        handle_frame(parent, page)
+        handle_frame(page)
 
     print('</svg>')
+
 
 if __name__ == '__main__':
     main()
