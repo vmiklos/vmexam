@@ -36,4 +36,10 @@
 - Proposal: https://issues.oasis-open.org/browse/OFFICE-4030
 - Status: open
 
+== allow-overlap for shapes
+
+- Date: 2019-09-25
+- Proposal: https://issues.oasis-open.org/browse/OFFICE-4047
+- Status: open
+
 // vim: ft=asciidoc
