@@ -20,6 +20,7 @@ filter/source/msfilter/rtfutil.cxx
 include/svl/grabbagitem.hxx
 include/vcl/filter/pdfdocument.hxx
 include/vcl/pdfread.hxx
+oox/qa/unit/mathml.cxx
 oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
 starmath/source/rtfexport.cxx
@@ -28,6 +29,7 @@ svl/source/items/grabbagitem.cxx
 svtools/qa/unit/testHtmlReader.cxx
 svx/qa/unit/unodraw.cxx
 sw/inc/textboxhelper.hxx
+sw/qa/core/text/text.cxx
 sw/qa/extras/layout/layout.cxx
 sw/qa/extras/rtfexport/rtfexport.cxx
 sw/qa/extras/rtfimport/rtfimport.cxx
