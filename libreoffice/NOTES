@@ -2760,10 +2760,6 @@ new real fix: 366972 (res, kb) 91% of baseline
 
 <<<
 
-Problematic bugs:
-
-https://bugs.documentfoundation.org/show_bug.cgi?id=104556 "FILEOPEN DOCX: Misplaced vertical red line (drawing object)" -- gave it a try, no luck so far
-
 Nominally not a regression:
 
 https://bugs.documentfoundation.org/show_bug.cgi?id=108726 pdfium / transparency thing
