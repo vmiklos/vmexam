@@ -20,6 +20,7 @@ filter/source/msfilter/rtfutil.cxx
 include/svl/grabbagitem.hxx
 include/vcl/filter/pdfdocument.hxx
 include/vcl/pdfread.hxx
+oox/qa/unit/drawingml.cxx
 oox/qa/unit/mathml.cxx
 oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
