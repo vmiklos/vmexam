@@ -26,6 +26,7 @@ oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
+starmath/source/unofilter.cxx
 svl/source/items/grabbagitem.cxx
 svtools/qa/unit/testHtmlReader.cxx
 svx/qa/unit/svdraw.cxx
@@ -60,6 +61,8 @@ writerfilter/inc/rtftok/RTFDocument.hxx
 writerfilter/qa/cppunittests/rtftok/testrtftok.cxx
 writerfilter/source/dmapper/SdtHelper.cxx
 writerfilter/source/dmapper/SdtHelper.hxx
+writerfilter/source/filter/RtfFilter.cxx
+writerfilter/source/filter/WriterFilter.cxx
 writerfilter/source/ooxml/factory_ns.py
 writerfilter/source/ooxml/factoryimpl.py
 writerfilter/source/ooxml/factoryimpl_ns.py
