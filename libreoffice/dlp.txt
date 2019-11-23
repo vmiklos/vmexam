@@ -26,7 +26,8 @@ WarningsAsErrors: '*'
 == librevenge
 
 - cpp11 patches: misc-unused-using-decls, modernize-use-override, modernize-use-nullptr, modernize-loop-convert,
-  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept, bugprone-too-small-loop-variable
+  modernize-use-auto, clang-analyzer-deadcode.DeadStores, modernize-use-noexcept, bugprone-too-small-loop-variable,
+  readability-make-member-function-const, readability-convert-member-functions-to-static, readability-static-accessed-through-instance
 
 == libodfgen
 
