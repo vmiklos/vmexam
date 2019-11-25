@@ -42,4 +42,10 @@
 - Proposal: https://issues.oasis-open.org/browse/OFFICE-4047
 - Status: open
 
+== semi-transparent shape text
+
+- Date: 2019-11-24
+- Proposal: https://issues.oasis-open.org/browse/OFFICE-4049
+- Status: open
+
 // vim: ft=asciidoc
