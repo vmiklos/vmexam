@@ -2,6 +2,7 @@
 
 import time, sys, re
 import email.utils
+import io
 
 def get_zone():
 	now = time.localtime()
@@ -26,7 +27,10 @@ def improve_date(input):
 			return input
 		return "%s (%s)" % (email.utils.formatdate(time.mktime(tz[:9])-tz[9]-(time.timezone), True), input)
 
-lines = sys.stdin.readlines()
+# Tolerate in case the input is not valid utf-8.
+stdin = sys.stdin.buffer.read().decode("utf-8", errors="replace")
+stdin_stream = io.StringIO(stdin)
+lines = stdin_stream.readlines()
 
 ignorenext = False
 ignoresf = False
