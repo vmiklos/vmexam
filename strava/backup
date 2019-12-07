@@ -1,0 +1,34 @@
+#!/bin/bash -ex
+#
+# Copyright 2019 Miklos Vajna. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+
+# Fully automated backup of your Strava data. The two mentioned github projects already provide
+# great building blocks, what was missing is the automated access token renewal before the (e.g.
+# daily) backup starts. The renewal is handled by this script.
+
+# Get the refresh token from the global.refresh_token key of the config.
+# Same for the other sensitive configuration parameters.
+# You can get these using <https://github.com/pR0Ps/strava-tokengen>.
+refresh_token="$(grep ^refresh_token ~/.config/strava-backup.conf |sed 's/^refresh_token=//')"
+client_id="$(grep ^client_id ~/.config/strava-backup.conf |sed 's/^client_id=//')"
+client_secret="$(grep ^client_secret ~/.config/strava-backup.conf |sed 's/^client_secret=//')"
+
+# Get the access token via the API, see
+# <https://developers.strava.com/docs/authentication/#refreshingexpiredaccesstokens>.
+access_token="$(curl -s -X POST \
+    https://www.strava.com/api/v3/oauth/token \
+    -d client_id="${client_id}" \
+    -d client_secret="${client_secret}" \
+    -d grant_type=refresh_token \
+    -d refresh_token="${refresh_token}" \
+    | jq -r '.access_token')"
+
+# Update the access token in the config and run the actual backup using
+# <https://github.com/pR0Ps/strava-backup>.
+sed -i "s/^api_token=.*/api_token=${access_token}/" ~/.config/strava-backup.conf
+strava-backup
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
