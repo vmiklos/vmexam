@@ -8,6 +8,8 @@
 # Fully automated backup of your Strava data. The two mentioned github projects already provide
 # great building blocks, what was missing is the automated access token renewal before the (e.g.
 # daily) backup starts. The renewal is handled by this script.
+# Obsoleted by
+# <https://github.com/pR0Ps/strava-backup/commit/6598d51956626442f88ff8b6c640b01e5b400a5f>.
 
 # Get the refresh token from the global.refresh_token key of the config.
 # Same for the other sensitive configuration parameters.
