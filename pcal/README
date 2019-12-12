@@ -1,0 +1,3 @@
+Dependencies:
+
+	zypper in python3-Pillow python3-PyPDF2 python3-img2pdf
