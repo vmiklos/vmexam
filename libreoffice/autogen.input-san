@@ -3,3 +3,4 @@
 --with-lang=en-US
 --without-myspell-dicts
 --without-help
+--without-java
