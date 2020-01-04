@@ -13,17 +13,6 @@ import java.nio.charset.StandardCharsets;
 
 public class AppTest
 {
-    class MockUrlopen
-    {
-        Urlopener old;
-        MockUrlopen(String suffix)
-        {
-            old = App.urlopener;
-            App.urlopener = new MockUrlopener(suffix);
-        }
-
-        void destruct() { App.urlopener = old; }
-    }
     @Test public void testHappy() throws Exception
     {
         MockUrlopen mu = new MockUrlopen("-happy");
