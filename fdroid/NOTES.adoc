@@ -1,0 +1,15 @@
+= Fdroid submit notes
+
+Main doc: https://gitlab.com/fdroid/fdroiddata/blob/master/CONTRIBUTING.md
+
+TL;DR:
+
+----
+cd ~/git
+export PATH="$PATH:$PWD/fdroidserver"
+cd fdroiddata
+... hack hack hack ...
+fdroid build -v -l hu.vmiklos.plees_tracker
+git commit
+git push -f origin HEAD:plees-tracker-add
+----
