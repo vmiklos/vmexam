@@ -59,7 +59,9 @@ vcl/qa/cppunit/gen/gen.cxx
 vcl/source/filter/ipdf/pdfdocument.cxx
 vcl/source/filter/ipdf/pdfread.cxx
 writerfilter/inc/rtftok/RTFDocument.hxx
+writerfilter/qa/cppunittests/dmapper/CellColorHandler.cxx
 writerfilter/qa/cppunittests/dmapper/DomainMapperTableHandler.cxx
+writerfilter/qa/cppunittests/dmapper/DomainMapper_Impl.cxx
 writerfilter/qa/cppunittests/filters-test/filters-test.cxx
 writerfilter/source/dmapper/SdtHelper.cxx
 writerfilter/source/dmapper/SdtHelper.hxx
