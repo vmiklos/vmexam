@@ -22,6 +22,7 @@ include/vcl/filter/pdfdocument.hxx
 include/vcl/pdfread.hxx
 oox/qa/unit/drawingml.cxx
 oox/qa/unit/mathml.cxx
+oox/qa/unit/shape.cxx
 oox/qa/unit/vml.cxx
 oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
