@@ -6,7 +6,9 @@
 # - clang-analyzer-optin.cplusplus.UninitializedObject: new check, seems to emit false positive on
 #   boost::optional
 # - modernize-use-trailing-return-type: signal/noise ratio looks low
-# - -bugprone-macro-parentheses: this breaks SAL_LOG()
+# - bugprone-macro-parentheses: this breaks SAL_LOG()
+# - readability-qualified-auto: LO code doesn't really do auto* pFoo
+# - bugprone-signed-char-misuse: complains on signed char -> int conversion, seems dubious
 Checks: "clang-diagnostic-*,\
 -clang-analyzer-cplusplus.NewDelete,\
 -clang-analyzer-cplusplus.NewDeleteLeaks,\
@@ -23,6 +25,7 @@ misc-*,\
 bugprone-*,\
 -bugprone-macro-parentheses,\
 -bugprone-narrowing-conversions,\
+-bugprone-signed-char-misuse,\
 readability-*,\
 -readability-braces-around-statements,\
 -readability-deleted-default,\
@@ -30,6 +33,7 @@ readability-*,\
 -readability-implicit-bool-cast,\
 -readability-implicit-bool-conversion,\
 -readability-magic-numbers,\
+-readability-qualified-auto,\
 "
 WarningsAsErrors: '*'
 
