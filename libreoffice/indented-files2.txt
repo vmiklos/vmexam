@@ -63,6 +63,7 @@ writerfilter/inc/rtftok/RTFDocument.hxx
 writerfilter/qa/cppunittests/dmapper/CellColorHandler.cxx
 writerfilter/qa/cppunittests/dmapper/DomainMapperTableHandler.cxx
 writerfilter/qa/cppunittests/dmapper/DomainMapper_Impl.cxx
+writerfilter/qa/cppunittests/dmapper/TextEffectsHandler.cxx
 writerfilter/qa/cppunittests/filters-test/filters-test.cxx
 writerfilter/source/dmapper/SdtHelper.cxx
 writerfilter/source/dmapper/SdtHelper.hxx
