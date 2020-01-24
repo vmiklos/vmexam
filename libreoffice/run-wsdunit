@@ -1,0 +1,10 @@
+#!/bin/bash
+
+name="$1" # e.g. unit-base
+if [ -z "$name" ]; then
+    echo "missing parameter: test name"
+    exit 1
+fi
+(cd test; ./run_unit.sh --test-name $name.la --log-file $name.log --trs-file $name.trs --color-tests yes --enable-hard-errors yes --expect-failure no -- ./$name.la)
+
+# vi:set shiftwidth=4 expandtab:
