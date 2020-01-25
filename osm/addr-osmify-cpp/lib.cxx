@@ -7,13 +7,12 @@
 #include "lib.hxx"
 
 #include <chrono>
-#include <condition_variable>
+#include <cxxabi.h>
+#include <future>
 #include <iostream>
 #include <memory>
-#include <mutex>
-#include <sstream>
 #include <string>
-#include <thread>
+#include <system_error>
 
 #include <Poco/Dynamic/Var.h>
 #include <Poco/Exception.h>
@@ -74,17 +73,6 @@ urlopenType getUrlopen() { return urlopen; }
 
 void setUrlopen(urlopenType custom) { urlopen = custom; }
 
-/// Contains state to know when to stop the spinner and show result from
-/// osmify().
-struct SpinnerContext
-{
-    std::string _query;
-    std::mutex _mutex;
-    std::condition_variable _conditionVariable;
-    std::stringstream _result;
-    bool _processed = false;
-};
-
 /// Handles SSL state lifecycle.
 class SslContext
 {
@@ -134,8 +122,9 @@ std::string queryNominatim(const std::string& query)
 }
 
 /// Turns an address into a coodinate + normalized address combo.
-void osmify(SpinnerContext& spinnerContext)
+std::string osmify(const std::string& query)
 {
+    std::stringstream ret;
     SslContext sslContext;
 
     // Use nominatim to get the coordinates and the osm type/id.
@@ -143,19 +132,18 @@ void osmify(SpinnerContext& spinnerContext)
     Poco::Dynamic::Var elements;
     try
     {
-        elements = parser.parse(queryNominatim(spinnerContext._query));
+        elements = parser.parse(queryNominatim(query));
     }
     catch (const Poco::Exception& exception)
     {
-        spinnerContext._result << "Failed to parse JSON from nominatim: "
-                               << exception.message();
-        return;
+        ret << "Failed to parse JSON from nominatim: " << exception.message();
+        return ret.str();
     }
     auto elementsArray = elements.extract<Poco::JSON::Array::Ptr>();
     if (elementsArray->size() == 0)
     {
-        spinnerContext._result << "No results from nominatim";
-        return;
+        ret << "No results from nominatim";
+        return ret.str();
     }
 
     if (elementsArray->size() > 1)
@@ -193,11 +181,11 @@ void osmify(SpinnerContext& spinnerContext)
     std::string objectId = elementObject->get("osm_id").toString();
 
     // Use overpass to get the properties of the object.
-    auto overpassQuery = "[out:json];\n"
-                         "(\n" +
-                         objectType + "(" + objectId + ");" +
-                         ");\n"
-                         "out body;";
+    std::string overpassQuery = "[out:json];\n"
+                                "(\n" +
+                                objectType + "(" + objectId + ");" +
+                                ");\n"
+                                "out body;";
     Poco::Dynamic::Var j;
     try
     {
@@ -205,17 +193,16 @@ void osmify(SpinnerContext& spinnerContext)
     }
     catch (const Poco::Exception& exception)
     {
-        spinnerContext._result << "Failed to parse JSON from overpass: "
-                               << exception.message();
-        return;
+        ret << "Failed to parse JSON from overpass: " << exception.message();
+        return ret.str();
     }
     auto jObject = j.extract<Poco::JSON::Object::Ptr>();
     elements = jObject->get("elements");
     elementsArray = elements.extract<Poco::JSON::Array::Ptr>();
     if (elementsArray->size() == 0)
     {
-        spinnerContext._result << "No results from overpass";
-        return;
+        ret << "No results from overpass";
+        return ret.str();
     }
 
     element = elementsArray->get(0);
@@ -230,27 +217,24 @@ void osmify(SpinnerContext& spinnerContext)
         postcode + " " + city + ", " + street + " " + housenumber;
 
     // Print the result.
-    spinnerContext._result << "geo:" << lat << "," << lon << " (" << addr
-                           << ")";
+    ret << "geo:" << lat << "," << lon << " (" << addr << ")";
+    return ret.str();
 }
 
-void spinner(SpinnerContext& spinnerContext, std::ostream& ostream)
+void spinner(std::future<std::string>& future, std::ostream& ostream)
 {
     std::vector<char> spinCharacters = {'\\', '|', '/', '-'};
     std::size_t spinIndex = 0;
     while (true)
     {
-        std::unique_lock<std::mutex> lock(spinnerContext._mutex);
         const int sleep = 100;
-        spinnerContext._conditionVariable.wait_for(
-            lock, std::chrono::milliseconds(sleep),
-            [&spinnerContext] { return spinnerContext._processed; });
-
-        if (spinnerContext._processed)
+        std::future_status status =
+            future.wait_for(std::chrono::milliseconds(sleep));
+        if (status == std::future_status::ready)
         {
             std::cerr << "\r";
             std::cerr.flush();
-            ostream << spinnerContext._result.str() << std::endl;
+            ostream << future.get() << std::endl;
             return;
         }
 
@@ -264,27 +248,23 @@ int main(const std::vector<const char*>& args, std::ostream& ostream)
 {
     if (args.size() > 1)
     {
-        SpinnerContext spinnerContext;
-        spinnerContext._query = args[1];
-        std::thread worker([&spinnerContext] {
-            try
-            {
-                osmify(spinnerContext);
-            }
-            catch (const Poco::Exception& exception)
-            {
-                spinnerContext._result << "Failed to osmify: "
-                                       << exception.message();
-            }
+        std::string query = args[1];
+        std::future<std::string> future =
+            std::async(std::launch::async, [&query] {
+                std::stringstream ret;
+                try
+                {
+                    ret << osmify(query);
+                }
+                catch (const Poco::Exception& exception)
+                {
+                    ret << "Failed to osmify: " << exception.message();
+                }
 
-            std::unique_lock<std::mutex> lock(spinnerContext._mutex);
-            spinnerContext._processed = true;
-            lock.unlock();
-            spinnerContext._conditionVariable.notify_one();
-        });
+                return ret.str();
+            });
 
-        spinner(spinnerContext, ostream);
-        worker.join();
+        spinner(future, ostream);
     }
     else
     {
