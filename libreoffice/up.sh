@@ -8,7 +8,18 @@
 #
 
 time (
-    git pull -r
+    # This can act as a gate, only pull in changes in case $rebaseRemote built them successfully
+    # already.
+    rebaseRemote=$(git config libreoffice.rebaseRemote)
+    if [ -z "$rebaseRemote" ]; then
+        # Optimistic: all changes passed CI anyway.
+        git pull -r
+    else
+        # Pessimistic: only update once 'make check' already passed in a sandbox locally.
+        git fetch "$rebaseRemote"
+        git rebase "$rebaseRemote"/master
+    fi
+
     if [ -e Makefile ]; then
         make distclean
     fi
