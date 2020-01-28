@@ -1,3 +1,4 @@
+--enable-dbgutil
 --enable-werror
---with-ant-home=/opt/lo/ant
---with-junit=/opt/lo/share/java/junit.jar
+# system-python3 is not working with werror
+--enable-python=internal
