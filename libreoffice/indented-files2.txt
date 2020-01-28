@@ -40,6 +40,7 @@ sw/qa/extras/rtfexport/rtfexport.cxx
 sw/qa/extras/rtfimport/rtfimport.cxx
 sw/qa/extras/uiwriter/uiwriter2.cxx
 sw/qa/extras/unowriter/unowriter.cxx
+sw/qa/uibase/shells/shells.cxx
 sw/source/core/doc/textboxhelper.cxx
 sw/source/filter/html/htmlreqifreader.cxx
 sw/source/filter/html/htmlreqifreader.hxx
@@ -63,6 +64,7 @@ writerfilter/inc/rtftok/RTFDocument.hxx
 writerfilter/qa/cppunittests/dmapper/CellColorHandler.cxx
 writerfilter/qa/cppunittests/dmapper/DomainMapperTableHandler.cxx
 writerfilter/qa/cppunittests/dmapper/DomainMapper_Impl.cxx
+writerfilter/qa/cppunittests/dmapper/GraphicImport.cxx
 writerfilter/qa/cppunittests/dmapper/TextEffectsHandler.cxx
 writerfilter/qa/cppunittests/filters-test/filters-test.cxx
 writerfilter/source/dmapper/SdtHelper.cxx
