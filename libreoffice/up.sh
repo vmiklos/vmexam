@@ -10,7 +10,7 @@
 time (
     # This can act as a gate, only pull in changes in case $rebaseRemote built them successfully
     # already.
-    rebaseRemote=$(git config libreoffice.rebaseRemote)
+    rebaseRemote=$(git config libreoffice.rebaseRemote || true)
     if [ -z "$rebaseRemote" ]; then
         # Optimistic: all changes passed CI anyway.
         git pull -r

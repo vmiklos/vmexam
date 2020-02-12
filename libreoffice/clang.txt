@@ -12,7 +12,7 @@ There are two modes:
 === Handling the first non-conforming class in a module
 
 ----
-make -C sw -sr -j8 -O gb_SUPPRESS_TESTS=y FORCE_COMPILE_ALL=1 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD/sw/inc -yaml" 2>&1 |tee ~/rename.yaml
+make -C sw -sr -j8 -O gb_SUPPRESS_TESTS=y FORCE_COMPILE_ALL=1 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD/sw -yaml" 2>&1 |tee ~/rename.yaml
 ----
 
 See below for the rest (clang-rename and clang-apply-replacements invocations).
@@ -131,5 +131,19 @@ Online:
 ----
 ~/git/include-what-you-use/iwyu_tool.py -p . test/UnitTiffLoad.cpp
 ----
+
+== Sanitizers
+
+Core:
+
+- See the blog post at https://vmiklos.hu/blog/libreoffice-asan-setup.html#_update_2019_11_14
+
+Online:
+
+----
+grep FAIL test/*.trs
+----
+
+Gives a list of all failures, then `run-wsdunit` can run a single test.
 
 // vim: ft=asciidoc
