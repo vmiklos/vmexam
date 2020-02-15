@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+# Copyright 2020 Miklos Vajna. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Trivial wrapper around a cmdline, sends a note about its exit code.
+# Config file is a single line in the form of "access_token=<your_access_token_here>".
+# See <https://www.pushbullet.com/> for details.
+
+"$@"
+exit_code=$?
+source ~/.config/pushbulletrc
+if [ ${exit_code} == 0 ]; then
+    result="passed"
+else
+    result="failed"
+fi
+curl \
+    -s \
+    -u ${access_token}: \
+    -X POST \
+    --header 'Content-Type: application/json' \
+    --data-binary '{"type": "note", "title": "'"$*"'", "body": "'$result' (exit code: '$exit_code')"}' \
+    -o /dev/null \
+    https://api.pushbullet.com/v2/pushes
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
