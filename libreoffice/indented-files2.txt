@@ -35,6 +35,7 @@ svx/qa/unit/svdraw.cxx
 svx/qa/unit/unodraw.cxx
 sw/inc/textboxhelper.hxx
 sw/qa/core/doc/doc.cxx
+sw/qa/core/layout/layout.cxx
 sw/qa/core/text/text.cxx
 sw/qa/extras/layout/layout.cxx
 sw/qa/extras/rtfexport/rtfexport.cxx
