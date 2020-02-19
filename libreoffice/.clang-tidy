@@ -9,6 +9,8 @@
 # - bugprone-macro-parentheses: this breaks SAL_LOG()
 # - readability-qualified-auto: LO code doesn't really do auto* pFoo
 # - bugprone-signed-char-misuse: complains on signed char -> int conversion, seems dubious
+# - misc-no-recursion: seems dubious
+# - bugprone-reserved-identifier: sometimes warns without a code location
 Checks: "clang-diagnostic-*,\
 -clang-analyzer-cplusplus.NewDelete,\
 -clang-analyzer-cplusplus.NewDeleteLeaks,\
@@ -22,10 +24,12 @@ modernize-*,\
 -modernize-use-nodiscard,\
 -modernize-use-trailing-return-type,\
 misc-*,\
+-misc-no-recursion,\
 bugprone-*,\
 -bugprone-macro-parentheses,\
 -bugprone-narrowing-conversions,\
 -bugprone-signed-char-misuse,\
+-bugprone-reserved-identifier,\
 readability-*,\
 -readability-braces-around-statements,\
 -readability-deleted-default,\
