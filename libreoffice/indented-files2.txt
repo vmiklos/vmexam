@@ -15,6 +15,7 @@ cui/qa/uitest/dialogs/pastedlg.py
 desktop/source/lib/lokclipboard.cxx
 desktop/source/lib/lokclipboard.hxx
 embeddedobj/qa/cppunit/general.cxx
+filter/qa/unit/svg.cxx
 filter/qa/unit/textfilterdetect.cxx
 filter/source/msfilter/rtfutil.cxx
 include/svl/grabbagitem.hxx
@@ -35,6 +36,7 @@ svx/qa/unit/svdraw.cxx
 svx/qa/unit/unodraw.cxx
 sw/inc/textboxhelper.hxx
 sw/qa/core/doc/doc.cxx
+sw/qa/core/frmedt/frmedt.cxx
 sw/qa/core/layout/layout.cxx
 sw/qa/core/text/text.cxx
 sw/qa/extras/layout/layout.cxx
