@@ -8,7 +8,7 @@ all: bin/readability-avoid-auto bin/bugprone-suspicious-xmlsec
 bin/readability-avoid-auto: readability-avoid-auto.cxx Makefile
 	clang++ $(CLANGFLAGS) $(CLANGLIBS) -ldl -lpthread -o $@ $<
 
-bin/test: test.cxx Makefile
+bin/ast-matcher: ast-matcher.cxx Makefile
 	clang++ $(CLANGFLAGS) $(CLANGLIBS) -ldl -lpthread -o $@ $<
 
 bin/bugprone-suspicious-xmlsec: bugprone-suspicious-xmlsec.cxx Makefile

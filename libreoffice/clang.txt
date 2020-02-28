@@ -95,10 +95,10 @@ Generate compile_commands.json for clang-rename:
 bear make -j8 CCACHE_DISABLE=1
 ----
 
-`auto` killing:
+Find with ast matchers:
 
 ----
-make -j8 CCACHE_PREFIX=find-harmful-auto-wrapper CCACHE_DISABLE=1
+make CCACHE_PREFIX=ast-matcher-wrapper CCACHE_DISABLE=1 build-nocheck
 ----
 
 == clang-tidy
