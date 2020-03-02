@@ -15,10 +15,9 @@ class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
     void
     run(const clang::ast_matchers::MatchFinder::MatchResult& result) override
     {
-        if (const auto expr =
-                result.Nodes.getNodeAs<clang::CXXOperatorCallExpr>("expr"))
+        if (const auto stmt = result.Nodes.getNodeAs<clang::Stmt>("stmt"))
         {
-            clang::SourceRange range(expr->getExprLoc());
+            clang::SourceRange range(stmt->getLocStart());
             report(result.Context, "ast-matcher", range.getBegin()) << range;
         }
     }
@@ -54,7 +53,7 @@ clang::ast_matchers::StatementMatcher makeMatcher()
                        declRefExpr(to(cxxMethodDecl(hasName("operator[]"))))),
                    hasDescendant(declRefExpr(to(varDecl(
                        hasType(cxxRecordDecl(hasName("StringVector"))))))))))
-        .bind("expr");
+        .bind("stmt");
 }
 
 llvm::cl::OptionCategory category("ast-matcher options");
