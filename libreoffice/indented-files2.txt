@@ -18,6 +18,7 @@ embeddedobj/qa/cppunit/general.cxx
 filter/qa/unit/svg.cxx
 filter/qa/unit/textfilterdetect.cxx
 filter/source/msfilter/rtfutil.cxx
+i18npool/qa/cppunit/test_defaultnumberingprovider.cxx
 include/svl/grabbagitem.hxx
 include/vcl/filter/pdfdocument.hxx
 include/vcl/pdfread.hxx
