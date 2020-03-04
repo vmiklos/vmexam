@@ -24,7 +24,7 @@ time (
         make distclean
     fi
     ./autogen.sh
-    make build-nocheck || make build-nocheck
+    make check gb_SUPPRESS_TESTS=y || make check gb_SUPPRESS_TESTS=y
     if [ "$(git config libreoffice.bibisect)" == "true" ]; then
         sh ~/git/vmexam/libreoffice/daily.sh
     fi
