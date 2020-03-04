@@ -45,6 +45,7 @@ clang::ast_matchers::StatementMatcher makeMatcher()
     // v[0] == "foo"
     // i.e. operator ==() has an argument, which is a StringVector::operator
     // []() result.
+    // But filter out LOOLProtocol::getFirstToken(v[0]) == "foo".
     return cxxOperatorCallExpr(
                hasDescendant(
                    declRefExpr(to(functionDecl(hasName("operator=="))))),
@@ -52,7 +53,9 @@ clang::ast_matchers::StatementMatcher makeMatcher()
                    hasDescendant(
                        declRefExpr(to(cxxMethodDecl(hasName("operator[]"))))),
                    hasDescendant(declRefExpr(to(varDecl(
-                       hasType(cxxRecordDecl(hasName("StringVector"))))))))))
+                       hasType(cxxRecordDecl(hasName("StringVector"))))))))),
+               unless(hasDescendant(declRefExpr(
+                   to(functionDecl(hasName("LOOLProtocol::getFirstToken")))))))
         .bind("stmt");
 }
 
