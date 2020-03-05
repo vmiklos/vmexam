@@ -146,4 +146,12 @@ grep FAIL test/*.trs
 
 Gives a list of all failures, then `run-wsdunit` can run a single test.
 
+== Build time profiling
+
+Core:
+
+----
+make check GBUILD_TRACE=$HOME/make-check-trace.json
+----
+
 // vim: ft=asciidoc
