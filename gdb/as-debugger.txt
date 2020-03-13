@@ -1,0 +1,10 @@
+= Android Studio debugger for gdb users
+
+gdb commands, and their AS equivalent:
+
+- next: F8
+- step: F7
+- finish: Shift-F8
+- cont: F9
+
+// vim: ft=asciidoc
