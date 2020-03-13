@@ -33,7 +33,6 @@ bugprone-*,\
 readability-*,\
 -readability-braces-around-statements,\
 -readability-deleted-default,\
--readability-function-size,\
 -readability-implicit-bool-cast,\
 -readability-implicit-bool-conversion,\
 -readability-magic-numbers,\
