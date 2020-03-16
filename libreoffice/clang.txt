@@ -13,19 +13,19 @@ There are two modes:
 
 ----
 make -C sw -sr -j8 -O gb_SUPPRESS_TESTS=y FORCE_COMPILE_ALL=1 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD/sw -yaml" 2>&1 |tee ~/rename.yaml
+# Touch the header of the relevant class.
+make check gb_SUPPRESS_TESTS=y COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=clang-rename-wrapper RENAME_ARGS="-input=$HOME/rename.yaml -force"
+clang-apply-replacements -remove-change-desc-files /tmp/rename
 ----
-
-See below for the rest (clang-rename and clang-apply-replacements invocations).
 
 === Finding a class with a known name in a module
 
 ----
 # Touch the header of the relevant class.
 make check gb_SUPPRESS_TESTS=y COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-class-name=SwFieldPortion -yaml" 2>&1 |tee ~/rename.yaml
-# Touch the header of the relevant class.
-make check gb_SUPPRESS_TESTS=y COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=clang-rename-wrapper RENAME_ARGS="-input=$HOME/rename.yaml -force"
-clang-apply-replacements -remove-change-desc-files /tmp/rename
 ----
+
+(See above for the rest: clang-rename and clang-apply-replacements invocations.)
 
 Building a complete list of non-conforming members for a module:
 
