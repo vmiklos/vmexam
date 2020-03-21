@@ -1,0 +1,22 @@
+// Append e.g. '[date:"2015-01-06T00:00:00Z"]' after '[timeout:...]' if you
+// want to get a historical result.
+[out:csv(::id, "addr:street","addr:housenumber", "addr:postcode", "addr:city", name, ::type)]  [timeout:86400];
+area(3600021335)->.searchArea;
+(
+  node["addr:street"](area.searchArea);
+  way["addr:street"](area.searchArea);
+  relation["addr:street"](area.searchArea);
+  
+  node["addr:housenumber"](area.searchArea);
+  way["addr:housenumber"](area.searchArea);
+  relation["addr:housenumber"](area.searchArea);
+
+  node["addr:postcode"](area.searchArea);
+  way["addr:postcode"](area.searchArea);
+  relation["addr:postcode"](area.searchArea);
+
+  node["addr:city"](area.searchArea);
+  way["addr:city"](area.searchArea);
+  relation["addr:city"](area.searchArea);
+);
+out body;
