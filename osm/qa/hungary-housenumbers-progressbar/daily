@@ -6,6 +6,11 @@
 #
 
 cd $(dirname $0)
-./overpass_query.py street-housenumbers-hungary.txt > $(date +%Y-%m-%d).csv
+date="$(date +%Y-%m-%d)"
+./overpass_query.py street-housenumbers-hungary.txt > "${date}.csv"
+./count.py "${date}.csv" > "${date}.count"
+
+# Clean up older (than 7 days), large .csv files.
+find . -type f -name "*.csv" -mtime +7 -exec rm -f {} \;
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
