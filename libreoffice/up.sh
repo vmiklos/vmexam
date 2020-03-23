@@ -9,11 +9,12 @@
 
 time (
     # This can act as a gate, only pull in changes in case $rebaseRemote built them successfully
-    # already.
+    # already. A safer 'git pull'.
     rebaseRemote=$(git config libreoffice.rebaseRemote || true)
+    git fetch
     if [ -z "$rebaseRemote" ]; then
         # Optimistic: all changes passed CI anyway.
-        git pull -r
+        git rebase HEAD@{upstream}
     else
         # Pessimistic: only update once 'make check' already passed in a sandbox locally.
         git fetch "$rebaseRemote"
