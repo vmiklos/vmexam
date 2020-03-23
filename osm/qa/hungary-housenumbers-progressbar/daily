@@ -8,7 +8,7 @@
 cd $(dirname $0)
 date="$(date +%Y-%m-%d)"
 ./overpass_query.py street-housenumbers-hungary.txt > "${date}.csv"
-./count.py "${date}.csv" > "${date}.count"
+sed '1d' "${date}.csv" |sort -u|wc -l > "${date}.count"
 
 # Clean up older (than 7 days), large .csv files.
 find . -type f -name "*.csv" -mtime +7 -exec rm -f {} \;
