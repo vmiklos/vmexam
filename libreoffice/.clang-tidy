@@ -3,8 +3,6 @@
 #   in theory
 # - modernize-avoid-c-arrays: new check, get back to this later
 # - modernize-use-nodiscard: new check, get back to this later
-# - clang-analyzer-optin.cplusplus.UninitializedObject: new check, seems to emit false positive on
-#   boost::optional
 # - modernize-use-trailing-return-type: signal/noise ratio looks low
 # - bugprone-macro-parentheses: this breaks SAL_LOG()
 # - readability-qualified-auto: LO code doesn't really do auto* pFoo
@@ -14,7 +12,6 @@
 Checks: "clang-diagnostic-*,\
 -clang-analyzer-cplusplus.NewDelete,\
 -clang-analyzer-cplusplus.NewDeleteLeaks,\
--clang-analyzer-optin.cplusplus.UninitializedObject,\
 performance-*,\
 unused-*,\
 modernize-*,\
