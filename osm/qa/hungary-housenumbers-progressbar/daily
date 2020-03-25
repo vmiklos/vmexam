@@ -18,6 +18,9 @@ num_ref=$(cat ref.count)
 num_osm=$(cat ${date}.count)
 percentage="$(echo "scale=2;${num_osm}*100/${num_ref}"|bc)%"
 echo '{"title": "'${title}'", "percentage": "'${percentage}'", "reference": "'${num_ref}'", "osm": "'${num_osm}'"}' > progress.json
-cat progress.json > /var/www/osm.vmiklos.hu/osm/housenumber-stats/hungary/progress.json
+
+prod="/var/www/osm.vmiklos.hu/osm/housenumber-stats/hungary/"
+cat progress.json > "${prod}/progress.json"
+cp *.html *.js "${prod}/"
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:

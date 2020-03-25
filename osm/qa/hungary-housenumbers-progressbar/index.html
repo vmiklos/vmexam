@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+	<title>Housenumber stats: Hungary</title>
+	<script src="Chart.min.js"></script>
+	<script src="jquery.min.js"></script>
+</head>
+<body>
+	<div style="width: 75%;">
+		<canvas id="progress"></canvas>
+	</div>
+	<script>
+var progressJSON = "/osm/housenumber-stats/hungary/progress.json";
+$.getJSON(progressJSON, function(progress) {
+    var progressData = {
+        labels: [progress.percentage],
+        datasets: [{
+            label: 'Reference',
+            backgroundColor: "rgba(255, 0, 0)",
+            data: [ progress.reference ],
+        }, {
+            label: 'OSM',
+            backgroundColor: "rgba(0, 255, 0)",
+            data: [ progress.osm ],
+        }]
+
+    };
+    var ctx = document.getElementById('progress').getContext('2d');
+    new Chart(ctx, {
+        type: 'horizontalBar',
+        data: progressData,
+        options: {
+            title: {
+                display: true,
+                text: progress.title,
+            },
+            scales: {
+                xAxes: [{
+                    ticks: { min: 0.0, }
+                }]
+            },
+        }
+    });
+});
+	</script>
+</body>
+</html>
