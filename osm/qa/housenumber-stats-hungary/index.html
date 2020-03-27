@@ -42,7 +42,17 @@ $.getJSON(statsJSON, function(stats) {
             },
             scales: {
                 xAxes: [{
-                    ticks: { suggestedMin: 0, }
+                    ticks: { suggestedMin: 0, },
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Time"
+                    },
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: "New house numbers"
+                    },
                 }]
             },
             plugins: {
@@ -51,11 +61,16 @@ $.getJSON(statsJSON, function(stats) {
                     anchor: 'end',
                 }
             },
+            tooltips: {
+                enabled: false,
+            },
+            legend: {
+                display: false,
+            },
         }
     });
 
     var progressData = {
-        labels: [progress.percentage + "%"],
         datasets: [{
             label: 'Reference',
             backgroundColor: "rgba(255, 0, 0)",
@@ -74,13 +89,20 @@ $.getJSON(statsJSON, function(stats) {
         options: {
             title: {
                 display: true,
-                text: "Coverage, as of " + progress.date,
+                text: "Coverage is " + progress.percentage + "%, as of " + progress.date,
             },
             scales: {
                 xAxes: [{
-                    ticks: { min: 0.0, }
+                    ticks: { min: 0.0, },
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Number of house numbers in database",
+                    },
                 }]
             },
+            tooltips: {
+                enabled: false,
+            }
         }
     });
 });
