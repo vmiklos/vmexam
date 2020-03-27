@@ -39,7 +39,7 @@ $.getJSON(statsJSON, function(stats) {
         labels: ["2020-03-24", "2020-03-25", "2020-03-26"],
         datasets: [{
             label: 'New house numbers',
-            backgroundColor: "rgba(0, 255, 0)",
+            backgroundColor: "rgba(0, 255, 0, 0.5)",
             data: [147, 244, 482],
         }]
 
@@ -86,11 +86,11 @@ $.getJSON(statsJSON, function(stats) {
     var progressData = {
         datasets: [{
             label: 'Reference',
-            backgroundColor: "rgba(255, 0, 0)",
+            backgroundColor: "rgba(255, 0, 0, 0.5)",
             data: [ progress.reference ],
         }, {
             label: 'OSM',
-            backgroundColor: "rgba(0, 255, 0)",
+            backgroundColor: "rgba(0, 255, 0, 0.5)",
             data: [ progress.osm ],
         }]
 
