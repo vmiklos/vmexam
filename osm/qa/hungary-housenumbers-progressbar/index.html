@@ -15,10 +15,10 @@
 		<canvas id="progress"></canvas>
 	</div>
 	<script>
-var progressJSON = "/osm/housenumber-stats/hungary/progress.json";
+var progressJSON = "/osm/housenumber-stats/hungary/stats.json";
 $.getJSON(progressJSON, function(progress) {
     var progressData = {
-        labels: [progress.percentage],
+        labels: [progress.percentage + "%"],
         datasets: [{
             label: 'Reference',
             backgroundColor: "rgba(255, 0, 0)",
