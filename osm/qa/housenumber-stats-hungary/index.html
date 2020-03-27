@@ -9,12 +9,25 @@
 	<script src="Chart.min.js"></script>
 	<script src="chartjs-plugin-datalabels.min.js"></script>
 	<script src="jquery.min.js"></script>
+	<style>
+
+div.canvasblock {
+    width: 75%;
+    margin: auto;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: 1px solid #7f7f7f;
+    padding: 5px;
+}
+	</style>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
-	<div style="width: 75%;">
-		<canvas id="daily"></canvas>
-		<canvas id="progress"></canvas>
+	<div class="canvasblock">
+		<canvas id="daily" class="with-border"></canvas>
+	</div>
+	<div class="canvasblock">
+		<canvas id="progress" class="with-border"></canvas>
 	</div>
 	<script>
 var statsJSON = "/osm/housenumber-stats/hungary/stats.json";
@@ -99,6 +112,14 @@ $.getJSON(statsJSON, function(stats) {
                         labelString: "Number of house numbers in database",
                     },
                 }]
+            },
+            plugins: {
+                datalabels: {
+                    formatter: function(value, context) {
+                        // Turn 1000 into '1 000'.
+                        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")
+                    }
+                }
             },
             tooltips: {
                 enabled: false,
