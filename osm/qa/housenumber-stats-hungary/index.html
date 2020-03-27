@@ -7,6 +7,7 @@
 	-->
 	<title>Housenumber stats: Hungary</title>
 	<script src="Chart.min.js"></script>
+	<script src="chartjs-plugin-datalabels.min.js"></script>
 	<script src="jquery.min.js"></script>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
@@ -43,6 +44,12 @@ $.getJSON(statsJSON, function(stats) {
                 xAxes: [{
                     ticks: { suggestedMin: 0, }
                 }]
+            },
+            plugins: {
+                datalabels: {
+                    align: 'top',
+                    anchor: 'end',
+                }
             },
         }
     });
