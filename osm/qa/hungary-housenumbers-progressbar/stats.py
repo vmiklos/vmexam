@@ -25,10 +25,30 @@ def handle_progress(j):
     ret["osm"] = num_osm
     j["progress"] = ret
 
+def handle_daily_new(j):
+    """Shows # of new housenumbers / day."""
+    day_in_sec = 86400
+    ret = []
+    prev_count = 0
+    prev_day = ""
+    for day_offset in range(3, -1, -1):
+        day_delta = day_offset * day_in_sec
+        day_timestamp = time.time() - day_delta
+        day_tuple = time.localtime(day_timestamp)
+        day = time.strftime("%Y-%m-%d", day_tuple)
+        with open("%s.count" % day, "r") as stream:
+            count = int(stream.read().strip())
+        if prev_count:
+            ret.append([prev_day, count - prev_count])
+        prev_count = count
+        prev_day = day
+    j["daily"] = ret
+
 def main() -> None:
     """Commandline interface to this module."""
     j = {}
     handle_progress(j)
+    handle_daily_new(j)
     print(json.dumps(j))
 
 

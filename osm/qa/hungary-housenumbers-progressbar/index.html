@@ -12,12 +12,41 @@
 </head>
 <body>
 	<div style="width: 75%;">
+		<canvas id="daily"></canvas>
 		<canvas id="progress"></canvas>
 	</div>
 	<script>
 var statsJSON = "/osm/housenumber-stats/hungary/stats.json";
 $.getJSON(statsJSON, function(stats) {
+    var daily = stats.daily;
     var progress = stats.progress;
+
+    var dailyData = {
+        labels: ["2020-03-24", "2020-03-25", "2020-03-26"],
+        datasets: [{
+            label: 'New house numbers',
+            backgroundColor: "rgba(0, 255, 0)",
+            data: [147, 244, 482],
+        }]
+
+    };
+    var ctx = document.getElementById('daily').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: dailyData,
+        options: {
+            title: {
+                display: true,
+                text: "New house numbers, last 3 days, as of " + progress.date,
+            },
+            scales: {
+                xAxes: [{
+                    ticks: { suggestedMin: 0, }
+                }]
+            },
+        }
+    });
+
     var progressData = {
         labels: [progress.percentage + "%"],
         datasets: [{
@@ -38,7 +67,7 @@ $.getJSON(statsJSON, function(stats) {
         options: {
             title: {
                 display: true,
-                text: "Coverage as of " + progress.date,
+                text: "Coverage, as of " + progress.date,
             },
             scales: {
                 xAxes: [{
