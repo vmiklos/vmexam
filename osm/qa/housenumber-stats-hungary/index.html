@@ -36,11 +36,12 @@ $.getJSON(statsJSON, function(stats) {
     var progress = stats.progress;
 
     var dailyData = {
-        labels: ["2020-03-24", "2020-03-25", "2020-03-26"],
+        // daily is a list of label-data pairs.
+        labels: daily.map(x => x[0]),
         datasets: [{
             label: 'New house numbers',
             backgroundColor: "rgba(0, 255, 0, 0.5)",
-            data: [147, 244, 482],
+            data: daily.map(x => x[1]),
         }]
 
     };
