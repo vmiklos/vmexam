@@ -5,5 +5,4 @@ area(3600021335)->.searchArea;
   way["addr:housenumber"](area.searchArea);
   relation["addr:housenumber"](area.searchArea);
 );
-out body;
 out meta;
