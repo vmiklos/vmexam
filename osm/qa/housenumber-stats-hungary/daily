@@ -8,7 +8,8 @@
 cd $(dirname $0)
 date="$(date +%Y-%m-%d)"
 ./overpass_query.py street-housenumbers-hungary.txt > "${date}.csv"
-sed '1d' "${date}.csv" |sort -u|wc -l > "${date}.count"
+# Ignore 5th field, which is the user who touched the object last.
+sed '1d' "${date}.csv" |cut -d $'\t' -f 1-4 |sort -u|wc -l > "${date}.count"
 
 # Clean up older (than 7 days), large .csv files.
 find . -type f -name "*.csv" -mtime +7 -exec rm -f {} \;
