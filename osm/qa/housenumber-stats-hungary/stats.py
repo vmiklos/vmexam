@@ -25,6 +25,17 @@ def handle_progress(j):
     ret["osm"] = num_osm
     j["progress"] = ret
 
+def handle_topusers(j):
+    """Generates stats for top users."""
+    today = time.strftime("%Y-%m-%d")
+    ret = []
+    with open("%s.topusers" % today, "r") as stream:
+        for line in stream.readlines():
+            line = line.strip()
+            count, _, user = line.partition(' ')
+            ret.append([user, count])
+    j["topusers"] = ret
+
 def handle_daily_new(j):
     """Shows # of new housenumbers / day."""
     day_in_sec = 86400
@@ -48,6 +59,7 @@ def main() -> None:
     """Commandline interface to this module."""
     j = {}
     handle_progress(j)
+    handle_topusers(j)
     handle_daily_new(j)
     print(json.dumps(j))
 
