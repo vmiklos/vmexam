@@ -23,23 +23,30 @@ div.canvasblock {
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
-	<div class="canvasblock">
-		<canvas id="daily" class="with-border"></canvas>
-	</div>
-	<div class="canvasblock">
-		<canvas id="progress" class="with-border"></canvas>
-	</div>
-	<script>
+    <h1>Housenumber stats: Hungary</h1>
+    <h2 id="_daily">New house numbers</h2>
+    <div class="canvasblock">
+        <canvas id="daily"></canvas>
+    </div>
+    <h2 id="_topusers">Top house number editors</h2>
+    <div class="canvasblock">
+        <canvas id="topusers"></canvas>
+    </div>
+    <h2 id="_progress">Coverage</h2>
+    <div class="canvasblock">
+        <canvas id="progress"></canvas>
+    </div>
+    <script>
 var statsJSON = "/osm/housenumber-stats/hungary/stats.json";
 $.getJSON(statsJSON, function(stats) {
     var daily = stats.daily;
+    var topusers = stats.topusers;
     var progress = stats.progress;
 
     var dailyData = {
         // daily is a list of label-data pairs.
         labels: daily.map(x => x[0]),
         datasets: [{
-            label: 'New house numbers',
             backgroundColor: "rgba(0, 255, 0, 0.5)",
             data: daily.map(x => x[1]),
         }]
@@ -66,6 +73,54 @@ $.getJSON(statsJSON, function(stats) {
                     scaleLabel: {
                         display: true,
                         labelString: "New house numbers"
+                    },
+                }]
+            },
+            plugins: {
+                datalabels: {
+                    align: 'top',
+                    anchor: 'end',
+                }
+            },
+            tooltips: {
+                enabled: false,
+            },
+            legend: {
+                display: false,
+            },
+        }
+    });
+
+    var topusersData = {
+        // topusers is a list of label-data pairs.
+        labels: topusers.map(x => x[0]),
+        datasets: [{
+            backgroundColor: "rgba(0, 255, 0, 0.5)",
+            data: topusers.map(x => x[1]),
+        }]
+
+    };
+    var ctx = document.getElementById('topusers').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: topusersData,
+        options: {
+            title: {
+                display: true,
+                text: "Top house number editors, as of " + progress.date,
+            },
+            scales: {
+                xAxes: [{
+                    ticks: { suggestedMin: 0, },
+                    scaleLabel: {
+                        display: true,
+                        labelString: "User name"
+                    },
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Number of house numbers last changed by this user",
                     },
                 }]
             },
