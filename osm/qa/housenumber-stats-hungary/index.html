@@ -1,16 +1,15 @@
 <!doctype html>
 <html>
 <head>
-	<!--
-	 Source code:
-	 https://github.com/vmiklos/vmexam/tree/master/osm/qa/housenumber-stats-hungary
-	-->
-	<title>Housenumber stats: Hungary</title>
-	<script src="Chart.min.js"></script>
-	<script src="chartjs-plugin-datalabels.min.js"></script>
-	<script src="jquery.min.js"></script>
-	<style>
-
+    <!--
+        Source code:
+        https://github.com/vmiklos/vmexam/tree/master/osm/qa/housenumber-stats-hungary
+    -->
+    <title>Housenumber stats: Hungary</title>
+    <script src="Chart.min.js"></script>
+    <script src="chartjs-plugin-datalabels.min.js"></script>
+    <script src="jquery.min.js"></script>
+    <style>
 div.canvasblock {
     width: 75%;
     margin: auto;
@@ -19,8 +18,8 @@ div.canvasblock {
     border: 1px solid #7f7f7f;
     padding: 5px;
 }
-	</style>
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
     <h1>Housenumber stats: Hungary</h1>
@@ -35,6 +34,14 @@ div.canvasblock {
     <h2 id="_progress">Coverage</h2>
     <div class="canvasblock">
         <canvas id="progress"></canvas>
+    </div>
+    <h2 id="_note">Note</h2>
+    <div>
+        These statistics are provided purely for interested editors, and are not intended to
+        reflect quality or quality of work done by any given editor in OSM, merely to show
+        activity of operations in the OSM database performed by all editors. If you want to use
+        them to motivate yourself, that's fine, but keep in mind that a bit of useful work is
+        more meaningful than a lot of useless work.
     </div>
     <script>
 var statsJSON = "/osm/housenumber-stats/hungary/stats.json";
@@ -183,6 +190,6 @@ $.getJSON(statsJSON, function(stats) {
         }
     });
 });
-	</script>
+    </script>
 </body>
 </html>
