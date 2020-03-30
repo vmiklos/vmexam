@@ -44,10 +44,7 @@ def handle_daily_new(j):
     prev_day = ""
     for day_offset in range(6, -1, -1):
         day_delta = day_offset * day_in_sec
-        # Make it less likely that a DST change causes problems for us: we know that this script
-        # runs shortly after midnight, so the timestamp is "now + 12h". That way a DST change is
-        # less likely to miscount days.
-        day_timestamp = time.time() + 12*60*60 - day_delta
+        day_timestamp = time.time() - day_delta
         day_tuple = time.localtime(day_timestamp)
         day = time.strftime("%Y-%m-%d", day_tuple)
         with open("%s.count" % day, "r") as stream:
