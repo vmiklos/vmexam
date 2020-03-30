@@ -5,10 +5,10 @@
 # found in the LICENSE file.
 #
 
+import datetime
 import json
-import time
 import sys
-
+import time
 
 def handle_progress(j):
     """Generates stats for a global progressbar."""
@@ -38,15 +38,12 @@ def handle_topusers(j):
 
 def handle_daily_new(j):
     """Shows # of new housenumbers / day."""
-    day_in_sec = 86400
     ret = []
     prev_count = 0
     prev_day = ""
     for day_offset in range(6, -1, -1):
-        day_delta = day_offset * day_in_sec
-        day_timestamp = time.time() - day_delta
-        day_tuple = time.localtime(day_timestamp)
-        day = time.strftime("%Y-%m-%d", day_tuple)
+        day_delta = datetime.date.today() - datetime.timedelta(day_offset)
+        day = day_delta.strftime("%Y-%m-%d")
         with open("%s.count" % day, "r") as stream:
             count = int(stream.read().strip())
         if prev_count:
