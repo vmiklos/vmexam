@@ -42,7 +42,7 @@ def handle_daily_new(j):
     ret = []
     prev_count = 0
     prev_day = ""
-    for day_offset in range(5, -1, -1):
+    for day_offset in range(6, -1, -1):
         day_delta = day_offset * day_in_sec
         day_timestamp = time.time() - day_delta
         day_tuple = time.localtime(day_timestamp)

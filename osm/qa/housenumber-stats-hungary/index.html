@@ -37,11 +37,10 @@ div.canvasblock {
     </div>
     <h2 id="_note">Note</h2>
     <div>
-        These statistics are provided purely for interested editors, and are not intended to
-        reflect quality or quality of work done by any given editor in OSM, merely to show
-        activity of operations in the OSM database performed by all editors. If you want to use
-        them to motivate yourself, that's fine, but keep in mind that a bit of useful work is
-        more meaningful than a lot of useless work.
+        These statistics are provided purely for interested editors, and are not intended to reflect
+        quality of work done by any given editor in OSM. If you want to use them to motivate
+        yourself, that's fine, but keep in mind that a bit of useful work is more meaningful than a
+        lot of useless work.
     </div>
     <script>
 var statsJSON = "/osm/housenumber-stats/hungary/stats.json";
@@ -66,7 +65,7 @@ $.getJSON(statsJSON, function(stats) {
         options: {
             title: {
                 display: true,
-                text: "New house numbers, last 5 days, as of " + progress.date,
+                text: "New house numbers, last 6 days, as of " + progress.date,
             },
             scales: {
                 xAxes: [{
