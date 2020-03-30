@@ -27,9 +27,19 @@ div.canvasblock {
 </head>
 <body>
     <h1>Housenumber stats: Hungary</h1>
+    <ul>
+        <li><a href="#_daily">New house numbers</a></li>
+        <li><a href="#_dailytotal">All house numbers</a></li>
+        <li><a href="#_topusers">Top house number editors</a></li>
+        <li><a href="#_progress">Coverage</a></li>
+    </ul>
     <h2 id="_daily">New house numbers</h2>
     <div class="canvasblock">
         <canvas id="daily"></canvas>
+    </div>
+    <h2 id="_dailytotal">All house numbers</h2>
+    <div class="canvasblock">
+        <canvas id="dailytotal"></canvas>
     </div>
     <h2 id="_topusers">Top house number editors</h2>
     <div class="canvasblock">
@@ -50,6 +60,7 @@ div.canvasblock {
 var statsJSON = "/osm/housenumber-stats/hungary/stats.json";
 $.getJSON(statsJSON, function(stats) {
     var daily = stats.daily;
+    var dailytotal = stats.dailytotal;
     var topusers = stats.topusers;
     var progress = stats.progress;
 
@@ -83,6 +94,53 @@ $.getJSON(statsJSON, function(stats) {
                     scaleLabel: {
                         display: true,
                         labelString: "New house numbers"
+                    },
+                }]
+            },
+            plugins: {
+                datalabels: {
+                    align: 'top',
+                    anchor: 'end',
+                }
+            },
+            tooltips: {
+                enabled: false,
+            },
+            legend: {
+                display: false,
+            },
+        }
+    });
+
+    var dailytotalData = {
+        // dailytotal is a list of label-data pairs.
+        labels: dailytotal.map(x => x[0]),
+        datasets: [{
+            backgroundColor: "rgba(0, 255, 0, 0.5)",
+            data: dailytotal.map(x => x[1]),
+        }]
+
+    };
+    var ctx = document.getElementById('dailytotal').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: dailytotalData,
+        options: {
+            title: {
+                display: true,
+                text: "All house numbers, last week, as of " + progress.date,
+            },
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Time"
+                    },
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: "All house numbers"
                     },
                 }]
             },

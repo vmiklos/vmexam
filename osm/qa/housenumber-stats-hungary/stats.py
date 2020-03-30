@@ -52,12 +52,24 @@ def handle_daily_new(j):
         prev_day = day
     j["daily"] = ret
 
+def handle_daily_total(j):
+    """Shows # of new housenumbers / day."""
+    ret = []
+    for day_offset in range(6, -1, -1):
+        day_delta = datetime.date.today() - datetime.timedelta(day_offset)
+        day = day_delta.strftime("%Y-%m-%d")
+        with open("%s.count" % day, "r") as stream:
+            count = int(stream.read().strip())
+        ret.append([day, count])
+    j["dailytotal"] = ret
+
 def main() -> None:
     """Commandline interface to this module."""
     j = {}
     handle_progress(j)
     handle_topusers(j)
     handle_daily_new(j)
+    handle_daily_total(j)
     print(json.dumps(j))
 
 
