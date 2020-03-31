@@ -41,7 +41,7 @@ def handle_daily_new(j):
     ret = []
     prev_count = 0
     prev_day = ""
-    for day_offset in range(6, -1, -1):
+    for day_offset in range(7, -1, -1):
         day_delta = datetime.date.today() - datetime.timedelta(day_offset)
         day = day_delta.strftime("%Y-%m-%d")
         with open("%s.count" % day, "r") as stream:
