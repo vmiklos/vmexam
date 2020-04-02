@@ -5,19 +5,20 @@
 # found in the LICENSE file.
 #
 
-cd $(dirname $0)
+cd "$(dirname "$0")" || exit
 date="$(date +%Y-%m-%d)"
 ./overpass_query.py street-housenumbers-hungary.txt > "${date}.csv"
 # Ignore 5th field, which is the user who touched the object last.
 sed '1d' "${date}.csv" |cut -d $'\t' -f 1-4 |sort -u|wc -l > "${date}.count"
-cat "${date}.csv" |cut -d $'\t' -f 5 |sort |uniq -c |sort -k1,1n |tail -n 20 |tac > "${date}.topusers"
+cut -d $'\t' -f 5 "${date}.csv" |sort |uniq -c |sort -k1,1n |tail -n 20 |tac > "${date}.topusers"
 
 # Clean up older (than 7 days), large .csv files.
 find . -type f -name "*.csv" -mtime +7 -exec rm -f {} \;
 
 ./stats.py > stats.json
 
-prod="/var/www/osm.vmiklos.hu/osm/housenumber-stats/hungary/"
-cp *.html *.js *.json "${prod}/"
+prod="workdir/stats-htdocs/"
+mkdir -p "${prod}"
+cp -- *.html *.js *.json "${prod}/"
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
