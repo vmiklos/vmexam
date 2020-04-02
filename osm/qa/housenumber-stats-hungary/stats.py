@@ -53,7 +53,7 @@ def handle_daily_new(j):
     j["daily"] = ret
 
 def handle_daily_total(j):
-    """Shows # of new housenumbers / day."""
+    """Shows # of total housenumbers / day."""
     ret = []
     for day_offset in range(6, -1, -1):
         day_delta = datetime.date.today() - datetime.timedelta(day_offset)
