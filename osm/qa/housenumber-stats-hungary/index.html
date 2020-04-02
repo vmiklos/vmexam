@@ -56,12 +56,7 @@ div.canvasblock {
         lot of useless work.
     </div>
     <script>
-var statsJSON = "/osm/housenumber-stats/hungary/stats.json";
-window.fetch(statsJSON)
-    .then((response) => {
-        return response.json();
-    })
-  .then((stats) => {
+function addCharts(stats) {
     var daily = stats.daily;
     var dailytotal = stats.dailytotal;
     var topusers = stats.topusers;
@@ -253,6 +248,17 @@ window.fetch(statsJSON)
             }
         }
     });
+}
+
+document.addEventListener("DOMContentLoaded", function(event) {
+    var statsJSON = "/osm/housenumber-stats/hungary/stats.json";
+    window.fetch(statsJSON)
+        .then((response) => {
+            return response.json();
+        })
+        .then((stats) => {
+            addCharts(stats);
+        });
 });
     </script>
 </body>
