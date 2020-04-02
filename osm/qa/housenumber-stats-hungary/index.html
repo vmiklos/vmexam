@@ -8,7 +8,6 @@
     <title>Housenumber stats: Hungary</title>
     <script src="Chart.min.js"></script>
     <script src="chartjs-plugin-datalabels.min.js"></script>
-    <script src="jquery.min.js"></script>
     <style>
 div.canvasblock {
     margin: auto;
@@ -58,7 +57,11 @@ div.canvasblock {
     </div>
     <script>
 var statsJSON = "/osm/housenumber-stats/hungary/stats.json";
-$.getJSON(statsJSON, function(stats) {
+window.fetch(statsJSON)
+    .then((response) => {
+        return response.json();
+    })
+  .then((stats) => {
     var daily = stats.daily;
     var dailytotal = stats.dailytotal;
     var topusers = stats.topusers;
