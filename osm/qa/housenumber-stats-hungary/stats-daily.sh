@@ -5,6 +5,11 @@
 # found in the LICENSE file.
 #
 
+#
+# This script runs an overpass query, then generates stats.json based on up to date and historic
+# data. It doesn't necessarily run on the same machine as cron.py.
+#
+
 cd "$(dirname "$0")" || exit
 date="$(date +%Y-%m-%d)"
 ./overpass_query.py data/street-housenumbers-hungary.txt > "${date}.csv"
