@@ -7,7 +7,7 @@
 
 cd "$(dirname "$0")" || exit
 date="$(date +%Y-%m-%d)"
-./overpass_query.py street-housenumbers-hungary.txt > "${date}.csv"
+./overpass_query.py data/street-housenumbers-hungary.txt > "${date}.csv"
 # Ignore 5th field, which is the user who touched the object last.
 sed '1d' "${date}.csv" |cut -d $'\t' -f 1-4 |sort -u|wc -l > "${date}.count"
 cut -d $'\t' -f 5 "${date}.csv" |sort |uniq -c |sort -k1,1n |tail -n 20 |tac > "${date}.topusers"
