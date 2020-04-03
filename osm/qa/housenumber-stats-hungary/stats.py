@@ -5,14 +5,16 @@
 # found in the LICENSE file.
 #
 
+from typing import Any
+from typing import Dict
 import datetime
 import json
 import sys
 import time
 
-def handle_progress(j):
+def handle_progress(j: Dict[str, Any]) -> None:
     """Generates stats for a global progressbar."""
-    ret = {}
+    ret: Dict[str, Any] = {}
     with open("ref.count", "r") as stream:
         num_ref = int(stream.read().strip())
     today = time.strftime("%Y-%m-%d")
@@ -25,7 +27,7 @@ def handle_progress(j):
     ret["osm"] = num_osm
     j["progress"] = ret
 
-def handle_topusers(j):
+def handle_topusers(j: Dict[str, Any]) -> None:
     """Generates stats for top users."""
     today = time.strftime("%Y-%m-%d")
     ret = []
@@ -36,7 +38,7 @@ def handle_topusers(j):
             ret.append([user, count])
     j["topusers"] = ret
 
-def handle_daily_new(j):
+def handle_daily_new(j: Dict[str, Any]) -> None:
     """Shows # of new housenumbers / day."""
     ret = []
     prev_count = 0
@@ -52,7 +54,7 @@ def handle_daily_new(j):
         prev_day = day
     j["daily"] = ret
 
-def handle_daily_total(j):
+def handle_daily_total(j: Dict[str, Any]) -> None:
     """Shows # of total housenumbers / day."""
     ret = []
     for day_offset in range(6, -1, -1):
@@ -65,7 +67,7 @@ def handle_daily_total(j):
 
 def main() -> None:
     """Commandline interface to this module."""
-    j = {}
+    j: Dict[str, Any] = {}
     handle_progress(j)
     handle_topusers(j)
     handle_daily_new(j)
