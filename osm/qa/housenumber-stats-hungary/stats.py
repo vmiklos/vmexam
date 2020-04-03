@@ -5,6 +5,8 @@
 # found in the LICENSE file.
 #
 
+"""The stats module creates statistics about missing / non-missing house numbers."""
+
 from typing import Any
 from typing import Dict
 import datetime
