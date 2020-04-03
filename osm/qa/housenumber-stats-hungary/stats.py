@@ -9,8 +9,8 @@ from typing import Any
 from typing import Dict
 import datetime
 import json
-import sys
 import time
+
 
 def handle_progress(j: Dict[str, Any]) -> None:
     """Generates stats for a global progressbar."""
@@ -27,6 +27,7 @@ def handle_progress(j: Dict[str, Any]) -> None:
     ret["osm"] = num_osm
     j["progress"] = ret
 
+
 def handle_topusers(j: Dict[str, Any]) -> None:
     """Generates stats for top users."""
     today = time.strftime("%Y-%m-%d")
@@ -37,6 +38,7 @@ def handle_topusers(j: Dict[str, Any]) -> None:
             count, _, user = line.partition(' ')
             ret.append([user, count])
     j["topusers"] = ret
+
 
 def handle_daily_new(j: Dict[str, Any]) -> None:
     """Shows # of new housenumbers / day."""
@@ -54,6 +56,7 @@ def handle_daily_new(j: Dict[str, Any]) -> None:
         prev_day = day
     j["daily"] = ret
 
+
 def handle_daily_total(j: Dict[str, Any]) -> None:
     """Shows # of total housenumbers / day."""
     ret = []
@@ -64,6 +67,7 @@ def handle_daily_total(j: Dict[str, Any]) -> None:
             count = int(stream.read().strip())
         ret.append([day, count])
     j["dailytotal"] = ret
+
 
 def main() -> None:
     """Commandline interface to this module."""
