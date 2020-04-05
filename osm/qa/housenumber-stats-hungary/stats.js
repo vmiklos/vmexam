@@ -4,6 +4,8 @@
  * found in the LICENSE file.
  */
 
+/* global Chart */
+
 function addCharts(stats) {
     var daily = stats.daily;
     var dailytotal = stats.dailytotal;
@@ -19,9 +21,9 @@ function addCharts(stats) {
         }]
 
     };
-    var ctx = document.getElementById('daily').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
+    var dailyCtx = document.getElementById("daily").getContext("2d");
+    new Chart(dailyCtx, {
+        type: "bar",
         data: dailyData,
         options: {
             title: {
@@ -45,8 +47,8 @@ function addCharts(stats) {
             },
             plugins: {
                 datalabels: {
-                    align: 'top',
-                    anchor: 'end',
+                    align: "top",
+                    anchor: "end",
                 }
             },
             tooltips: {
@@ -67,9 +69,9 @@ function addCharts(stats) {
         }]
 
     };
-    var ctx = document.getElementById('dailytotal').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
+    var dailyTotalCtx = document.getElementById("dailytotal").getContext("2d");
+    new Chart(dailyTotalCtx, {
+        type: "line",
         data: dailytotalData,
         options: {
             title: {
@@ -92,8 +94,8 @@ function addCharts(stats) {
             },
             plugins: {
                 datalabels: {
-                    align: 'top',
-                    anchor: 'end',
+                    align: "top",
+                    anchor: "end",
                 }
             },
             tooltips: {
@@ -114,9 +116,9 @@ function addCharts(stats) {
         }]
 
     };
-    var ctx = document.getElementById('topusers').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
+    var topUsersCtx = document.getElementById("topusers").getContext("2d");
+    new Chart(topUsersCtx, {
+        type: "bar",
         data: topusersData,
         options: {
             title: {
@@ -140,8 +142,8 @@ function addCharts(stats) {
             },
             plugins: {
                 datalabels: {
-                    align: 'top',
-                    anchor: 'end',
+                    align: "top",
+                    anchor: "end",
                 }
             },
             tooltips: {
@@ -155,19 +157,19 @@ function addCharts(stats) {
 
     var progressData = {
         datasets: [{
-            label: 'Reference',
+            label: "Reference",
             backgroundColor: "rgba(255, 0, 0, 0.5)",
             data: [ progress.reference ],
         }, {
-            label: 'OSM',
+            label: "OSM",
             backgroundColor: "rgba(0, 255, 0, 0.5)",
             data: [ progress.osm ],
         }]
 
     };
-    var ctx = document.getElementById('progress').getContext('2d');
-    new Chart(ctx, {
-        type: 'horizontalBar',
+    var progressCtx = document.getElementById("progress").getContext("2d");
+    new Chart(progressCtx, {
+        type: "horizontalBar",
         data: progressData,
         options: {
             title: {
@@ -185,9 +187,10 @@ function addCharts(stats) {
             },
             plugins: {
                 datalabels: {
+                    // eslint-disable-next-line no-unused-vars
                     formatter: function(value, context) {
                         // Turn 1000 into '1 000'.
-                        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")
+                        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
                     }
                 }
             },
@@ -198,6 +201,7 @@ function addCharts(stats) {
     });
 }
 
+// eslint-disable-next-line no-unused-vars
 document.addEventListener("DOMContentLoaded", function(event) {
     var statsJSON = "/osm/housenumber-stats/hungary/stats.json";
     window.fetch(statsJSON)
