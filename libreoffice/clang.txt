@@ -146,6 +146,19 @@ grep FAIL test/*.trs
 
 Gives a list of all failures, then `run-wsdunit` can run a single test.
 
+Poco:
+
+----
+git clone https://github.com/pocoproject/poco poco-fuzz
+cd poco-fuzz/
+git checkout -b poco-1.9.1 origin/poco-1.9.1
+# This is not enough, we need Crypto and NetSSL_OpenSSL
+#./configure --no-samples --no-tests --minimal
+./configure --no-samples --no-tests --omit=Zip,Data,Data/SQLite,Data/ODBC,Data/MySQL,MongoDB,PDF,CppParser,PageCompiler
+make -j8 CC="$CC" CXX="$CXX"
+make -j8 CC="$CC" CXX="$CXX" install INSTALLDIR=$PWD/install
+----
+
 == Build time profiling
 
 Core:

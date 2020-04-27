@@ -46,6 +46,7 @@ sw/qa/extras/rtfexport/rtfexport.cxx
 sw/qa/extras/rtfimport/rtfimport.cxx
 sw/qa/extras/uiwriter/uiwriter2.cxx
 sw/qa/extras/unowriter/unowriter.cxx
+sw/qa/uibase/dochdl/dochdl.cxx
 sw/qa/uibase/shells/shells.cxx
 sw/source/core/doc/textboxhelper.cxx
 sw/source/filter/html/htmlreqifreader.cxx
