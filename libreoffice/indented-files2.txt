@@ -39,6 +39,7 @@ sw/inc/textboxhelper.hxx
 sw/qa/core/doc/doc.cxx
 sw/qa/core/frmedt/frmedt.cxx
 sw/qa/core/layout/layout.cxx
+sw/qa/core/objectpositioning/objectpositioning.cxx
 sw/qa/core/text/text.cxx
 sw/qa/core/txtnode/txtnode.cxx
 sw/qa/extras/layout/layout.cxx
