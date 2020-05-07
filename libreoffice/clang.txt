@@ -16,6 +16,7 @@ make -C sw -sr -j8 -O gb_SUPPRESS_TESTS=y FORCE_COMPILE_ALL=1 COMPILER_EXTERNAL_
 # Touch the header of the relevant class.
 make check gb_SUPPRESS_TESTS=y COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=clang-rename-wrapper RENAME_ARGS="-input=$HOME/rename.yaml -force"
 clang-apply-replacements -remove-change-desc-files /tmp/rename
+make check gb_SUPPRESS_TESTS=y
 ----
 
 === Finding a class with a known name in a module
