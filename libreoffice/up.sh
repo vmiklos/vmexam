@@ -13,7 +13,8 @@ time (
     rebaseRemote=$(git config libreoffice.rebaseRemote || true)
     git fetch
     if [ -z "$rebaseRemote" ]; then
-        # Optimistic: all changes passed CI anyway.
+        # Optimistic: all changes passed CI anyway, and can go back to the good / old state using
+        # `git reset --hard ORIG_HEAD` in worst case.
         git rebase HEAD@{upstream}
     else
         # Pessimistic: only update once 'make check' already passed in a sandbox locally.
