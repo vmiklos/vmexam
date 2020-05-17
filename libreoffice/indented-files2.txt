@@ -33,6 +33,7 @@ starmath/source/rtfexport.hxx
 starmath/source/unofilter.cxx
 svl/source/items/grabbagitem.cxx
 svtools/qa/unit/testHtmlReader.cxx
+svx/qa/unit/sdr.cxx
 svx/qa/unit/svdraw.cxx
 svx/qa/unit/unodraw.cxx
 sw/inc/textboxhelper.hxx
