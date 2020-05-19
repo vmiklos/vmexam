@@ -30,6 +30,11 @@ oox/qa/unit/drawingml.cxx
 oox/qa/unit/mathml.cxx
 oox/qa/unit/shape.cxx
 oox/qa/unit/vml.cxx
+oox/source/drawingml/customshapepresetdata.cxx
+oox/source/shape/LockedCanvasContext.cxx
+oox/source/shape/LockedCanvasContext.hxx
+oox/source/shape/WpgContext.cxx
+oox/source/shape/WpgContext.hxx
 oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
 starmath/source/rtfexport.cxx
@@ -42,6 +47,7 @@ svtools/qa/unit/testHtmlReader.cxx
 svx/qa/unit/sdr.cxx
 svx/qa/unit/svdraw.cxx
 svx/qa/unit/unodraw.cxx
+svx/qa/unit/xoutdev.cxx
 sw/inc/textboxhelper.hxx
 sw/qa/core/doc/doc.cxx
 sw/qa/core/frmedt/frmedt.cxx
@@ -72,6 +78,9 @@ sw/source/filter/ww8/rtfsdrexport.cxx
 sw/source/filter/ww8/rtfsdrexport.hxx
 sw/source/filter/ww8/rtfstringbuffer.cxx
 sw/source/filter/ww8/rtfstringbuffer.hxx
+sw/source/filter/ww8/sprmids.hxx
+sw/source/uibase/docvw/SidebarScrollBar.cxx
+sw/source/uibase/docvw/SidebarScrollBar.hxx
 vcl/qa/cppunit/gen/gen.cxx
 vcl/source/filter/ipdf/pdfdocument.cxx
 vcl/source/filter/ipdf/pdfread.cxx
@@ -161,12 +170,15 @@ writerperfect/source/writer/exp/xmltbli.cxx
 writerperfect/source/writer/exp/xmltbli.hxx
 writerperfect/source/writer/exp/xmltext.cxx
 writerperfect/source/writer/exp/xmltext.hxx
+xmlsecurity/inc/certificate.hxx
 xmlsecurity/inc/documentsignaturemanager.hxx
 xmlsecurity/inc/pdfio/pdfdocument.hxx
 xmlsecurity/inc/pdfsignaturehelper.hxx
 xmlsecurity/qa/unit/pdfsigning/pdfsigning.cxx
 xmlsecurity/qa/unit/signing/signing.cxx
 xmlsecurity/source/helper/documentsignaturemanager.cxx
+xmlsecurity/source/helper/ooxmlsecexporter.cxx
+xmlsecurity/source/helper/ooxmlsecexporter.hxx
 xmlsecurity/source/helper/pdfsignaturehelper.cxx
 xmlsecurity/source/pdfio/pdfdocument.cxx
 xmlsecurity/workben/pdfverify.cxx
