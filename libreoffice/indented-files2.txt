@@ -11,14 +11,18 @@ connectivity/source/inc/writer/WDatabaseMetaData.hxx
 connectivity/source/inc/writer/WDriver.hxx
 connectivity/source/inc/writer/WTable.hxx
 connectivity/source/inc/writer/WTables.hxx
+cppcanvas/qa/extras/emfplus/emfplus.cxx
 cui/qa/uitest/dialogs/pastedlg.py
 desktop/source/lib/lokclipboard.cxx
 desktop/source/lib/lokclipboard.hxx
+drawinglayer/qa/unit/border.cxx
 embeddedobj/qa/cppunit/general.cxx
 filter/qa/unit/svg.cxx
 filter/qa/unit/textfilterdetect.cxx
 filter/source/msfilter/rtfutil.cxx
+framework/qa/cppunit/dispatchtest.cxx
 i18npool/qa/cppunit/test_defaultnumberingprovider.cxx
+include/comphelper/propertyvalue.hxx
 include/svl/grabbagitem.hxx
 include/vcl/filter/pdfdocument.hxx
 include/vcl/pdfread.hxx
@@ -31,6 +35,8 @@ oox/source/shape/WpsContext.hxx
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
 starmath/source/unofilter.cxx
+starmath/source/wordexportbase.cxx
+starmath/source/wordexportbase.hxx
 svl/source/items/grabbagitem.cxx
 svtools/qa/unit/testHtmlReader.cxx
 svx/qa/unit/sdr.cxx

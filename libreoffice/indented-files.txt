@@ -1,13 +1,8 @@
-cppcanvas/qa/extras/emfplus/emfplus.cxx
-drawinglayer/qa/unit/border.cxx
-framework/qa/cppunit/dispatchtest.cxx
-include/comphelper/propertyvalue.hxx
 oox/source/drawingml/customshapepresetdata.cxx
 oox/source/shape/LockedCanvasContext.cxx
 oox/source/shape/LockedCanvasContext.hxx
 oox/source/shape/WpgContext.cxx
 oox/source/shape/WpgContext.hxx
-starmath/source/wordexportbase.cxx
 svx/qa/unit/xoutdev.cxx
 sw/source/filter/ww8/sprmids.hxx
 sw/source/uibase/docvw/SidebarScrollBar.cxx
