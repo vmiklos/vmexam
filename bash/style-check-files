@@ -12,17 +12,10 @@ if [ "$1" == "--fix" ]; then
 	shift
 fi
 
-for file in $(cat .git/indented-files.cache .git/indented-files2.cache)
+for file in $(cat .git/indented-files2.cache)
 do
 	case $file in
 	*.cxx|*.cpp|*.hxx)
-		if grep -q $file .git/indented-files.cache && ! astyle-check $file; then
-			if [ -n "$fix" ]; then
-				astyle-check --fix $file
-			else
-				exit 1
-			fi
-		fi
 		find-unsorted-includes $file || exit 1
 		# Use css:: instead.
 		grep -H -n using.*com::sun::star:: $file && exit 1

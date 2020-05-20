@@ -31,7 +31,7 @@ def worker(q, failedFiles):
 def tidy(paths):
     headers = []
 
-    fileLists = [".git/indented-files.cache", ".git/indented-files2.cache"]
+    fileLists = [".git/indented-files2.cache"]
     readPaths = False
     if not len(paths):
         readPaths = True

@@ -24,7 +24,7 @@ try:
 except IndexError:
     print("""Example: find-unsorted-includes source/filter/ww8/rtfsdrexport.cxx""")
     # More complex example would be:
-    # 'for i in $(grep cxx$ .git/indented-files.cache|grep -v qa); do ~/git/vmexam/libreoffice/find-unsorted-includes $i; done'
+    # 'for i in $(grep cxx$ .git/indented-files2.cache|grep -v qa); do ~/git/vmexam/libreoffice/find-unsorted-includes $i; done'
     sys.exit(1)
 
 sock = open(srcfile)

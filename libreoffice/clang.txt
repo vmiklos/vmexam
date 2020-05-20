@@ -122,7 +122,7 @@ Core:
 Core:
 
 ----
-bin/find-unneeded-includes $(cat .git/indented-files.cache .git/indented-files2.cache|grep cxx$)
+bin/find-unneeded-includes $(grep cxx$ .git/indented-files2.cache)
 bin/find-unneeded-includes sw/inc/*.hxx
 bin/find-unneeded-includes writerfilter/inc/{dmapper,ooxml,rtftok}/*.hxx
 ----
