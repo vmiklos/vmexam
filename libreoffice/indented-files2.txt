@@ -84,6 +84,8 @@ sw/source/uibase/docvw/SidebarScrollBar.hxx
 vcl/qa/cppunit/gen/gen.cxx
 vcl/source/filter/ipdf/pdfdocument.cxx
 vcl/source/filter/ipdf/pdfread.cxx
+writerfilter/inc/dmapper/DomainMapperFactory.hxx
+writerfilter/inc/dmapper/GraphicZOrderHelper.hxx
 writerfilter/inc/rtftok/RTFDocument.hxx
 writerfilter/qa/cppunittests/dmapper/CellColorHandler.cxx
 writerfilter/qa/cppunittests/dmapper/DomainMapperTableHandler.cxx
@@ -92,8 +94,16 @@ writerfilter/qa/cppunittests/dmapper/GraphicImport.cxx
 writerfilter/qa/cppunittests/dmapper/PropertyMap.cxx
 writerfilter/qa/cppunittests/dmapper/TextEffectsHandler.cxx
 writerfilter/qa/cppunittests/filters-test/filters-test.cxx
+writerfilter/source/dmapper/LatentStyleHandler.cxx
+writerfilter/source/dmapper/LatentStyleHandler.hxx
 writerfilter/source/dmapper/SdtHelper.cxx
 writerfilter/source/dmapper/SdtHelper.hxx
+writerfilter/source/dmapper/SmartTagHandler.cxx
+writerfilter/source/dmapper/SmartTagHandler.hxx
+writerfilter/source/dmapper/TableManager.cxx
+writerfilter/source/dmapper/TablePositionHandler.cxx
+writerfilter/source/dmapper/TablePositionHandler.hxx
+writerfilter/source/dmapper/domainmapperfactory.cxx
 writerfilter/source/filter/RtfFilter.cxx
 writerfilter/source/filter/WriterFilter.cxx
 writerfilter/source/ooxml/factory_ns.py
