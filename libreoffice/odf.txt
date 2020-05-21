@@ -48,4 +48,10 @@
 - Proposal: https://issues.oasis-open.org/browse/OFFICE-4049
 - Status: open
 
+== page-content-bottom vertical relation
+
+- Date: 2020-05-10
+- Proposal: https://issues.oasis-open.org/browse/OFFICE-4073
+- Status: open
+
 // vim: ft=asciidoc
