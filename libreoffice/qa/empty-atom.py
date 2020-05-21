@@ -7,7 +7,6 @@
 
 from xml.dom import minidom
 import os
-import sys
 import unittest
 
 

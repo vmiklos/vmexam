@@ -7,7 +7,7 @@ PYTHON_FILES = \
 	       qa/empty-atom.py
 
 check: download
-	pycodestyle $(PYTHON_FILES)
+	flake8 $(PYTHON_FILES)
 	TDOC="workdir/regressions-blame-$(NAME).atom" qa/empty-atom.py
 
 download:
