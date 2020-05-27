@@ -1,0 +1,8 @@
+Generic:
+
+- howto: https://blog.stephenmarz.com/2020/05/20/assemblys-perspective/ (assuming you know C)
+
+x86_64:
+
+- cheatsheet: https://cs.brown.edu/courses/cs033/docs/guides/x64_cheatsheet.pdf
+- sp has to be aligned to 16 bytes: https://stackoverflow.com/questions/41912684/what-is-the-purpose-of-the-rbp-register-in-x86-64-assembler
