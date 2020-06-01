@@ -14,12 +14,12 @@ sock = urllib.request.urlopen('https://api.github.com/users/%s/repos?per_page=10
 repos = json.loads(sock.read().decode('utf-8'))
 for i in repos:
     if os.path.exists("%s.git" % i['name']):
-        system("echo Updating existing repo %s" % i['name'])
+        # Update existing repo
         os.chdir("%s.git" % i['name'])
         system("git fetch -q origin && git remote prune origin")
         os.chdir("..")
     else:
-        system("echo Mirroring new repo %s" % i['name'])
+        # Mirror new repo
         system("git clone --mirror %s" % i['git_url'])
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
