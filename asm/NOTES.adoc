@@ -6,3 +6,8 @@ x86_64:
 
 - cheatsheet: https://cs.brown.edu/courses/cs033/docs/guides/x64_cheatsheet.pdf
 - sp has to be aligned to 16 bytes: https://stackoverflow.com/questions/41912684/what-is-the-purpose-of-the-rbp-register-in-x86-64-assembler
+
+aarch64:
+
+- guide: https://modexp.wordpress.com/2018/10/30/arm64-assembly/
+- relocations: http://www.rowleydownload.co.uk/arm/documentation/gnu/as/AArch64_002dRelocations.html
