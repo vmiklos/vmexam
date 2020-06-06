@@ -81,7 +81,7 @@ def main(argv):
     xmlPersons = {}
     count = 0
     while True:
-        print("Downloading page #" + str(count) + "...")
+        # print("Downloading page #" + str(count) + "...")
         people_result = service.people().connections().list(resourceName='people/me', personFields=personFields, pageToken=pageToken).execute()
         connections = people_result.get('connections', [])
         for person in connections:
