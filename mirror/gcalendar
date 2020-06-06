@@ -16,6 +16,6 @@ fi
 
 cp ~/.google-calendar/calendar.json .
 
-git add calendar.json && git commit -m "$(date +%Y-%m-%d)"
+git add calendar.json && git commit --quiet -m "$(date +%Y-%m-%d)"
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:

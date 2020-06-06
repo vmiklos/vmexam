@@ -16,6 +16,6 @@ fi
 
 cp ~/.google-contacts/contacts.json .
 
-git add contacts.json && git commit -m "$(date +%Y-%m-%d)"
+git add contacts.json && git commit --quiet -m "$(date +%Y-%m-%d)"
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
