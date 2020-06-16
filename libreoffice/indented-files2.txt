@@ -38,6 +38,7 @@ oox/source/shape/WpgContext.cxx
 oox/source/shape/WpgContext.hxx
 oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
+sfx2/qa/uitest/doc/objserv.py
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
 starmath/source/unofilter.cxx
