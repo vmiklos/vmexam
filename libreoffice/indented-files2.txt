@@ -26,6 +26,7 @@ include/comphelper/propertyvalue.hxx
 include/svl/grabbagitem.hxx
 include/svx/signaturelinehelper.hxx
 include/vcl/filter/pdfdocument.hxx
+include/vcl/filter/pdfobjectcontainer.hxx
 include/vcl/pdfread.hxx
 oox/qa/unit/drawingml.cxx
 oox/qa/unit/mathml.cxx
@@ -84,9 +85,11 @@ sw/source/filter/ww8/rtfstringbuffer.hxx
 sw/source/filter/ww8/sprmids.hxx
 sw/source/uibase/docvw/SidebarScrollBar.cxx
 sw/source/uibase/docvw/SidebarScrollBar.hxx
+vcl/inc/pdf/objectcopier.hxx
 vcl/qa/cppunit/gen/gen.cxx
 vcl/source/filter/ipdf/pdfdocument.cxx
 vcl/source/filter/ipdf/pdfread.cxx
+vcl/source/gdi/pdfobjectcopier.cxx
 writerfilter/inc/dmapper/DomainMapperFactory.hxx
 writerfilter/inc/dmapper/GraphicZOrderHelper.hxx
 writerfilter/inc/rtftok/RTFDocument.hxx
