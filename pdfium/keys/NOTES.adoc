@@ -1,0 +1,4 @@
+Authority certificate is at: <ca-chain.cert.pem>.
+To be able to import it in Windows, rename the '.pem' extension to '.cer'.
+Signing certificate is at <example-pdfium-Alice.cert.p12>.
+Signing certificate is at <example-pdfium-Bob.cert.p12>.

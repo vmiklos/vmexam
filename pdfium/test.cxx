@@ -155,7 +155,6 @@ void testRoundtrip()
 
     FPDF_DestroyLibrary();
 }
-#endif
 
 void testTdf108963()
 {
@@ -204,14 +203,41 @@ void testTdf108963()
 
     FPDF_DestroyLibrary();
 }
+#endif
+
+void testSignatures()
+{
+    FPDF_LIBRARY_CONFIG config;
+    config.version = 2;
+    config.m_pUserFontPaths = nullptr;
+    config.m_pIsolate = nullptr;
+    config.m_v8EmbedderSlot = 0;
+    FPDF_InitLibraryWithConfig(&config);
+
+    std::ifstream testFile("2sig.pdf", std::ios::binary);
+    std::vector<char> fileContents((std::istreambuf_iterator<char>(testFile)),
+                                   std::istreambuf_iterator<char>());
+    FPDF_DOCUMENT document = FPDF_LoadMemDocument(
+        fileContents.data(), fileContents.size(), /*password=*/nullptr);
+    assert(document);
+
+    int signatureCount = FPDF_GetSignatureCount(document);
+    std::cerr << "debug, signatureCount is " << signatureCount << std::endl;
+
+    FPDF_CloseDocument(document);
+
+    FPDF_DestroyLibrary();
+}
+
 int main()
 {
 #if 0
     testTdf106059();
     testTdf105461();
     testRoundtrip();
-#endif
     testTdf108963();
+#endif
+    testSignatures();
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
