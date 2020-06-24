@@ -46,6 +46,20 @@ cd workdir
 ninja -t compdb cc cxx >../compile_commands.json
 ----
 
+IWYU:
+
+----
+sed -i 's|-Xclang -debug-info-kind=constructor ||' compile_commands.json
+sed -i 's|-Wno-non-c-typedef-for-linkage ||' compile_commands.json
+sed -i 's|-Wmax-tokens ||' compile_commands.json
+sed -i 's|-Xclang -add-plugin -Xclang find-bad-constructs -Xclang -plugin-arg-find-bad-constructs -Xclang check-ipc ||' compile_commands.json
+~/git/include-what-you-use/iwyu_tool.py -p . fpdfsdk/fpdf_signature_embeddertest.cpp
+----
+
+== signature API:
+
+- https://pdfium-review.googlesource.com/c/pdfium/+/70830 Add FPDF_GetSignatureCount() API
+
 == path API
 
 - first goal: expose # of points in a path -> patch is at https://pdfium-review.googlesource.com/c/pdfium/+/13592

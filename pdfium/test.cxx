@@ -6,6 +6,7 @@
 
 #include <fpdf_edit.h>
 #include <fpdf_save.h>
+#include <fpdf_signature.h>
 #include <fpdfview.h>
 
 #if 0
