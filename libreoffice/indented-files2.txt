@@ -23,6 +23,7 @@ filter/source/msfilter/rtfutil.cxx
 framework/qa/cppunit/dispatchtest.cxx
 i18npool/qa/cppunit/test_defaultnumberingprovider.cxx
 include/comphelper/propertyvalue.hxx
+include/sfx2/digitalsignatures.hxx
 include/svl/grabbagitem.hxx
 include/svx/signaturelinehelper.hxx
 include/vcl/filter/pdfdocument.hxx
