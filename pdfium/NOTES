@@ -56,9 +56,23 @@ sed -i 's|-Xclang -add-plugin -Xclang find-bad-constructs -Xclang -plugin-arg-fi
 ~/git/include-what-you-use/iwyu_tool.py -p . fpdfsdk/fpdf_signature_embeddertest.cpp
 ----
 
+vim:
+
+----
+:set shiftwidth=2
+:set softtabstop=2
+:set expandtab
+:set textwidth=80
+----
+
 == signature API:
 
 - https://pdfium-review.googlesource.com/c/pdfium/+/70830 Add FPDF_GetSignatureCount() API
+
+----
+./testing/tools/fixup_pdf_template.py testing/resources/two_signatures.in
+workdir/pdfium_embeddertests --gtest_filter=FPDFSignatureEmbedderTest.*
+----
 
 == path API
 
