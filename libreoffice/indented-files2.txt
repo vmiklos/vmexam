@@ -87,6 +87,7 @@ sw/source/filter/ww8/sprmids.hxx
 sw/source/uibase/docvw/SidebarScrollBar.cxx
 sw/source/uibase/docvw/SidebarScrollBar.hxx
 vcl/inc/pdf/objectcopier.hxx
+vcl/qa/cppunit/filter/ipdf/ipdf.cxx
 vcl/qa/cppunit/gen/gen.cxx
 vcl/source/filter/ipdf/pdfdocument.cxx
 vcl/source/filter/ipdf/pdfread.cxx
