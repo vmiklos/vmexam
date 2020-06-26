@@ -26,7 +26,12 @@ int main(int argc, char* argv[])
     assert(document);
 
     int signatureCount = FPDF_GetSignatureCount(document);
-    std::cerr << "debug, signatureCount is " << signatureCount << std::endl;
+    for (int i = 0; i < signatureCount; ++i)
+    {
+        std::cerr << "Signature #" << i << ":" << std::endl;
+        std::cerr << "debug, signature is "
+                  << FPDF_GetSignatureObject(document, i) << std::endl;
+    }
 
     FPDF_CloseDocument(document);
 
