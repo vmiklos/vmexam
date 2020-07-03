@@ -7,7 +7,7 @@ PDFIUM_LIBS := -Wl,--start-group \
 	-Wl,--end-group  -ldl -lrt -lfreetype -pthread
 
 pdfiumsig: pdfiumsig.o Makefile
-	clang++ -std=c++11 -g -o pdfiumsig pdfiumsig.o ${PDFIUM_LIBS}
+	clang++ -std=c++14 -g -o pdfiumsig pdfiumsig.o ${PDFIUM_LIBS}
 
 pdfiumsig.o: pdfiumsig.cxx Makefile
-	clang++ -std=c++11 -g -c -o pdfiumsig.o ${PDFIUM_CFLAGS} pdfiumsig.cxx
+	clang++ -std=c++14 -g -c -o pdfiumsig.o ${PDFIUM_CFLAGS} pdfiumsig.cxx
