@@ -6,8 +6,11 @@ PDFIUM_LIBS := -Wl,--start-group \
 	${LIBCXX} \
 	-Wl,--end-group  -ldl -lrt -lfreetype -pthread
 
+NSS_CFLAGS := $(shell pkg-config --cflags nss)
+NSS_LIBS := $(shell pkg-config --libs nss)
+
 pdfiumsig: pdfiumsig.o Makefile
-	clang++ -std=c++14 -g -o pdfiumsig pdfiumsig.o ${PDFIUM_LIBS}
+	clang++ -std=c++14 -g -o pdfiumsig pdfiumsig.o ${PDFIUM_LIBS} ${NSS_LIBS}
 
 pdfiumsig.o: pdfiumsig.cxx Makefile
-	clang++ -std=c++14 -g -c -o pdfiumsig.o ${PDFIUM_CFLAGS} pdfiumsig.cxx
+	clang++ -std=c++14 -g -c -o pdfiumsig.o ${PDFIUM_CFLAGS} ${NSS_CFLAGS} pdfiumsig.cxx
