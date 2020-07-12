@@ -1,14 +1,13 @@
 #include <cassert>
 #include <fstream>
-#include <iomanip>
 #include <iostream>
 #include <iterator>
 #include <vector>
 
-#include <fpdf_edit.h>
-#include <fpdf_save.h>
 #include <fpdf_signature.h>
 #include <fpdfview.h>
+
+#include "public/cpp/fpdf_scopers.h"
 
 #include <cert.h>
 #include <cms.h>
@@ -31,14 +30,23 @@ template <> struct default_delete<CERTCertificate>
 };
 } // namespace std
 
-class CryptoNss
+class Crypto
 {
   public:
-    CryptoNss();
-    ~CryptoNss();
+    Crypto();
+    ~Crypto();
+    /**
+     * Validates if `signature` is a proper signature of `bytes`. This only
+     * focuses on if the digest matches or not, ignoring cert validation. Not
+     * specific to PDF in any way.
+     *
+     * The flow is: message -> contentInfo -> signedData -> signerInfo
+     */
+    void validateBytes(const std::vector<unsigned char>& bytes,
+                       const std::vector<unsigned char>& signature);
 };
 
-CryptoNss::CryptoNss()
+Crypto::Crypto()
 {
     SECStatus ret = NSS_NoDB_Init(nullptr);
     if (ret != SECSuccess)
@@ -47,7 +55,7 @@ CryptoNss::CryptoNss()
     }
 }
 
-CryptoNss::~CryptoNss()
+Crypto::~Crypto()
 {
     SECStatus ret = NSS_Shutdown();
     if (ret != SECSuccess)
@@ -56,21 +64,8 @@ CryptoNss::~CryptoNss()
     }
 }
 
-struct ByteRange
-{
-    size_t offset;
-    size_t length;
-};
-
-/**
- * Validates if `signature` is a proper signature of `bytes`. This only focuses
- * on if the digest matches or not, ignoring cert validation. Not specific to
- * PDF in any way.
- *
- * The flow is: message -> contentInfo -> signedData -> signerInfo
- */
-void validateBytes(const std::vector<unsigned char>& bytes,
-                   const std::vector<unsigned char>& signature)
+void Crypto::validateBytes(const std::vector<unsigned char>& bytes,
+                           const std::vector<unsigned char>& signature)
 {
     SECItem signatureItem;
     signatureItem.data = const_cast<unsigned char*>(signature.data());
@@ -129,17 +124,6 @@ void validateBytes(const std::vector<unsigned char>& bytes,
 
     HASH_Update(hashContext.get(), bytes.data(), bytes.size());
 
-    size_t hashLength = 0;
-    switch (algOid)
-    {
-    case SEC_OID_SHA1:
-        hashLength = 20;
-        break;
-    default:
-        std::cerr << "warning, unhandled hash alg" << std::endl;
-        return;
-    }
-
     NSSCMSSignerInfo* signerInfo =
         NSS_CMSSignedData_GetSignerInfo(signedData, 0);
     if (!signerInfo)
@@ -149,9 +133,10 @@ void validateBytes(const std::vector<unsigned char>& bytes,
         return;
     }
 
-    std::vector<unsigned char> hash(hashLength);
+    std::vector<unsigned char> hash(HASH_ResultLenContext(hashContext.get()));
     unsigned int actualHashLength;
-    HASH_End(hashContext.get(), hash.data(), &actualHashLength, hashLength);
+    HASH_End(hashContext.get(), hash.data(), &actualHashLength,
+             HASH_ResultLenContext(hashContext.get()));
     // Need to call this manually, so that signerinfo->cert gets set. Otherwise
     // NSS_CMSSignerInfo_Verify() will call
     // NSS_CMSSignerInfo_GetSigningCertificate() with certdb=nullptr, which
@@ -174,11 +159,17 @@ void validateBytes(const std::vector<unsigned char>& bytes,
     std::cerr << "  - Signature Verification: digest matches" << std::endl;
 }
 
+struct ByteRange
+{
+    size_t offset;
+    size_t length;
+};
+
 void validateByteRanges(const std::vector<unsigned char>& bytes,
                         const std::vector<ByteRange>& byteRanges,
                         const std::vector<unsigned char>& signature)
 {
-    CryptoNss crypto;
+    Crypto crypto;
     std::vector<unsigned char> buffer;
     for (const auto& byteRange : byteRanges)
     {
@@ -188,7 +179,7 @@ void validateByteRanges(const std::vector<unsigned char>& bytes,
                byteRange.length);
     }
 
-    validateBytes(buffer, signature);
+    crypto.validateBytes(buffer, signature);
 }
 
 void validateSignature(const std::vector<unsigned char>& bytes,
@@ -258,18 +249,19 @@ int main(int argc, char* argv[])
     std::vector<unsigned char> fileContents(
         (std::istreambuf_iterator<char>(testFile)),
         std::istreambuf_iterator<char>());
-    FPDF_DOCUMENT document = FPDF_LoadMemDocument(
-        fileContents.data(), fileContents.size(), /*password=*/nullptr);
-    assert(document);
-
-    int signatureCount = FPDF_GetSignatureCount(document);
-    for (int i = 0; i < signatureCount; ++i)
     {
-        FPDF_SIGNATURE signature = FPDF_GetSignatureObject(document, i);
-        validateSignature(fileContents, signature, i);
-    }
+        ScopedFPDFDocument document(FPDF_LoadMemDocument(
+            fileContents.data(), fileContents.size(), /*password=*/nullptr));
+        assert(document);
 
-    FPDF_CloseDocument(document);
+        int signatureCount = FPDF_GetSignatureCount(document.get());
+        for (int i = 0; i < signatureCount; ++i)
+        {
+            FPDF_SIGNATURE signature =
+                FPDF_GetSignatureObject(document.get(), i);
+            validateSignature(fileContents, signature, i);
+        }
+    }
 
     FPDF_DestroyLibrary();
 }
