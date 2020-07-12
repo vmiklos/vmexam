@@ -4,7 +4,6 @@ connectivity/source/drivers/writer/WDatabaseMetaData.cxx
 connectivity/source/drivers/writer/WDriver.cxx
 connectivity/source/drivers/writer/WTable.cxx
 connectivity/source/drivers/writer/WTables.cxx
-connectivity/source/drivers/writer/Wservices.cxx
 connectivity/source/inc/writer/WCatalog.hxx
 connectivity/source/inc/writer/WConnection.hxx
 connectivity/source/inc/writer/WDatabaseMetaData.hxx
