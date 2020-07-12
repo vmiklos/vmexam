@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#
+# Copyright 2020 Miklos Vajna. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+
+#
+# Copy exported keypad mapper traces from phone (in a termux session) to my NAS.
+#
+
+year="$(date +%Y)"
+cd storage/shared/Documents/
+scp ${year}* vmiklos@plug.vmiklos.hu:feltoltes/
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
