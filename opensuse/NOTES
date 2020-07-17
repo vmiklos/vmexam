@@ -206,4 +206,11 @@ kstart plasmashell #to restart it
 - STL container pretty-printers do not work by default in gdb anymore:
   - can be fixed with: 'zypper in libstdc++6-devel-gcc8'
 
+=== openSUSE Leap 15.1 -> openSUSE Leap 15.2 (x86_64)
+
+- the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (sed the config, zypper ref, zypper dup)
+- the usual fix with html5 video codecs in firefox/chromium: https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support
+- my LANG=hu_HU.UTF-8 + LC_MESSAGES=C setup broke, had to restore the lost LANG part in KDE
+- https://www.phoronix.com/scan.php?page=news_item&px=KDE-Plasma-5.18-Emojis windows + '.' now allows inserting turtles...
+
 // vim: ft=asciidoc paste
