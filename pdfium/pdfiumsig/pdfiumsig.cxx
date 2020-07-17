@@ -14,10 +14,6 @@
 #include <nss.h>
 #include <sechash.h>
 
-#include "core/fpdfapi/parser/cpdf_array.h"
-#include "core/fpdfapi/parser/cpdf_dictionary.h"
-#include "fpdfsdk/cpdfsdk_helpers.h"
-
 namespace std
 {
 template <> struct default_delete<HASHContext>
@@ -190,22 +186,22 @@ void validateSignature(const std::vector<unsigned char>& bytes,
     std::vector<unsigned char> contents(contentsLen);
     FPDFSignatureObj_GetContents(signature, contents.data(), contents.size());
 
-    CPDF_Dictionary* signatureDict = CPDFDictionaryFromFPDFSignature(signature);
-    CPDF_Dictionary* valueDict = signatureDict->GetDictFor("V");
-    const CPDF_Array* byteRangeArray = valueDict->GetArrayFor("ByteRange");
+    int byteRangeLen = FPDFSignatureObj_GetByteRange(signature, nullptr, 0);
+    std::vector<unsigned long> byteRange(byteRangeLen);
+    FPDFSignatureObj_GetByteRange(signature, byteRange.data(),
+                                  byteRange.size());
 
     std::vector<ByteRange> byteRanges;
     size_t byteRangeOffset = 0;
-    for (size_t i = 0; i < byteRangeArray->size(); ++i)
+    for (size_t i = 0; i < byteRange.size(); ++i)
     {
-        float number = byteRangeArray->GetNumberAt(i);
         if (i % 2 == 0)
         {
-            byteRangeOffset = number;
+            byteRangeOffset = byteRange[i];
             continue;
         }
 
-        size_t byteRangeLength = number;
+        size_t byteRangeLength = byteRange[i];
         byteRanges.push_back({byteRangeOffset, byteRangeLength});
     }
 
