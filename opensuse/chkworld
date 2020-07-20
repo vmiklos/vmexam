@@ -7,7 +7,7 @@ import sys
 
 up2dates = {
     "lcov": "lynx -dump http://ltp.sourceforge.net/coverage/lcov.php|grep lcov-.*tar.gz$ |sed -e 's|.*lcov-||;s|.tar.gz.*||;q'|sed 's/1.14/1.15+git.20190524.75fbae1/'",
-    "foo2zjs": "lynx -source -dump http://foo2zjs.rkkda.com/Changelog|head -n 1|sed 's/-/_/g;s/:.*//'",
+    "foo2zjs": "lynx -source -dump http://foo2zjs.rkkda.com/Changelog|head -n 1|sed 's/-/_/g;s/\t.*//'",
     # just check that we're packaging the latest commit
     "gtimelog": "[ $(git ls-remote https://gitlab.collabora.com/collabora/gtimelog.git |grep master|cut -c 1-7) == 'd430c41' ] && echo 0.6.0",
 }
