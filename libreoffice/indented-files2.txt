@@ -102,6 +102,7 @@ writerfilter/qa/cppunittests/dmapper/GraphicImport.cxx
 writerfilter/qa/cppunittests/dmapper/PropertyMap.cxx
 writerfilter/qa/cppunittests/dmapper/TextEffectsHandler.cxx
 writerfilter/qa/cppunittests/filters-test/filters-test.cxx
+writerfilter/qa/cppunittests/rtftok/rtfsdrimport.cxx
 writerfilter/source/dmapper/LatentStyleHandler.cxx
 writerfilter/source/dmapper/LatentStyleHandler.hxx
 writerfilter/source/dmapper/SdtHelper.cxx
