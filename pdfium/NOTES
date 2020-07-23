@@ -79,6 +79,12 @@ workdir/pdfium_embeddertests --gtest_filter=FPDFSignatureEmbedderTest.*
   - snake_case for variable names, but kFooBar for constants, see
     <https://google.github.io/styleguide/cppguide.html#General_Naming_Rules>
 
+- pdfiumsig incremental development:
+
+----
+touch Makefile && make && (./pdfiumsig good.pdf; ./pdfiumsig bad.pdf)
+----
+
 == path API
 
 - first goal: expose # of points in a path -> patch is at https://pdfium-review.googlesource.com/c/pdfium/+/13592

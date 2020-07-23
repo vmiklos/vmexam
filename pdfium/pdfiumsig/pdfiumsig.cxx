@@ -29,6 +29,12 @@ template <> struct default_delete<CERTCertificate>
 class Crypto
 {
   public:
+    enum class ValidationStatus
+    {
+        SUCCESS,
+        FAILURE,
+    };
+
     Crypto();
     ~Crypto();
     /**
@@ -38,8 +44,9 @@ class Crypto
      *
      * The flow is: message -> contentInfo -> signedData -> signerInfo
      */
-    void validateBytes(const std::vector<unsigned char>& bytes,
-                       const std::vector<unsigned char>& signature);
+    bool validateBytes(const std::vector<unsigned char>& bytes,
+                       const std::vector<unsigned char>& signature,
+                       ValidationStatus& status);
 };
 
 Crypto::Crypto()
@@ -60,8 +67,9 @@ Crypto::~Crypto()
     }
 }
 
-void Crypto::validateBytes(const std::vector<unsigned char>& bytes,
-                           const std::vector<unsigned char>& signature)
+bool Crypto::validateBytes(const std::vector<unsigned char>& bytes,
+                           const std::vector<unsigned char>& signature,
+                           ValidationStatus& status)
 {
     SECItem signatureItem;
     signatureItem.data = const_cast<unsigned char*>(signature.data());
@@ -78,7 +86,7 @@ void Crypto::validateBytes(const std::vector<unsigned char>& bytes,
     if (!NSS_CMSMessage_IsSigned(message))
     {
         std::cerr << "warning, NSS_CMSMessage_IsSigned() failed" << std::endl;
-        return;
+        return false;
     }
 
     NSSCMSContentInfo* contentInfo =
@@ -87,7 +95,7 @@ void Crypto::validateBytes(const std::vector<unsigned char>& bytes,
     {
         std::cerr << "warning, NSS_CMSMessage_ContentLevel() failed"
                   << std::endl;
-        return;
+        return false;
     }
 
     auto signedData = static_cast<NSSCMSSignedData*>(
@@ -96,7 +104,7 @@ void Crypto::validateBytes(const std::vector<unsigned char>& bytes,
     {
         std::cerr << "warning, NSS_CMSContentInfo_GetContent() failed"
                   << std::endl;
-        return;
+        return false;
     }
 
     std::vector<std::unique_ptr<CERTCertificate>> messageCertificates;
@@ -115,7 +123,7 @@ void Crypto::validateBytes(const std::vector<unsigned char>& bytes,
     if (!hashContext)
     {
         std::cerr << "warning, HASH_Create() failed" << std::endl;
-        return;
+        return false;
     }
 
     HASH_Update(hashContext.get(), bytes.data(), bytes.size());
@@ -126,7 +134,7 @@ void Crypto::validateBytes(const std::vector<unsigned char>& bytes,
     {
         std::cerr << "warning, NSS_CMSSignedData_GetSignerInfo() failed"
                   << std::endl;
-        return;
+        return false;
     }
 
     std::vector<unsigned char> hash(HASH_ResultLenContext(hashContext.get()));
@@ -148,11 +156,11 @@ void Crypto::validateBytes(const std::vector<unsigned char>& bytes,
                                              /*contentType=*/nullptr);
     if (ret != SECSuccess)
     {
-        std::cerr << "  - Signature Verification: digest does not match"
-                  << std::endl;
-        return;
+        status = ValidationStatus::FAILURE;
+        return true;
     }
-    std::cerr << "  - Signature Verification: digest matches" << std::endl;
+    status = ValidationStatus::SUCCESS;
+    return true;
 }
 
 struct ByteRange
@@ -175,7 +183,21 @@ void validateByteRanges(const std::vector<unsigned char>& bytes,
                byteRange.length);
     }
 
-    crypto.validateBytes(buffer, signature);
+    Crypto::ValidationStatus status{};
+    if (!crypto.validateBytes(buffer, signature, status))
+    {
+        std::cerr << "warning, failed to determine digest match" << std::endl;
+        return;
+    }
+
+    if (status == Crypto::ValidationStatus::FAILURE)
+    {
+        std::cerr << "  - Signature Verification: digest does not match"
+                  << std::endl;
+        return;
+    }
+
+    std::cerr << "  - Signature Verification: digest matches" << std::endl;
 }
 
 void validateSignature(const std::vector<unsigned char>& bytes,
@@ -187,7 +209,7 @@ void validateSignature(const std::vector<unsigned char>& bytes,
     FPDFSignatureObj_GetContents(signature, contents.data(), contents.size());
 
     int byteRangeLen = FPDFSignatureObj_GetByteRange(signature, nullptr, 0);
-    std::vector<unsigned long> byteRange(byteRangeLen);
+    std::vector<int> byteRange(byteRangeLen);
     FPDFSignatureObj_GetByteRange(signature, byteRange.data(),
                                   byteRange.size());
 
@@ -205,7 +227,22 @@ void validateSignature(const std::vector<unsigned char>& bytes,
         byteRanges.push_back({byteRangeOffset, byteRangeLength});
     }
 
+    int subFilterLen = FPDFSignatureObj_GetSubFilter(signature, nullptr, 0);
+    std::vector<char> subFilterBuf(subFilterLen);
+    FPDFSignatureObj_GetSubFilter(signature, subFilterBuf.data(),
+                                  subFilterBuf.size());
+    // Buffer is NUL-terminated.
+    std::string subFilter(subFilterBuf.data(), subFilterBuf.size() - 1);
+
     // Sanity checks.
+    if (subFilter != "adbe.pkcs7.detached" &&
+        subFilter != "ETSI.CAdES.detached")
+    {
+        std::cerr << "warning, unexpected sub-filter: '" << subFilter << "'"
+                  << std::endl;
+        return;
+    }
+
     if (byteRanges.size() < 2)
     {
         std::cerr << "warning, expected 2 byte ranges" << std::endl;
