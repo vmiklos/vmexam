@@ -53,6 +53,7 @@ svx/qa/unit/unodraw.cxx
 svx/qa/unit/xoutdev.cxx
 svx/source/dialog/signaturelinehelper.cxx
 sw/inc/textboxhelper.hxx
+sw/qa/core/crsr/crsr.cxx
 sw/qa/core/doc/doc.cxx
 sw/qa/core/frmedt/frmedt.cxx
 sw/qa/core/layout/layout.cxx
