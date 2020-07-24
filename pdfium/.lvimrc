@@ -1,0 +1,5 @@
+if g:localvimrc_sourced_once_for_file
+    finish
+endif
+
+set shiftwidth=2 softtabstop=2 expandtab
