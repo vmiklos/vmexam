@@ -33,6 +33,8 @@ oox/qa/unit/mathml.cxx
 oox/qa/unit/shape.cxx
 oox/qa/unit/vml.cxx
 oox/source/drawingml/customshapepresetdata.cxx
+oox/source/drawingml/diagram/rulelistcontext.cxx
+oox/source/drawingml/diagram/rulelistcontext.hxx
 oox/source/shape/LockedCanvasContext.cxx
 oox/source/shape/LockedCanvasContext.hxx
 oox/source/shape/WpgContext.cxx
