@@ -1,7 +1,9 @@
 #include <cassert>
+#include <codecvt>
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <locale>
 #include <vector>
 
 #include <fpdf_signature.h>
@@ -264,6 +266,18 @@ void validateSignature(const std::vector<unsigned char>& bytes,
             << "warning, second range start is not the end of the signature"
             << std::endl;
         return;
+    }
+
+    int reasonLen = FPDFSignatureObj_GetReason(signature, nullptr, 0);
+    if (reasonLen > 0)
+    {
+        std::vector<char16_t> reasonBuf(reasonLen);
+        FPDFSignatureObj_GetReason(signature, reasonBuf.data(),
+                                   reasonBuf.size());
+        std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>
+            conversion;
+        std::string reason = conversion.to_bytes(reasonBuf.data());
+        std::cerr << "  - Signature Reason: " << reason << std::endl;
     }
 
     validateByteRanges(bytes, byteRanges, contents);

@@ -82,7 +82,7 @@ workdir/pdfium_embeddertests --gtest_filter=FPDFSignatureEmbedderTest.*
 - pdfiumsig incremental development:
 
 ----
-touch Makefile && make && (./pdfiumsig good.pdf; ./pdfiumsig bad.pdf)
+touch Makefile && make && (./pdfiumsig good.pdf; ./pdfiumsig bad.pdf; ./pdfiumsig reason.pdf)
 ----
 
 == path API
