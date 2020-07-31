@@ -71,6 +71,7 @@ sw/qa/extras/unowriter/unowriter.cxx
 sw/qa/uibase/dochdl/dochdl.cxx
 sw/qa/uibase/frmdlg/frmdlg.cxx
 sw/qa/uibase/shells/shells.cxx
+sw/qa/unit/swmodeltestbase.cxx
 sw/source/core/doc/textboxhelper.cxx
 sw/source/filter/html/htmlreqifreader.cxx
 sw/source/filter/html/htmlreqifreader.hxx
