@@ -280,6 +280,14 @@ void validateSignature(const std::vector<unsigned char>& bytes,
         std::cerr << "  - Signature Reason: " << reason << std::endl;
     }
 
+    int timeLen = FPDFSignatureObj_GetTime(signature, nullptr, 0);
+    if (timeLen > 0)
+    {
+        std::vector<char> timeBuf(timeLen);
+        FPDFSignatureObj_GetTime(signature, timeBuf.data(), timeBuf.size());
+        std::cerr << "  - Signature Time: " << timeBuf.data() << std::endl;
+    }
+
     validateByteRanges(bytes, byteRanges, contents);
 }
 
