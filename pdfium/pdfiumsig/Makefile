@@ -12,5 +12,5 @@ NSS_LIBS := $(shell pkg-config --libs nss)
 pdfiumsig: pdfiumsig.o Makefile
 	clang++ -std=c++14 -g -o pdfiumsig pdfiumsig.o ${PDFIUM_LIBS} ${NSS_LIBS}
 
-pdfiumsig.o: pdfiumsig.cxx Makefile
-	clang++ -std=c++14 -g -c -o pdfiumsig.o ${PDFIUM_CFLAGS} ${NSS_CFLAGS} pdfiumsig.cxx
+pdfiumsig.o: pdfiumsig.cpp Makefile
+	clang++ -std=c++14 -g -c -o pdfiumsig.o ${PDFIUM_CFLAGS} ${NSS_CFLAGS} pdfiumsig.cpp
