@@ -133,7 +133,7 @@ bool Crypto::validateBytes(const std::vector<unsigned char>& bytes,
   unsigned int actual_hash_length;
   HASH_End(hash_context.get(), hash.data(), &actual_hash_length,
            HASH_ResultLenContext(hash_context.get()));
-  // Need to call this manually, so that signerinfo->cert gets set. Otherwise
+  // Need to call this manually, so that signer_info->cert gets set. Otherwise
   // NSS_CMSSignerInfo_Verify() will call
   // NSS_CMSSignerInfo_GetSigningCertificate() with certdb=nullptr, which
   // won't find the certificate.
