@@ -10,8 +10,8 @@ time (
         -DCMAKE_BUILD_TYPE=Release \
         -DLLVM_ENABLE_ASSERTIONS=ON \
         -DLLVM_ENABLE_SPHINX=ON \
-        -DCMAKE_C_COMPILER="clang" \
-        -DCMAKE_CXX_COMPILER="clang++" \
+        -DCMAKE_C_COMPILER="gcc" \
+        -DCMAKE_CXX_COMPILER="g++" \
         -DLLVM_ENABLE_PROJECTS="compiler-rt;clang;clang-tools-extra" \
         ../llvm
     make -j8
