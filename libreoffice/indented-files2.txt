@@ -62,6 +62,7 @@ sw/qa/core/layout/layout.cxx
 sw/qa/core/objectpositioning/objectpositioning.cxx
 sw/qa/core/text/text.cxx
 sw/qa/core/txtnode/txtnode.cxx
+sw/qa/core/undo/undo.cxx
 sw/qa/core/unocore/unocore.cxx
 sw/qa/extras/layout/layout.cxx
 sw/qa/extras/rtfexport/rtfexport.cxx
@@ -194,6 +195,7 @@ writerperfect/source/writer/exp/xmltbli.cxx
 writerperfect/source/writer/exp/xmltbli.hxx
 writerperfect/source/writer/exp/xmltext.cxx
 writerperfect/source/writer/exp/xmltext.hxx
+xmloff/qa/unit/draw.cxx
 xmloff/qa/unit/style.cxx
 xmloff/qa/unit/text.cxx
 xmlsecurity/inc/certificate.hxx
