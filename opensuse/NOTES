@@ -215,4 +215,8 @@ kstart plasmashell #to restart it
   - ctrl-shift-left/right also broke (no longer moves the current tab left/right), can be fixed at the same place
 - https://www.phoronix.com/scan.php?page=news_item&px=KDE-Plasma-5.18-Emojis windows + '.' now allows inserting turtles...
 
+=== openSUSE Leap 15.1 -> openSUSE Leap 15.2 (aarch64)
+
+- the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (zypper --releasever=15.2 ref, zypper --releasever=15.2 dup)
+
 // vim: ft=asciidoc paste
