@@ -286,6 +286,14 @@ int main(int argc, char* argv[]) {
       FPDF_SIGNATURE signature = FPDF_GetSignatureObject(document.get(), i);
       validateSignature(file_contents, signature, i);
     }
+
+    int num_trailers = FPDF_GetTrailerEnds(document.get(), nullptr, 0);
+    std::vector<unsigned int> trailer_ends(num_trailers);
+    FPDF_GetTrailerEnds(document.get(), trailer_ends.data(),
+                        trailer_ends.size());
+    std::cerr << "Trailer end offsets:" << std::endl;
+    for (auto end : trailer_ends)
+      std::cerr << " - " << end << std::endl;
   }
 
   FPDF_DestroyLibrary();
