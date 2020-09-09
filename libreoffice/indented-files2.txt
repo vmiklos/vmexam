@@ -58,6 +58,7 @@ svx/source/dialog/signaturelinehelper.cxx
 sw/inc/textboxhelper.hxx
 sw/qa/core/crsr/crsr.cxx
 sw/qa/core/doc/doc.cxx
+sw/qa/core/draw/draw.cxx
 sw/qa/core/frmedt/frmedt.cxx
 sw/qa/core/layout/layout.cxx
 sw/qa/core/objectpositioning/objectpositioning.cxx
