@@ -44,7 +44,7 @@ for i, line in enumerate(lines):
         else:
             print("""%s:%s: own header is not the first one""" % (srcfile, (i + 1)))
             sys.exit(1)
-    if firstInclude:
+    if firstInclude and what != "<sal/config.h>":
         firstInclude = False
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
