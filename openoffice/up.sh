@@ -2,7 +2,7 @@
 
 # git clone https://gitbox.apache.org/repos/asf/openoffice.git
 # tested in a Ubuntu 14.04 chroot, build breaks with a non-ancient toolchain
-# last successfull commit: b2b6b138749e974ca2c6396b5ae0a0b78591c7d4 (Fixed typos, removed whitespace, 2019-09-16)
+# last successfull commit: 01d5ed08e552202ec8cdea6b6076e44a413a135b (Updated Asturian dictionary, 2020-09-18)
 
 time (
     git pull -r
