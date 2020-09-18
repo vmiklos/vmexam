@@ -1,27 +1,10 @@
 #!/bin/bash -ex
 #
-# The build uses ccache, so sometimes the build completes pretty quickly,
-# sometimes it takes quite some time. To run it exactly once a day, you can use
-# something like:
-#
-# while true; do ~/git/vmexam/bash/sleep-until 04:00; ./up.sh; done
+# Builds core.git from scratch.
 #
 
 time (
-    # This can act as a gate, only pull in changes in case $rebaseRemote built them successfully
-    # already. A safer 'git pull'.
-    rebaseRemote=$(git config libreoffice.rebaseRemote || true)
-    git fetch
-    if [ -z "$rebaseRemote" ]; then
-        # Optimistic: all changes passed CI anyway, and can go back to the good / old state using
-        # `git reset --hard ORIG_HEAD` in worst case.
-        git rebase HEAD@{upstream}
-    else
-        # Pessimistic: only update once 'make check' already passed in a sandbox locally.
-        git fetch "$rebaseRemote"
-        git rebase "$rebaseRemote"/master
-    fi
-
+    git pull -r
     if [ -e Makefile ]; then
         make distclean
     fi
@@ -36,5 +19,7 @@ time (
     make vim-ide-integration
     style-check-files
 ) 2>&1 |tee log
+
+exit ${PIPESTATUS[0]}
 
 # vim:set shiftwidth=4 expandtab:
