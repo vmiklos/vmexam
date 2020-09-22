@@ -11,8 +11,9 @@ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 export PATH=`pwd`/depot_tools:"$PATH"
 gclient config --unmanaged https://pdfium.googlesource.com/pdfium.git
 gclient sync
-gn gen workdir
-gn args workdir
+mkdir workdir
+gn gen workdir/debug
+gn args workdir/debug
 ----
 
 argument list:
@@ -25,25 +26,26 @@ pdf_is_standalone = true    # important - to get pdfium_test
 is_component_build = false
 pdf_is_complete_lib = true
 #system_libjpeg_config = true
-is_asan = true
+#is_asan = true
 ----
 
 incremental build:
 
 ----
+. ./autogen.env
 git pull -r
 gclient sync
-ninja -C workdir
+ninja -C workdir/debug
 # exclude workdir and other automatically
 ctags --c++-kinds=+p --fields=+iaS --extra=+q -R --totals=yes $(git ls-files|grep /|sed 's|/.*||'|sort -u)
-workdir/pdfium_embeddertests --gtest_filter=FPDFEditEmbedderTest.AddPaths
+workdir/debug/pdfium_embeddertests --gtest_filter=FPDFEditEmbedderTest.AddPaths
 ----
 
 compile commands:
 
 ----
-cd workdir
-ninja -t compdb cc cxx >../compile_commands.json
+cd workdir/debug
+ninja -t compdb cc cxx >../../compile_commands.json
 ----
 
 IWYU:
@@ -71,13 +73,15 @@ vim:
 
 ----
 ./testing/tools/fixup_pdf_template.py testing/resources/two_signatures.in
-workdir/pdfium_embeddertests --gtest_filter=FPDFSignatureEmbedderTest.*
+workdir/debug/pdfium_embeddertests --gtest_filter=FPDFSignatureEmbedderTest.*
 ----
 
 - checklist:
   - wrap commit message at 72 columns
   - snake_case for variable names, but kFooBar for constants, see
     <https://google.github.io/styleguide/cppguide.html#General_Naming_Rules>
+  - avoid {} on if/else if possible, but put it for all branches if one branch
+    needs it, see <https://google.github.io/styleguide/cppguide.html#Conditionals>
 
 - pdfiumsig incremental development:
 
@@ -93,7 +97,7 @@ touch Makefile && make && (./pdfiumsig good.pdf; ./pdfiumsig bad.pdf; ./pdfiumsi
 how to run the tests?
 
 ----
-workdir/pdfium_embeddertests
+workdir/debug/pdfium_embeddertests
 ----
 
 But has to disable bunch of already failing tests.
