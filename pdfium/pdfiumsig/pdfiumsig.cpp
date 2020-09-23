@@ -158,6 +158,11 @@ struct ByteRange {
   size_t length;
 };
 
+struct Signature {
+  FPDF_SIGNATURE signature;
+  std::vector<ByteRange> byte_ranges;
+};
+
 void validateByteRanges(const std::vector<unsigned char>& bytes,
                         const std::vector<ByteRange>& byte_ranges,
                         const std::vector<unsigned char>& signature) {
@@ -186,29 +191,14 @@ void validateByteRanges(const std::vector<unsigned char>& bytes,
 }
 
 void validateSignature(const std::vector<unsigned char>& bytes,
-                       FPDF_SIGNATURE signature,
+                       const Signature& signature_info,
                        int signature_index) {
+  FPDF_SIGNATURE signature = signature_info.signature;
+  const std::vector<ByteRange>& byte_ranges = signature_info.byte_ranges;
   std::cerr << "Signature #" << signature_index << ":" << std::endl;
   int contents_len = FPDFSignatureObj_GetContents(signature, nullptr, 0);
   std::vector<unsigned char> contents(contents_len);
   FPDFSignatureObj_GetContents(signature, contents.data(), contents.size());
-
-  int byte_range_len = FPDFSignatureObj_GetByteRange(signature, nullptr, 0);
-  std::vector<int> byte_range(byte_range_len);
-  FPDFSignatureObj_GetByteRange(signature, byte_range.data(),
-                                byte_range.size());
-
-  std::vector<ByteRange> byte_ranges;
-  size_t byte_range_offset = 0;
-  for (size_t i = 0; i < byte_range.size(); ++i) {
-    if (i % 2 == 0) {
-      byte_range_offset = byte_range[i];
-      continue;
-    }
-
-    size_t byte_range_len = byte_range[i];
-    byte_ranges.push_back({byte_range_offset, byte_range_len});
-  }
 
   int sub_filter_len = FPDFSignatureObj_GetSubFilter(signature, nullptr, 0);
   std::vector<char> sub_filter_buf(sub_filter_len);
@@ -264,6 +254,27 @@ void validateSignature(const std::vector<unsigned char>& bytes,
   validateByteRanges(bytes, byte_ranges, contents);
 }
 
+std::vector<ByteRange> getByteRanges(FPDF_SIGNATURE signature) {
+  int byte_range_len = FPDFSignatureObj_GetByteRange(signature, nullptr, 0);
+  std::vector<int> byte_range(byte_range_len);
+  FPDFSignatureObj_GetByteRange(signature, byte_range.data(),
+                                byte_range.size());
+
+  std::vector<ByteRange> byte_ranges;
+  size_t byte_range_offset = 0;
+  for (size_t i = 0; i < byte_range.size(); ++i) {
+    if (i % 2 == 0) {
+      byte_range_offset = byte_range[i];
+      continue;
+    }
+
+    size_t byte_range_len = byte_range[i];
+    byte_ranges.push_back({byte_range_offset, byte_range_len});
+  }
+
+  return byte_ranges;
+}
+
 int main(int argc, char* argv[]) {
   FPDF_LIBRARY_CONFIG config;
   config.version = 2;
@@ -282,9 +293,14 @@ int main(int argc, char* argv[]) {
     assert(document);
 
     int signature_count = FPDF_GetSignatureCount(document.get());
+    std::vector<Signature> signatures(signature_count);
     for (int i = 0; i < signature_count; ++i) {
       FPDF_SIGNATURE signature = FPDF_GetSignatureObject(document.get(), i);
-      validateSignature(file_contents, signature, i);
+      std::vector<ByteRange> byte_ranges = getByteRanges(signature);
+      signatures[i] = Signature{signature, byte_ranges};
+    }
+    for (int i = 0; i < signature_count; ++i) {
+      validateSignature(file_contents, signatures[i], i);
     }
 
     int num_trailers = FPDF_GetTrailerEnds(document.get(), nullptr, 0);

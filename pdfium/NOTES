@@ -82,6 +82,7 @@ workdir/debug/pdfium_embeddertests --gtest_filter=FPDFSignatureEmbedderTest.*
     <https://google.github.io/styleguide/cppguide.html#General_Naming_Rules>
   - avoid {} on if/else if possible, but put it for all branches if one branch
     needs it, see <https://google.github.io/styleguide/cppguide.html#Conditionals>
+  - iwyu before/after on touched files
 
 - pdfiumsig incremental development:
 
