@@ -8,6 +8,7 @@
 #include <iostream>
 #include <iterator>
 #include <locale>
+#include <set>
 #include <vector>
 
 #include <fpdf_signature.h>
@@ -33,6 +34,10 @@ struct CERTCertificateDeleter {
 using ScopedCERTCertificate =
     std::unique_ptr<CERTCertificate, CERTCertificateDeleter>;
 
+/**
+ * Crypto is meant to contain all code that interacts with a real crypto
+ * library.
+ */
 class Crypto {
  public:
   enum class ValidationStatus {
@@ -190,8 +195,37 @@ void validateByteRanges(const std::vector<unsigned char>& bytes,
   std::cerr << "  - Signature Verification: digest matches" << std::endl;
 }
 
+int getEofOfSignature(const Signature& signature) {
+  return signature.byte_ranges[1].offset + signature.byte_ranges[1].length;
+}
+
+bool isCompleteSignature(const std::vector<unsigned int>& trailer_ends,
+                         const Signature& signature_info,
+                         const std::set<unsigned int>& signature_eofs) {
+  unsigned int own_eof = getEofOfSignature(signature_info);
+  bool found_own = false;
+  for (const auto& eof : trailer_ends) {
+    if (eof == own_eof) {
+      found_own = true;
+      continue;
+    }
+
+    if (!found_own)
+      continue;
+
+    if (signature_eofs.find(eof) == signature_eofs.end())
+      // Unsigned incremental update found.
+      return false;
+  }
+
+  // Make sure we find the incremental update of the signature itself.
+  return found_own;
+}
+
 void validateSignature(const std::vector<unsigned char>& bytes,
+                       const std::vector<unsigned int>& trailer_ends,
                        const Signature& signature_info,
+                       const std::set<unsigned int>& signature_eofs,
                        int signature_index) {
   FPDF_SIGNATURE signature = signature_info.signature;
   const std::vector<ByteRange>& byte_ranges = signature_info.byte_ranges;
@@ -233,6 +267,11 @@ void validateSignature(const std::vector<unsigned char>& bytes,
               << std::endl;
     return;
   }
+
+  if (!isCompleteSignature(trailer_ends, signature_info, signature_eofs))
+    std::cerr << "  - Signature is partial" << std::endl;
+  else
+    std::cerr << "  - Signature is complete" << std::endl;
 
   int reason_len = FPDFSignatureObj_GetReason(signature, nullptr, 0);
   if (reason_len > 0) {
@@ -283,6 +322,7 @@ int main(int argc, char* argv[]) {
   config.m_v8EmbedderSlot = 0;
   FPDF_InitLibraryWithConfig(&config);
 
+  std::cerr << "Digital Signature Info of: " << argv[1] << std::endl;
   std::ifstream file_stream(argv[1], std::ios::binary);
   std::vector<unsigned char> file_contents(
       (std::istreambuf_iterator<char>(file_stream)),
@@ -292,6 +332,7 @@ int main(int argc, char* argv[]) {
         file_contents.data(), file_contents.size(), /*password=*/nullptr));
     assert(document);
 
+    // Collect info about signatures.
     int signature_count = FPDF_GetSignatureCount(document.get());
     std::vector<Signature> signatures(signature_count);
     for (int i = 0; i < signature_count; ++i) {
@@ -299,17 +340,22 @@ int main(int argc, char* argv[]) {
       std::vector<ByteRange> byte_ranges = getByteRanges(signature);
       signatures[i] = Signature{signature, byte_ranges};
     }
-    for (int i = 0; i < signature_count; ++i) {
-      validateSignature(file_contents, signatures[i], i);
+
+    std::set<unsigned int> signature_eofs;
+    for (const auto& signature : signatures) {
+      signature_eofs.insert(getEofOfSignature(signature));
     }
 
     int num_trailers = FPDF_GetTrailerEnds(document.get(), nullptr, 0);
     std::vector<unsigned int> trailer_ends(num_trailers);
     FPDF_GetTrailerEnds(document.get(), trailer_ends.data(),
                         trailer_ends.size());
-    std::cerr << "Trailer end offsets:" << std::endl;
-    for (auto end : trailer_ends)
-      std::cerr << " - " << end << std::endl;
+
+    // Validate them.
+    for (int i = 0; i < signature_count; ++i) {
+      validateSignature(file_contents, trailer_ends, signatures[i],
+                        signature_eofs, i);
+    }
   }
 
   FPDF_DestroyLibrary();
