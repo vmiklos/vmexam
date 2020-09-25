@@ -202,7 +202,6 @@ xmloff/qa/unit/style.cxx
 xmloff/qa/unit/text.cxx
 xmlsecurity/inc/certificate.hxx
 xmlsecurity/inc/documentsignaturemanager.hxx
-xmlsecurity/inc/pdfio/pdfdocument.hxx
 xmlsecurity/inc/pdfsignaturehelper.hxx
 xmlsecurity/qa/unit/pdfsigning/pdfsigning.cxx
 xmlsecurity/qa/unit/signing/signing.cxx
@@ -210,5 +209,4 @@ xmlsecurity/source/helper/documentsignaturemanager.cxx
 xmlsecurity/source/helper/ooxmlsecexporter.cxx
 xmlsecurity/source/helper/ooxmlsecexporter.hxx
 xmlsecurity/source/helper/pdfsignaturehelper.cxx
-xmlsecurity/source/pdfio/pdfdocument.cxx
 xmlsecurity/workben/pdfverify.cxx
