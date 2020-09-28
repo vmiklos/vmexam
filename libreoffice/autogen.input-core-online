@@ -1,0 +1,4 @@
+--with-distro=CPLinux-LOKit
+--with-lang=en-US
+--without-myspell-dicts
+--with-package-format=no
