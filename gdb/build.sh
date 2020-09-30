@@ -5,7 +5,7 @@ cd ~/git/binutils-gdb
 git reset --hard
 git pull -r
 git clean -x -d -f
-CFLAGS="-g -O2" ./configure --prefix=$(pwd)/install
+CFLAGS="-g -O2" ./configure --prefix=$(pwd)/install --with-python=/usr/bin/python3
 make -j8
 make install
 # enable e.g. STL pretty-printers
