@@ -1,0 +1,19 @@
+#!/bin/bash -e
+#
+# Copyright 2020 Miklos Vajna. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+
+if [ -e .github ]; then
+    # GitHub
+    BRANCH=$(git symbolic-ref HEAD|sed 's|refs/heads/||')
+    REMOTE=$(git config branch.$BRANCH.remote)
+    git push $REMOTE HEAD:private/$USER/$BRANCH
+    git branch private/$USER/$BRANCH
+    gh pr create --base $BRANCH --head private/$USER/$BRANCH --fill
+    git branch -D private/$USER/$BRANCH
+    exit 0
+fi
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
