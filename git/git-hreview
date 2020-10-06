@@ -5,13 +5,21 @@
 # found in the LICENSE file.
 #
 
-# Assume GitHub
-BRANCH=$(git symbolic-ref HEAD|sed 's|refs/heads/||')
-REMOTE=$(git config branch.$BRANCH.remote)
-git push $REMOTE HEAD:private/$USER/$BRANCH
-git branch private/$USER/$BRANCH
-gh pr create --base $BRANCH --head private/$USER/$BRANCH --fill
-git branch -D private/$USER/$BRANCH
-exit 0
+if [ -e .github ]; then
+    # GitHub
+    BRANCH=$(git symbolic-ref HEAD|sed 's|refs/heads/||')
+    REMOTE=$(git config branch.$BRANCH.remote)
+    if git rev-parse --quiet --verify $REMOTE/private/$USER/$BRANCH >/dev/null; then
+        # PR is open, just update it.
+        git push -f $REMOTE HEAD:private/$USER/$BRANCH
+    else
+        # Open a new PR.
+        git push $REMOTE HEAD:private/$USER/$BRANCH
+        git branch private/$USER/$BRANCH
+        gh pr create --base $BRANCH --head private/$USER/$BRANCH --fill
+        git branch -D private/$USER/$BRANCH
+    fi
+    exit 0
+fi
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
