@@ -1,0 +1,13 @@
+[Unit]
+Description=Sends git emails
+After=network.target
+
+[Service]
+# email.sh in this directory.
+ExecStart=/bin/bash /home/vmiklos/git/email/mirror.sh
+Restart=on-failure
+RestartSec=1s
+User=vmiklos
+
+[Install]
+WantedBy=multi-user.target
