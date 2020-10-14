@@ -1,10 +1,13 @@
 -include config.mak
 
-bundle.js: main.js Makefile
+package-lock.json: package.json
+	npm install
+
+bundle.js: main.js package-lock.json Makefile
 ifneq ($(DEBUG),)
 	browserify --debug -o bundle.js main.js
 else
-	browserify -g uglifyify -o bundle.js main.js
+	browserify --plugin tinyify -o bundle.js main.js
 endif
 
 check:

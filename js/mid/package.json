@@ -1,0 +1,12 @@
+{
+  "name": "mid",
+  "version": "1.0.0",
+  "description": "mid",
+  "main": "main.js",
+  "author": "Miklos Vajna",
+  "license": "MIT",
+  "dependencies": {
+    "domready": "1.0.8",
+    "tinyify": "3.0.0"
+  }
+}
