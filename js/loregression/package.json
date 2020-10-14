@@ -1,0 +1,18 @@
+{
+  "name": "loregression",
+  "version": "1.0.0",
+  "description": "loregression",
+  "author": "Miklos Vajna",
+  "license": "MIT",
+  "dependencies": {
+    "@types/domready": "^1.0.0",
+    "@types/node": "14.11.8",
+    "@typescript-eslint/eslint-plugin": "4.4.1",
+    "@typescript-eslint/parser": "4.4.1",
+    "domready": "1.0.8",
+    "eslint": "7.11.0",
+    "tinyify": "3.0.0",
+    "tsify": "5.0.2",
+    "typescript": "4.0.3"
+  }
+}
