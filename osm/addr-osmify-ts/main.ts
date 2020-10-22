@@ -6,15 +6,46 @@
 
 import domready = require('domready');
 
-function queryTurbo(protocol: string, element: {[index: string]: any})
+interface Next {
+    (protocol: string, element: NominatimResult): void
+}
+
+class NominatimResult
+{
+    'class': string;
+    lat: string;
+    lon: string;
+    osm_type: string;
+    osm_id: string;
+}
+
+class TurboTags
+{
+    'addr:city': string;
+    'addr:housenumber': string;
+    'addr:postcode': string;
+    'addr:street': string;
+}
+
+class TurboElement
+{
+    'tags': TurboTags;
+}
+
+class TurboResult
+{
+    'elements': TurboElement[];
+}
+
+function queryTurbo(protocol: string, element: NominatimResult)
 {
     const output = <HTMLInputElement>document.getElementById('output');
     output.value = 'Using overpass-api...';
 
-    const lat = element['lat'];
-    const lon = element['lon'];
-    const objectType = element['osm_type'];
-    const objectId = element['osm_id'];
+    const lat = element.lat;
+    const lon = element.lon;
+    const objectType = element.osm_type;
+    const objectId = element.osm_id;
     const query = '[out:json];\n(\n    ' + objectType + '(' + objectId +
                   ');\n);\nout body;';
 
@@ -22,21 +53,21 @@ function queryTurbo(protocol: string, element: {[index: string]: any})
 
     const request = new Request(url, {method : 'POST', body : query});
     window.fetch(request)
-        .then(response => response.json())
+        .then(response => <Promise<TurboResult>>response.json())
         .then(body => {
             let output = <HTMLInputElement>document.getElementById('output');
 
-            element = body['elements'][0];
+            const element = body.elements[0];
             if (element == null)
             {
                 output.value = 'No results from overpass';
                 return;
             }
 
-            const city = element['tags']['addr:city'];
-            const housenumber = element['tags']['addr:housenumber'];
-            const postcode = element['tags']['addr:postcode'];
-            const street = element['tags']['addr:street'];
+            const city = element.tags['addr:city'];
+            const housenumber = element.tags['addr:housenumber'];
+            const postcode = element.tags['addr:postcode'];
+            const street = element.tags['addr:street'];
             const addr =
                 postcode + ' ' + city + ', ' + street + ' ' + housenumber;
 
@@ -52,14 +83,8 @@ function queryTurbo(protocol: string, element: {[index: string]: any})
         });
 }
 
-interface Next {
-    (protocol: string, element: {[index: string]: any}): void
-}
-
-function getJsonArray(request: Request):
-    Promise<any[]>{return <Promise<any>>fetch(request).then(res => res.json())}
-
-function queryNominatim(protocol: string, query: string, next: Next) {
+function queryNominatim(protocol: string, query: string, next: Next)
+{
     const output = <HTMLInputElement>document.getElementById('output');
     output.value = 'Using nominatim...';
 
@@ -69,7 +94,8 @@ function queryNominatim(protocol: string, query: string, next: Next) {
     urlParams.append('format', 'json');
     url += urlParams.toString();
     const request = new Request(url, {method : 'GET'});
-    getJsonArray(request)
+    window.fetch(request)
+        .then(res => <Promise<NominatimResult[]>>res.json())
         .then(elements => {
             const output = <HTMLInputElement>document.getElementById('output');
 
@@ -84,7 +110,7 @@ function queryNominatim(protocol: string, query: string, next: Next) {
                 // There are multiple elements, prefer buildings if
                 // possible.
                 const buildings =
-                    elements.filter(function(element: {[index: string]: any}) {
+                    elements.filter(function(element: NominatimResult) {
                         return element['class'] == 'building';
                     });
                 if (buildings.length > 0)
@@ -101,8 +127,8 @@ function queryNominatim(protocol: string, query: string, next: Next) {
         });
 }
 
-function
-osmify() {
+function osmify()
+{
     const protocol = location.protocol != 'http:' ? 'https:' : 'http:';
     const nominatimInput =
         <HTMLInputElement>document.getElementById('nominatim-input');
