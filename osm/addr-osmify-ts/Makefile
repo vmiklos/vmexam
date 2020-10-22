@@ -9,7 +9,7 @@ BROWSERIFY_OPTIONS = --plugin tinyify
 endif
 
 bundle.js: main.ts package-lock.json Makefile config.mak
-	browserify -o bundle.js $(BROWSERIFY_OPTIONS) --plugin [ tsify --noImplicitAny ] main.ts
+	browserify -o bundle.js $(BROWSERIFY_OPTIONS) --plugin tsify main.ts
 
 package-lock.json: package.json
 	npm install

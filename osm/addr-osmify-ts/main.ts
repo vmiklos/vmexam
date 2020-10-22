@@ -6,10 +6,6 @@
 
 import domready = require('domready');
 
-interface Next {
-    (protocol: string, element: NominatimResult): void
-}
-
 class NominatimResult
 {
     'class': string;
@@ -37,7 +33,7 @@ class TurboResult
     'elements': TurboElement[];
 }
 
-function queryTurbo(protocol: string, element: NominatimResult)
+async function queryTurbo(protocol: string, element: NominatimResult)
 {
     const output = <HTMLInputElement>document.getElementById('output');
     output.value = 'Using overpass-api...';
@@ -52,38 +48,38 @@ function queryTurbo(protocol: string, element: NominatimResult)
     const url = protocol + '//overpass-api.de/api/interpreter';
 
     const request = new Request(url, {method : 'POST', body : query});
-    window.fetch(request)
-        .then(response => <Promise<TurboResult>>response.json())
-        .then(body => {
-            let output = <HTMLInputElement>document.getElementById('output');
+    try
+    {
+        const response = await window.fetch(request);
+        const body = await<Promise<TurboResult>>response.json();
 
-            const element = body.elements[0];
-            if (element == null)
-            {
-                output.value = 'No results from overpass';
-                return;
-            }
-
-            const city = element.tags['addr:city'];
-            const housenumber = element.tags['addr:housenumber'];
-            const postcode = element.tags['addr:postcode'];
-            const street = element.tags['addr:street'];
-            const addr =
-                postcode + ' ' + city + ', ' + street + ' ' + housenumber;
-
-            // Show the result.
-            const result = 'geo:' + lat + ',' + lon + ' (' + addr + ')';
-            output = <HTMLInputElement>document.getElementById('output');
-            output.value = result;
-        })
-        .catch(reason => {
-            const output = <HTMLInputElement>document.getElementById('output');
-            output.value = 'Overpass error: ' + reason;
+        const element = body.elements[0];
+        if (element == null)
+        {
+            output.value = 'No results from overpass';
             return;
-        });
+        }
+
+        const city = element.tags['addr:city'];
+        const housenumber = element.tags['addr:housenumber'];
+        const postcode = element.tags['addr:postcode'];
+        const street = element.tags['addr:street'];
+        const addr = postcode + ' ' + city + ', ' + street + ' ' + housenumber;
+
+        // Show the result.
+        const result = 'geo:' + lat + ',' + lon + ' (' + addr + ')';
+        output.value = result;
+    }
+    catch (reason)
+    {
+        const output = <HTMLInputElement>document.getElementById('output');
+        output.value = 'Overpass error: ' + reason;
+        return;
+    }
 }
 
-function queryNominatim(protocol: string, query: string, next: Next)
+async function queryNominatim(protocol: string,
+                              query: string): Promise<NominatimResult>
 {
     const output = <HTMLInputElement>document.getElementById('output');
     output.value = 'Using nominatim...';
@@ -94,40 +90,40 @@ function queryNominatim(protocol: string, query: string, next: Next)
     urlParams.append('format', 'json');
     url += urlParams.toString();
     const request = new Request(url, {method : 'GET'});
-    window.fetch(request)
-        .then(res => <Promise<NominatimResult[]>>res.json())
-        .then(elements => {
-            const output = <HTMLInputElement>document.getElementById('output');
+    try
+    {
+        const response = await window.fetch(request);
+        let elements = await<Promise<NominatimResult[]>>response.json();
+        const output = <HTMLInputElement>document.getElementById('output');
 
-            if (elements.length == 0)
-            {
-                output.value = 'No results from nominatim';
-                return;
-            }
+        if (elements.length == 0)
+        {
+            output.value = 'No results from nominatim';
+            return;
+        }
 
-            if (elements.length > 1)
-            {
-                // There are multiple elements, prefer buildings if
-                // possible.
-                const buildings =
-                    elements.filter(function(element: NominatimResult) {
-                        return element['class'] == 'building';
-                    });
-                if (buildings.length > 0)
-                    elements = buildings;
-            }
+        if (elements.length > 1)
+        {
+            // There are multiple elements, prefer buildings if
+            // possible.
+            const buildings =
+                elements.filter(function(element: NominatimResult) {
+                    return element['class'] == 'building';
+                });
+            if (buildings.length > 0)
+                elements = buildings;
+        }
 
-            const element = elements[0];
-
-            next(protocol, element);
-        })
-        .catch(reason => {
-            const output = <HTMLInputElement>document.getElementById('output');
-            output.value = 'Nominatim error: ' + reason;
-        });
+        return elements[0];
+    }
+    catch (reason)
+    {
+        const output = <HTMLInputElement>document.getElementById('output');
+        output.value = 'Nominatim error: ' + reason;
+    };
 }
 
-function osmify()
+async function osmify()
 {
     const protocol = location.protocol != 'http:' ? 'https:' : 'http:';
     const nominatimInput =
@@ -135,8 +131,10 @@ function osmify()
     const query = nominatimInput.value;
 
     // Use nominatim to get the coordinates and the osm type/id.
-    // Next, use overpass to get the properties of the object.
-    queryNominatim(protocol, query, queryTurbo);
+    const nominatimResult = await queryNominatim(protocol, query);
+
+    // Use overpass to get the properties of the object.
+    queryTurbo(protocol, nominatimResult);
 }
 
 domready(function() {

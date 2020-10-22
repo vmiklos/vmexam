@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "target": "es3",
+	"noImplicitAny": true,
+        "lib": [
+            "dom",
+            "es2015"
+        ]
+    }
+}
