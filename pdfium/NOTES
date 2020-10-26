@@ -67,6 +67,10 @@ vim:
 :set textwidth=80
 ----
 
+sharing a git grep result via a link:
+
+https://source.chromium.org/search?q=cpdf_annot::subtype::stamp&ss=chromium
+
 == signature API:
 
 - https://pdfium-review.googlesource.com/c/pdfium/+/70830 Add FPDF_GetSignatureCount() API
