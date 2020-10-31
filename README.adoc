@@ -1,0 +1,5 @@
+= vmexam - Miklos' code Examples
+
+This repo is my random collection of notes and code chunks that are too small to have their own
+repo. The name comes from my initials (Miklos V) and soxexam(1) - Linux man page, which is a cheat
+sheet for SoX.

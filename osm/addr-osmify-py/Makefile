@@ -1,14 +1,14 @@
-check: check-unit check-flake8 check-mypy check-pylint
-
-check-flake8:
-	flake8 addr_osmify.py
-	flake8 test_addr_osmify.py
-
-check-mypy:
+build:
 	mypy --python-version 3.5 --strict addr_osmify.py
 	mypy --python-version 3.5 --strict test_addr_osmify.py
 
-check-pylint:
+check: build check-unit check-format check-lint
+
+check-format:
+	flake8 addr_osmify.py
+	flake8 test_addr_osmify.py
+
+check-lint:
 	pylint addr_osmify.py
 	pylint test_addr_osmify.py
 
