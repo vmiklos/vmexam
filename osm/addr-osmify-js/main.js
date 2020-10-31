@@ -5,107 +5,105 @@
  */
 
 var domready = require('domready');
-var querystring = require('querystring-browser');
-var request = require('browser-request');
 
-function queryTurbo(protocol, element)
+async function queryTurbo(protocol, element)
 {
     var output = document.getElementById('output');
     output.value = 'Using overpass-api...';
 
-    var lat = element['lat'];
-    var lon = element['lon'];
-    var objectType = element['osm_type'];
-    var objectId = element['osm_id'];
+    var lat = element.lat;
+    var lon = element.lon;
+    var objectType = element.osm_type;
+    var objectId = element.osm_id;
     var query = '[out:json];\n(\n    ' + objectType + '(' + objectId +
                 ');\n);\nout body;';
 
     var url = protocol + '//overpass-api.de/api/interpreter';
 
-    request({'method' : 'POST', 'url' : url, 'body' : query, 'json' : true},
-            function(er, response, body) {
-                var output = document.getElementById('output');
-                if (er)
-                {
-                    output.value = 'Overpass error: ' + er;
-                    return;
-                }
+    var request = new Request(url, {method : 'POST', body : query});
+    try
+    {
+        var response = await window.fetch(request);
+        var body = await response.json();
 
-                element = body['elements'][0];
-                if (element == null)
-                {
-                    output.value = 'No results from overpass';
-                    return;
-                }
+        var element = body.elements[0];
+        if (element == null)
+        {
+            output.value = 'No results from overpass';
+            return;
+        }
 
-                var city = element['tags']['addr:city'];
-                var housenumber = element['tags']['addr:housenumber'];
-                var postcode = element['tags']['addr:postcode'];
-                var street = element['tags']['addr:street'];
-                var addr =
-                    postcode + ' ' + city + ', ' + street + ' ' + housenumber;
+        var city = element.tags['addr:city'];
+        var housenumber = element.tags['addr:housenumber'];
+        var postcode = element.tags['addr:postcode'];
+        var street = element.tags['addr:street'];
+        var addr = postcode + ' ' + city + ', ' + street + ' ' + housenumber;
 
-                // Show the result.
-                var result = 'geo:' + lat + ',' + lon + ' (' + addr + ')';
-                output = document.getElementById('output');
-                output.value = result;
-            });
+        // Show the result.
+        var result = 'geo:' + lat + ',' + lon + ' (' + addr + ')';
+        output.value = result;
+    }
+    catch (reason)
+    {
+        var output = document.getElementById('output');
+        output.value = 'Overpass error: ' + reason;
+        return;
+    }
 }
 
-function queryNominatim(protocol, query, next)
+async function queryNominatim(protocol, query, next)
 {
     var output = document.getElementById('output');
     output.value = 'Using nominatim...';
 
-    var url = protocol + '//nominatim.openstreetmap.org/search.php?';
-    url += querystring.stringify({'q' : query, 'format' : 'json'});
-    request({'method' : 'GET', 'url' : url, 'json' : true},
-            function(er, response, elements) {
-                var output = document.getElementById('output');
-                if (er)
-                {
-                    output.value = 'Nominatim error: ' + er;
-                    return;
-                }
+    let url = protocol + '//nominatim.openstreetmap.org/search.php?';
+    var urlParams = new URLSearchParams();
+    urlParams.append('q', query);
+    urlParams.append('format', 'json');
+    url += urlParams.toString();
+    var request = new Request(url, {method : 'GET'});
+    try
+    {
+        var response = await window.fetch(request);
+        let elements = await response.json();
+        var output = document.getElementById('output');
 
-                if (elements.length == 0)
-                {
-                    output.value = 'No results from nominatim';
-                    return;
-                }
+        if (elements.length == 0)
+        {
+            output.value = 'No results from nominatim';
+            return;
+        }
 
-                if (elements.length > 1)
-                {
-                    // There are multiple elements, prefer buildings if
-                    // possible.
-                    var buildings = elements.filter(function(
-                        element) { return element['class'] == 'building'; });
-                    if (buildings.length > 0)
-                        elements = buildings;
-                }
+        if (elements.length > 1)
+        {
+            // There are multiple elements, prefer buildings if
+            // possible.
+            var buildings = elements.filter(function(
+                element) { return element['class'] == 'building'; });
+            if (buildings.length > 0)
+                elements = buildings;
+        }
 
-                var element = elements[0];
-
-                next(protocol, element);
-            });
+        return elements[0];
+    }
+    catch (reason)
+    {
+        var output = document.getElementById('output');
+        output.value = 'Nominatim error: ' + reason;
+    };
 }
 
-function osmify()
+async function osmify()
 {
     var protocol = location.protocol != 'http:' ? 'https:' : 'http:';
-    var query = document.getElementById('nominatim-input').value;
+    var nominatimInput = document.getElementById('nominatim-input');
+    var query = nominatimInput.value;
 
     // Use nominatim to get the coordinates and the osm type/id.
-    // Next, use overpass to get the properties of the object.
-    queryNominatim(protocol, query, queryTurbo);
-}
+    var nominatimResult = await queryNominatim(protocol, query);
 
-/// Look up name as a key in the query string.
-function getParameterByName(name)
-{
-    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
-        results = regex.exec(location.search);
-    return results === null ? '' : results[1].replace(/\+/g, ' ');
+    // Use overpass to get the properties of the object.
+    queryTurbo(protocol, nominatimResult);
 }
 
 domready(function() {
@@ -147,7 +145,7 @@ domready(function() {
     body.appendChild(example);
 
     // Allow pre-fill via GET parameters.
-    var query = getParameterByName('query');
+    var query = new URLSearchParams(window.location.search).get('query');
     if (query)
     {
         nominatimInput.value = decodeURIComponent(query);

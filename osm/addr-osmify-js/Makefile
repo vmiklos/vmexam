@@ -1,14 +1,19 @@
 -include config.mak
 
-bundle.js: main.js Makefile
 ifneq ($(DEBUG),)
-	browserify --debug -o bundle.js main.js
+BROWSERIFY_OPTIONS = --debug
 else
-	browserify -g uglifyify -o bundle.js main.js
+BROWSERIFY_OPTIONS = --plugin tinyify
 endif
 
+bundle.js: main.js package-lock.json Makefile config.mak
+	browserify -o bundle.js $(BROWSERIFY_OPTIONS) main.js
+
+package-lock.json: package.json
+	npm install
+
 check:
-	eslint main.js
+	node_modules/eslint/bin/eslint.js main.js
 
 run:
-	python3 simple-https-server.py
+	python3 -m http.server
