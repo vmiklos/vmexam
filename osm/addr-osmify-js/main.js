@@ -26,7 +26,7 @@ async function queryTurbo(protocol, element)
         var response = await window.fetch(request);
         var body = await response.json();
 
-        var element = body.elements[0];
+        element = body.elements[0];
         if (element == null)
         {
             output.value = 'No results from overpass';
@@ -45,13 +45,13 @@ async function queryTurbo(protocol, element)
     }
     catch (reason)
     {
-        var output = document.getElementById('output');
+        output = document.getElementById('output');
         output.value = 'Overpass error: ' + reason;
         return;
     }
 }
 
-async function queryNominatim(protocol, query, next)
+async function queryNominatim(protocol, query)
 {
     var output = document.getElementById('output');
     output.value = 'Using nominatim...';
@@ -66,7 +66,7 @@ async function queryNominatim(protocol, query, next)
     {
         var response = await window.fetch(request);
         let elements = await response.json();
-        var output = document.getElementById('output');
+        output = document.getElementById('output');
 
         if (elements.length == 0)
         {
@@ -88,9 +88,9 @@ async function queryNominatim(protocol, query, next)
     }
     catch (reason)
     {
-        var output = document.getElementById('output');
+        output = document.getElementById('output');
         output.value = 'Nominatim error: ' + reason;
-    };
+    }
 }
 
 async function osmify()
