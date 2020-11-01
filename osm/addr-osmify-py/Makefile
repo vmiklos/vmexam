@@ -1,6 +1,6 @@
-build:
-	mypy --python-version 3.5 --strict addr_osmify.py
-	mypy --python-version 3.5 --strict test_addr_osmify.py
+build: Makefile
+	mypy --python-version 3.6 --strict --no-error-summary addr_osmify.py
+	mypy --python-version 3.6 --strict --no-error-summary test_addr_osmify.py
 
 check: build check-unit check-format check-lint
 

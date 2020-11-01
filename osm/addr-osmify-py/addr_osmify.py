@@ -15,6 +15,7 @@ import threading
 import urllib.parse
 import urllib.request
 from typing import Dict
+from typing import cast
 
 
 def query_turbo(query: str) -> str:
@@ -25,7 +26,7 @@ def query_turbo(query: str) -> str:
     buf = sock.read()
     sock.close()
 
-    return buf.decode("utf-8")
+    return cast(str, buf.decode("utf-8"))
 
 
 def query_nominatim(query: str) -> str:
@@ -41,7 +42,7 @@ def query_nominatim(query: str) -> str:
     buf = sock.read()
     sock.close()
 
-    return buf.decode("utf-8")
+    return cast(str, buf.decode("utf-8"))
 
 
 def osmify(query: str) -> str:
