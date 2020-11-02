@@ -12,7 +12,12 @@ bundle.js: main.js package-lock.json Makefile config.mak
 package-lock.json: package.json
 	npm install
 
-check:
+check: check-unit check-lint
+
+check-unit:
+	node_modules/.bin/cypress run
+
+check-lint:
 	node_modules/eslint/bin/eslint.js main.js
 
 run:

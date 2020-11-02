@@ -5,6 +5,7 @@
   "author": "Miklos Vajna",
   "license": "MIT",
   "dependencies": {
+    "cypress": "5.5.0",
     "domready": "1.0.8",
     "eslint": "7.11.0",
     "tinyify": "3.0.0"
