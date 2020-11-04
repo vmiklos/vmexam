@@ -12,7 +12,7 @@ This implementation is written in Python:
 
 - [x] documentation (this file for users, Python doc strings for developers)
 
-- [x] tests (100% line coverage)
+- [x] tests (100% statement coverage)
 
 - [x] static code analysis (pylint)
 

@@ -6,6 +6,7 @@
 
 var domready = require('domready');
 
+// Send query to overpass turbo.
 async function queryTurbo(protocol, element)
 {
     var output = document.getElementById('output');
@@ -51,6 +52,7 @@ async function queryTurbo(protocol, element)
     }
 }
 
+// Send query to nominatim.
 async function queryNominatim(protocol, query)
 {
     var output = document.getElementById('output');
@@ -93,6 +95,7 @@ async function queryNominatim(protocol, query)
     }
 }
 
+// Turn query into a coordinate + address string.
 async function osmify()
 {
     var protocol = location.protocol != 'http:' ? 'https:' : 'http:';
@@ -101,11 +104,16 @@ async function osmify()
 
     // Use nominatim to get the coordinates and the osm type/id.
     var nominatimResult = await queryNominatim(protocol, query);
+    if (!nominatimResult)
+    {
+        return;
+    }
 
     // Use overpass to get the properties of the object.
     queryTurbo(protocol, nominatimResult);
 }
 
+// Entry point of this module.
 domready(function() {
     // Create our page.
     var body = document.getElementsByTagName('body')[0];
