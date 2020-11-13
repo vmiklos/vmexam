@@ -71,8 +71,8 @@ domready(function() {
                 choices.push(i);
             }
         }
-        // TODO: if set 0 to 1, 1 to 2, 2 to 0, then 3 will blow up: it can only
-        // be 3, but it also wants be something other than 3.
+        // TODO: if we set 0 to 1, 1 to 2, 2 to 0, then 3 will blow up: it can
+        // only be 3, but it also wants be something other than 3.
         const choice = choose(choices);
         currentActors.push(choice);
     }
