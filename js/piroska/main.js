@@ -5,12 +5,12 @@
  */
 
 var domready = require('domready');
-var shuffle = require('shuffle-array');
 
-String.prototype.replaceAll = function(search, replacement) {
-    var target = this;
-    return target.replace(new RegExp(search, 'g'), replacement);
-};
+/// Picks a random element form the array.
+function choose(array)
+{
+    return array[Math.floor(Math.random() * array.length)];
+}
 
 domready(function() {
     var text = '';
@@ -58,10 +58,22 @@ domready(function() {
     ];
 
     // Maps original actors to actors in the current run.
-    // TODO duplication
-    var currentActors = [ 0, 1, 2, 3 ];
+    var currentActors = [];
 
-    shuffle(currentActors);
+    for (var actor = 0; actor < actors.length; actor += 1)
+    {
+        var choices = [];
+        var choice = 0;
+        for (var i = 0; i < actors.length; i += 1)
+        {
+            if (i != actor && !currentActors.includes(i))
+            {
+                choices.push(i);
+            }
+        }
+        choice = choose(choices);
+        currentActors.push(choice);
+    }
 
     for (var actor = 0; actor < actors.length; actor += 1)
     {

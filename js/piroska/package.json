@@ -6,8 +6,8 @@
   "author": "Miklos Vajna",
   "license": "MIT",
   "dependencies": {
+    "browserify": "17.0.0",
     "domready": "1.0.8",
-    "shuffle-array": "1.0.1",
-    "uglifyify": "5.0.1"
+    "tinyify": "3.0.0"
   }
 }
