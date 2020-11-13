@@ -5,7 +5,7 @@
  */
 
 import 'ts-replace-all';
-var domready = require('domready');
+import domready = require('domready');
 
 /// Picks a random element form the array.
 function choose(array: Array<number>): number
@@ -14,7 +14,7 @@ function choose(array: Array<number>): number
 }
 
 domready(function() {
-    var text = '';
+    let text = '';
     text +=
         '{Actor04} bort és kalácsot visz a beteg {Actor11}. Útközben összetalálkozik ';
     text +=
@@ -39,7 +39,7 @@ domready(function() {
         '{Actor10} elevenen kisétál belőle. A hasat megtöltik kaviccsal. {Actor24} ';
     text += 'elpusztul.';
 
-    var actors = [
+    const actors = [
         [
             'Piroska', 'Piroskának', 'Piroskával', 'Piroskához', 'Piroska',
             'Piroska'
@@ -59,36 +59,35 @@ domready(function() {
     ];
 
     // Maps original actors to actors in the current run.
-    var currentActors: Array<number> = [];
+    const currentActors: Array<number> = [];
 
-    for (var actor = 0; actor < actors.length; actor += 1)
+    for (let actor = 0; actor < actors.length; actor += 1)
     {
-        var choices = [];
-        var choice = 0;
-        for (var i = 0; i < actors.length; i += 1)
+        const choices = [];
+        for (let i = 0; i < actors.length; i += 1)
         {
             if (i != actor && !currentActors.includes(i))
             {
                 choices.push(i);
             }
         }
-        choice = choose(choices);
+        const choice = choose(choices);
         currentActors.push(choice);
     }
 
-    for (var actor = 0; actor < actors.length; actor += 1)
+    for (let actor = 0; actor < actors.length; actor += 1)
     {
-        for (var variant = 0; variant < actors[0].length; variant += 1)
+        for (let variant = 0; variant < actors[0].length; variant += 1)
         {
-            var fro = '{Actor' + actor.toString() + variant.toString() + '}';
-            var to = actors[currentActors[actor]][variant];
+            const fro = '{Actor' + actor.toString() + variant.toString() + '}';
+            const to = actors[currentActors[actor]][variant];
             text = text.replaceAll(fro, to);
         }
     }
 
     // Create our page.
-    var body = document.getElementsByTagName('body')[0];
-    var paragraph = document.createElement('p');
+    const body = document.getElementsByTagName('body')[0];
+    const paragraph = document.createElement('p');
     paragraph.appendChild(document.createTextNode(text));
     body.appendChild(paragraph);
 });
