@@ -13,6 +13,11 @@ bundle.js: main.ts package-lock.json Makefile config.mak
 
 package-lock.json: package.json
 	npm install
+	touch $@
 
 check:
 	node_modules/eslint/bin/eslint.js main.ts
+
+run:
+	python3 -m http.server
+

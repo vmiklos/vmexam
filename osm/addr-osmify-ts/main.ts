@@ -120,7 +120,7 @@ async function queryNominatim(protocol: string,
     {
         const output = <HTMLInputElement>document.getElementById('output');
         output.value = 'Nominatim error: ' + reason;
-    };
+    }
 }
 
 async function osmify()
