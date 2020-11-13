@@ -6,6 +6,7 @@
 
 import domready = require('domready');
 
+// NominatimResult represents one element in the result array from Nominatim.
 class NominatimResult
 {
     'class': string;
@@ -15,6 +16,7 @@ class NominatimResult
     osm_id: string;
 }
 
+// TurboTags contains various tags about one Overpass element.
 class TurboTags
 {
     'addr:city': string;
@@ -23,16 +25,19 @@ class TurboTags
     'addr:street': string;
 }
 
+// TurboElement represents one result from Overpass.
 class TurboElement
 {
     'tags': TurboTags;
 }
 
+// TurboResult is the result from Overpass.
 class TurboResult
 {
     'elements': TurboElement[];
 }
 
+// Send query to overpass turbo.
 async function queryTurbo(protocol: string, element: NominatimResult)
 {
     const output = <HTMLInputElement>document.getElementById('output');
@@ -78,6 +83,7 @@ async function queryTurbo(protocol: string, element: NominatimResult)
     }
 }
 
+// Send query to nominatim.
 async function queryNominatim(protocol: string,
                               query: string): Promise<NominatimResult>
 {
@@ -123,6 +129,7 @@ async function queryNominatim(protocol: string,
     }
 }
 
+// Turn query into a coordinate + address string.
 async function osmify()
 {
     const protocol = location.protocol != 'http:' ? 'https:' : 'http:';
@@ -137,6 +144,7 @@ async function osmify()
     queryTurbo(protocol, nominatimResult);
 }
 
+// Entry point of this module.
 domready(function() {
     // Create our page.
     const body = document.getElementsByTagName('body')[0];
