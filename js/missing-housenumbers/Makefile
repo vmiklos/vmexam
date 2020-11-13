@@ -11,6 +11,8 @@ else
 BROWSERIFY_OPTIONS += --plugin tinyify
 endif
 
+INSTDIR=$(HOME)/git/vmiklos.hu/htdocs/osm/missing-housenumbers/
+
 all: bundle.js ol.css
 
 bundle.js: main.ts package-lock.json Makefile config.mak
@@ -28,3 +30,6 @@ run:
 
 check:
 	node_modules/eslint/bin/eslint.js main.ts
+
+install:
+	cp *.kml index.html ol.css bundle.js $(INSTDIR)
