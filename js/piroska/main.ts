@@ -4,10 +4,11 @@
  * found in the LICENSE file.
  */
 
+import 'ts-replace-all';
 var domready = require('domready');
 
 /// Picks a random element form the array.
-function choose(array)
+function choose(array: Array<number>): number
 {
     return array[Math.floor(Math.random() * array.length)];
 }
@@ -58,7 +59,7 @@ domready(function() {
     ];
 
     // Maps original actors to actors in the current run.
-    var currentActors = [];
+    var currentActors: Array<number> = [];
 
     for (var actor = 0; actor < actors.length; actor += 1)
     {
