@@ -1,0 +1,42 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.55.7 8b86ff77",
+  "osm3s": {
+    "timestamp_osm_base": "2019-08-19T20:18:02Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "way",
+  "id": 226141952,
+  "nodes": [
+    2349946171,
+    4802521670,
+    4802521668,
+    4802521664,
+    4802521665,
+    4802521666,
+    4802521667,
+    4802521669,
+    4802521671,
+    4802521672,
+    4802521663,
+    2349946131,
+    2349946169,
+    2349946150,
+    2349946159,
+    2349946171
+  ],
+  "tags": {
+    "addr:city": "Budapest",
+    "addr:housenumber": "18",
+    "addr:postcode": "1111",
+    "addr:street": "Karinthy Frigyes út",
+    "building": "apartments",
+    "building:levels": "7"
+  }
+}
+
+  ]
+}

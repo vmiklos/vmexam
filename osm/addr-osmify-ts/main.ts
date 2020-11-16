@@ -139,6 +139,10 @@ async function osmify()
 
     // Use nominatim to get the coordinates and the osm type/id.
     const nominatimResult = await queryNominatim(protocol, query);
+    if (!nominatimResult)
+    {
+        return;
+    }
 
     // Use overpass to get the properties of the object.
     queryTurbo(protocol, nominatimResult);

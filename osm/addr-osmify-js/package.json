@@ -5,7 +5,7 @@
   "author": "Miklos Vajna",
   "license": "MIT",
   "dependencies": {
-    "@cypress/code-coverage": "^3.8.3",
+    "@cypress/code-coverage": "3.8.3",
     "browserify": "17.0.0",
     "browserify-istanbul": "3.0.1",
     "cypress": "5.5.0",
