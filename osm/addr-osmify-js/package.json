@@ -1,8 +1,4 @@
 {
-  "name": "addr-osmify-js",
-  "version": "1.0.0",
-  "description": "addr-osmify-js",
-  "author": "Miklos Vajna",
   "license": "MIT",
   "dependencies": {
     "@cypress/code-coverage": "3.8.3",
@@ -15,5 +11,9 @@
     "nyc": "15.1.0",
     "tinyify": "3.0.0",
     "wait-on": "5.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vmiklos/vmexam"
   }
 }
