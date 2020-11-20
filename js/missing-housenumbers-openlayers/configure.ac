@@ -1,4 +1,4 @@
-AC_INIT(missing-housenumbers-leaflet)
+AC_INIT(missing-housenumbers-openlayers)
 
 AC_ARG_ENABLE(debug,
     AS_HELP_STRING([--enable-debug],

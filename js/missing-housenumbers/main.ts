@@ -4,17 +4,9 @@
  * found in the LICENSE file.
  */
 
-import domready = require('domready');
-import KML from 'ol/format/KML';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import {Fill, Stroke, Style} from 'ol/style';
-import {Map, View} from 'ol';
-import {OSM} from 'ol/source';
-import {Tile} from 'ol/layer';
-import {fromLonLat} from 'ol/proj';
+import * as L from 'leaflet';
 
-const center = [ 19.0045, 47.4744 ];
+const center: L.LatLngTuple = [ 47.4744, 19.0045 ];
 const zoom = 14;
 
 // Generate KML with overpass, see <http://overpass-turbo.eu/s/gLa> for an
@@ -29,61 +21,59 @@ const zoom = 14;
 
 // List of areas which were not 100% and at least once I pulled it up to 100%.
 // Not claiming I did all the work there. :-)
-const green = [ 0, 128, 0 ];
-const orange = [ 255, 165, 0 ];
 const tracks = [
-    {url : "sasad.kml", color : green},
-    {url : "gazdagret.kml", color : green},
-    {url : "sashegy.kml", color : green},
-    {url : "nemetvolgy.kml", color : green},
-    {url : "ormezo.kml", color : green},
-    {url : "farkasvolgy.kml", color : green},
-    {url : "magasut.kml", color : green},
-    {url : "farkasret.kml", color : green},
-    {url : "hosszuret.kml", color : green},
-    {url : "madarhegy.kml", color : green},
-    {url : "krisztinavaros.kml", color : green},
-    {url : "kissvabhegy.kml", color : green},
-    {url : "orbanhegy.kml", color : green},
-    {url : "svabhegy.kml", color : green},
-    {url : "martonhegy.kml", color : green},
-    {url : "szechenyihegy.kml", color : orange},
+    {url : 'sasad.json', color : 'green'},
+    {url : 'gazdagret.json', color : 'green'},
+    {url : 'sashegy.json', color : 'green'},
+    {url : 'nemetvolgy.json', color : 'green'},
+    {url : 'ormezo.json', color : 'green'},
+    {url : 'farkasvolgy.json', color : 'green'},
+    {url : 'magasut.json', color : 'green'},
+    {url : 'farkasret.json', color : 'green'},
+    {url : 'hosszuret.json', color : 'green'},
+    {url : 'madarhegy.json', color : 'green'},
+    {url : 'krisztinavaros.json', color : 'green'},
+    {url : 'kissvabhegy.json', color : 'green'},
+    {url : 'orbanhegy.json', color : 'green'},
+    {url : 'svabhegy.json', color : 'green'},
+    {url : 'martonhegy.json', color : 'green'},
+    {url : 'szechenyihegy.json', color : 'orange'},
 ];
 
 // Boilerplate below.
 
-domready(function() {
-    // Project from EPSG:4326 / WGS 1984 to Spherical Mercator.
-    const projectedCenter = fromLonLat(center);
-    const map = new Map({
-        target : 'map',
-        view : new View({center : projectedCenter, zoom : zoom})
-    });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const layer: any = new Tile({source : new OSM()});
-    map.addLayer(layer);
+async function addRelations(map: L.Map)
+{
+    for (let i = 0; i < tracks.length; i += 1)
+    {
+        const track = tracks[i];
+        const url = track.url;
+        const response = await window.fetch(url);
+        const relation = await response.json();
+        // There are 2 features (boundary and center), we only care about
+        // the first one.
+        relation.features.pop();
+        L.geoJSON(relation, {
+             style : {
+                 color : track.color,
+                 opacity : 0.5,
+                 weight : 5,
+                 fillColor : track.color,
+                 fillOpacity : 0.1
+             }
+         }).addTo(map);
+    }
+}
 
-    // Add the layers for the relations.
-    tracks.forEach(function(track) {
-        const color = track.color;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const vector: any = new VectorLayer({
-            source : new VectorSource({
-                url : track.url,
-                format : new KML({extractStyles : false}),
-            }),
-            style : new Style({
-                stroke : new Stroke({
-                    color : [ color[0], color[1], color[2], 0.5 ],
-                    width : 5,
-                }),
-                fill : new Fill({
-                    color : [ color[0], color[1], color[2], 0.1 ],
-                }),
-            }),
-        });
-        map.addLayer(vector);
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    const map = L.map('map').setView(center, zoom);
+
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+         attribution :
+             '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors.',
+     }).addTo(map);
+
+    addRelations(map);
 });
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:
