@@ -1,8 +1,4 @@
 {
-  "name": "addr-osmify-ts",
-  "version": "1.0.0",
-  "description": "addr-osmify-ts",
-  "author": "Miklos Vajna",
   "license": "MIT",
   "dependencies": {
     "@cypress/code-coverage": "3.8.3",
