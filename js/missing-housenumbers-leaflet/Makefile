@@ -10,8 +10,8 @@ INSTDIR=$(HOME)/git/vmiklos.hu/htdocs/osm/missing-housenumbers/
 
 all: bundle.js leaflet.css
 
-bundle.js: main.js package-lock.json Makefile config.mak
-	node_modules/.bin/browserify -o bundle.js $(BROWSERIFY_OPTIONS) main.js
+bundle.js: main.ts package-lock.json Makefile config.mak
+	node_modules/.bin/browserify -o bundle.js $(BROWSERIFY_OPTIONS) --plugin tsify main.ts
 
 leaflet.css: package-lock.json
 	cp node_modules/leaflet/dist/leaflet.css .
@@ -23,7 +23,7 @@ package-lock.json: package.json
 check: check-lint
 
 check-lint:
-	node_modules/eslint/bin/eslint.js main.js
+	node_modules/eslint/bin/eslint.js main.ts
 
 run:
 	python3 -m http.server

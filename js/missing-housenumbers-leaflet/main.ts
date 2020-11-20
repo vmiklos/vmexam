@@ -4,9 +4,9 @@
  * found in the LICENSE file.
  */
 
-var L = require('leaflet');
+import * as L from 'leaflet';
 
-const center = [ 47.4744, 19.0045 ];
+const center: L.LatLngTuple = [ 47.4744, 19.0045 ];
 const zoom = 14;
 
 // Generate KML with overpass, see <http://overpass-turbo.eu/s/gLa> for an
@@ -42,14 +42,14 @@ const tracks = [
 
 // Boilerplate below.
 
-async function addRelations(map)
+async function addRelations(map: L.Map)
 {
-    for (var i = 0; i < tracks.length; i += 1)
+    for (let i = 0; i < tracks.length; i += 1)
     {
-        var track = tracks[i];
-        var url = track.url;
-        var response = await window.fetch(url);
-        var relation = await response.json();
+        const track = tracks[i];
+        const url = track.url;
+        const response = await window.fetch(url);
+        const relation = await response.json();
         // There are 2 features (boundary and center), we only care about
         // the first one.
         relation.features.pop();
@@ -66,7 +66,7 @@ async function addRelations(map)
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    var map = L.map('map').setView(center, zoom);
+    const map = L.map('map').setView(center, zoom);
 
     L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
          attribution :
