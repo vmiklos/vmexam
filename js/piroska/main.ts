@@ -18,30 +18,17 @@ function shuffleArray(array: number[])
 }
 
 domready(function() {
-    let text = '';
-    text +=
-        '{Actor04} bort és kalácsot visz a beteg {Actor11}. Útközben összetalálkozik ';
-    text +=
-        '{Actor22}, és az rábeszéli, hogy virágot is vigyen. Míg {Actor00} virágot szed, ';
-    text +=
-        '{Actor20} elnyargal {Actor13}, megeszi és magára öltve hálóköntösét és ';
-    text +=
-        'hálósapkáját, befekszik az ágyába. Nemsokára megérkezik {Actor00}, és ';
-    text +=
-        'megkérdezi, hogy miért olyan nagy a füle, szeme, szája. {Actor24} válaszai: a) ';
-    text +=
-        'azért, hogy jobban halljalak, b) azért, hogy jobban lássalak, c) azért, hogy ';
-    text +=
-        'könnyebben bekaphassalak/vagy felszólítja, hogy feküdjön mellé. {Actor04} ';
-    text +=
-        'nekikészülődik, de irtózik és kérdéseket tesz fel: miért olyan nagy/vagy szőrös ';
-    text +=
-        'a lába, a keze, a szája stb., {Actor20} bekapja. Az arrajáró {Actor35} ';
-    text +=
-        'meghallja {Actor20} erős horkolását, bemegy, felvágja a hasát, és {Actor00} és ';
-    text +=
-        '{Actor10} elevenen kisétál belőle. A hasat megtöltik kaviccsal. {Actor24} ';
-    text += 'elpusztul.';
+    let text = `
+{Actor04} bort és kalácsot visz a beteg {Actor11}. Útközben összetalálkozik {Actor22}, és az
+rábeszéli, hogy virágot is vigyen. Míg {Actor00} virágot szed, {Actor20} elnyargal {Actor13},
+megeszi és magára öltve hálóköntösét és hálósapkáját, befekszik az ágyába. Nemsokára megérkezik
+{Actor00}, és megkérdezi, hogy miért olyan nagy a füle, szeme, szája. {Actor24} válaszai: a) azért,
+hogy jobban halljalak, b) azért, hogy jobban lássalak, c) azért, hogy könnyebben bekaphassalak/vagy
+felszólítja, hogy feküdjön mellé. {Actor04} nekikészülődik, de irtózik és kérdéseket tesz fel: miért
+olyan nagy/vagy szőrös a lába, a keze, a szája stb., {Actor20} bekapja. Az arrajáró {Actor35}
+meghallja {Actor20} erős horkolását, bemegy, felvágja a hasát, és {Actor00} és {Actor10} elevenen
+kisétál belőle. A hasat megtöltik kaviccsal. {Actor24} elpusztul.
+`;
 
     const actors = [
         [
