@@ -13,6 +13,7 @@ bundle.js: main.ts package-lock.json Makefile config.mak
 
 package-lock.json: package.json
 	npm install
+	touch package-lock.json
 
 check:
 	node_modules/eslint/bin/eslint.js main.ts

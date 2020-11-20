@@ -7,10 +7,14 @@
 import 'ts-replace-all';
 import domready = require('domready');
 
-/// Picks a random element form the array.
-function choose(array: Array<number>): number
+// Randomly reorder elements of `array`.
+function shuffleArray(array: number[])
 {
-    return array[Math.floor(Math.random() * array.length)];
+    for (let i = array.length - 1; i > 0; i--)
+    {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [ array[j], array[i] ];
+    }
 }
 
 domready(function() {
@@ -60,21 +64,23 @@ domready(function() {
 
     // Maps original actors to actors in the current run.
     const currentActors: Array<number> = [];
-
-    for (let actor = 0; actor < actors.length; actor += 1)
+    for (let i = 0; i < actors.length; i += 1)
     {
-        const choices = [];
+        currentActors.push(i);
+    }
+
+    while (true)
+    {
+        shuffleArray(currentActors);
+        // Make sure that no elements stay at their original position.
         for (let i = 0; i < actors.length; i += 1)
         {
-            if (i != actor && !currentActors.includes(i))
+            if (currentActors[i] == i)
             {
-                choices.push(i);
+                continue;
             }
         }
-        // TODO: if we set 0 to 1, 1 to 2, 2 to 0, then 3 will blow up: it can
-        // only be 3, but it also wants be something other than 3.
-        const choice = choose(choices);
-        currentActors.push(choice);
+        break;
     }
 
     for (let actor = 0; actor < actors.length; actor += 1)
