@@ -9,7 +9,7 @@ BROWSERIFY_OPTIONS = --plugin tinyify
 endif
 
 bundle.js: main.ts package-lock.json Makefile config.mak
-	browserify -o bundle.js $(BROWSERIFY_OPTIONS) --plugin tsify main.ts
+	node_modules/.bin/browserify -o bundle.js $(BROWSERIFY_OPTIONS) --plugin tsify main.ts
 
 package-lock.json: package.json
 	npm install
@@ -24,7 +24,7 @@ check-unit-interactive:
 	node_modules/.bin/cypress open
 
 check-lint:
-	node_modules/eslint/bin/eslint.js main.ts cypress/integration/main.spec.ts
+	node_modules/.bin/eslint main.ts cypress/integration/main.spec.ts
 
 run:
 	python3 -m http.server

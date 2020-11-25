@@ -1,12 +1,19 @@
 {
-  "name": "mid",
-  "version": "1.0.0",
-  "description": "mid",
-  "main": "main.js",
-  "author": "Miklos Vajna",
   "license": "MIT",
   "dependencies": {
+    "@types/domready": "1.0.0",
+    "@types/node": "14.14.7",
+    "@typescript-eslint/eslint-plugin": "4.7.0",
+    "@typescript-eslint/parser": "4.7.0",
+    "browserify": "17.0.0",
     "domready": "1.0.8",
-    "tinyify": "3.0.0"
+    "eslint": "7.13.0",
+    "tinyify": "3.0.0",
+    "tsify": "5.0.2",
+    "typescript": "4.0.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vmiklos/vmexam"
   }
 }
