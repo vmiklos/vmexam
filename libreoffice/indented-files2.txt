@@ -20,6 +20,8 @@ filter/qa/unit/svg.cxx
 filter/qa/unit/textfilterdetect.cxx
 filter/source/msfilter/rtfutil.cxx
 framework/qa/cppunit/dispatchtest.cxx
+framework/qa/cppunit/loadenv.cxx
+framework/qa/cppunit/services.cxx
 i18npool/qa/cppunit/test_defaultnumberingprovider.cxx
 include/comphelper/propertyvalue.hxx
 include/sfx2/digitalsignatures.hxx
@@ -27,6 +29,7 @@ include/svl/grabbagitem.hxx
 include/svx/signaturelinehelper.hxx
 include/vcl/filter/pdfdocument.hxx
 include/vcl/filter/pdfobjectcontainer.hxx
+include/vcl/pdf/PDFPageObjectType.hxx
 include/vcl/pdfread.hxx
 oox/qa/unit/drawingml.cxx
 oox/qa/unit/mathml.cxx
@@ -41,6 +44,7 @@ oox/source/shape/WpgContext.cxx
 oox/source/shape/WpgContext.hxx
 oox/source/shape/WpsContext.cxx
 oox/source/shape/WpsContext.hxx
+sd/qa/filter/eppt/eppt.cxx
 sfx2/qa/cppunit/view.cxx
 sfx2/qa/uitest/doc/objserv.py
 starmath/source/rtfexport.cxx
@@ -58,6 +62,7 @@ svx/source/dialog/signaturelinehelper.cxx
 sw/inc/textboxhelper.hxx
 sw/qa/core/crsr/crsr.cxx
 sw/qa/core/doc/doc.cxx
+sw/qa/core/docnode/docnode.cxx
 sw/qa/core/draw/draw.cxx
 sw/qa/core/frmedt/frmedt.cxx
 sw/qa/core/layout/layout.cxx
@@ -67,6 +72,7 @@ sw/qa/core/txtnode/txtnode.cxx
 sw/qa/core/undo/undo.cxx
 sw/qa/core/unocore/unocore.cxx
 sw/qa/extras/layout/layout.cxx
+sw/qa/extras/layout/layout2.cxx
 sw/qa/extras/rtfexport/rtfexport.cxx
 sw/qa/extras/rtfimport/rtfimport.cxx
 sw/qa/extras/uiwriter/uiwriter2.cxx
@@ -74,6 +80,7 @@ sw/qa/extras/unowriter/unowriter.cxx
 sw/qa/uibase/dochdl/dochdl.cxx
 sw/qa/uibase/frmdlg/frmdlg.cxx
 sw/qa/uibase/shells/shells.cxx
+sw/qa/uibase/uno/uno.cxx
 sw/qa/unit/swmodeltestbase.cxx
 sw/source/core/doc/textboxhelper.cxx
 sw/source/filter/html/htmlreqifreader.cxx
@@ -104,6 +111,7 @@ writerfilter/inc/dmapper/DomainMapperFactory.hxx
 writerfilter/inc/dmapper/GraphicZOrderHelper.hxx
 writerfilter/inc/rtftok/RTFDocument.hxx
 writerfilter/qa/cppunittests/dmapper/CellColorHandler.cxx
+writerfilter/qa/cppunittests/dmapper/DomainMapper.cxx
 writerfilter/qa/cppunittests/dmapper/DomainMapperTableHandler.cxx
 writerfilter/qa/cppunittests/dmapper/DomainMapper_Impl.cxx
 writerfilter/qa/cppunittests/dmapper/GraphicImport.cxx
@@ -111,6 +119,7 @@ writerfilter/qa/cppunittests/dmapper/PropertyMap.cxx
 writerfilter/qa/cppunittests/dmapper/TextEffectsHandler.cxx
 writerfilter/qa/cppunittests/filters-test/filters-test.cxx
 writerfilter/qa/cppunittests/rtftok/rtfsdrimport.cxx
+writerfilter/qa/cppunittests/rtftok/rtfsprm.cxx
 writerfilter/source/dmapper/LatentStyleHandler.cxx
 writerfilter/source/dmapper/LatentStyleHandler.hxx
 writerfilter/source/dmapper/SdtHelper.cxx
