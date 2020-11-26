@@ -4,9 +4,9 @@
  * found in the LICENSE file.
  */
 
-var calendar = require('node-calendar');
-var domready = require('domready');
-var seedRandom = require('seed-random');
+import calendar = require('node-calendar');
+import domready = require('domready');
+import seedRandom = require('seed-random');
 // cldr doesn't seem to work with browserify, so do this manually for now.
 calendar.month_name = [
     '', 'január', 'február', 'március', 'április', 'május', 'június', 'július',
@@ -15,7 +15,7 @@ calendar.month_name = [
 calendar.day_name =
     [ 'hétfő', 'kedd', 'szerda', 'csütörtök', 'péntek', 'szombat', 'vasárnap' ];
 
-var tasks = [
+const tasks = [
     'Segítségnyújtés gyermekeinknek az érzéseik elfogadásában (35.\xA0o.)',
     'Együttműködésre bírni gyermekeinket (79.\xA0o.)',
     'Büntetés helyett (118.\xA0o.)', 'Az önállóság támogatása (151.\xA0o.)',
@@ -24,48 +24,48 @@ var tasks = [
 ];
 
 /// Look up name as a key in the query string.
-function getParameterByName(name)
+function getParameterByName(name: string)
 {
-    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
-        results = regex.exec(location.search);
+    name = name.replace(/[[]/, '\\[').replace(/[\]]/, '\\]');
+    const regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
+          results = regex.exec(location.search);
     return results === null ? '' : results[1].replace(/\+/g, ' ');
 }
 
 /// Formats the calendar.
 function formatcal()
 {
-    var table = document.createElement('table');
+    const table = document.createElement('table');
     table.className = 'month';
     document.getElementsByTagName('body')[0].appendChild(table);
 
     // The year / month row.
-    var tr = table.insertRow(table.rows.length);
-    var th = document.createElement('th');
+    let tr = table.insertRow(table.rows.length);
+    const th = document.createElement('th');
     th.className = 'month';
     tr.appendChild(th);
     th.colSpan = 7;
-    var date = new Date();
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1;
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
     th.appendChild(
         document.createTextNode(year + ' ' + calendar.month_name[month]));
 
     // The days of the week row.
     tr = table.insertRow(table.rows.length);
-    calendar.day_name.forEach(function(day) {
-        var th = document.createElement('th');
+    calendar.day_name.forEach(function(day: string) {
+        const th = document.createElement('th');
         tr.appendChild(th);
         th.appendChild(document.createTextNode(day));
     });
 
     // The actual days.
-    var cal = new calendar.Calendar();
-    var matrix = cal.monthdayscalendar(year, month);
-    matrix.forEach(function(week) {
-        var tr = table.insertRow(table.rows.length);
-        week.forEach(function(day) {
-            var td = document.createElement('td');
+    const cal = new calendar.Calendar();
+    const matrix = cal.monthdayscalendar(year, month);
+    matrix.forEach(function(week: number[]) {
+        const tr = table.insertRow(table.rows.length);
+        week.forEach(function(day: number) {
+            const td = document.createElement('td');
             td.className = 'day';
             tr.appendChild(td);
             if (day == 0)
@@ -74,9 +74,9 @@ function formatcal()
             }
             else
             {
-                td.appendChild(document.createTextNode(day));
+                td.appendChild(document.createTextNode(day.toString()));
                 td.appendChild(document.createElement('br'));
-                var task = tasks[Math.floor(Math.random() * tasks.length)];
+                const task = tasks[Math.floor(Math.random() * tasks.length)];
                 td.appendChild(document.createTextNode(task));
             }
         });
@@ -84,7 +84,7 @@ function formatcal()
 }
 
 domready(function() {
-    var seed = getParameterByName('seed');
+    const seed = getParameterByName('seed');
     if (seed)
     {
         seedRandom(seed, {global : true});
