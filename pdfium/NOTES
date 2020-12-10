@@ -38,6 +38,9 @@ gclient sync
 ninja -C workdir/debug
 # exclude workdir and other automatically
 ctags --c++-kinds=+p --fields=+iaS --extra=+q -R --totals=yes $(git ls-files|grep /|sed 's|/.*||'|sort -u)
+# all unit tests are expected to pass locally
+workdir/debug/pdfium_unittests
+# some embedder tests are only expected to pass on the try bots
 workdir/debug/pdfium_embeddertests --gtest_filter=FPDFEditEmbedderTest.AddPaths
 ----
 
