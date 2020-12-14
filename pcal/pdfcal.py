@@ -54,6 +54,7 @@ outputPdf = PyPDF2.PdfFileWriter()
 
 page = None
 for month in range(1, 13):
+    print("{}...".format(month))
     monthString = "%02d" % month
 
     # Handle the image part.
