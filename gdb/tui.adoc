@@ -1,0 +1,5 @@
+= gdb TUI notes
+
+Enable: `tui enable`
+
+Make arrow keys traverse the command history: `focus next`
