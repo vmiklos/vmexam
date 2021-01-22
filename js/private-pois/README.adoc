@@ -1,0 +1,3 @@
+Simply shows a geojson using https://leafletjs.com/[leaflet].
+
+pois.json is intentionally not included -- host public POIs on OSM. :-)
