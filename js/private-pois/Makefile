@@ -28,5 +28,5 @@ run:
 
 install:
 ifneq ($(INSTDIR),)
-	cp pois.json index.html leaflet.css bundle.js $(INSTDIR)
+	cp pois.json pois.xml index.html leaflet.css bundle.js $(INSTDIR)
 endif
