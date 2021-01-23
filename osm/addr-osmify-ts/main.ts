@@ -7,8 +7,7 @@
 import domready = require('domready');
 
 // NominatimResult represents one element in the result array from Nominatim.
-class NominatimResult
-{
+interface NominatimResult {
     'class': string;
     lat: string;
     lon: string;
@@ -17,8 +16,7 @@ class NominatimResult
 }
 
 // TurboTags contains various tags about one Overpass element.
-class TurboTags
-{
+interface TurboTags {
     'addr:city': string;
     'addr:housenumber': string;
     'addr:postcode': string;
@@ -26,14 +24,12 @@ class TurboTags
 }
 
 // TurboElement represents one result from Overpass.
-class TurboElement
-{
+interface TurboElement {
     'tags': TurboTags;
 }
 
 // TurboResult is the result from Overpass.
-class TurboResult
-{
+interface TurboResult {
     'elements': TurboElement[];
 }
 
