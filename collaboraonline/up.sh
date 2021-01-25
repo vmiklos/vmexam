@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 time (
     git pull -r
@@ -33,5 +33,7 @@ time (
     make ctags
     make check
 ) 2>&1 |tee log
+
+exit ${PIPESTATUS[0]}
 
 # vim:set shiftwidth=4 expandtab:
