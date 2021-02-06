@@ -89,7 +89,7 @@ class PartitionRecord(BinaryStream):
         """Dumps the binary in XML format."""
         print('<partition-record>')
         self.print_and_set("drive_attributes", self.read_uint8())
-        # See <https://en.wikipedia.org/wiki/Cylinder-head-sector>.
+        # See <https://wiki.osdev.org/Partition_Table>.
         self.print_and_set("starting_chs_1", self.read_uint8())
         self.print_and_set("starting_chs_2", self.read_uint8())
         self.print_and_set("starting_chs_3", self.read_uint8())
