@@ -5,7 +5,7 @@ authors = ["Miklos Vajna <vmiklos@vmiklos.hu>"]
 edition = "2018"
 
 [dependencies]
-atty = "0.2"
-reqwest = "0.9.5"
-serde_json = "1.0"
-url = "1.7.2"
+atty = "0.2.14"
+reqwest = { version = "0.11.0", features = ["blocking"] }
+serde_json = "1.0.62"
+url = "2.2.0"

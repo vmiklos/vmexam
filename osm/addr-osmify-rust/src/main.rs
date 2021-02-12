@@ -11,7 +11,7 @@ extern crate url;
 
 use std::io::Write;
 
-type BoxResult<T> = Result<T, Box<std::error::Error>>;
+type BoxResult<T> = Result<T, Box<dyn std::error::Error>>;
 
 #[derive(Debug)]
 struct OsmifyError {
@@ -41,9 +41,9 @@ impl std::error::Error for OsmifyError {
 fn query_turbo(query: &str) -> BoxResult<String> {
     let url = "http://overpass-api.de/api/interpreter";
 
-    let client = reqwest::Client::new();
+    let client = reqwest::blocking::Client::new();
     let body = String::from(query);
-    let mut buf = client.post(url).body(body).send()?;
+    let buf = client.post(url).body(body).send()?;
     Ok(buf.text()?)
 }
 
@@ -55,7 +55,7 @@ fn query_nominatim(query: &str) -> BoxResult<String> {
         .finish();
     let url = format!("{}{}", prefix, encoded);
 
-    let mut buf = reqwest::get(url.as_str())?;
+    let buf = reqwest::blocking::get(url.as_str())?;
 
     Ok(buf.text()?)
 }
