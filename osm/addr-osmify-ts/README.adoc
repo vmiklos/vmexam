@@ -6,7 +6,7 @@ is also machine-friendly, e.g. OsmAnd can parse it as well.
 
 This implementation is written in TypeScript:
 
-- [X] static typing
+- [x] static typing
 
 - [x] consistent code formatting (clang-format)
 
