@@ -1,0 +1,20 @@
+--- main.py.orig	2021-02-28 21:44:05.155837537 +0100
++++ main.py	2021-02-28 21:59:58.346825999 +0100
+@@ -672,6 +672,17 @@
+             # I have no idea if there's API for that.
+             self.w(' (out of ')
+             self.w('%d' % self.weekdays_in_month(), 'time')
++            self.w(' days)\n')
++
++            month_ago = self.timelog.day - datetime.timedelta(days=30)
++            monthly_window = self.monthly_window(month_ago)
++            month_total_work, _ = monthly_window.totals()
++            (d, h) = divmod(as_hours(month_total_work), self.settings.hours)
++            h_delta = datetime.timedelta(seconds=(h * 60 * 60))
++            self.w('Time worked last month: ')
++            self.w('%d days %s' % (d, format_duration(h_delta)), 'duration')
++            self.w(' (out of ')
++            self.w('%d' % self.weekdays_in_month(), 'time')
+             self.w(' days)')
+ 
+         if self.settings.show_office_hours:
