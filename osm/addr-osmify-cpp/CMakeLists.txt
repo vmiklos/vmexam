@@ -34,6 +34,7 @@ if (OSMIFY_ENABLE_GCOV)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 endif ()
 
+find_package(OpenSSL REQUIRED SSL)
 find_package(Poco REQUIRED Foundation JSON Net NetSSL)
 
 add_library(osmifycore
