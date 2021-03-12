@@ -35,6 +35,12 @@ refs/pull/*,commit)
 refs/heads/private/*,commit)
 	# Source of pull request: ignore
 	exit 0;;
+refs/identities/*,commit)
+	# git bug users
+	exit 0;;
+refs/bugs/*,commit)
+	# git bug bugs
+	exit 0;;
 esac
 
 # set this  to 'cat' to get a very detailed listing.

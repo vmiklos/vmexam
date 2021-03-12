@@ -12,7 +12,7 @@ export PATH=$HOME/bin:$PATH
 cd $(dirname $0)
 while true
 do
-    for repo in ged2dot online
+    for repo in ged2dot osm-gimmisn plees-tracker
     do
         cd $repo-mirror.git
         git fetch -q github
