@@ -29,4 +29,4 @@ run:
 	python3 -m http.server
 
 install:
-	cp *.json index.html leaflet.css bundle.js $(INSTDIR)
+	cp index.html leaflet.css bundle.js $(INSTDIR)
