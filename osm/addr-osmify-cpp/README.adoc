@@ -12,7 +12,7 @@ This implementation is written in $$C++17$$:
 
 - [x] documentation (this file for users, code comments for developers)
 
-- [x] tests (100% statement coverage, passing under sanitizers)
+- [x] tests (100% line coverage, passing under sanitizers)
 
 - [x] static code analysis (clang-tidy, include-what-you-use)
 
