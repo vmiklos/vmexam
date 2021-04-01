@@ -1,0 +1,27 @@
+= addr-osmify-cpp
+
+Takes an nominatim query (e.g. 'Mészáros utca 58/a, Budapest') and turns it
+into a string that is readable (so that you can save it to your contacts) and
+is also machine-friendly, e.g. OsmAnd can parse it as well.
+
+This implementation is written in $$C++17$$:
+
+- [x] static typing
+
+- [x] consistent code formatting (clang-format)
+
+- [x] documentation (this file for users, code comments for developers)
+
+- [x] tests (100% statement coverage, passing under sanitizers)
+
+- [x] static code analysis (clang-tidy, include-what-you-use)
+
+== Install
+
+----
+mkdir workdir
+cd workdir
+cmake ..
+make
+make check
+----

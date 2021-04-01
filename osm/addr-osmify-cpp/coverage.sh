@@ -12,7 +12,14 @@ make check
 cd -
 lcov --directory workdir --capture --output-file osmify.info
 lcov --remove osmify.info '/usr/*' --output-file osmify.info
+
+# Network traffic is intentionally mocked.
+lcov --remove osmify.info $PWD/urllib.cxx --output-file osmify.info
+
 genhtml -o coverage osmify.info
 echo "Coverage report is now available at coverage/index.html."
+
+# Prints line coverage.
+lcov --summary osmify.info
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:

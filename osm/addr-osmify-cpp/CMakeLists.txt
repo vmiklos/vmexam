@@ -39,6 +39,7 @@ find_package(Poco REQUIRED Foundation JSON Net NetSSL)
 
 add_library(osmifycore
     lib.cxx
+    urllib.cxx
     )
 target_link_libraries(osmifycore
     Poco::Foundation

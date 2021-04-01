@@ -4,7 +4,14 @@
  * found in the LICENSE file.
  */
 
+#include <cassert>
+#include <chrono>
 #include <fstream>
+#include <iterator>
+#include <sstream>
+#include <string>
+#include <thread>
+#include <vector>
 
 #include <Poco/URI.h>
 #include <gtest/gtest-message.h>
@@ -12,6 +19,7 @@
 #include <gtest/gtest.h>
 
 #include "lib.hxx"
+#include "urllib.hxx"
 
 namespace
 {
@@ -40,19 +48,23 @@ std::string mockUrlopen(const std::string& url, const std::string& data)
     std::string content((std::istreambuf_iterator<char>(stream)),
                         std::istreambuf_iterator<char>());
 
+    // Make sure that the 100ms progressbar spins at least once.
+    const int doubleSpin = 200;
+    std::this_thread::sleep_for(std::chrono::milliseconds(doubleSpin));
+
     return content;
 }
 
 class MockUrlopen
 {
-    osmify::urlopenType _old = nullptr;
+    urllib::request::urlopenType _old = nullptr;
     std::string _oldSuffix;
 
   public:
-    MockUrlopen(osmify::urlopenType custom, const std::string& suffix)
+    MockUrlopen(urllib::request::urlopenType custom, const std::string& suffix)
     {
-        _old = osmify::getUrlopen();
-        osmify::setUrlopen(custom);
+        _old = urllib::request::urlopen;
+        urllib::request::urlopen = custom;
         _oldSuffix = urlopenSuffix;
         urlopenSuffix = suffix;
     }
@@ -60,7 +72,7 @@ class MockUrlopen
     ~MockUrlopen()
     {
         urlopenSuffix = _oldSuffix;
-        osmify::setUrlopen(_old);
+        urllib::request::urlopen = _old;
     }
 };
 
@@ -116,6 +128,28 @@ TEST(TestMain, testOverpassNoResult)
     std::stringstream out;
     ASSERT_EQ(0, osmify::main(args, out));
     std::string expected = "No results from overpass\n";
+    ASSERT_EQ(expected, out.str());
+}
+
+TEST(TestMain, testNominatimBadJson)
+{
+    MockUrlopen mu(mockUrlopen, "-nominatim-badjson");
+    std::vector<const char*> args{"", "Mészáros utca 58/a, Budapest"};
+    std::stringstream out;
+    ASSERT_EQ(0, osmify::main(args, out));
+    std::string expected =
+        "Failed to parse JSON from nominatim: JSON parser error.\n";
+    ASSERT_EQ(expected, out.str());
+}
+
+TEST(TestMain, testOverpassBadJson)
+{
+    MockUrlopen mu(mockUrlopen, "-overpass-badjson");
+    std::vector<const char*> args{"", "Mészáros utca 58/a, Budapest"};
+    std::stringstream out;
+    ASSERT_EQ(0, osmify::main(args, out));
+    std::string expected =
+        "Failed to parse JSON from overpass: JSON parser error.\n";
     ASSERT_EQ(expected, out.str());
 }
 

@@ -6,19 +6,10 @@
  */
 
 #include <ostream>
-#include <string>
 #include <vector>
 
 namespace osmify
 {
-/// Function type for urlopen() customization.
-using urlopenType = std::string (*)(const std::string& url,
-                                    const std::string& data);
-/// Returns the current urlopen().
-urlopenType getUrlopen();
-/// Sets the current urlopen().
-void setUrlopen(urlopenType custom);
-
 /// CLI wrapper around the C++ API.
 int main(const std::vector<const char*>& args, std::ostream& ostream);
 } // namespace osmify

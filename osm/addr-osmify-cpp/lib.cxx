@@ -10,7 +10,7 @@
 #include <cxxabi.h>
 #include <future>
 #include <iostream>
-#include <memory>
+#include <sstream>
 #include <string>
 #include <system_error>
 
@@ -20,58 +20,17 @@
 #include <Poco/JSON/Object.h>
 #include <Poco/JSON/Parser.h>
 #include <Poco/Net/Context.h>
-#include <Poco/Net/HTTPMessage.h>
-#include <Poco/Net/HTTPRequest.h>
-#include <Poco/Net/HTTPResponse.h>
-#include <Poco/Net/HTTPSClientSession.h>
 #include <Poco/Net/HTTPSStreamFactory.h>
 #include <Poco/Net/NetSSL.h>
 #include <Poco/Net/RejectCertificateHandler.h>
 #include <Poco/Net/SSLManager.h>
 #include <Poco/SharedPtr.h>
-#include <Poco/StreamCopier.h>
 #include <Poco/URI.h>
-#include <Poco/URIStreamOpener.h>
+
+#include "urllib.hxx"
 
 namespace osmify
 {
-
-/// Default urlopen(), using Poco::Net.
-std::string defaultUrlopen(const std::string& url, const std::string& data)
-{
-    Poco::URI uri(url);
-    if (data.empty())
-    {
-        std::unique_ptr<std::istream> responseStream(
-            Poco::URIStreamOpener::defaultOpener().open(uri));
-
-        std::stringstream stringStream;
-        Poco::StreamCopier::copyStream(*responseStream, stringStream);
-
-        return stringStream.str();
-    }
-
-    Poco::Net::HTTPSClientSession session(uri.getHost(), uri.getPort());
-    Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_POST,
-                                   uri.getPath(),
-                                   Poco::Net::HTTPMessage::HTTP_1_1);
-    request.setContentLength(data.length());
-    std::ostream& requestStream = session.sendRequest(request);
-    requestStream << data;
-    Poco::Net::HTTPResponse response;
-    std::istream& responseStream = session.receiveResponse(response);
-
-    std::stringstream stringStream;
-    Poco::StreamCopier::copyStream(responseStream, stringStream);
-
-    return stringStream.str();
-}
-
-static urlopenType urlopen = defaultUrlopen;
-
-urlopenType getUrlopen() { return urlopen; }
-
-void setUrlopen(urlopenType custom) { urlopen = custom; }
 
 /// Handles SSL state lifecycle.
 class SslContext
@@ -108,7 +67,7 @@ SslContext::~SslContext()
 std::string queryTurbo(const std::string& query)
 {
     std::string url("https://overpass-api.de/api/interpreter");
-    return urlopen(url, query);
+    return urllib::request::urlopen(url, query);
 }
 
 /// Gets the OSM object from nominatim.
@@ -118,7 +77,7 @@ std::string queryNominatim(const std::string& query)
     uri.addQueryParameter("q", query);
     uri.addQueryParameter("format", "json");
 
-    return urlopen(uri.toString(), "");
+    return urllib::request::urlopen(uri.toString(), "");
 }
 
 /// Turns an address into a coodinate + normalized address combo.
@@ -250,19 +209,7 @@ int main(const std::vector<const char*>& args, std::ostream& ostream)
     {
         std::string query = args[1];
         std::future<std::string> future =
-            std::async(std::launch::async, [&query] {
-                std::stringstream ret;
-                try
-                {
-                    ret << osmify(query);
-                }
-                catch (const Poco::Exception& exception)
-                {
-                    ret << "Failed to osmify: " << exception.message();
-                }
-
-                return ret.str();
-            });
+            std::async(std::launch::async, [&query] { return osmify(query); });
 
         spinner(future, ostream);
     }

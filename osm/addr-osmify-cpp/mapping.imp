@@ -1,6 +1,10 @@
 [
   # iwyu wrongly thinks that including <iosfwd> is sufficient.
   { symbol: [ "std::stringstream", private, "<sstream>", public ] },
+  # iwyu wrongly thinks that std::ifstream is somewhere else.
+  { symbol: [ "std::ifstream", private, "<fstream>", public ] },
+  # iwyu wrongly thinks that a private header should be included.
+  { symbol: [ "ASSERT_EQ", private, "<gtest/gtest.h>", public ] },
 ]
 
 # vim: set ft=toml:
