@@ -116,6 +116,7 @@ vcl/qa/cppunit/gen/gen.cxx
 vcl/source/filter/ipdf/pdfdocument.cxx
 vcl/source/filter/ipdf/pdfread.cxx
 vcl/source/gdi/pdfobjectcopier.cxx
+vcl/source/pdf/PDFiumTools.cxx
 writerfilter/inc/dmapper/DomainMapperFactory.hxx
 writerfilter/inc/dmapper/GraphicZOrderHelper.hxx
 writerfilter/inc/rtftok/RTFDocument.hxx
@@ -215,9 +216,11 @@ writerperfect/source/writer/exp/xmltbli.cxx
 writerperfect/source/writer/exp/xmltbli.hxx
 writerperfect/source/writer/exp/xmltext.cxx
 writerperfect/source/writer/exp/xmltext.hxx
+xmloff/inc/XMLRtlGutterPropertyHandler.hxx
 xmloff/qa/unit/draw.cxx
 xmloff/qa/unit/style.cxx
 xmloff/qa/unit/text.cxx
+xmloff/source/style/XMLRtlGutterPropertyHandler.cxx
 xmlsecurity/inc/certificate.hxx
 xmlsecurity/inc/documentsignaturemanager.hxx
 xmlsecurity/inc/pdfsignaturehelper.hxx
