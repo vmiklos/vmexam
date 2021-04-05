@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const map = L.map('map');
 
     // JSON for showing here on the map, XML for OSMAnd.
-    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
          attribution :
              '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors. (<a href="pois.json">json</a>, <a href="pois.xml">xml</a>)',
      }).addTo(map);
