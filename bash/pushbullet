@@ -21,7 +21,7 @@ curl \
     -u ${access_token}: \
     -X POST \
     --header 'Content-Type: application/json' \
-    --data-binary '{"type": "note", "title": "'"$*"'", "body": "'$result' (exit code: '$exit_code')"}' \
+    --data-binary '{"type": "note", "title": "'"$*"'", "body": "'$result' (WD: '$PWD', exit code: '$exit_code')"}' \
     -o /dev/null \
     https://api.pushbullet.com/v2/pushes
 
