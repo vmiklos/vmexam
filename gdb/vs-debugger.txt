@@ -7,4 +7,6 @@ gdb commands, and their VS equivalent:
 - finish: Shift-F11
 - cont: F5
 
+go to line: Ctrl-G
+
 // vim: ft=asciidoc
