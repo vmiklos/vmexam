@@ -24,5 +24,6 @@ curl \
     --data-binary '{"type": "note", "title": "'"$*"'", "body": "'$result' (WD: '$PWD', exit code: '$exit_code')"}' \
     -o /dev/null \
     https://api.pushbullet.com/v2/pushes
+exit ${exit_code}
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
