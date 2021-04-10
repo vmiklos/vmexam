@@ -9,6 +9,7 @@
 # - bugprone-signed-char-misuse: complains on signed char -> int conversion, seems dubious
 # - misc-no-recursion: seems dubious
 # - bugprone-reserved-identifier: sometimes warns without a code location
+# - readability-function-cognitive-complexity: noisy, we already have readability-function-size instead
 Checks: "clang-diagnostic-*,\
 -clang-analyzer-cplusplus.NewDelete,\
 -clang-analyzer-cplusplus.NewDeleteLeaks,\
@@ -34,6 +35,7 @@ readability-*,\
 -readability-implicit-bool-conversion,\
 -readability-magic-numbers,\
 -readability-qualified-auto,\
+-readability-function-cognitive-complexity,\
 "
 WarningsAsErrors: '*'
 
