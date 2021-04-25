@@ -25,6 +25,16 @@ SwFrameInvFlags = {
     0x20: "NextSetCompletePaint",
 }
 
+SwFlyFrameInvFlags = {
+  0x01: "InvalidatePos",
+  0x02: "InvalidateSize",
+  0x04: "InvalidatePrt",
+  0x08: "SetNotifyBack",
+  0x10: "SetCompletePaint",
+  0x20: "InvalidateBrowseWidth",
+  0x40: "ClearContourCache",
+  0x80: "UpdateObjInSortedList",
+}
 
 def main():
     enum = sys.argv[1]
