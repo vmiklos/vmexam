@@ -36,6 +36,17 @@ SwFlyFrameInvFlags = {
   0x80: "UpdateObjInSortedList",
 }
 
+SwPageFrameInvFlags = {
+  0x00: "NONE",
+  0x01: "InvalidatePrt",
+  0x02: "SetCompletePaint",
+  0x04: "InvalidateNextPos",
+  0x08: "PrepareHeader",
+  0x10: "PrepareFooter",
+  0x20: "CheckGrid",
+  0x40: "InvalidateGrid",
+}
+
 def main():
     enum = sys.argv[1]
     magic = int(sys.argv[2], 16)
