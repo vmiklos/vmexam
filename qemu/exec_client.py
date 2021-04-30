@@ -7,8 +7,8 @@
 
 """
 This can run outside, on a host Linux machine:
-- if you symlink the winword script to ~/bin, then it will work with native paths
-- you can create similar wrapper scripts, e.g. s/winword/powerpnt/
+- if you symlink the script script to e.g. ~/bin/winword, then it will inject the exe for you
+- it'll try to map between the host and guest paths
 
 You may want to customize:
 - shared directory
@@ -23,12 +23,38 @@ import sys
 import urllib.request
 
 
-def main():
+ALIASES = {
+    "excel": "c:/program files (x86)/microsoft office/root/office16/excel.exe",
+    "powerpnt": "c:/program files (x86)/microsoft office/root/office16/powerpnt.exe",
+    "winword": "c:/program files (x86)/microsoft office/root/office16/winword.exe",
+}
+
+
+def main() -> None:
     """Commandline interface to this module."""
     argv = sys.argv[1:]
-    argv = [i.replace(os.path.join(os.environ["HOME"], "git"), 'z:') for i in argv]
+
+    # If my name is an alias, inject it.
+    my_name = sys.argv[0]
+    command = ""
+    for key, value in ALIASES.items():
+        if not my_name.endswith(key):
+            continue
+        command = value
+    if command:
+        argv = [command] + argv
+
+    # Map from host path to guest path.
+    abs_argv = []
+    for arg in argv:
+        if os.path.exists(arg):
+            abs_argv.append(os.path.abspath(arg))
+        else:
+            abs_argv.append(arg)
+    abs_argv = [i.replace(os.path.join(os.environ["HOME"], "git"), 'z:') for i in abs_argv]
+
     payload_dict = {
-        "command": argv
+        "command": abs_argv
     }
     payload = json.dumps(payload_dict)
     url = "http://192.168.122.216:8000/exec"

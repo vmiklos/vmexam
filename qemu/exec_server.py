@@ -9,7 +9,7 @@
 This can potentially auto-start inside a Windows VM:
 - go to C:/Users/you/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup
 - create an exec-server.lnk file in Explorer pointing to e.g.
-  "c:/Python39/pythonw.exe c:/lo/exec_server.py"
+  "c:/Python39/pythonw.exe c:/path/to/exec_server.py"
 
 You may want to customize the port number below.
 
@@ -17,14 +17,25 @@ Needless to say, run this only in a VM that is only visible to your local host, 
 network, since it allows executing arbitrary commands, remotely, without auth.
 """
 
+from typing import Any
+from typing import Dict
+from typing import Iterable
+from typing import TYPE_CHECKING
 import json
 import os
 import subprocess
 import traceback
 import wsgiref.simple_server
 
+if TYPE_CHECKING:
+    # pylint: disable=no-name-in-module,import-error
+    from wsgiref.types import StartResponse
 
-def application(environ, start_response):
+
+def application(
+        environ: Dict[str, Any],
+        start_response: 'StartResponse'
+) -> Iterable[bytes]:
     """The entry point of this WSGI app."""
     try:
         body = "OK"
@@ -37,11 +48,9 @@ def application(environ, start_response):
             flags |= 0x00000008  # DETACHED_PROCESS
             flags |= 0x00000200  # CREATE_NEW_PROCESS_GROUP
             flags |= 0x08000000  # CREATE_NO_WINDOW
-            pkwargs = {
-                'close_fds': True,  # close stdin/stdout/stderr on child
-                'creationflags': flags,
-            }
-            subprocess.Popen(command, **pkwargs)
+            subprocess.Popen(command,
+                             close_fds=True,  # close stdin/stdout/stderr on child
+                             creationflags=flags)
         else:
             subprocess.run(command, check=True)
     # pylint: disable=broad-except
@@ -56,7 +65,7 @@ def application(environ, start_response):
     return [body_bytes]
 
 
-def main():
+def main() -> None:
     """Commandline interface to this module."""
     httpd = wsgiref.simple_server.make_server('', 8000, application)
     httpd.serve_forever()
