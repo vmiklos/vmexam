@@ -47,6 +47,11 @@ SwPageFrameInvFlags = {
   0x40: "InvalidateGrid",
 }
 
+SwSectionFrameInvFlags = {
+  0x01: "InvalidateSize",
+  0x10: "SetCompletePaint",
+}
+
 def main():
     enum = sys.argv[1]
     magic = int(sys.argv[2], 16)
