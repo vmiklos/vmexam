@@ -177,8 +177,8 @@ func Main(args []string, stream io.Writer) int {
 		return spinner(ch, stream)
 	}
 
-	fmt.Println(stream, "usage: addr-osmify <query>")
-	fmt.Println(stream)
-	fmt.Println(stream, "e.g. addr-osmify 'Mészáros utca 58/a, Budapest'")
+	fmt.Fprintf(stream, "usage: addr-osmify <query>\n")
+	fmt.Fprintf(stream, "\n")
+	fmt.Fprintf(stream, "e.g. addr-osmify 'Mészáros utca 58/a, Budapest'\n")
 	return 0
 }
