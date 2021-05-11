@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/url"
-	"os"
 	"time"
 )
 
@@ -161,7 +160,8 @@ func spinner(ch chan SpinnerResult, stream io.Writer) int {
 	}
 }
 
-func Main(args []string, stream io.Writer) {
+// Main is the commandline interface to this package.
+func Main(args []string, stream io.Writer) int {
 	flags := flag.NewFlagSet(args[0], flag.ContinueOnError)
 	flags.Parse(args[1:])
 	if flags.NArg() > 0 {
@@ -174,10 +174,11 @@ func Main(args []string, stream io.Writer) {
 				ch <- SpinnerResult{Result: *result}
 			}
 		}()
-		os.Exit(spinner(ch, stream))
-	} else {
-		fmt.Println(stream, "usage: addr-osmify <query>")
-		fmt.Println(stream)
-		fmt.Println(stream, "e.g. addr-osmify 'Mészáros utca 58/a, Budapest'")
+		return spinner(ch, stream)
 	}
+
+	fmt.Println(stream, "usage: addr-osmify <query>")
+	fmt.Println(stream)
+	fmt.Println(stream, "e.g. addr-osmify 'Mészáros utca 58/a, Budapest'")
+	return 0
 }

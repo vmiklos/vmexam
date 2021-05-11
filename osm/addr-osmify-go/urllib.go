@@ -44,4 +44,5 @@ func urlopen(url string, data string) (string, error) {
 	return buf.String(), nil
 }
 
+// Urlopen is a wrapper around http.Get() and with POST functionality.
 var Urlopen = urlopen

@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	Main(os.Args, os.Stdout)
+	os.Exit(Main(os.Args, os.Stdout))
 }
