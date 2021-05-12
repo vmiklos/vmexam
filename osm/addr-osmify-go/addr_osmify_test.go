@@ -155,3 +155,93 @@ func TestNoargs(t *testing.T) {
 		t.Errorf("Main() = %q, want prefix %q", buf.String(), want)
 	}
 }
+
+// Tests the case where there nominatim is down.
+func TestNominatimUrlopen(t *testing.T) {
+	OldUrlopen := Urlopen
+	defer func() { Urlopen = OldUrlopen }()
+	Urlopen = func(urlString string, data string) (string, error) {
+		return "", fmt.Errorf("lookup nominatim.openstreetmap.org on 192.168.0.1:53: no such host")
+	}
+	want := ": no such host\n"
+	argv := []string{"", "Mészáros utca 58/a, Budapest"}
+	buf := new(bytes.Buffer)
+	Main(argv, buf)
+	if !strings.HasSuffix(buf.String(), want) {
+		t.Errorf("Main() = %q, want suffix %q", buf.String(), want)
+	}
+}
+
+// Tests the case where nominatim sends not-well-formed json.
+func TestNominatimJson(t *testing.T) {
+	OldUrlopen := Urlopen
+	defer func() { Urlopen = OldUrlopen }()
+	route := URLRoute{
+		URL:        "http://nominatim.openstreetmap.org/search.php?format=json&q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest",
+		ResultPath: "mock/nominatim-bad.json",
+	}
+	routes := []URLRoute{route}
+	Urlopen = MockUrlopen(t, routes)
+
+	want := "osmify: queryNominatim: json decode failed: unexpected EOF\n"
+	argv := []string{"", "Mészáros utca 58/a, Budapest"}
+	buf := new(bytes.Buffer)
+	Main(argv, buf)
+	if buf.String() != want {
+		t.Errorf("Main() = %q, want %q", buf.String(), want)
+	}
+}
+
+// Tests the case where there overpass is down.
+func TestOverpassUrlopen(t *testing.T) {
+	OldUrlopen := Urlopen
+	defer func() { Urlopen = OldUrlopen }()
+	route := URLRoute{
+		URL:        "http://nominatim.openstreetmap.org/search.php?format=json&q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest",
+		ResultPath: "mock/nominatim-happy.json",
+	}
+	routes := []URLRoute{route}
+	mockURLOpen := MockUrlopen(t, routes)
+	Urlopen = func(urlString string, data string) (string, error) {
+		if urlString == "http://overpass-api.de/api/interpreter" {
+			return "", fmt.Errorf("lookup overpass-api.de on 192.168.0.1:53: no such host")
+		}
+
+		return mockURLOpen(urlString, data)
+	}
+
+	want := ": no such host\n"
+	argv := []string{"", "Mészáros utca 58/a, Budapest"}
+	buf := new(bytes.Buffer)
+	Main(argv, buf)
+	if !strings.HasSuffix(buf.String(), want) {
+		t.Errorf("Main() = %q, want suffix %q", buf.String(), want)
+	}
+}
+
+// Tests the case where overpass sends not-well-formed json.
+func TestOverpassJson(t *testing.T) {
+	OldUrlopen := Urlopen
+	defer func() { Urlopen = OldUrlopen }()
+	var routes []URLRoute
+	route := URLRoute{
+		URL:        "http://nominatim.openstreetmap.org/search.php?format=json&q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest",
+		ResultPath: "mock/nominatim-happy.json",
+	}
+	routes = append(routes, route)
+	route = URLRoute{
+		URL:        "http://overpass-api.de/api/interpreter",
+		DataPath:   "mock/overpass-happy.expected-data",
+		ResultPath: "mock/overpass-bad.json",
+	}
+	routes = append(routes, route)
+	Urlopen = MockUrlopen(t, routes)
+
+	want := "osmify: queryTurbo: json decode failed: unexpected EOF\n"
+	argv := []string{"", "Mészáros utca 58/a, Budapest"}
+	buf := new(bytes.Buffer)
+	Main(argv, buf)
+	if buf.String() != want {
+		t.Errorf("Main() = %q, want %q", buf.String(), want)
+	}
+}
