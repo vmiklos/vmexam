@@ -13,6 +13,9 @@
 # $ ./resolve_magic.py SwFrameInvFlags 0x13
 # SwFrameInvFlags::InvalidatePrt | SwFrameInvFlags::InvalidateSize | SwFrameInvFlags::NextInvalidatePos
 #
+# Convert from C++: s/    \(.*\) = \(.*\),/    \2: "\1",/g
+#
+
 
 import sys
 
@@ -50,6 +53,17 @@ SwPageFrameInvFlags = {
 SwSectionFrameInvFlags = {
   0x01: "InvalidateSize",
   0x10: "SetCompletePaint",
+}
+
+SwTabFrameInvFlags = {
+    0x00: "NONE",
+    0x02: "InvalidatePrt",
+    0x04: "InvalidateIndNextPrt",
+    0x08: "InvalidatePrevPrt",
+    0x10: "SetIndNextCompletePaint",
+    0x20: "InvalidateBrowseWidth",
+    0x40: "InvalidatePos",
+    0x80: "InvalidateNextPos",
 }
 
 def main():
