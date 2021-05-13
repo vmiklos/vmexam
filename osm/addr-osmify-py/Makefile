@@ -14,4 +14,4 @@ check-lint:
 
 check-unit:
 	coverage run --branch --module unittest test_addr_osmify.py
-	coverage report --show-missing --fail-under=100 addr_osmify.py test_addr_osmify.py
+	coverage report --show-missing --fail-under=100 addr_osmify.py

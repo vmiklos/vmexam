@@ -1,0 +1,15 @@
+[REPORTS]
+
+# Activate the evaluation score.
+score=no
+
+[FORMAT]
+
+# Maximum number of characters on a single line.
+max-line-length=120
+
+[DESIGN]
+
+# Minimum number of public methods for a class (see R0903).
+# This is required for python 3.6 without data classes.
+min-public-methods=0

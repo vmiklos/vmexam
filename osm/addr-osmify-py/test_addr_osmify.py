@@ -8,6 +8,7 @@
 
 from typing import BinaryIO
 from typing import Callable
+from typing import List
 from typing import Optional
 import io
 import os
@@ -16,6 +17,21 @@ import unittest
 import unittest.mock
 import urllib
 import addr_osmify
+
+
+class URLRoute:
+    """Contains info about how to mock one URL."""
+    # The request URL
+    url: str
+    # Path of expected POST data, empty for GET
+    data_path: str
+    # Path of expected result data
+    result_path: str
+
+    def __init__(self, url: str, data_path: str, result_path: str) -> None:
+        self.url = url
+        self.data_path = data_path
+        self.result_path = result_path
 
 
 class TestMain(unittest.TestCase):
@@ -41,9 +57,41 @@ class TestMain(unittest.TestCase):
                 return buf
         return mock_urlopen_with_suffix
 
+    def mock_urlopen(self, routes: List[URLRoute]) -> Callable[[str, Optional[bytes]], BinaryIO]:
+        """Generates a mock for urllib.request.urlopen()."""
+        def mock_urlopen_with_route(url: str, data: Optional[bytes] = None) -> BinaryIO:
+            """Mocks urllib.request.urlopen()."""
+            for route in routes:
+                if url != route.url:
+                    continue
+
+                if route.data_path:
+                    with open(route.data_path, "rb") as stream:
+                        self.assertEqual(stream.read(), data)
+
+                with open(route.result_path, "rb") as stream:
+                    buf = io.BytesIO()
+                    buf.write(stream.read())
+                    buf.seek(0)
+                    # Make sure that the 100ms progressbar spins at least once.
+                    time.sleep(0.2)
+                    return buf
+            self.fail("url missing from route list: '" + url + "'")
+        return mock_urlopen_with_route
+
     def test_happy(self) -> None:
         """Tests the happy path."""
-        with unittest.mock.patch('urllib.request.urlopen', self.gen_urlopen("-happy")):
+        nominatim_url = "http://nominatim.openstreetmap.org/search.php?"
+        nominatim_url += "q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json"
+        routes: List[URLRoute] = [
+            URLRoute(url=nominatim_url,
+                     data_path="",
+                     result_path="mock/nominatim-happy.json"),
+            URLRoute(url="http://overpass-api.de/api/interpreter",
+                     data_path="mock/overpass-happy.expected-data",
+                     result_path="mock/overpass-happy.json")
+        ]
+        with unittest.mock.patch('urllib.request.urlopen', self.mock_urlopen(routes)):
             argv = ["", "Mészáros utca 58/a, Budapest"]
             with unittest.mock.patch('sys.argv', argv):
                 buf = io.StringIO()
@@ -55,7 +103,17 @@ class TestMain(unittest.TestCase):
 
     def test_prefer_buildings(self) -> None:
         """Tests that buildings are preferred in case of multiple results."""
-        with unittest.mock.patch('urllib.request.urlopen', self.gen_urlopen("-prefer-buildings")):
+        nominatim_url = "http://nominatim.openstreetmap.org/search.php?"
+        nominatim_url += "q=Karinthy+Frigyes+%C3%BAt+18%2C+Budapest&format=json"
+        routes: List[URLRoute] = [
+            URLRoute(url=nominatim_url,
+                     data_path="",
+                     result_path="mock/nominatim-prefer-buildings.json"),
+            URLRoute(url="http://overpass-api.de/api/interpreter",
+                     data_path="mock/overpass-prefer-buildings.expected-data",
+                     result_path="mock/overpass-prefer-buildings.json")
+        ]
+        with unittest.mock.patch('urllib.request.urlopen', self.mock_urlopen(routes)):
             argv = ["", "Karinthy Frigyes út 18, Budapest"]
             with unittest.mock.patch('sys.argv', argv):
                 buf = io.StringIO()
@@ -68,7 +126,17 @@ class TestMain(unittest.TestCase):
 
     def test_no_buildings(self) -> None:
         """Similar to test_prefer_buildings(), but none of the results are a building."""
-        with unittest.mock.patch('urllib.request.urlopen', self.gen_urlopen("-no-buildings")):
+        nominatim_url = "http://nominatim.openstreetmap.org/search.php?"
+        nominatim_url += "q=Karinthy+Frigyes+%C3%BAt+18%2C+Budapest&format=json"
+        routes: List[URLRoute] = [
+            URLRoute(url=nominatim_url,
+                     data_path="",
+                     result_path="mock/nominatim-no-buildings.json"),
+            URLRoute(url="http://overpass-api.de/api/interpreter",
+                     data_path="mock/overpass-no-buildings.expected-data",
+                     result_path="mock/overpass-no-buildings.json")
+        ]
+        with unittest.mock.patch('urllib.request.urlopen', self.mock_urlopen(routes)):
             argv = ["", "Karinthy Frigyes út 18, Budapest"]
             with unittest.mock.patch('sys.argv', argv):
                 buf = io.StringIO()
@@ -81,7 +149,14 @@ class TestMain(unittest.TestCase):
 
     def test_nominatim_noresults(self) -> None:
         """Tests the case when nominatim gives no results."""
-        with unittest.mock.patch('urllib.request.urlopen', self.gen_urlopen("-no-result")):
+        nominatim_url = "http://nominatim.openstreetmap.org/search.php?"
+        nominatim_url += "q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapestt&format=json"
+        routes: List[URLRoute] = [
+            URLRoute(url=nominatim_url,
+                     data_path="",
+                     result_path="mock/nominatim-no-result.json")
+        ]
+        with unittest.mock.patch('urllib.request.urlopen', self.mock_urlopen(routes)):
             argv = ["", "Mészáros utca 58/a, Budapestt"]
             with unittest.mock.patch('sys.argv', argv):
                 buf = io.StringIO()
@@ -93,7 +168,17 @@ class TestMain(unittest.TestCase):
 
     def test_overpass_noresults(self) -> None:
         """Tests the case when overpass gives no results."""
-        with unittest.mock.patch('urllib.request.urlopen', self.gen_urlopen("-overpass-noresult")):
+        nominatim_url = "http://nominatim.openstreetmap.org/search.php?"
+        nominatim_url += "q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json"
+        routes: List[URLRoute] = [
+            URLRoute(url=nominatim_url,
+                     data_path="",
+                     result_path="mock/nominatim-overpass-noresult.json"),
+            URLRoute(url="http://overpass-api.de/api/interpreter",
+                     data_path="mock/overpass-noresult.expected-data",
+                     result_path="mock/overpass-noresult.json")
+        ]
+        with unittest.mock.patch('urllib.request.urlopen', self.mock_urlopen(routes)):
             argv = ["", "Mészáros utca 58/a, Budapest"]
             with unittest.mock.patch('sys.argv', argv):
                 buf = io.StringIO()
