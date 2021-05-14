@@ -1,0 +1,9 @@
+= Development notes
+
+== Outdated dependencies
+
+Query for direct dependencies:
+
+----
+cargo outdated -d 1
+----
