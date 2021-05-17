@@ -4,13 +4,18 @@
  * found in the LICENSE file.
  */
 
+#![warn(missing_docs)]
+
+//! Takes an OSM way ID and turns it into a string that is readable and
+//! e.g. OsmAnd can parse it as well.
+
 extern crate atty;
-extern crate reqwest;
 extern crate serde_json;
 extern crate url;
 
 use std::io::Write;
 
+/// A Result which allows any error that implements Error.
 pub type BoxResult<T> = Result<T, Box<dyn std::error::Error>>;
 
 #[derive(Debug)]
@@ -30,7 +35,9 @@ impl std::error::Error for OsmifyError {
     }
 }
 
+/// Allows HTTP GET and POST requests.
 pub trait Urllib: Send + Sync {
+    /// If `data` is empty, that means HTTP GET, otherwise a HTTP POST.
     fn urlopen(&self, url: &str, data: &str) -> BoxResult<String>;
 }
 
@@ -180,6 +187,7 @@ fn spinner(
     }
 }
 
+/// Similar to plain main(), but with an interface that allows testing.
 pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: Box<dyn Urllib>) -> BoxResult<()> {
     if args.len() > 1 {
         let (tx, rx) = std::sync::mpsc::channel();
@@ -198,4 +206,86 @@ pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: Box<dyn Urllib>) 
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    struct URLRoute {
+        url: String,
+        data_path: String,
+        result_path: String,
+    }
+
+    struct MockUrllib {
+        routes: Vec<URLRoute>,
+    }
+
+    impl Urllib for MockUrllib {
+        fn urlopen(&self, url: &str, data: &str) -> BoxResult<String> {
+            for route in self.routes.iter() {
+                if route.url != url {
+                    continue;
+                }
+
+                if !route.data_path.is_empty() {
+                    // Can't use assert_eq!() here, failure would result in a hang.
+                    let contents = match std::fs::read_to_string(&route.data_path) {
+                        Ok(value) => value,
+                        Err(error) => {
+                            return Err(Box::new(OsmifyError {
+                                details: format!("failed read {}: {:?}", route.result_path, error),
+                            }))
+                        }
+                    };
+                    if data != contents {
+                        return Err(Box::new(OsmifyError {
+                            details: format!("unexpected data: '{}' != '{}'", data, contents),
+                        }));
+                    }
+                }
+
+                let contents = match std::fs::read_to_string(&route.result_path) {
+                    Ok(value) => value,
+                    Err(error) => {
+                        return Err(Box::new(OsmifyError {
+                            details: format!("failed read {}: {:?}", route.result_path, error),
+                        }))
+                    }
+                };
+                return Ok(contents);
+            }
+
+            return Err(Box::new(OsmifyError {
+                details: format!("unexpected url: {}", url),
+            }));
+        }
+    }
+
+    #[test]
+    fn test_happy() -> BoxResult<()> {
+        let args: Vec<String> = vec!["".to_string(), "Mészáros utca 58/a, Budapest".to_string()];
+
+        let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
+
+        let routes = vec![
+            URLRoute{url: "http://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json".to_string(), data_path: "".to_string(), result_path: "mock/nominatim-happy.json".to_string()},
+            URLRoute{url: "http://overpass-api.de/api/interpreter".to_string(), data_path: "mock/overpass-happy.expected-data".to_string(), result_path: "mock/overpass-happy.json".to_string()}
+        ];
+        let urllib: Box<dyn Urllib> = Box::new(MockUrllib { routes: routes });
+        main(args, &mut buf, urllib)?;
+
+        let buf_vec = buf.into_inner();
+        let buf_string = match std::str::from_utf8(&buf_vec) {
+            Ok(v) => v,
+            Err(e) => panic!("invalid UTF-8 sequence: {}", e),
+        };
+        assert_eq!(
+            buf_string,
+            "geo:47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n"
+        );
+
+        Ok(())
+    }
 }

@@ -4,9 +4,11 @@
  * found in the LICENSE file.
  */
 
-extern crate reqwest;
+#![warn(missing_docs)]
 
-use std::io::stdout;
+//! Commandline interface to addr_osmify.
+
+extern crate reqwest;
 
 struct ReqwestUrllib {}
 
@@ -28,7 +30,7 @@ impl addr_osmify::Urllib for ReqwestUrllib {
 fn main() -> addr_osmify::BoxResult<()> {
     let args: Vec<String> = std::env::args().collect();
     let urllib: Box<dyn addr_osmify::Urllib> = Box::new(ReqwestUrllib {});
-    addr_osmify::main(args, &mut stdout(), urllib)?;
+    addr_osmify::main(args, &mut std::io::stdout(), urllib)?;
 
     Ok(())
 }
