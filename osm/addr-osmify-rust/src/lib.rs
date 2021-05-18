@@ -67,14 +67,14 @@ fn osmify(query: &str, urllib: &dyn Urllib) -> BoxResult<String> {
         Ok(value) => value,
         Err(error) => {
             return Err(Box::new(OsmifyError {
-                details: format!("Failed to parse JSON from nominatim: {:?}", error),
+                details: format!("failed to parse JSON from nominatim: {}", error.to_string()),
             }));
         }
     };
     let mut elements = json.as_array().ok_or("option::NoneError")?.clone();
     if elements.is_empty() {
         return Err(Box::new(OsmifyError {
-            details: "No results from nominatim".to_string(),
+            details: "no results from nominatim".to_string(),
         }));
     }
 
@@ -195,7 +195,7 @@ pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: Box<dyn Urllib>) 
             let result = osmify(&args[1], &*urllib);
             match result {
                 Ok(value) => tx.send(Ok(value)),
-                Err(error) => tx.send(Err(format!("Failed to osmify: {:?}", error))),
+                Err(error) => tx.send(Err(format!("failed to osmify: {}", error.to_string()))),
             }
         });
         spinner(&rx, stream)?;
@@ -235,7 +235,11 @@ mod tests {
                         Ok(value) => value,
                         Err(error) => {
                             return Err(Box::new(OsmifyError {
-                                details: format!("failed read {}: {:?}", route.result_path, error),
+                                details: format!(
+                                    "failed read {}: {}",
+                                    route.data_path,
+                                    error.to_string()
+                                ),
                             }))
                         }
                     };
@@ -250,7 +254,11 @@ mod tests {
                     Ok(value) => value,
                     Err(error) => {
                         return Err(Box::new(OsmifyError {
-                            details: format!("failed read {}: {:?}", route.result_path, error),
+                            details: format!(
+                                "failed read {}: {}",
+                                route.result_path,
+                                error.to_string()
+                            ),
                         }))
                     }
                 };
@@ -270,8 +278,16 @@ mod tests {
         let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
 
         let routes = vec![
-            URLRoute{url: "http://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json".to_string(), data_path: "".to_string(), result_path: "mock/nominatim-happy.json".to_string()},
-            URLRoute{url: "http://overpass-api.de/api/interpreter".to_string(), data_path: "mock/overpass-happy.expected-data".to_string(), result_path: "mock/overpass-happy.json".to_string()}
+            URLRoute {
+                url: "http://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json".to_string(),
+                data_path: "".to_string(),
+                result_path: "mock/nominatim-happy.json".to_string()
+            },
+            URLRoute {
+                url: "http://overpass-api.de/api/interpreter".to_string(),
+                data_path: "mock/overpass-happy.expected-data".to_string(),
+                result_path: "mock/overpass-happy.json".to_string()
+            }
         ];
         let urllib: Box<dyn Urllib> = Box::new(MockUrllib { routes: routes });
         main(args, &mut buf, urllib)?;
@@ -284,6 +300,97 @@ mod tests {
         assert_eq!(
             buf_string,
             "geo:47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n"
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_nominatim_json() -> BoxResult<()> {
+        let args: Vec<String> = vec!["".to_string(), "Mészáros utca 58/a, Budapest".to_string()];
+
+        let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
+
+        let routes = vec![
+            URLRoute {
+                url: "http://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json".to_string(),
+                data_path: "".to_string(),
+                result_path: "mock/nominatim-bad.json".to_string()
+            },
+        ];
+        let urllib: Box<dyn Urllib> = Box::new(MockUrllib { routes: routes });
+        let error = match main(args, &mut buf, urllib) {
+            Ok(_) => panic!("unexpected success"),
+            Err(e) => e,
+        };
+
+        assert_eq!(
+            error.to_string(),
+            "failed to osmify: failed to parse JSON from nominatim: EOF while parsing an object at line 2 column 0",
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_nominatim_no_result() -> BoxResult<()> {
+        let args: Vec<String> = vec!["".to_string(), "Mészáros utca 58/a, Budapestt".to_string()];
+
+        let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
+
+        let routes = vec![
+            URLRoute {
+                url: "http://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapestt&format=json".to_string(),
+                data_path: "".to_string(),
+                result_path: "mock/nominatim-no-result.json".to_string()
+            },
+        ];
+        let urllib: Box<dyn Urllib> = Box::new(MockUrllib { routes: routes });
+        let error = match main(args, &mut buf, urllib) {
+            Ok(_) => panic!("unexpected success"),
+            Err(e) => e,
+        };
+
+        assert_eq!(
+            error.to_string(),
+            "failed to osmify: no results from nominatim",
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_prefer_buildings() -> BoxResult<()> {
+        let args: Vec<String> = vec![
+            "".to_string(),
+            "Karinthy Frigyes út 18, Budapest".to_string(),
+        ];
+
+        let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
+
+        let routes = vec![
+            URLRoute {
+                url: "http://nominatim.openstreetmap.org/search.php?q=Karinthy+Frigyes+%C3%BAt+18%2C+Budapest&format=json".to_string(),
+                data_path: "".to_string(),
+                result_path: "mock/nominatim-prefer-buildings.json".to_string()
+            },
+            URLRoute {
+                url: "http://overpass-api.de/api/interpreter".to_string(),
+                data_path: "mock/overpass-prefer-buildings.expected-data".to_string(),
+                result_path: "mock/overpass-prefer-buildings.json".to_string()
+            }
+        ];
+        let urllib: Box<dyn Urllib> = Box::new(MockUrllib { routes: routes });
+        main(args, &mut buf, urllib)?;
+
+        let buf_vec = buf.into_inner();
+        let buf_string = match std::str::from_utf8(&buf_vec) {
+            Ok(v) => v,
+            Err(e) => panic!("invalid UTF-8 sequence: {}", e),
+        };
+        assert_eq!(
+            buf_string,
+            "geo:47.47690895,19.0512550758533 (1111 Budapest, Karinthy Frigyes út 18)\n"
         );
 
         Ok(())
