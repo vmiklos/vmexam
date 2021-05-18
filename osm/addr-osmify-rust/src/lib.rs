@@ -61,6 +61,21 @@ fn query_nominatim(urllib: &dyn Urllib, query: &str) -> BoxResult<String> {
     Ok(buf)
 }
 
+fn is_building(element: &serde_json::Value) -> bool {
+    if !element.is_object() {
+        return false;
+    }
+    let class = element.get("class");
+    if class.is_none() {
+        return false;
+    }
+    let class = class.unwrap();
+    if !class.is_string() {
+        return false;
+    }
+    class.as_str().unwrap() == "building"
+}
+
 fn osmify(query: &str, urllib: &dyn Urllib) -> BoxResult<String> {
     let nominatim = query_nominatim(urllib, query)?;
     let json: serde_json::Value = match serde_json::from_str(&nominatim) {
@@ -82,20 +97,7 @@ fn osmify(query: &str, urllib: &dyn Urllib) -> BoxResult<String> {
         // There are multiple elements, prefer buildings if possible.
         let buildings: Vec<serde_json::Value> = elements
             .iter()
-            .filter(|i| {
-                let i = match i.as_object() {
-                    Some(value) => value,
-                    None => return false,
-                };
-                let class = match i.get("class") {
-                    Some(value) => value.as_str(),
-                    None => return false,
-                };
-                match class {
-                    Some(value) => value == "building",
-                    None => false,
-                }
-            })
+            .filter(|i| is_building(i))
             .cloned()
             .collect();
 
@@ -394,5 +396,27 @@ mod tests {
         );
 
         Ok(())
+    }
+
+    #[test]
+    fn test_is_building() {
+        {
+            let json_null = serde_json::Value::Null;
+            assert!(!is_building(&json_null));
+        }
+
+        {
+            let map = serde_json::Map::new();
+            let json_object = serde_json::Value::Object(map);
+            assert!(!is_building(&json_object));
+        }
+
+        {
+            let mut map = serde_json::Map::new();
+            let json_null = serde_json::Value::Null;
+            map.insert("class".to_string(), json_null);
+            let json_object = serde_json::Value::Object(map);
+            assert!(!is_building(&json_object));
+        }
     }
 }
