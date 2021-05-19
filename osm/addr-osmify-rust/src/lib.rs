@@ -2,7 +2,7 @@
  * Copyright 2019 Miklos Vajna. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
- */
+*/
 
 #![warn(missing_docs)]
 
@@ -134,7 +134,7 @@ out body;"#,
         Ok(value) => value,
         Err(error) => {
             return Err(Box::new(OsmifyError {
-                details: format!("Failed to parse JSON from overpass: {:?}", error),
+                details: format!("failed to parse JSON from overpass: {}", error.to_string()),
             }));
         }
     };
@@ -142,7 +142,7 @@ out body;"#,
     let elements = &json["elements"].as_array().ok_or("option::NoneError")?;
     if elements.is_empty() {
         return Err(Box::new(OsmifyError {
-            details: "No results from overpass".to_string(),
+            details: "no results from overpass".to_string(),
         }));
     }
 
@@ -211,6 +211,7 @@ pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: Box<dyn Urllib>) 
 }
 
 #[cfg(test)]
+#[cfg(not(tarpaulin_include))]
 mod tests {
     use super::*;
 
@@ -399,6 +400,91 @@ mod tests {
     }
 
     #[test]
+    fn test_overpass_json() -> BoxResult<()> {
+        let args: Vec<String> = vec!["".to_string(), "Mészáros utca 58/a, Budapest".to_string()];
+
+        let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
+
+        let routes = vec![
+            URLRoute {
+                url: "http://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json".to_string(),
+                data_path: "".to_string(),
+                result_path: "mock/nominatim-happy.json".to_string()
+            },
+            URLRoute {
+                url: "http://overpass-api.de/api/interpreter".to_string(),
+                data_path: "mock/overpass-happy.expected-data".to_string(),
+                result_path: "mock/overpass-bad.json".to_string()
+            }
+        ];
+        let urllib: Box<dyn Urllib> = Box::new(MockUrllib { routes: routes });
+        let error = match main(args, &mut buf, urllib) {
+            Ok(_) => panic!("unexpected success"),
+            Err(e) => e,
+        };
+
+        assert_eq!(
+            error.to_string(),
+            "failed to osmify: failed to parse JSON from overpass: EOF while parsing a value at line 3 column 0",
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_overpass_noresult() -> BoxResult<()> {
+        let args: Vec<String> = vec!["".to_string(), "Mészáros utca 58/a, Budapest".to_string()];
+
+        let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
+
+        let routes = vec![
+            URLRoute {
+                url: "http://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json".to_string(),
+                data_path: "".to_string(),
+                result_path: "mock/nominatim-happy.json".to_string()
+            },
+            URLRoute {
+                url: "http://overpass-api.de/api/interpreter".to_string(),
+                data_path: "mock/overpass-happy.expected-data".to_string(),
+                result_path: "mock/overpass-noresult.json".to_string()
+            }
+        ];
+        let urllib: Box<dyn Urllib> = Box::new(MockUrllib { routes: routes });
+        let error = match main(args, &mut buf, urllib) {
+            Ok(_) => panic!("unexpected success"),
+            Err(e) => e,
+        };
+
+        assert_eq!(
+            error.to_string(),
+            "failed to osmify: no results from overpass",
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_noargs() -> BoxResult<()> {
+        let args: Vec<String> = vec!["".to_string()];
+        let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
+        let routes = vec![];
+        let urllib: Box<dyn Urllib> = Box::new(MockUrllib { routes: routes });
+        main(args, &mut buf, urllib)?;
+
+        let buf_vec = buf.into_inner();
+        let buf_string = match std::str::from_utf8(&buf_vec) {
+            Ok(v) => v,
+            Err(e) => panic!("invalid UTF-8 sequence: {}", e),
+        };
+        assert!(
+            buf_string.starts_with("usage: "),
+            format!("buf_string is '{}'", buf_string)
+        );
+
+        Ok(())
+    }
+
+    #[test]
     fn test_is_building() {
         {
             let json_null = serde_json::Value::Null;
@@ -418,5 +504,16 @@ mod tests {
             let json_object = serde_json::Value::Object(map);
             assert!(!is_building(&json_object));
         }
+    }
+
+    #[test]
+    #[allow(deprecated)]
+    fn osmify_error_description() {
+        use std::error::Error;
+
+        let error = OsmifyError {
+            details: "test".to_string(),
+        };
+        assert_eq!(error.description(), "test".to_string());
     }
 }
