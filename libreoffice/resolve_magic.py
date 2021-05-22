@@ -66,6 +66,18 @@ SwTabFrameInvFlags = {
     0x80: "InvalidateNextPos",
 }
 
+SwContentFrameInvFlags = {
+    0x00: "NONE",
+    0x01: "SetCompletePaint",
+    0x02: "InvalidatePos",
+    0x04: "InvalidateSize",
+    0x08: "InvalidateSectPrt",
+    0x10: "InvalidateNextPrt",
+    0x20: "InvalidatePrevPrt",
+    0x40: "InvalidateNextPos",
+    0x80: "SetNextCompletePaint",
+};
+
 def main():
     enum = sys.argv[1]
     magic = int(sys.argv[2], 16)

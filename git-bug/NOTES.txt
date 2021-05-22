@@ -1,0 +1,12 @@
+= git-bug notes
+
+== Contributions
+
+https://github.com/MichaelMure/git-bug/pulls?q=is%3Apr+is%3Aclosed+author%3Avmiklos
+
+https://github.com/MichaelMure/git-bug/pull/568 Add ability to search by arbitrary metadata
+https://github.com/MichaelMure/git-bug/pull/593 webui: allow specifying the initial query
+
+== matrix room
+
+#the-git-bug_Lobby:gitter.im
