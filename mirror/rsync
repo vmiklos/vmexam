@@ -43,6 +43,17 @@ wilson)
         exit 1
     fi
     ;;
+genesis)
+    cd genesis
+    if ! ssh genesis.vmiklos.hu 'cd /srv/www/sqldumps; ./backup.sh'; then
+        echo "sqldump failed, giving up"
+        exit 1
+    fi
+    if ! rsync -avP --delete-after -x genesis.vmiklos.hu:/srv/www/{htdocs,sqldumps} .; then
+        echo "rsync failed giving up"
+        exit 1
+    fi
+    ;;
 *)
     echo "error: missing machine"
     echo "state of backups:"
