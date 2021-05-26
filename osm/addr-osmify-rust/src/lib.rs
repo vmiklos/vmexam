@@ -14,6 +14,7 @@ extern crate serde_json;
 extern crate url;
 
 use std::io::Write;
+use std::sync::Arc;
 
 /// A Result which allows any error that implements Error.
 pub type BoxResult<T> = Result<T, Box<dyn std::error::Error>>;
@@ -190,9 +191,10 @@ fn spinner(
 }
 
 /// Similar to plain main(), but with an interface that allows testing.
-pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: Box<dyn Urllib>) -> BoxResult<()> {
+pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: &Arc<dyn Urllib>) -> BoxResult<()> {
     if args.len() > 1 {
         let (tx, rx) = std::sync::mpsc::channel();
+        let urllib = urllib.clone();
         std::thread::spawn(move || {
             let result = osmify(&args[1], &*urllib);
             match result {
@@ -292,8 +294,8 @@ mod tests {
                 result_path: "mock/overpass-happy.json".to_string()
             }
         ];
-        let urllib: Box<dyn Urllib> = Box::new(MockUrllib { routes: routes });
-        main(args, &mut buf, urllib)?;
+        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes: routes });
+        main(args, &mut buf, &urllib)?;
 
         let buf_vec = buf.into_inner();
         let buf_string = match std::str::from_utf8(&buf_vec) {
@@ -321,8 +323,8 @@ mod tests {
                 result_path: "mock/nominatim-bad.json".to_string()
             },
         ];
-        let urllib: Box<dyn Urllib> = Box::new(MockUrllib { routes: routes });
-        let error = match main(args, &mut buf, urllib) {
+        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes: routes });
+        let error = match main(args, &mut buf, &urllib) {
             Ok(_) => panic!("unexpected success"),
             Err(e) => e,
         };
@@ -348,8 +350,8 @@ mod tests {
                 result_path: "mock/nominatim-no-result.json".to_string()
             },
         ];
-        let urllib: Box<dyn Urllib> = Box::new(MockUrllib { routes: routes });
-        let error = match main(args, &mut buf, urllib) {
+        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes: routes });
+        let error = match main(args, &mut buf, &urllib) {
             Ok(_) => panic!("unexpected success"),
             Err(e) => e,
         };
@@ -383,8 +385,8 @@ mod tests {
                 result_path: "mock/overpass-prefer-buildings.json".to_string()
             }
         ];
-        let urllib: Box<dyn Urllib> = Box::new(MockUrllib { routes: routes });
-        main(args, &mut buf, urllib)?;
+        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes: routes });
+        main(args, &mut buf, &urllib)?;
 
         let buf_vec = buf.into_inner();
         let buf_string = match std::str::from_utf8(&buf_vec) {
@@ -417,8 +419,8 @@ mod tests {
                 result_path: "mock/overpass-bad.json".to_string()
             }
         ];
-        let urllib: Box<dyn Urllib> = Box::new(MockUrllib { routes: routes });
-        let error = match main(args, &mut buf, urllib) {
+        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes: routes });
+        let error = match main(args, &mut buf, &urllib) {
             Ok(_) => panic!("unexpected success"),
             Err(e) => e,
         };
@@ -449,8 +451,8 @@ mod tests {
                 result_path: "mock/overpass-noresult.json".to_string()
             }
         ];
-        let urllib: Box<dyn Urllib> = Box::new(MockUrllib { routes: routes });
-        let error = match main(args, &mut buf, urllib) {
+        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes: routes });
+        let error = match main(args, &mut buf, &urllib) {
             Ok(_) => panic!("unexpected success"),
             Err(e) => e,
         };
@@ -468,8 +470,8 @@ mod tests {
         let args: Vec<String> = vec!["".to_string()];
         let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
         let routes = vec![];
-        let urllib: Box<dyn Urllib> = Box::new(MockUrllib { routes: routes });
-        main(args, &mut buf, urllib)?;
+        let urllib: std::sync::Arc<dyn Urllib> = std::sync::Arc::new(MockUrllib { routes: routes });
+        main(args, &mut buf, &urllib)?;
 
         let buf_vec = buf.into_inner();
         let buf_string = match std::str::from_utf8(&buf_vec) {

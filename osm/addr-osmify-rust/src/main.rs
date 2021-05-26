@@ -10,6 +10,8 @@
 
 extern crate reqwest;
 
+use std::sync::Arc;
+
 struct ReqwestUrllib {}
 
 // Network traffic is intentionally mocked.
@@ -32,8 +34,8 @@ impl addr_osmify::Urllib for ReqwestUrllib {
 #[cfg(not(tarpaulin_include))]
 fn main() -> addr_osmify::BoxResult<()> {
     let args: Vec<String> = std::env::args().collect();
-    let urllib: Box<dyn addr_osmify::Urllib> = Box::new(ReqwestUrllib {});
-    addr_osmify::main(args, &mut std::io::stdout(), urllib)?;
+    let urllib: Arc<dyn addr_osmify::Urllib> = Arc::new(ReqwestUrllib {});
+    addr_osmify::main(args, &mut std::io::stdout(), &urllib)?;
 
     Ok(())
 }
