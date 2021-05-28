@@ -4,12 +4,13 @@
  * found in the LICENSE file.
  */
 
+#![deny(warnings)]
 #![warn(missing_docs)]
+#![warn(rust_2018_idioms)]
 
 //! Commandline interface to addr_osmify.
 
-extern crate reqwest;
-
+use reqwest;
 use std::sync::Arc;
 
 struct ReqwestUrllib {}

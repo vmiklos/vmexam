@@ -4,17 +4,19 @@
  * found in the LICENSE file.
 */
 
+#![deny(warnings)]
 #![warn(missing_docs)]
+#![warn(rust_2018_idioms)]
 
 //! Takes an OSM way ID and turns it into a string that is readable and
 //! e.g. OsmAnd can parse it as well.
 
-extern crate atty;
-extern crate serde_json;
-extern crate url;
-
+use atty;
+use serde;
+use serde_json;
 use std::io::Write;
 use std::sync::Arc;
+use url;
 
 /// A Result which allows any error that implements Error.
 pub type BoxResult<T> = Result<T, Box<dyn std::error::Error>>;
@@ -25,7 +27,7 @@ struct OsmifyError {
 }
 
 impl std::fmt::Display for OsmifyError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.details)
     }
 }
@@ -42,14 +44,59 @@ pub trait Urllib: Send + Sync {
     fn urlopen(&self, url: &str, data: &str) -> BoxResult<String>;
 }
 
-fn query_turbo(urllib: &dyn Urllib, query: &str) -> BoxResult<String> {
+/// TurboTags contains various tags about one Overpass element.
+#[derive(serde::Deserialize)]
+struct TurboTags {
+    #[serde(rename(deserialize = "addr:city"))]
+    city: String,
+    #[serde(rename(deserialize = "addr:housenumber"))]
+    housenumber: String,
+    #[serde(rename(deserialize = "addr:postcode"))]
+    postcode: String,
+    #[serde(rename(deserialize = "addr:street"))]
+    street: String,
+}
+
+/// TurboElement represents one result from Overpass.
+#[derive(serde::Deserialize)]
+struct TurboElement {
+    tags: TurboTags,
+}
+
+/// TurboResult is the result from Overpass.
+#[derive(serde::Deserialize)]
+struct TurboResult {
+    elements: Vec<TurboElement>,
+}
+
+fn query_turbo(urllib: &dyn Urllib, query: &str) -> BoxResult<TurboResult> {
     let url = "http://overpass-api.de/api/interpreter";
 
     let buf = urllib.urlopen(url, query)?;
-    Ok(buf)
+
+    let elements: TurboResult = match serde_json::from_str(&buf) {
+        Ok(value) => value,
+        Err(error) => {
+            return Err(Box::new(OsmifyError {
+                details: format!("failed to parse JSON from overpass: {}", error.to_string()),
+            }));
+        }
+    };
+
+    Ok(elements)
 }
 
-fn query_nominatim(urllib: &dyn Urllib, query: &str) -> BoxResult<String> {
+/// NominatimResult represents one element in the result array from Nominatim.
+#[derive(Clone, serde::Deserialize)]
+struct NominatimResult {
+    class: String,
+    lat: String,
+    lon: String,
+    osm_type: String,
+    osm_id: u64,
+}
+
+fn query_nominatim(urllib: &dyn Urllib, query: &str) -> BoxResult<Vec<NominatimResult>> {
     let prefix = "http://nominatim.openstreetmap.org/search.php?";
     let encoded: String = url::form_urlencoded::Serializer::new(String::new())
         .append_pair("q", query)
@@ -59,27 +106,7 @@ fn query_nominatim(urllib: &dyn Urllib, query: &str) -> BoxResult<String> {
 
     let buf = urllib.urlopen(url.as_str(), "")?;
 
-    Ok(buf)
-}
-
-fn is_building(element: &serde_json::Value) -> bool {
-    if !element.is_object() {
-        return false;
-    }
-    let class = element.get("class");
-    if class.is_none() {
-        return false;
-    }
-    let class = class.unwrap();
-    if !class.is_string() {
-        return false;
-    }
-    class.as_str().unwrap() == "building"
-}
-
-fn osmify(query: &str, urllib: &dyn Urllib) -> BoxResult<String> {
-    let nominatim = query_nominatim(urllib, query)?;
-    let json: serde_json::Value = match serde_json::from_str(&nominatim) {
+    let elements: Vec<NominatimResult> = match serde_json::from_str(&buf) {
         Ok(value) => value,
         Err(error) => {
             return Err(Box::new(OsmifyError {
@@ -87,7 +114,12 @@ fn osmify(query: &str, urllib: &dyn Urllib) -> BoxResult<String> {
             }));
         }
     };
-    let mut elements = json.as_array().ok_or("option::NoneError")?.clone();
+
+    Ok(elements)
+}
+
+fn osmify(query: &str, urllib: &dyn Urllib) -> BoxResult<String> {
+    let mut elements = query_nominatim(urllib, query)?;
     if elements.is_empty() {
         return Err(Box::new(OsmifyError {
             details: "no results from nominatim".to_string(),
@@ -96,9 +128,9 @@ fn osmify(query: &str, urllib: &dyn Urllib) -> BoxResult<String> {
 
     if elements.len() > 1 {
         // There are multiple elements, prefer buildings if possible.
-        let buildings: Vec<serde_json::Value> = elements
+        let buildings: Vec<NominatimResult> = elements
             .iter()
-            .filter(|i| is_building(i))
+            .filter(|i| i.class == "building")
             .cloned()
             .collect();
 
@@ -107,19 +139,11 @@ fn osmify(query: &str, urllib: &dyn Urllib) -> BoxResult<String> {
         }
     }
 
-    let element = elements[0].as_object().ok_or("option::NoneError")?;
-    let lat = element["lat"]
-        .as_str()
-        .ok_or("no lat in json from nominatim")?;
-    let lon = element["lon"]
-        .as_str()
-        .ok_or("no lon in json from nominatim")?;
-    let object_type = element["osm_type"]
-        .as_str()
-        .ok_or("no osm_type in json from nominatim")?;
-    let object_id = element["osm_id"]
-        .as_u64()
-        .ok_or("no osm_id in json from nominatim")?;
+    let element = &elements[0];
+    let lat = &element.lat;
+    let lon = &element.lon;
+    let object_type = &element.osm_type;
+    let object_id = element.osm_id;
 
     // Use overpass to get the properties of the object.
     let overpass_query = format!(
@@ -130,17 +154,8 @@ fn osmify(query: &str, urllib: &dyn Urllib) -> BoxResult<String> {
 out body;"#,
         object_type, object_id
     );
-    let turbo = query_turbo(urllib, &overpass_query)?;
-    let json: serde_json::Value = match serde_json::from_str(&turbo) {
-        Ok(value) => value,
-        Err(error) => {
-            return Err(Box::new(OsmifyError {
-                details: format!("failed to parse JSON from overpass: {}", error.to_string()),
-            }));
-        }
-    };
-    let json = json.as_object().ok_or("option::NoneError")?;
-    let elements = &json["elements"].as_array().ok_or("option::NoneError")?;
+    let turbo_result = query_turbo(urllib, &overpass_query)?;
+    let elements = turbo_result.elements;
     if elements.is_empty() {
         return Err(Box::new(OsmifyError {
             details: "no results from overpass".to_string(),
@@ -148,13 +163,11 @@ out body;"#,
     }
 
     let element = &elements[0];
-    let tags = element["tags"].as_object().ok_or("option::NoneError")?;
-    let city = tags["addr:city"].as_str().ok_or("option::NoneError")?;
-    let housenumber = tags["addr:housenumber"]
-        .as_str()
-        .ok_or("option::NoneError")?;
-    let postcode = tags["addr:postcode"].as_str().ok_or("option::NoneError")?;
-    let street = tags["addr:street"].as_str().ok_or("option::NoneError")?;
+    let tags = &element.tags;
+    let city = &tags.city;
+    let housenumber = &tags.housenumber;
+    let postcode = &tags.postcode;
+    let street = &tags.street;
     let addr = format!("{} {}, {} {}", postcode, city, street, housenumber);
 
     // Print the result.
@@ -484,28 +497,6 @@ mod tests {
         );
 
         Ok(())
-    }
-
-    #[test]
-    fn test_is_building() {
-        {
-            let json_null = serde_json::Value::Null;
-            assert!(!is_building(&json_null));
-        }
-
-        {
-            let map = serde_json::Map::new();
-            let json_object = serde_json::Value::Object(map);
-            assert!(!is_building(&json_object));
-        }
-
-        {
-            let mut map = serde_json::Map::new();
-            let json_null = serde_json::Value::Null;
-            map.insert("class".to_string(), json_null);
-            let json_object = serde_json::Value::Object(map);
-            assert!(!is_building(&json_object));
-        }
     }
 
     #[test]
