@@ -31,6 +31,6 @@ access_token="$(curl -s -X POST \
 # Update the access token in the config and run the actual backup using
 # <https://github.com/pR0Ps/strava-backup>.
 sed -i "s/^api_token=.*/api_token=${access_token}/" ~/.config/strava-backup.conf
-strava-backup
+strava-backup --quiet
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
