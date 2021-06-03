@@ -8,7 +8,7 @@
 # - does not require grcov
 # - defines a way to exclude test code from coverage
 
-cargo tarpaulin --out Lcov
+cargo tarpaulin --out Lcov --target-dir $PWD/target-cov
 
 genhtml -o coverage lcov.info
 echo "Coverage report is now available at coverage/index.html."

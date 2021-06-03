@@ -5,13 +5,14 @@
  * found in the LICENSE file.
  */
 
+#include <functional>
 #include <string>
 
 namespace urllib::request
 {
 /// Function type for urlopen() customization.
-using urlopenType = std::string (*)(const std::string& url,
-                                    const std::string& data);
+using urlopenType =
+    std::function<std::string(const std::string& url, const std::string& data)>;
 extern urlopenType urlopen;
 } // namespace urllib::request
 

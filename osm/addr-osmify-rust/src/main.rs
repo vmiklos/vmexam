@@ -10,7 +10,6 @@
 
 //! Commandline interface to addr_osmify.
 
-use reqwest;
 use std::sync::Arc;
 
 struct ReqwestUrllib {}

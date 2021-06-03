@@ -23,64 +23,108 @@
 
 namespace
 {
-std::string urlopenSuffix;
 
-std::string mockUrlopen(const std::string& url, const std::string& data)
+struct URLRoute
 {
-    if (!data.empty())
+    /// The request URL
+    std::string url;
+    /// Path of expected POST data, empty for GET
+    std::string dataPath;
+    /// Path of expected result data
+    std::string resultPath;
+};
+
+class MockUrlopenFunction
+{
+    std::vector<URLRoute> _routes;
+
+  public:
+    MockUrlopenFunction(const std::vector<URLRoute>& routes);
+
+    std::string operator()(const std::string& url, const std::string& data);
+};
+
+MockUrlopenFunction::MockUrlopenFunction(const std::vector<URLRoute>& routes)
+    : _routes(routes)
+{
+}
+
+std::string MockUrlopenFunction::operator()(const std::string& url,
+                                            const std::string& data)
+{
+    for (const auto& route : _routes)
     {
-        std::string path;
-        Poco::URI::encode(url, "/", path);
-        path = "mock/" + path + urlopenSuffix + ".expected-data";
-        std::ifstream stream(path);
+        if (url != route.url)
+        {
+            continue;
+        }
+
+        if (!route.dataPath.empty())
+        {
+            std::ifstream stream(route.dataPath);
+            if (!stream.is_open())
+            {
+                std::cerr << "failed to open '" << route.dataPath << "'"
+                          << std::endl;
+            }
+            assert(stream.is_open());
+            std::string content((std::istreambuf_iterator<char>(stream)),
+                                std::istreambuf_iterator<char>());
+            assert(data == content);
+        }
+
+        std::ifstream stream(route.resultPath);
+        if (!stream.is_open())
+        {
+            std::cerr << "failed to open '" << route.resultPath << "'"
+                      << std::endl;
+        }
         assert(stream.is_open());
+
         std::string content((std::istreambuf_iterator<char>(stream)),
                             std::istreambuf_iterator<char>());
-        assert(data == content);
+
+        // Make sure that the 100ms progressbar spins at least once.
+        const int doubleSpin = 200;
+        std::this_thread::sleep_for(std::chrono::milliseconds(doubleSpin));
+
+        return content;
     }
 
-    std::string path;
-    Poco::URI::encode(url, "/", path);
-    path = "mock/" + path + urlopenSuffix;
-    std::ifstream stream(path);
-    assert(stream.is_open());
-
-    std::string content((std::istreambuf_iterator<char>(stream)),
-                        std::istreambuf_iterator<char>());
-
-    // Make sure that the 100ms progressbar spins at least once.
-    const int doubleSpin = 200;
-    std::this_thread::sleep_for(std::chrono::milliseconds(doubleSpin));
-
-    return content;
+    std::cerr << "unexpected url='" << url << "' and data='" << data << "'"
+              << std::endl;
+    assert(false);
+    return std::string();
 }
 
 class MockUrlopen
 {
-    urllib::request::urlopenType _old = nullptr;
-    std::string _oldSuffix;
+    urllib::request::urlopenType _old;
 
   public:
-    MockUrlopen(urllib::request::urlopenType custom, const std::string& suffix)
+    MockUrlopen(const std::vector<URLRoute>& routes)
     {
         _old = urllib::request::urlopen;
-        urllib::request::urlopen = custom;
-        _oldSuffix = urlopenSuffix;
-        urlopenSuffix = suffix;
+        urllib::request::urlopen = MockUrlopenFunction(routes);
     }
 
-    ~MockUrlopen()
-    {
-        urlopenSuffix = _oldSuffix;
-        urllib::request::urlopen = _old;
-    }
+    ~MockUrlopen() { urllib::request::urlopen = _old; }
 };
 
 } // namespace
 
 TEST(TestMain, testHappy)
 {
-    MockUrlopen mu(mockUrlopen, "-happy");
+    std::vector<URLRoute> routes = {
+        URLRoute{"https://nominatim.openstreetmap.org/"
+                 "search.php?q=M%C3%A9sz%C3%A1ros%20utca%2058%2Fa%2C%"
+                 "20Budapest&format=json",
+                 "", "mock/nominatim-happy.json"},
+        URLRoute{"https://overpass-api.de/api/interpreter",
+                 "mock/overpass-happy.expected-data",
+                 "mock/overpass-happy.json"},
+    };
+    MockUrlopen urlopen(routes);
     std::vector<const char*> args{"", "Mészáros utca 58/a, Budapest"};
     std::stringstream out;
     ASSERT_EQ(0, osmify::main(args, out));
@@ -91,7 +135,16 @@ TEST(TestMain, testHappy)
 
 TEST(TestMain, testPreferBuildings)
 {
-    MockUrlopen mu(mockUrlopen, "-prefer-buildings");
+    std::vector<URLRoute> routes = {
+        URLRoute{"https://nominatim.openstreetmap.org/"
+                 "search.php?q=Karinthy%20Frigyes%20%C3%BAt%2018%2C%20Budapest&"
+                 "format=json",
+                 "", "mock/nominatim-prefer-buildings.json"},
+        URLRoute{"https://overpass-api.de/api/interpreter",
+                 "mock/overpass-prefer-buildings.expected-data",
+                 "mock/overpass-prefer-buildings.json"},
+    };
+    MockUrlopen urlopen(routes);
     std::vector<const char*> args{"", "Karinthy Frigyes út 18, Budapest"};
     std::stringstream out;
     ASSERT_EQ(0, osmify::main(args, out));
@@ -102,7 +155,16 @@ TEST(TestMain, testPreferBuildings)
 
 TEST(TestMain, testNoBuildings)
 {
-    MockUrlopen mu(mockUrlopen, "-no-buildings");
+    std::vector<URLRoute> routes = {
+        URLRoute{"https://nominatim.openstreetmap.org/"
+                 "search.php?q=Karinthy%20Frigyes%20%C3%BAt%2018%2C%20Budapest&"
+                 "format=json",
+                 "", "mock/nominatim-no-buildings.json"},
+        URLRoute{"https://overpass-api.de/api/interpreter",
+                 "mock/overpass-no-buildings.expected-data",
+                 "mock/overpass-no-buildings.json"},
+    };
+    MockUrlopen urlopen(routes);
     std::vector<const char*> args{"", "Karinthy Frigyes út 18, Budapest"};
     std::stringstream out;
     ASSERT_EQ(0, osmify::main(args, out));
@@ -113,7 +175,13 @@ TEST(TestMain, testNoBuildings)
 
 TEST(TestMain, testNoResult)
 {
-    MockUrlopen mu(mockUrlopen, "-no-result");
+    std::vector<URLRoute> routes = {
+        URLRoute{"https://nominatim.openstreetmap.org/"
+                 "search.php?q=M%C3%A9sz%C3%A1ros%20utca%2058%2Fa%2C%"
+                 "20Budapestt&format=json",
+                 "", "mock/nominatim-no-result.json"},
+    };
+    MockUrlopen urlopen(routes);
     std::vector<const char*> args{"", "Mészáros utca 58/a, Budapestt"};
     std::stringstream out;
     ASSERT_EQ(0, osmify::main(args, out));
@@ -123,7 +191,16 @@ TEST(TestMain, testNoResult)
 
 TEST(TestMain, testOverpassNoResult)
 {
-    MockUrlopen mu(mockUrlopen, "-overpass-noresult");
+    std::vector<URLRoute> routes = {
+        URLRoute{"https://nominatim.openstreetmap.org/"
+                 "search.php?q=M%C3%A9sz%C3%A1ros%20utca%2058%2Fa%2C%"
+                 "20Budapest&format=json",
+                 "", "mock/nominatim-happy.json"},
+        URLRoute{"https://overpass-api.de/api/interpreter",
+                 "mock/overpass-no-result.expected-data",
+                 "mock/overpass-no-result.json"},
+    };
+    MockUrlopen urlopen(routes);
     std::vector<const char*> args{"", "Mészáros utca 58/a, Budapest"};
     std::stringstream out;
     ASSERT_EQ(0, osmify::main(args, out));
@@ -133,7 +210,13 @@ TEST(TestMain, testOverpassNoResult)
 
 TEST(TestMain, testNominatimBadJson)
 {
-    MockUrlopen mu(mockUrlopen, "-nominatim-badjson");
+    std::vector<URLRoute> routes = {
+        URLRoute{"https://nominatim.openstreetmap.org/"
+                 "search.php?q=M%C3%A9sz%C3%A1ros%20utca%2058%2Fa%2C%"
+                 "20Budapest&format=json",
+                 "", "mock/nominatim-bad.json"},
+    };
+    MockUrlopen urlopen(routes);
     std::vector<const char*> args{"", "Mészáros utca 58/a, Budapest"};
     std::stringstream out;
     ASSERT_EQ(0, osmify::main(args, out));
@@ -144,7 +227,15 @@ TEST(TestMain, testNominatimBadJson)
 
 TEST(TestMain, testOverpassBadJson)
 {
-    MockUrlopen mu(mockUrlopen, "-overpass-badjson");
+    std::vector<URLRoute> routes = {
+        URLRoute{"https://nominatim.openstreetmap.org/"
+                 "search.php?q=M%C3%A9sz%C3%A1ros%20utca%2058%2Fa%2C%"
+                 "20Budapest&format=json",
+                 "", "mock/nominatim-happy.json"},
+        URLRoute{"https://overpass-api.de/api/interpreter",
+                 "mock/overpass-happy.expected-data", "mock/overpass-bad.json"},
+    };
+    MockUrlopen urlopen(routes);
     std::vector<const char*> args{"", "Mészáros utca 58/a, Budapest"};
     std::stringstream out;
     ASSERT_EQ(0, osmify::main(args, out));

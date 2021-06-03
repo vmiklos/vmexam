@@ -11,12 +11,8 @@
 //! Takes an OSM way ID and turns it into a string that is readable and
 //! e.g. OsmAnd can parse it as well.
 
-use atty;
-use serde;
-use serde_json;
 use std::io::Write;
 use std::sync::Arc;
-use url;
 
 /// A Result which allows any error that implements Error.
 pub type BoxResult<T> = Result<T, Box<dyn std::error::Error>>;
@@ -307,7 +303,7 @@ mod tests {
                 result_path: "mock/overpass-happy.json".to_string()
             }
         ];
-        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes: routes });
+        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
         main(args, &mut buf, &urllib)?;
 
         let buf_vec = buf.into_inner();
@@ -336,7 +332,7 @@ mod tests {
                 result_path: "mock/nominatim-bad.json".to_string()
             },
         ];
-        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes: routes });
+        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
         let error = match main(args, &mut buf, &urllib) {
             Ok(_) => panic!("unexpected success"),
             Err(e) => e,
@@ -363,7 +359,7 @@ mod tests {
                 result_path: "mock/nominatim-no-result.json".to_string()
             },
         ];
-        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes: routes });
+        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
         let error = match main(args, &mut buf, &urllib) {
             Ok(_) => panic!("unexpected success"),
             Err(e) => e,
@@ -398,7 +394,7 @@ mod tests {
                 result_path: "mock/overpass-prefer-buildings.json".to_string()
             }
         ];
-        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes: routes });
+        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
         main(args, &mut buf, &urllib)?;
 
         let buf_vec = buf.into_inner();
@@ -432,7 +428,7 @@ mod tests {
                 result_path: "mock/overpass-bad.json".to_string()
             }
         ];
-        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes: routes });
+        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
         let error = match main(args, &mut buf, &urllib) {
             Ok(_) => panic!("unexpected success"),
             Err(e) => e,
@@ -464,7 +460,7 @@ mod tests {
                 result_path: "mock/overpass-noresult.json".to_string()
             }
         ];
-        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes: routes });
+        let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
         let error = match main(args, &mut buf, &urllib) {
             Ok(_) => panic!("unexpected success"),
             Err(e) => e,
@@ -483,7 +479,7 @@ mod tests {
         let args: Vec<String> = vec!["".to_string()];
         let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
         let routes = vec![];
-        let urllib: std::sync::Arc<dyn Urllib> = std::sync::Arc::new(MockUrllib { routes: routes });
+        let urllib: std::sync::Arc<dyn Urllib> = std::sync::Arc::new(MockUrllib { routes });
         main(args, &mut buf, &urllib)?;
 
         let buf_vec = buf.into_inner();
@@ -493,7 +489,8 @@ mod tests {
         };
         assert!(
             buf_string.starts_with("usage: "),
-            format!("buf_string is '{}'", buf_string)
+            "buf_string is '{}'",
+            buf_string
         );
 
         Ok(())
