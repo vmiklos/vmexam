@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+# Copyright 2021 Miklos Vajna. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Trivial wrapper around ffmpeg.
+
+OUTPUT="$(basename "$1" .MOV).mp4"
+ffmpeg -i "$1" -c:v libx264 -preset slow -crf 20 -c:a aac -b:a 160k -vf format=yuv420p -movflags +faststart "$OUTPUT"
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
