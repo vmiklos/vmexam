@@ -5,3 +5,4 @@ import ranges
 r = ranges.Range(2, 4)
 assert not r.contains(1)
 assert r.contains(3)
+print(r.test(1))

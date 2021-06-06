@@ -1,5 +1,8 @@
 use pyo3::prelude::*;
 
+mod foo;
+mod bar;
+
 /// An inclusive range of integers.
 #[pyclass]
 struct Range {
@@ -16,6 +19,10 @@ impl Range {
 
     fn contains(&self, item: u64) -> PyResult<bool> {
         Ok(self.start <= item && item <= self.end)
+    }
+
+    fn test(&self, a: usize) -> PyResult<usize> {
+        Ok(foo::foo(a, true))
     }
 }
 
