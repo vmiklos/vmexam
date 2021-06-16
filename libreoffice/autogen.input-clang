@@ -1,4 +1,5 @@
-CC=clang
-CXX=clang++
+# the default 7.0.1 on openSUSE Leap 15.2 is too old to work with libstdc++-9; use llvm 12 instead
+CC=/home/vmiklos/git/llvm/instdir/bin/clang
+CXX=/home/vmiklos/git/llvm/instdir/bin/clang++
 --enable-dbgutil
 --enable-werror

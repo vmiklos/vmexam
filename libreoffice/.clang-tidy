@@ -10,6 +10,7 @@
 # - misc-no-recursion: seems dubious
 # - bugprone-reserved-identifier: sometimes warns without a code location
 # - readability-function-cognitive-complexity: noisy, we already have readability-function-size instead
+# - readability-uppercase-literal-suffix: does not report *where* the problem is
 Checks: "clang-diagnostic-*,\
 -clang-analyzer-cplusplus.NewDelete,\
 -clang-analyzer-cplusplus.NewDeleteLeaks,\
@@ -36,6 +37,7 @@ readability-*,\
 -readability-magic-numbers,\
 -readability-qualified-auto,\
 -readability-function-cognitive-complexity,\
+-readability-uppercase-literal-suffix,\
 "
 WarningsAsErrors: '*'
 
