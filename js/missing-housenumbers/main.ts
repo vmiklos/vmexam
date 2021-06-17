@@ -38,7 +38,9 @@ const tracks = [
     {url : 'svabhegy.json', color : 'green'},
     {url : 'martonhegy.json', color : 'green'},
     {url : 'szechenyihegy.json', color : 'green'},
-    {url : 'istenhegy.json', color : 'orange'},
+    {url : 'istenhegy.json', color : 'green'},
+    {url : 'kutvolgy.json', color : 'orange'},
+    {url : 'viranyos.json', color : 'red'},
 ];
 
 // Boilerplate below.
