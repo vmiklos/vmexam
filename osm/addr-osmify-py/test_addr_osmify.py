@@ -11,11 +11,9 @@ from typing import Callable
 from typing import List
 from typing import Optional
 import io
-import os
 import time
 import unittest
 import unittest.mock
-import urllib
 import addr_osmify
 
 
@@ -36,27 +34,6 @@ class URLRoute:
 
 class TestMain(unittest.TestCase):
     """Tests main()."""
-    def gen_urlopen(self, suffix: str) -> Callable[[str, Optional[bytes]], BinaryIO]:
-        """Generates a mock for urllib.request.urlopen()."""
-        def mock_urlopen_with_suffix(url: str, data: Optional[bytes] = None) -> BinaryIO:
-            """Mocks urllib.request.urlopen()."""
-            if data:
-                data_path = os.path.join("mock", urllib.parse.quote_plus(url))
-                data_path += suffix + ".expected-data"
-                with open(data_path, "rb") as stream:
-                    self.assertEqual(stream.read(), data)
-
-            path = os.path.join("mock", urllib.parse.quote_plus(url))
-            path += suffix
-            with open(path, "rb") as stream:
-                buf = io.BytesIO()
-                buf.write(stream.read())
-                buf.seek(0)
-                # Make sure that the 100ms progressbar spins at least once.
-                time.sleep(0.2)
-                return buf
-        return mock_urlopen_with_suffix
-
     def mock_urlopen(self, routes: List[URLRoute]) -> Callable[[str, Optional[bytes]], BinaryIO]:
         """Generates a mock for urllib.request.urlopen()."""
         def mock_urlopen_with_route(url: str, data: Optional[bytes] = None) -> BinaryIO:
