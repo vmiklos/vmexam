@@ -14,7 +14,7 @@ do
         if ls "$expected" &>/dev/null; then
             continue
         fi
-        mv "$i" "$expected"
+        mv -i "$i" "$expected"
     fi
 done
 
