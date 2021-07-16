@@ -27,3 +27,6 @@ async: async.cxx Makefile
 
 asan: asan.cxx Makefile
 	clang++ -std=c++11 -o asan -g -O0 -fsanitize=address asan.cxx
+
+icu4c: icu4c.cxx Makefile
+	clang++ -std=c++11 -o icu4c -g -o icu4c $(shell icu-config --ldflags) icu4c.cxx
