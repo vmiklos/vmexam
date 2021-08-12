@@ -74,6 +74,7 @@ sw/qa/core/crsr/crsr.cxx
 sw/qa/core/doc/doc.cxx
 sw/qa/core/docnode/docnode.cxx
 sw/qa/core/draw/draw.cxx
+sw/qa/core/edit/edit.cxx
 sw/qa/core/fields/fields.cxx
 sw/qa/core/frmedt/frmedt.cxx
 sw/qa/core/layout/layout.cxx
