@@ -7,6 +7,7 @@
 # - bugprone-macro-parentheses: this breaks SAL_LOG()
 # - readability-qualified-auto: LO code doesn't really do auto* pFoo
 # - bugprone-signed-char-misuse: complains on signed char -> int conversion, seems dubious
+# - bugprone-easily-swappable-parameters: flags set(x, y), seems dubious
 # - misc-no-recursion: seems dubious
 # - bugprone-reserved-identifier: sometimes warns without a code location
 # - readability-function-cognitive-complexity: noisy, we already have readability-function-size instead
@@ -29,6 +30,7 @@ bugprone-*,\
 -bugprone-narrowing-conversions,\
 -bugprone-signed-char-misuse,\
 -bugprone-reserved-identifier,\
+-bugprone-easily-swappable-parameters,\
 readability-*,\
 -readability-braces-around-statements,\
 -readability-deleted-default,\
