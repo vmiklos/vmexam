@@ -28,7 +28,7 @@ if [ -e .github ]; then
         # Open a new PR.
         git push $REMOTE HEAD:private/$USER/$BRANCH
         git branch private/$USER/$BRANCH
-        gh pr create --base $BRANCH --head private/$USER/$BRANCH --fill --label automerge
+        gh pr create --base $BRANCH --head private/$USER/$BRANCH --fill --label automerge | tee .git/gh-pr-create.log
         git branch -D private/$USER/$BRANCH
     fi
     exit 0

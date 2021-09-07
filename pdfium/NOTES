@@ -32,7 +32,7 @@ pdf_is_complete_lib = true
 incremental build:
 
 ----
-. ./autogen.env
+. ~/git/vmexam/pdfium/autogen.env
 git pull -r
 gclient sync
 ninja -C workdir/debug
