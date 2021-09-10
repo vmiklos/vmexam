@@ -228,7 +228,8 @@ kstart plasmashell #to restart it
   - repo-backports-update from <http://download.opensuse.org/update/leap/$releasever/backports/>
   - repo-sle-update from <http://download.opensuse.org/update/leap/$releasever/sle/>
 - if /etc/os-release starts to report SLES, install openSUSE-release back (wtf?)
-- https://github.com/ycm-core/YouCompleteMe needs newer vim: zypper -p https://download.opensuse.org/repositories/editors/openSUSE_Leap_15.3/ in vim
+- https://github.com/ycm-core/YouCompleteMe needs newer a vim version: zypper -p https://download.opensuse.org/repositories/editors/openSUSE_Leap_15.3/ in vim
 - https://www.microsoft.com/en-ww/microsoft-365 needs newer mutt: zypper -p https://download.opensuse.org/repositories/server:/mail/openSUSE_Leap_15.3/ in mutt
+- the intel X11 driver is buggy, e.g. typing in konsole sometimes misses a redraw, `modesetting_drv` is fine: `zypper remove xf86-video-intel`
 
 // vim: ft=asciidoc paste
