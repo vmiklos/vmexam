@@ -12,7 +12,7 @@ There are two modes:
 === Handling the first non-conforming class in a module
 
 ----
-make -C sw -sr -j8 -O gb_SUPPRESS_TESTS=y FORCE_COMPILE_ALL=1 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD/sw -yaml" 2>&1 |tee ~/rename.yaml
+make -C sw -sr -j8 -O gb_SUPPRESS_TESTS=y FORCE_COMPILE=all COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD/sw -yaml" 2>&1 |tee ~/rename.yaml
 # Touch the header of the relevant class.
 make check gb_SUPPRESS_TESTS=y COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=clang-rename-wrapper RENAME_ARGS="-input=$HOME/rename.yaml -force"
 clang-apply-replacements -remove-change-desc-files /tmp/rename
@@ -31,7 +31,7 @@ make check gb_SUPPRESS_TESTS=y COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unpre
 Building a complete list of non-conforming members for a module:
 
 ----
-make -k -sr -j8 -O FORCE_COMPILE_ALL=1 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD" 2>&1 |grep :: | tee ~/sw-to-prefix.log
+make -k -sr -j8 -O FORCE_COMPILE=all COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD" 2>&1 |grep :: | tee ~/sw-to-prefix.log
 ----
 
 === Other examples:
@@ -39,7 +39,7 @@ make -k -sr -j8 -O FORCE_COMPILE_ALL=1 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=fi
 Detect unprefixed members in a whole module:
 
 ----
-make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-class-prefix=Sw" FORCE_COMPILE_ALL=1
+make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-class-prefix=Sw" FORCE_COMPILE=all
 ----
 
 (The '2' version is the same as the rename wrapper, just s/rename/find-unprefixed-members/.)
