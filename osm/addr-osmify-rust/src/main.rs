@@ -11,6 +11,9 @@
 
 //! Commandline interface to addr_osmify.
 
+use isahc::config::Configurable;
+use isahc::ReadResponseExt;
+use isahc::RequestExt;
 use std::sync::Arc;
 
 struct ReqwestUrllib {}
@@ -20,15 +23,20 @@ struct ReqwestUrllib {}
 impl addr_osmify::Urllib for ReqwestUrllib {
     fn urlopen(&self, url: &str, data: &str) -> addr_osmify::BoxResult<String> {
         if !data.is_empty() {
-            let client = reqwest::blocking::Client::new();
-            let body = String::from(data);
-            let buf = client.post(url).body(body).send()?;
-            return Ok(buf.text()?);
+            let mut buf = isahc::Request::post(url)
+                .redirect_policy(isahc::config::RedirectPolicy::Limit(1))
+                .body(data)?
+                .send()?;
+            let ret = buf.text()?;
+            return Ok(ret);
         }
 
-        let buf = reqwest::blocking::get(url)?;
-
-        Ok(buf.text()?)
+        let mut buf = isahc::Request::get(url)
+            .redirect_policy(isahc::config::RedirectPolicy::Limit(1))
+            .body(())?
+            .send()?;
+        let ret = buf.text()?;
+        Ok(ret)
     }
 }
 
