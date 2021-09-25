@@ -4,7 +4,8 @@
 # found in the LICENSE file.
 
 # Benefits of 'cargo tarpaulin':
-# - does not require nightly-only -Zinstrument-coverage
+# - does not require nightly-only -Zinstrument-coverage (see
+# <https://github.com/rust-lang/rust/issues/79121> if it's still nightly-only)
 # - does not require grcov
 # - defines a way to exclude test code from coverage
 
