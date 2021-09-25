@@ -200,18 +200,21 @@ fn spinner(
     }
 }
 
+fn worker(query: &str, urllib: &dyn Urllib, tx: &std::sync::mpsc::Sender<Result<String, String>>) {
+    let result = osmify(query, urllib);
+    match result {
+        Ok(value) => tx.send(Ok(value)),
+        Err(error) => tx.send(Err(format!("failed to osmify: {}", error.to_string()))),
+    }
+    .unwrap()
+}
+
 /// Similar to plain main(), but with an interface that allows testing.
 pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: &Arc<dyn Urllib>) -> BoxResult<()> {
     if args.len() > 1 {
         let (tx, rx) = std::sync::mpsc::channel();
         let urllib = urllib.clone();
-        std::thread::spawn(move || {
-            let result = osmify(&args[1], &*urllib);
-            match result {
-                Ok(value) => tx.send(Ok(value)),
-                Err(error) => tx.send(Err(format!("failed to osmify: {}", error.to_string()))),
-            }
-        });
+        std::thread::spawn(move || worker(&args[1], &*urllib, &tx));
         spinner(&rx, stream)?;
     } else {
         writeln!(stream, "usage: addr-osmify <query>")?;
