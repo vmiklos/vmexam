@@ -219,6 +219,10 @@ kstart plasmashell #to restart it
 
 - the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (zypper --releasever=15.2 ref, zypper --releasever=15.2 dup)
 - samba: unix extensions are now disabled, it can be enabled with `server min protocol = LANMAN1` in `/etc/samba/smb.conf`, see <https://www.samba.org/samba/history/samba-4.11.0.html>
+- nextcloud, restore clean URLs:
+  - cd /srv/www/htdocs/nextcloud
+  - chown wwwrun .htaccess
+  - sudo -u wwwrun php ./occ maintenance:update:htaccess
 
 === openSUSE Leap 15.2 -> openSUSE Leap 15.3 (x86_64)
 
