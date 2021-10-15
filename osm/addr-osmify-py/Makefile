@@ -15,3 +15,6 @@ check-lint:
 check-unit:
 	coverage run --branch --module unittest test_addr_osmify.py
 	coverage report --show-missing --fail-under=100 addr_osmify.py
+
+tags:
+	ctags --python-kinds=-iv --fields=+l --extra=+q -R --totals=yes *

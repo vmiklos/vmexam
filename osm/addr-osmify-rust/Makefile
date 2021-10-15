@@ -15,3 +15,8 @@ check-unit:
 
 check-clippy:
 	cargo clippy
+
+tags:
+	rusty-tags vi
+
+.PHONY: tags
