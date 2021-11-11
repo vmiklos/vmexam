@@ -30,3 +30,6 @@ asan: asan.cxx Makefile
 
 icu4c: icu4c.cxx Makefile
 	clang++ -std=c++11 -o icu4c -g -o icu4c $(shell icu-config --ldflags) icu4c.cxx
+
+move: move.cxx Makefile
+	clang++ -D_GLIBCXX_DEBUG -std=c++17 -o move move.cxx
