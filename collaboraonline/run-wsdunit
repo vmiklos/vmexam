@@ -13,7 +13,7 @@ do
     count=$((count+1))
 
     (cd test; ./run_unit.sh --test-name $name.la --log-file $name.log --trs-file $name.trs --color-tests yes --enable-hard-errors yes --expect-failure no -- ./$name.la)
-    ./loolwsd --disable-lool-user-checking --cleanup
+    ./coolwsd --disable-lool-user-checking --cleanup
     if ! grep -q FAIL test/$name.trs; then
         break
     fi
