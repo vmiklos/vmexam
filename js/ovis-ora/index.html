@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Ovis óra</title>
+    <script>
+      function draw(ratio) {
+        var canvas = document.getElementById('mycanvas');
+        var ctx = canvas.getContext('2d');
+	ctx.clearRect(0, 0, 1000, 1000);
+	ctx.fillStyle = 'rgb(0, 255, 0)';
+	ctx.fillRect(0, 0, 1000 * ratio, 1000);
+	ctx.fillStyle = 'rgb(255, 0, 0)';
+	ctx.fillRect(1000 * ratio, 0, 1000 - 1000 * ratio, 1000);
+      }
+      async function myclick() {
+        var durationElement = document.querySelector('#duration');
+        durationElement.style = 'display: none;';
+        var duration = durationElement.value;
+        document.querySelector('#submit').style = 'display: none;';
+        var min = document.querySelector('#min');
+        document.querySelector("#mycanvas").style.display = 'inline';
+        duration *= 60;
+        for (var i = 1; i <= duration; i++) {
+          draw(i / duration);
+          await new Promise(r => setTimeout(r, 1000));
+        }
+      }
+    </script>
+    <style>
+      canvas {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+	display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="mycanvas" width="1000" height="1000"></canvas>
+    <input id="duration" type="text" placeholder="Perc" style="width: 50%"/>
+    <input id="submit" type="button" value="OK" onclick="myclick()"/>
+  </body>
+</html>
