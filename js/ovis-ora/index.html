@@ -25,6 +25,15 @@
           draw(i / duration);
           await new Promise(r => setTimeout(r, 1000));
         }
+
+	// Full green: end text.
+        var canvas = document.getElementById('mycanvas');
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = "#000000";
+        ctx.font = '100px sans-serif';
+        var text = "Vége";
+        var textWidth = ctx.measureText(text).width;
+        ctx.fillText(text, (canvas.width/2) - (textWidth / 2), 500);
       }
     </script>
     <style>
