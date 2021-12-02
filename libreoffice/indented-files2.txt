@@ -17,6 +17,7 @@ desktop/source/lib/lokclipboard.hxx
 drawinglayer/qa/unit/border.cxx
 embeddedobj/qa/cppunit/general.cxx
 embeddedobj/qa/cppunit/msole.cxx
+extensions/qa/bibliography/bibliography.cxx
 filter/qa/unit/svg.cxx
 filter/qa/unit/textfilterdetect.cxx
 filter/source/msfilter/rtfutil.cxx
@@ -65,8 +66,11 @@ starmath/source/wordexportbase.hxx
 svl/source/items/grabbagitem.cxx
 svtools/qa/unit/testHtmlReader.cxx
 svx/qa/unit/sdr.cxx
+svx/qa/unit/styles.cxx
 svx/qa/unit/svdraw.cxx
+svx/qa/unit/table.cxx
 svx/qa/unit/unodraw.cxx
+svx/qa/unit/xml.cxx
 svx/qa/unit/xoutdev.cxx
 svx/source/dialog/signaturelinehelper.cxx
 sw/inc/textboxhelper.hxx
@@ -132,6 +136,8 @@ writerfilter/qa/cppunittests/dmapper/GraphicImport.cxx
 writerfilter/qa/cppunittests/dmapper/PropertyMap.cxx
 writerfilter/qa/cppunittests/dmapper/TextEffectsHandler.cxx
 writerfilter/qa/cppunittests/filters-test/filters-test.cxx
+writerfilter/qa/cppunittests/rtftok/rtfdispatchvalue.cxx
+writerfilter/qa/cppunittests/rtftok/rtfdocumentimpl.cxx
 writerfilter/qa/cppunittests/rtftok/rtfsdrimport.cxx
 writerfilter/qa/cppunittests/rtftok/rtfsprm.cxx
 writerfilter/qa/cppunittests/rtftok/rtftokenizer.cxx
