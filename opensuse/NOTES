@@ -236,4 +236,9 @@ kstart plasmashell #to restart it
 - https://www.microsoft.com/en-ww/microsoft-365 needs newer mutt: zypper -p https://download.opensuse.org/repositories/server:/mail/openSUSE_Leap_15.3/ in mutt
 - the intel X11 driver is buggy, e.g. typing in konsole sometimes misses a redraw, `modesetting_drv` is fine: `zypper remove xf86-video-intel`
 
+=== openSUSE Leap 15.2 -> openSUSE Leap 15.3 (aarch64)
+
+- the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (zypper --releasever=15.3 ref, zypper --releasever=15.3 dup)
+- added the 2 new repos
+
 // vim: ft=asciidoc paste
