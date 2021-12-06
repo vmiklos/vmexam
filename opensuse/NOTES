@@ -235,6 +235,8 @@ kstart plasmashell #to restart it
 - https://github.com/ycm-core/YouCompleteMe needs newer a vim version: zypper -p https://download.opensuse.org/repositories/editors/openSUSE_Leap_15.3/ in vim
 - https://www.microsoft.com/en-ww/microsoft-365 needs newer mutt: zypper -p https://download.opensuse.org/repositories/server:/mail/openSUSE_Leap_15.3/ in mutt
 - the intel X11 driver is buggy, e.g. typing in konsole sometimes misses a redraw, `modesetting_drv` is fine: `zypper remove xf86-video-intel`
+- STL container pretty-printers do not work by default in gdb anymore:
+  - can be fixed with: 'zypper in libstdc++6-devel-gcc11 libstdc++6-pp-gcc11'
 
 === openSUSE Leap 15.2 -> openSUSE Leap 15.3 (aarch64)
 

@@ -36,6 +36,13 @@ plug3-home)
         exit 1
     fi
     ;;
+plug3-boot-efi)
+    cd plug3-boot-efi
+    if ! rsync -avP --delete-after -x plug.vmiklos.hu:/boot/efi/ .; then
+        echo "rsync failed giving up"
+        exit 1
+    fi
+    ;;
 wilson)
     cd wilson
     if ! rsync -avP --delete-after -x --exclude=swapfile wilson.vmiklos.hu:/ .; then
