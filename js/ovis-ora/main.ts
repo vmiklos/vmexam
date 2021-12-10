@@ -37,14 +37,14 @@ async function submitClick()
 
     // Full green: end text.
     const body = document.getElementsByTagName('body')[0];
-    const end = document.createElement('p');
+    const end = document.createElement('img');
     end.style.zIndex = "1";
     end.style.position = "fixed";
     end.style.font = '100px sans-serif';
     end.style.top = '50%';
     end.style.left = '50%';
     end.style.transform = 'translate(-50%, -50%)';
-    end.appendChild(document.createTextNode('Vége'));
+    end.src = "smiley.svg";
     body.appendChild(end);
     confetti({
         particleCount : 150,
