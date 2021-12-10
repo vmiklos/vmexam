@@ -4,6 +4,7 @@
  * found in the LICENSE file.
  */
 
+import confetti = require('canvas-confetti');
 import domready = require('domready');
 
 async function drawClock(ratio: number)
@@ -45,6 +46,10 @@ async function submitClick()
     end.style.transform = 'translate(-50%, -50%)';
     end.appendChild(document.createTextNode('Vége'));
     body.appendChild(end);
+    confetti({
+        particleCount : 150,
+        ticks : 600,
+    });
 }
 
 domready(function() {
