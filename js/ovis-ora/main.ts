@@ -35,12 +35,16 @@ async function submitClick()
     }
 
     // Full green: end text.
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = "#000000";
-    ctx.font = '100px sans-serif';
-    const text = "Vége";
-    const textWidth = ctx.measureText(text).width;
-    ctx.fillText(text, (canvas.width / 2) - (textWidth / 2), 500);
+    const body = document.getElementsByTagName('body')[0];
+    const end = document.createElement('p');
+    end.style.zIndex = "1";
+    end.style.position = "fixed";
+    end.style.font = '100px sans-serif';
+    end.style.top = '50%';
+    end.style.left = '50%';
+    end.style.transform = 'translate(-50%, -50%)';
+    end.appendChild(document.createTextNode('Vége'));
+    body.appendChild(end);
 }
 
 domready(function() {
