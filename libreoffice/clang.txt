@@ -114,7 +114,7 @@ grep error: log.clang-tidy |grep -v misc-non-private
 Core:
 
 ----
-~/git/vmexam/libreoffice/clang-tidy.py
+~/git/vmexam/libreoffice/clang-tidy.py 2>&1 |tee log.clang-tidy
 ----
 
 == IWYU
