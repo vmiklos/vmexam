@@ -5,33 +5,13 @@
  */
 
 import domready = require('domready');
+import shuffle = require('shuffle-array');
 
 declare global
 {
     interface Window {
         wordList: Array<string>|undefined;
     }
-}
-
-// Need to figure out how to use the array-shuffle package...
-function shuffle(array: Array<string>)
-{
-    let currentIndex = array.length, randomIndex;
-
-    // While there remain elements to shuffle...
-    while (currentIndex != 0)
-    {
-
-        // Pick a remaining element...
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-
-        // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] =
-            [ array[randomIndex], array[currentIndex] ];
-    }
-
-    return array;
 }
 
 async function refreshClick()
