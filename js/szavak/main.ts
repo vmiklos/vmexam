@@ -91,6 +91,7 @@ domready(function() {
     refresh.style.width = '100px';
     refresh.style.height = '100px';
     refresh.style.transform = 'translate(-50%, -50%)';
+    refresh.style.cursor = 'pointer';
     refresh.src = 'refresh.svg';
     refresh.onclick = refreshClick;
     body.appendChild(refresh);
