@@ -19,7 +19,7 @@ async function refreshClick()
     // Fetch word list if needed.
     if (window.wordList === undefined)
     {
-        let request = new Request("szavak.json");
+        const request = new Request("szavak.json");
         const response = await window.fetch(request);
         window.wordList = await response.json();
     }
@@ -29,14 +29,14 @@ async function refreshClick()
     const wordElement = document.querySelector('#word');
 
     let valid = true;
-    let valid_letters =
+    const valid_letters =
         [ 'a', 'á', 'e', 'i', 'í', 'm', 'o', 'ó', 'r', 't', 'u', 'ú', '=' ];
     for (let i = 0; i < window.wordList.length; i++)
     {
-        let word = window.wordList[i];
+        const word = window.wordList[i];
         for (let j = 0; j < word.length; j++)
         {
-            let letter = word[j];
+            const letter = word[j];
             if (!valid_letters.includes(letter))
             {
                 valid = false;
