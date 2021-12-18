@@ -11,7 +11,7 @@ time (
         -DLLVM_ENABLE_SPHINX=ON \
         -DCMAKE_C_COMPILER="gcc" \
         -DCMAKE_CXX_COMPILER="g++" \
-        -DLLVM_ENABLE_PROJECTS="compiler-rt;clang;clang-tools-extra" \
+        -DLLVM_ENABLE_PROJECTS="compiler-rt;clang;clang-tools-extra;lld" \
         ../llvm
     make -j8
     make install
