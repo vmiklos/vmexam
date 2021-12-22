@@ -24,9 +24,14 @@ async function refreshClick()
         window.wordList = await response.json();
     }
 
+    // Decide what color to use.
+    const colors =
+        [ '#4472C4', '#ED7D31', '#A5A5A5', '#FFC000', '#5B9BD5', '#70AD47' ];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+
     // Pick a random word that contains only valid letters.
     window.wordList = shuffle(window.wordList);
-    const wordElement = document.querySelector('#word');
+    const wordElement = <HTMLElement>document.querySelector('#word');
 
     let valid = true;
     const valid_letters =
@@ -46,6 +51,7 @@ async function refreshClick()
         if (valid && word.length >= 2)
         {
             wordElement.innerHTML = word.replace(/=/g, '-');
+            wordElement.style.color = color;
             break;
         }
         valid = true;
