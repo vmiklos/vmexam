@@ -19,7 +19,7 @@ check-unit:
 	tools/run-cypress.sh
 
 check-lint:
-	node_modules/eslint/bin/eslint.js main.js cypress/integration/main.spec.js
+	npx eslint main.js cypress/integration/main.spec.js
 
 run:
 	python3 -m http.server
@@ -28,5 +28,5 @@ check-unit-cov:
 	rm -rf .nyc_output/ coverage/
 	npx webpack --config webpack-cov.config.js
 	tools/run-cypress.sh --env COVERAGE_RUN=1
-	node_modules/.bin/nyc report --statements 100 --check-coverage --reporter=text-summary
-	node_modules/.bin/nyc report --reporter=html
+	npx nyc report --statements 100 --check-coverage --reporter=text-summary
+	npx nyc report --reporter=html
