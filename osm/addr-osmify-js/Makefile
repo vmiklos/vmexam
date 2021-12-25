@@ -1,13 +1,13 @@
 -include config.mak
 
 ifneq ($(DEBUG),)
-BROWSERIFY_OPTIONS = --debug
+WEBPACK_OPTIONS = --mode=development
 else
-BROWSERIFY_OPTIONS = --plugin tinyify
+WEBPACK_OPTIONS = --mode=production
 endif
 
-bundle.js: main.js package-lock.json Makefile config.mak
-	node_modules/.bin/browserify -o bundle.js $(BROWSERIFY_OPTIONS) main.js
+bundle.js: main.js webpack.config.js package-lock.json Makefile config.mak
+	npx webpack ${WEBPACK_OPTIONS} --config webpack.config.js
 
 package-lock.json: package.json
 	npm install
@@ -26,7 +26,7 @@ run:
 
 check-unit-cov:
 	rm -rf .nyc_output/ coverage/
-	node_modules/.bin/browserify -o bundle.js -t browserify-istanbul main.js
+	npx webpack --config webpack-cov.config.js
 	tools/run-cypress.sh --env COVERAGE_RUN=1
 	node_modules/.bin/nyc report --statements 100 --check-coverage --reporter=text-summary
 	node_modules/.bin/nyc report --reporter=html
