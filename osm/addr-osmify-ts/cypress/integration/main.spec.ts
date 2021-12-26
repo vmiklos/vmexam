@@ -6,12 +6,12 @@
 
 describe('TestMain', () => {
     it('testHappy', () => {
-        cy.route2(
+        cy.intercept(
             'GET',
             'https://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json',
             {fixture : 'nominatim-happy.json'});
-        cy.route2('POST', 'http://overpass-api.de/api/interpreter',
-                  {fixture : 'overpass-happy.json'});
+        cy.intercept('POST', 'http://overpass-api.de/api/interpreter',
+                     {fixture : 'overpass-happy.json'});
 
         cy.visit('http://0.0.0.0:8000/');
 
@@ -25,12 +25,12 @@ describe('TestMain', () => {
     });
 
     it('testOverpassNoresults', () => {
-        cy.route2(
+        cy.intercept(
             'GET',
             'https://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json',
             {fixture : 'nominatim-happy.json'});
-        cy.route2('POST', 'http://overpass-api.de/api/interpreter',
-                  {fixture : 'overpass-no-result.json'});
+        cy.intercept('POST', 'http://overpass-api.de/api/interpreter',
+                     {fixture : 'overpass-no-result.json'});
 
         cy.visit('http://0.0.0.0:8000/');
 
@@ -42,12 +42,12 @@ describe('TestMain', () => {
     });
 
     it('testOverpassError', () => {
-        cy.route2(
+        cy.intercept(
             'GET',
             'https://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json',
             {fixture : 'nominatim-happy.json'});
-        cy.route2('POST', 'http://overpass-api.de/api/interpreter',
-                  {statusCode : 200, body : 'not json'});
+        cy.intercept('POST', 'http://overpass-api.de/api/interpreter',
+                     {statusCode : 200, body : 'not json'});
 
         cy.visit('http://0.0.0.0:8000/');
 
@@ -62,12 +62,12 @@ describe('TestMain', () => {
     });
 
     it('testNominatimNoresults', () => {
-        cy.route2(
+        cy.intercept(
             'GET',
             'https://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json',
             {statusCode : 200, body : '[]'});
-        cy.route2('POST', 'http://overpass-api.de/api/interpreter',
-                  {fixture : 'overpass-happy.json'});
+        cy.intercept('POST', 'http://overpass-api.de/api/interpreter',
+                     {fixture : 'overpass-happy.json'});
 
         cy.visit('http://0.0.0.0:8000/');
 
@@ -79,12 +79,12 @@ describe('TestMain', () => {
     });
 
     it('testNominatimError', () => {
-        cy.route2(
+        cy.intercept(
             'GET',
             'https://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json',
             {statusCode : 200, body : 'not json'});
-        cy.route2('POST', 'http://overpass-api.de/api/interpreter',
-                  {fixture : 'overpass-happy.json'});
+        cy.intercept('POST', 'http://overpass-api.de/api/interpreter',
+                     {fixture : 'overpass-happy.json'});
 
         cy.visit('http://0.0.0.0:8000/');
 
@@ -99,12 +99,12 @@ describe('TestMain', () => {
     });
 
     it('testPreferBuildings', () => {
-        cy.route2(
+        cy.intercept(
             'GET',
             'https://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json',
             {fixture : 'nominatim-prefer-buildings.json'});
-        cy.route2('POST', 'http://overpass-api.de/api/interpreter',
-                  {fixture : 'overpass-prefer-buildings.json'});
+        cy.intercept('POST', 'http://overpass-api.de/api/interpreter',
+                     {fixture : 'overpass-prefer-buildings.json'});
 
         cy.visit('http://0.0.0.0:8000/');
 
@@ -118,12 +118,12 @@ describe('TestMain', () => {
     });
 
     it('testSearchParam', () => {
-        cy.route2(
+        cy.intercept(
             'GET',
             'https://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json',
             {fixture : 'nominatim-happy.json'});
-        cy.route2('POST', 'http://overpass-api.de/api/interpreter',
-                  {fixture : 'overpass-happy.json'});
+        cy.intercept('POST', 'http://overpass-api.de/api/interpreter',
+                     {fixture : 'overpass-happy.json'});
 
         cy.visit(
             'http://0.0.0.0:8000/?query=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest');
