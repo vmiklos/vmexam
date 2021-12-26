@@ -4,8 +4,6 @@
  * found in the LICENSE file.
  */
 
-import domready = require('domready');
-
 // NominatimResult represents one element in the result array from Nominatim.
 interface NominatimResult {
     'class': string;
@@ -144,8 +142,8 @@ async function osmify()
     queryTurbo(protocol, nominatimResult);
 }
 
-// Entry point of this module.
-domready(function() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+document.addEventListener("DOMContentLoaded", async function(event) {
     // Create our page.
     const body = document.getElementsByTagName('body')[0];
 
