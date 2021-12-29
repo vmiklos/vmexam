@@ -1,7 +1,7 @@
 -include config.mak
 
 ifneq ($(DEBUG),)
-WEBPACK_OPTIONS = --mode=development
+WEBPACK_OPTIONS = --mode=development --devtool inline-source-map
 else
 WEBPACK_OPTIONS = --mode=production
 endif
@@ -18,7 +18,7 @@ check: check-unit check-lint
 # Without coverage: tools/run-cypress.sh
 check-unit: bundle.js
 	rm -rf .nyc_output/ coverage/
-	npx webpack --config webpack-cov.config.js
+	npx webpack --mode=development --devtool inline-source-map --config webpack-cov.config.js
 	tools/run-cypress.sh --env COVERAGE_RUN=1
 	npx nyc report --statements 100 --check-coverage --reporter=text-summary
 	npx nyc report --reporter=html
