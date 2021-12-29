@@ -4,8 +4,7 @@
  * found in the LICENSE file.
  */
 
-import domready = require('domready');
-import shuffle = require('shuffle-array');
+import arrayShuffle from 'array-shuffle';
 
 declare global
 {
@@ -30,7 +29,7 @@ async function refreshClick()
     const color = colors[Math.floor(Math.random() * colors.length)];
 
     // Pick a random word that contains only valid letters.
-    window.wordList = shuffle(window.wordList);
+    window.wordList = arrayShuffle(window.wordList);
     const wordElement = <HTMLElement>document.querySelector('#word');
 
     let valid = true;
@@ -58,7 +57,8 @@ async function refreshClick()
     }
 }
 
-domready(function() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+document.addEventListener("DOMContentLoaded", async function(event) {
     // Create our page.
     const body = document.getElementsByTagName('body')[0];
     const word = document.createElement('p');
