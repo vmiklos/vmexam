@@ -85,8 +85,11 @@ mod tests {
 
     #[test]
     fn hyphenate() {
-        let dict = HyphenDict::new("/usr/share/hyphen/hyph_hu_HU.dic").expect("HyphenDict::new() failed");
-        let hyphenated = dict.hyphenate("asszonnyal").expect("HyphenDict::hyphenate() failed");
+        let dict =
+            HyphenDict::new("/usr/share/hyphen/hyph_hu_HU.dic").expect("HyphenDict::new() failed");
+        let hyphenated = dict
+            .hyphenate("asszonnyal")
+            .expect("HyphenDict::hyphenate() failed");
         assert_eq!(hyphenated, "asz=szony=nyal");
     }
 }
