@@ -33,8 +33,10 @@ async function refreshClick()
     const wordElement = <HTMLElement>document.querySelector('#word');
 
     let valid = true;
-    const valid_letters =
-        [ 'a', 'á', 'e', 'i', 'í', 'm', 'o', 'ó', 'r', 't', 'u', 'ú', '=' ];
+    const valid_letters = [
+        'a', 'á', 'e', 'i', 'í', 'l', 'm', 'o', 'ó', 'r', 't', 'u', 'ú', 'ü',
+        'ű', '='
+    ];
     for (let i = 0; i < window.wordList.length; i++)
     {
         const word = window.wordList[i];
