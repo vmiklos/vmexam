@@ -15,10 +15,11 @@ declare global
 
 async function refreshClick()
 {
+    const jsonPath = "szavak2.json";
     // Fetch word list if needed.
     if (window.wordList === undefined)
     {
-        const request = new Request("szavak.json");
+        const request = new Request(jsonPath);
         const response = await window.fetch(request);
         window.wordList = await response.json();
     }
@@ -49,7 +50,7 @@ async function refreshClick()
                 break;
             }
         }
-        if (valid && word.length >= 2)
+        if ((valid && word.length >= 2) || jsonPath == "szavak2.json")
         {
             wordElement.innerHTML = word.replace(/=/g, '-');
             wordElement.style.color = color;

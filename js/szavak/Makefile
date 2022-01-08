@@ -17,7 +17,7 @@ check:
 	npx eslint main.ts
 
 install:
-	scp index.html bundle.js refresh.svg szavak.json wilson:share/szavak/
+	scp index.html bundle.js refresh.svg szavak*.json wilson:share/szavak/
 
 run:
 	python3 -m http.server
