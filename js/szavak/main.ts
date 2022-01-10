@@ -5,25 +5,34 @@
  */
 
 import arrayShuffle from 'array-shuffle';
+import confetti from 'canvas-confetti';
 
 declare global
 {
     interface Window {
         wordList: Array<string>|undefined;
+        lastConfetti: number;
     }
 }
 
 async function refreshClick()
 {
+    const now = (+new Date()) / 1000;
     let jsonPath = "2022-01-04.json";
 
     const urlParams = new URLSearchParams(window.location.search);
-    const path = urlParams.get('path');
-    if (path != null)
+    let value = urlParams.get('path');
+    if (value != null)
     {
-        jsonPath = path;
+        jsonPath = value;
     }
     const filter = urlParams.get('filter') != null;
+    let confettiTimeout = 600; // 10 minutes
+    value = urlParams.get('confetti');
+    if (value != null)
+    {
+        confettiTimeout = Number(value);
+    }
 
     // Fetch word list if needed.
     if (window.wordList === undefined)
@@ -31,6 +40,8 @@ async function refreshClick()
         const request = new Request(jsonPath);
         const response = await window.fetch(request);
         window.wordList = await response.json();
+
+        window.lastConfetti = now;
     }
 
     // Decide what color to use.
@@ -66,6 +77,15 @@ async function refreshClick()
             break;
         }
         valid = true;
+    }
+
+    if (now - window.lastConfetti > confettiTimeout)
+    {
+        confetti({
+            particleCount : 150,
+            ticks : 600,
+        });
+        window.lastConfetti = now;
     }
 }
 

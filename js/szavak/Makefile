@@ -1,7 +1,7 @@
 -include config.mak
 
 ifneq ($(DEBUG),)
-WEBPACK_OPTIONS = --mode=development
+WEBPACK_OPTIONS = --mode=development --devtool inline-source-map
 else
 WEBPACK_OPTIONS = --mode=production
 endif
