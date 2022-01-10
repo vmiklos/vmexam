@@ -15,7 +15,16 @@ declare global
 
 async function refreshClick()
 {
-    const jsonPath = "szavak2.json";
+    let jsonPath = "2022-01-04.json";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const path = urlParams.get('path');
+    if (path != null)
+    {
+        jsonPath = path;
+    }
+    const filter = urlParams.get('filter') != null;
+
     // Fetch word list if needed.
     if (window.wordList === undefined)
     {
@@ -50,7 +59,7 @@ async function refreshClick()
                 break;
             }
         }
-        if ((valid && word.length >= 2) || jsonPath == "szavak2.json")
+        if ((valid && word.length >= 2) || !filter)
         {
             wordElement.innerHTML = word.replace(/=/g, '-');
             wordElement.style.color = color;
