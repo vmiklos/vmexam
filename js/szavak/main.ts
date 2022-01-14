@@ -18,7 +18,7 @@ declare global
 async function refreshClick()
 {
     const now = (+new Date()) / 1000;
-    let jsonPath = "2022-01-04.json";
+    let jsonPath = "szavak.json";
 
     const urlParams = new URLSearchParams(window.location.search);
     let value = urlParams.get('path');
@@ -26,7 +26,8 @@ async function refreshClick()
     {
         jsonPath = value;
     }
-    const filter = urlParams.get('filter') != null;
+    value = urlParams.get('filter');
+    const filter = value == null || Number(value) != 0;
     let confettiTimeout = 600; // 10 minutes
     value = urlParams.get('confetti');
     if (value != null)
@@ -55,8 +56,8 @@ async function refreshClick()
 
     let valid = true;
     const valid_letters = [
-        'a', 'á', 'e', 'é', 'i', 'í', 'l', 'm', 'o', 'ó', 'r', 't', 'u', 'ú',
-        'ü', 'ű', 'v', '='
+        'a', 'á', 'e', 'é', 'i', 'í', 'l', 'm', 'o', 'ó',
+        'ö', 'ő', 'r', 't', 'u', 'ú', 'ü', 'ű', 'v', '='
     ];
     for (let i = 0; i < window.wordList.length; i++)
     {
