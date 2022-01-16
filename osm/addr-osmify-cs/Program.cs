@@ -175,7 +175,7 @@ class Program
             string addr = String.Format("{0} {1}, {2} {3}", postcode, city, street, housenumber);
 
             // Print the result.
-            return String.Format("geo:{0},{1} ({2})", lat, lon, addr);
+            return String.Format("{0},{1} ({2})", lat, lon, addr);
     }
 
     // Invokes osmify() on a thread.

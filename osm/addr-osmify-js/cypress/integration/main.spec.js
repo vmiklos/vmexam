@@ -21,7 +21,7 @@ describe('TestMain', () => {
 
         cy.get('#output').should(
             'have.value',
-            'geo:47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)');
+            '47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)');
     });
 
     it('testOverpassNoresults', () => {
@@ -112,7 +112,7 @@ describe('TestMain', () => {
 
         cy.get('#output').should(
             'have.value',
-            'geo:47.47690895,19.0512550758533 (1111 Budapest, Karinthy Frigyes út 18)');
+            '47.47690895,19.0512550758533 (1111 Budapest, Karinthy Frigyes út 18)');
     });
 
     it('testSearchParam', () => {
@@ -132,7 +132,7 @@ describe('TestMain', () => {
 
         cy.get('#output').should(
             'have.value',
-            'geo:47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)');
+            '47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)');
     });
 });
 

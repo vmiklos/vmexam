@@ -147,8 +147,8 @@ void osmify(NSString* query)
         stringWithFormat:@"%@ %@, %@ %@", postcode, city, street, housenumber];
 
     // Print the result.
-    printf("%s\n", [[NSString stringWithFormat:@"geo:%@,%@ (%@)", lat, lon,
-                                               addr] UTF8String]);
+    printf("%s\n", [[NSString stringWithFormat:@"%@,%@ (%@)", lat, lon, addr]
+                       UTF8String]);
 }
 
 int main(int argc, const char* argv[])

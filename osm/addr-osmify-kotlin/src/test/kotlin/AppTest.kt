@@ -20,7 +20,7 @@ class AppTest {
             val baos = ByteArrayOutputStream()
             App(args, baos)
             val out = String(baos.toByteArray(), StandardCharsets.UTF_8)
-            val expected = "geo:47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n"
+            val expected = "47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n"
             assertEquals(expected, out)
         } catch (e: Exception) {
             throw e

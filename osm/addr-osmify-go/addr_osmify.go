@@ -133,7 +133,7 @@ out body;`, objectType, objectID)
 	addr := fmt.Sprintf("%s %s, %s %s", postCode, city, street, houseNumber)
 
 	// Print the result.
-	result := fmt.Sprintf("geo:%s,%s (%s)", lat, lon, addr)
+	result := fmt.Sprintf("%s,%s (%s)", lat, lon, addr)
 	return &result, nil
 }
 

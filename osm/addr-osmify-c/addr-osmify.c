@@ -391,7 +391,7 @@ void osmify(struct SpinnerContext* spinnerContext)
         goto cleanup;
     }
 
-    if (asprintf(&spinnerContext->result, "geo:%s,%s (%s)", lat, lon, addr) < 0)
+    if (asprintf(&spinnerContext->result, "%s,%s (%s)", lat, lon, addr) < 0)
     {
         spinnerContext->error = strdup("failed to build the result string");
         goto cleanup;

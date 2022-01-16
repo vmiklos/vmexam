@@ -84,7 +84,7 @@ out body;""" % (object_type, object_id)
     addr = "%s %s, %s %s" % (postcode, city, street, housenumber)
 
     # Print the result.
-    return "geo:%s,%s (%s)" % (lat, lon, addr)
+    return "%s,%s (%s)" % (lat, lon, addr)
 
 
 def worker(context: Dict[str, str]) -> None:

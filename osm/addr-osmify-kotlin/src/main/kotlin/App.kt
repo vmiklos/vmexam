@@ -103,7 +103,7 @@ class App(args: Array<String>, out: OutputStream) {
             val street = turboElement.tags.street
             val addr = "$postCode $city, $street $houseNumber"
             // Print the result.
-            return "geo:$lat,$lon ($addr)"
+            return "$lat,$lon ($addr)"
         }
     }
 

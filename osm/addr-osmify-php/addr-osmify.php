@@ -96,7 +96,7 @@ function osmify(string $query): void
     $addr = $postcode . ' ' . $city . ', ' . $street . ' ' . $housenumber;
 
     // Print the result.
-    echo 'geo:' . $lat . ',' . $lon . ' (' . $addr . ")\n";
+    echo '' . $lat . ',' . $lon . ' (' . $addr . ")\n";
 }
 
 // Commandline interface to this module.

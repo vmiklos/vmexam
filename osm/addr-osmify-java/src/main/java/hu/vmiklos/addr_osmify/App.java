@@ -106,7 +106,7 @@ public final class App
         String addr = postCode + " " + city + ", " + street + " " + houseNumber;
 
         // Print the result.
-        return "geo:" + lat + "," + lon + " (" + addr + ")";
+        return "" + lat + "," + lon + " (" + addr + ")";
     }
 
     /**

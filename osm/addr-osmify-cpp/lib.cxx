@@ -176,7 +176,7 @@ std::string osmify(const std::string& query)
         postcode + " " + city + ", " + street + " " + housenumber;
 
     // Print the result.
-    ret << "geo:" << lat << "," << lon << " (" << addr << ")";
+    ret << "" << lat << "," << lon << " (" << addr << ")";
     return ret.str();
 }
 

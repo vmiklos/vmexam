@@ -41,7 +41,7 @@ async function queryTurbo(protocol, element)
         var addr = postcode + ' ' + city + ', ' + street + ' ' + housenumber;
 
         // Show the result.
-        var result = 'geo:' + lat + ',' + lon + ' (' + addr + ')';
+        var result = '' + lat + ',' + lon + ' (' + addr + ')';
         output.value = result;
     }
     catch (reason)

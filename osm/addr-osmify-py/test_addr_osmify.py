@@ -75,7 +75,7 @@ class TestMain(unittest.TestCase):
                 with unittest.mock.patch('sys.stdout', buf):
                     addr_osmify.main()
                 buf.seek(0)
-                expected = "geo:47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n"
+                expected = "47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n"
                 self.assertEqual(buf.read(), expected)
 
     def test_prefer_buildings(self) -> None:
@@ -97,7 +97,7 @@ class TestMain(unittest.TestCase):
                 with unittest.mock.patch('sys.stdout', buf):
                     addr_osmify.main()
                 buf.seek(0)
-                expected = "geo:47.47690895,19.0512550758533"
+                expected = "47.47690895,19.0512550758533"
                 expected += " (1111 Budapest, Karinthy Frigyes út 18)\n"
                 self.assertEqual(buf.read(), expected)
 
@@ -120,7 +120,7 @@ class TestMain(unittest.TestCase):
                 with unittest.mock.patch('sys.stdout', buf):
                     addr_osmify.main()
                 buf.seek(0)
-                expected = "geo:47.47690895,19.0512550758533"
+                expected = "47.47690895,19.0512550758533"
                 expected += " (1111 Budapest, Karinthy Frigyes út 18)\n"
                 self.assertEqual(buf.read(), expected)
 

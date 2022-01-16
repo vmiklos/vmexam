@@ -93,7 +93,7 @@ sub osmify($)
     my $addr = $postcode . " " . $city . ", " . $street . " " . $housenumber;
 
     # Print the result.
-    printf("geo:%s,%s (%s)\n", $lat, $lon, $addr);
+    printf("%s,%s (%s)\n", $lat, $lon, $addr);
 }
 
 # Commandline interface to this module.

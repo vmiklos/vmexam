@@ -23,7 +23,7 @@ public class AppTest
             new App(args, baos);
             String out = new String(baos.toByteArray(), StandardCharsets.UTF_8);
             String expected =
-                "geo:47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n";
+                "47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n";
             assertEquals(expected, out);
         }
         catch (Exception e)

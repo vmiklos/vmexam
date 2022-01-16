@@ -66,7 +66,7 @@ async function queryTurbo(protocol: string, element: NominatimResult)
         const addr = postcode + ' ' + city + ', ' + street + ' ' + housenumber;
 
         // Show the result.
-        const result = 'geo:' + lat + ',' + lon + ' (' + addr + ')';
+        const result = '' + lat + ',' + lon + ' (' + addr + ')';
         output.value = result;
     }
     catch (reason)

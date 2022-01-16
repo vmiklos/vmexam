@@ -73,7 +73,7 @@ function osmify()
     local -r addr="${postcode} ${city}, ${street} ${housenumber}"
 
     # Print the result.
-    echo "geo:${lat},${lon} (${addr})"
+    echo "${lat},${lon} (${addr})"
 }
 
 if [ -n "$1" ]; then

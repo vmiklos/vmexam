@@ -168,7 +168,7 @@ out body;"#,
     let addr = format!("{} {}, {} {}", postcode, city, street, housenumber);
 
     // Print the result.
-    Ok(format!("geo:{},{} ({})", lat, lon, addr))
+    Ok(format!("{},{} ({})", lat, lon, addr))
 }
 
 fn spinner(
@@ -317,7 +317,7 @@ mod tests {
         };
         assert_eq!(
             buf_string,
-            "geo:47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n"
+            "47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n"
         );
 
         Ok(())
@@ -408,7 +408,7 @@ mod tests {
         };
         assert_eq!(
             buf_string,
-            "geo:47.47690895,19.0512550758533 (1111 Budapest, Karinthy Frigyes út 18)\n"
+            "47.47690895,19.0512550758533 (1111 Budapest, Karinthy Frigyes út 18)\n"
         );
 
         Ok(())

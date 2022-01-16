@@ -129,7 +129,7 @@ TEST(TestMain, testHappy)
     std::stringstream out;
     ASSERT_EQ(0, osmify::main(args, out));
     std::string expected =
-        "geo:47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n";
+        "47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n";
     ASSERT_EQ(expected, out.str());
 }
 
@@ -148,7 +148,7 @@ TEST(TestMain, testPreferBuildings)
     std::vector<const char*> args{"", "Karinthy Frigyes út 18, Budapest"};
     std::stringstream out;
     ASSERT_EQ(0, osmify::main(args, out));
-    std::string expected = "geo:47.47690895,19.0512550758533 (1111 Budapest, "
+    std::string expected = "47.47690895,19.0512550758533 (1111 Budapest, "
                            "Karinthy Frigyes út 18)\n";
     ASSERT_EQ(expected, out.str());
 }
@@ -168,7 +168,7 @@ TEST(TestMain, testNoBuildings)
     std::vector<const char*> args{"", "Karinthy Frigyes út 18, Budapest"};
     std::stringstream out;
     ASSERT_EQ(0, osmify::main(args, out));
-    std::string expected = "geo:47.47690895,19.0512550758533 (1111 Budapest, "
+    std::string expected = "47.47690895,19.0512550758533 (1111 Budapest, "
                            "Karinthy Frigyes út 18)\n";
     ASSERT_EQ(expected, out.str());
 }

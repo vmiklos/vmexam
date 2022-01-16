@@ -63,7 +63,7 @@ func TestHappy(t *testing.T) {
 	routes = append(routes, route)
 	Urlopen = MockUrlopen(t, routes)
 
-	want := "geo:47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n"
+	want := "47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n"
 	argv := []string{"", "Mészáros utca 58/a, Budapest"}
 	buf := new(bytes.Buffer)
 	Main(argv, buf)
@@ -90,7 +90,7 @@ func TestPreferBuildings(t *testing.T) {
 	routes = append(routes, route)
 	Urlopen = MockUrlopen(t, routes)
 
-	want := "geo:47.47690895,19.0512550758533 (1111 Budapest, Karinthy Frigyes út 18)\n"
+	want := "47.47690895,19.0512550758533 (1111 Budapest, Karinthy Frigyes út 18)\n"
 	argv := []string{"", "Karinthy Frigyes út 18, Budapest"}
 	buf := new(bytes.Buffer)
 	Main(argv, buf)
