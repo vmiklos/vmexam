@@ -46,6 +46,7 @@ class GContacts(object):
             address = addresses[0]
             if address.startswith("geo:"):
                 # This is the whole point of this script.
+                # TODO search for source:address=osm instead.
                 continue
             matches.append("%s: %s" % (name, address))
         matches = sorted(set(matches))
