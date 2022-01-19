@@ -56,8 +56,8 @@ async function refreshClick()
 
     let valid = true;
     const valid_letters = [
-        'a', 'á', 'e', 'é', 'i', 'í', 'l', 'm', 'o', 'ó',
-        'ö', 'ő', 'r', 't', 'u', 'ú', 'ü', 'ű', 'v', '='
+        'a', 'á', 'e', 'é', 'i', 'í', 'l', 'm', 'n', 'o', 'ó',
+        'ö', 'ő', 'r', 's', 't', 'u', 'ú', 'ü', 'ű', 'v', '='
     ];
     for (let i = 0; i < window.wordList.length; i++)
     {
