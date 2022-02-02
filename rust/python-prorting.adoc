@@ -3,6 +3,9 @@
 Based on porting osm-gimmisn over from Python to Rust. Read
 <https://blog.waleedkhan.name/port-python-to-rust/> first.
 
+I started porting on 2021-08-01 and finished on 2021-11-14, taking care of about 11000 lines of
+Python code (including tests).
+
 Before porting:
 
 - Tests: make sure you have 100% statement coverage to avoid regressions.

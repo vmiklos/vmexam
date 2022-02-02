@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Simple script to clean up unused namespace declarations in an XML file.
+
+from lxml import etree as ET
+import re
+import sys
+
+def get_only_in_first(first, second):
+    ret = []
+    for index, item in enumerate(first):
+        if item not in second:
+            ret.append(first[index])
+    return ret
+
+def find_unused_nsdecls(root, used_nsdecls, all_nsdecls):
+    used_nsdecls.append(re.sub("{(.*)}.*", r"\1", root.tag))
+    for k, v in root.attrib.items():
+        used_nsdecls.append(re.sub("{(.*)}.*", r"\1", k))
+    for k, v in root.nsmap.items():
+        all_nsdecls.append(v)
+    for child in root.getchildren():
+        find_unused_nsdecls(child, used_nsdecls, all_nsdecls)
+
+def remove_unused_nsdecls(in_path, out_path):
+    dom = ET.parse(in_path)
+    root = dom.getroot()
+
+    used_nsdecls = []
+    all_nsdecls = []
+    find_unused_nsdecls(root, used_nsdecls, all_nsdecls)
+    used_nsdecls = sorted(set(used_nsdecls))
+    all_nsdecls = sorted(set(all_nsdecls))
+    unused_nsdecls = get_only_in_first(all_nsdecls, used_nsdecls)
+    # root.nsmap is read-only, see https://bugs.launchpad.net/lxml/+bug/555602
+    removals = []
+    for nsdecls in unused_nsdecls:
+        removals += [" xmlns:{}=\"{}\"".format(k, v) for k, v in root.nsmap.items() if v == nsdecls]
+    with open(in_path, "r") as stream:
+        buf = stream.read()
+    for removal in removals:
+        buf = buf.replace(removal, "")
+    with open(out_path, "w") as stream:
+        stream.write(buf)
+
+if __name__ == "__main__":
+    in_path = sys.argv[1]
+    if len(sys.argv) >= 3:
+        out_path = sys.argv[2]
+    else:
+        out_path = in_path
+    remove_unused_nsdecls(in_path, out_path)
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
