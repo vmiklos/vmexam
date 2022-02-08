@@ -33,6 +33,19 @@ class GContacts(object):
                     addresses.append(address["formattedValue"])
             return addresses
 
+        def getAddressSource(contact):
+            if "userDefined" not in contact.keys():
+                return ""
+
+            for userDefined in contact["userDefined"]:
+                if userDefined["key"] != "source:address":
+                    continue
+                if "value" not in userDefined.keys():
+                    continue
+                return userDefined["value"]
+
+            return ""
+
         if not os.path.exists(self.contactsJsonPath):
             return
         contacts = json.load(open(self.contactsJsonPath))
@@ -44,9 +57,7 @@ class GContacts(object):
                 continue
 
             address = addresses[0]
-            if address.startswith("geo:"):
-                # This is the whole point of this script.
-                # TODO search for source:address=osm instead.
+            if not address or getAddressSource(contact) == "osm":
                 continue
             matches.append("%s: %s" % (name, address))
         matches = sorted(set(matches))
