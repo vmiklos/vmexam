@@ -72,7 +72,7 @@ impl Urllib for MockUrllib {
 }
 
 #[test]
-fn test_happy() -> BoxResult<()> {
+fn test_happy() {
     let args: Vec<String> = vec!["".to_string(), "Mészáros utca 58/a, Budapest".to_string()];
 
     let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
@@ -93,20 +93,15 @@ fn test_happy() -> BoxResult<()> {
     assert_eq!(main(args, &mut buf, &urllib), 0);
 
     let buf_vec = buf.into_inner();
-    let buf_string = match std::str::from_utf8(&buf_vec) {
-        Ok(v) => v,
-        Err(e) => panic!("invalid UTF-8 sequence: {}", e),
-    };
+    let buf_string = String::from_utf8(buf_vec).unwrap();
     assert_eq!(
         buf_string,
         "47.490592,19.030662 (1016 Budapest, Mészáros utca 58/a)\n"
     );
-
-    Ok(())
 }
 
 #[test]
-fn test_nominatim_json() -> BoxResult<()> {
+fn test_nominatim_json() {
     let args: Vec<String> = vec!["".to_string(), "Mészáros utca 58/a, Budapest".to_string()];
 
     let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
@@ -122,17 +117,15 @@ fn test_nominatim_json() -> BoxResult<()> {
     assert_eq!(main(args, &mut buf, &urllib), 1);
 
     let buf_vec = buf.into_inner();
-    let buf_string = std::str::from_utf8(&buf_vec).unwrap();
+    let buf_string = String::from_utf8(buf_vec).unwrap();
     assert_eq!(
         buf_string,
         "failed to osmify: failed to parse JSON from nominatim: EOF while parsing an object at line 2 column 0",
     );
-
-    Ok(())
 }
 
 #[test]
-fn test_nominatim_no_result() -> BoxResult<()> {
+fn test_nominatim_no_result() {
     let args: Vec<String> = vec!["".to_string(), "Mészáros utca 58/a, Budapestt".to_string()];
 
     let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
@@ -150,12 +143,10 @@ fn test_nominatim_no_result() -> BoxResult<()> {
     let buf_vec = buf.into_inner();
     let buf_string = std::str::from_utf8(&buf_vec).unwrap();
     assert_eq!(buf_string, "failed to osmify: no results from nominatim",);
-
-    Ok(())
 }
 
 #[test]
-fn test_prefer_buildings() -> BoxResult<()> {
+fn test_prefer_buildings() {
     let args: Vec<String> = vec![
         "".to_string(),
         "Karinthy Frigyes út 18, Budapest".to_string(),
@@ -179,20 +170,15 @@ fn test_prefer_buildings() -> BoxResult<()> {
     assert_eq!(main(args, &mut buf, &urllib), 0);
 
     let buf_vec = buf.into_inner();
-    let buf_string = match std::str::from_utf8(&buf_vec) {
-        Ok(v) => v,
-        Err(e) => panic!("invalid UTF-8 sequence: {}", e),
-    };
+    let buf_string = String::from_utf8(buf_vec).unwrap();
     assert_eq!(
         buf_string,
         "47.47690895,19.0512550758533 (1111 Budapest, Karinthy Frigyes út 18)\n"
     );
-
-    Ok(())
 }
 
 #[test]
-fn test_overpass_json() -> BoxResult<()> {
+fn test_overpass_json() {
     let args: Vec<String> = vec!["".to_string(), "Mészáros utca 58/a, Budapest".to_string()];
 
     let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
@@ -218,12 +204,10 @@ fn test_overpass_json() -> BoxResult<()> {
         buf_string,
         "failed to osmify: failed to parse JSON from overpass: EOF while parsing a value at line 3 column 0",
     );
-
-    Ok(())
 }
 
 #[test]
-fn test_overpass_noresult() -> BoxResult<()> {
+fn test_overpass_noresult() {
     let args: Vec<String> = vec!["".to_string(), "Mészáros utca 58/a, Budapest".to_string()];
 
     let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
@@ -246,12 +230,10 @@ fn test_overpass_noresult() -> BoxResult<()> {
     let buf_vec = buf.into_inner();
     let buf_string = std::str::from_utf8(&buf_vec).unwrap();
     assert_eq!(buf_string, "failed to osmify: no results from overpass",);
-
-    Ok(())
 }
 
 #[test]
-fn test_noargs() -> BoxResult<()> {
+fn test_noargs() {
     let args: Vec<String> = vec!["".to_string()];
     let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let routes = vec![];
@@ -268,8 +250,6 @@ fn test_noargs() -> BoxResult<()> {
         "buf_string is '{}'",
         buf_string
     );
-
-    Ok(())
 }
 
 #[test]
