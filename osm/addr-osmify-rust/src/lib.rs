@@ -75,7 +75,7 @@ fn query_turbo(urllib: &dyn Urllib, query: &str) -> BoxResult<TurboResult> {
         Ok(value) => value,
         Err(error) => {
             return Err(Box::new(OsmifyError {
-                details: format!("failed to parse JSON from overpass: {}", error.to_string()),
+                details: format!("failed to parse JSON from overpass: {}", error),
             }));
         }
     };
@@ -107,7 +107,7 @@ fn query_nominatim(urllib: &dyn Urllib, query: &str) -> BoxResult<Vec<NominatimR
         Ok(value) => value,
         Err(error) => {
             return Err(Box::new(OsmifyError {
-                details: format!("failed to parse JSON from nominatim: {}", error.to_string()),
+                details: format!("failed to parse JSON from nominatim: {}", error),
             }));
         }
     };
@@ -204,13 +204,17 @@ fn worker(query: &str, urllib: &dyn Urllib, tx: &std::sync::mpsc::Sender<Result<
     let result = osmify(query, urllib);
     match result {
         Ok(value) => tx.send(Ok(value)),
-        Err(error) => tx.send(Err(format!("failed to osmify: {}", error.to_string()))),
+        Err(error) => tx.send(Err(format!("failed to osmify: {}", error))),
     }
     .unwrap()
 }
 
-/// Similar to plain main(), but with an interface that allows testing.
-pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: &Arc<dyn Urllib>) -> BoxResult<()> {
+/// Inner main() that is allowed to fail.
+pub fn our_main(
+    args: Vec<String>,
+    stream: &mut dyn Write,
+    urllib: &Arc<dyn Urllib>,
+) -> BoxResult<()> {
     if args.len() > 1 {
         let (tx, rx) = std::sync::mpsc::channel();
         let urllib = urllib.clone();
@@ -223,6 +227,17 @@ pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: &Arc<dyn Urllib>)
     }
 
     Ok(())
+}
+
+/// Similar to plain main(), but with an interface that allows testing.
+pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: &Arc<dyn Urllib>) -> i32 {
+    match our_main(args, stream, urllib) {
+        Ok(_) => 0,
+        Err(err) => {
+            stream.write_all(err.to_string().as_bytes()).unwrap();
+            1
+        }
+    }
 }
 
 #[cfg(test)]
@@ -308,7 +323,7 @@ mod tests {
             }
         ];
         let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
-        main(args, &mut buf, &urllib)?;
+        assert_eq!(main(args, &mut buf, &urllib), 0);
 
         let buf_vec = buf.into_inner();
         let buf_string = match std::str::from_utf8(&buf_vec) {
@@ -337,13 +352,12 @@ mod tests {
             },
         ];
         let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
-        let error = match main(args, &mut buf, &urllib) {
-            Ok(_) => panic!("unexpected success"),
-            Err(e) => e,
-        };
+        assert_eq!(main(args, &mut buf, &urllib), 1);
 
+        let buf_vec = buf.into_inner();
+        let buf_string = std::str::from_utf8(&buf_vec).unwrap();
         assert_eq!(
-            error.to_string(),
+            buf_string,
             "failed to osmify: failed to parse JSON from nominatim: EOF while parsing an object at line 2 column 0",
         );
 
@@ -364,15 +378,11 @@ mod tests {
             },
         ];
         let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
-        let error = match main(args, &mut buf, &urllib) {
-            Ok(_) => panic!("unexpected success"),
-            Err(e) => e,
-        };
+        assert_eq!(main(args, &mut buf, &urllib), 1);
 
-        assert_eq!(
-            error.to_string(),
-            "failed to osmify: no results from nominatim",
-        );
+        let buf_vec = buf.into_inner();
+        let buf_string = std::str::from_utf8(&buf_vec).unwrap();
+        assert_eq!(buf_string, "failed to osmify: no results from nominatim",);
 
         Ok(())
     }
@@ -399,7 +409,7 @@ mod tests {
             }
         ];
         let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
-        main(args, &mut buf, &urllib)?;
+        assert_eq!(main(args, &mut buf, &urllib), 0);
 
         let buf_vec = buf.into_inner();
         let buf_string = match std::str::from_utf8(&buf_vec) {
@@ -433,13 +443,12 @@ mod tests {
             }
         ];
         let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
-        let error = match main(args, &mut buf, &urllib) {
-            Ok(_) => panic!("unexpected success"),
-            Err(e) => e,
-        };
+        assert_eq!(main(args, &mut buf, &urllib), 1);
 
+        let buf_vec = buf.into_inner();
+        let buf_string = std::str::from_utf8(&buf_vec).unwrap();
         assert_eq!(
-            error.to_string(),
+            buf_string,
             "failed to osmify: failed to parse JSON from overpass: EOF while parsing a value at line 3 column 0",
         );
 
@@ -465,15 +474,11 @@ mod tests {
             }
         ];
         let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
-        let error = match main(args, &mut buf, &urllib) {
-            Ok(_) => panic!("unexpected success"),
-            Err(e) => e,
-        };
+        assert_eq!(main(args, &mut buf, &urllib), 1);
 
-        assert_eq!(
-            error.to_string(),
-            "failed to osmify: no results from overpass",
-        );
+        let buf_vec = buf.into_inner();
+        let buf_string = std::str::from_utf8(&buf_vec).unwrap();
+        assert_eq!(buf_string, "failed to osmify: no results from overpass",);
 
         Ok(())
     }
@@ -484,7 +489,7 @@ mod tests {
         let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
         let routes = vec![];
         let urllib: std::sync::Arc<dyn Urllib> = std::sync::Arc::new(MockUrllib { routes });
-        main(args, &mut buf, &urllib)?;
+        assert_eq!(main(args, &mut buf, &urllib), 0);
 
         let buf_vec = buf.into_inner();
         let buf_string = match std::str::from_utf8(&buf_vec) {

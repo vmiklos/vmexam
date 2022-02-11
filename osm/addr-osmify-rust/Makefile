@@ -11,7 +11,7 @@ check-format:
 # Without coverage: cargo test --lib
 # Custom target dir to avoid rebuilds, see <https://github.com/xd009642/tarpaulin/discussions/772>.
 check-unit:
-	cargo tarpaulin --lib --fail-under 100 --target-dir $(PWD)/target-cov
+	cargo tarpaulin --lib -v --skip-clean --fail-under 100 --target-dir $(PWD)/target-cov
 
 check-clippy:
 	cargo clippy
