@@ -1,0 +1,5 @@
+# the default 9.0.1 on openSUSE Leap 15.3 is too old, use the 'clang12-devel' package instead
+CC=clang
+CXX=clang++
+--enable-dbgutil
+--enable-werror
