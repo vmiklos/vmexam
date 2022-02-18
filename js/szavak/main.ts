@@ -56,8 +56,9 @@ async function refreshClick()
 
     let valid = true;
     const valid_letters = [
-        'a', 'á', 'b', 'c', 'e', 'é', 'h', 'i', 'í', 'j', 'k', 'l', 'm', 'n',
-        'o', 'ó', 'ö', 'ő', 'r', 's', 't', 'u', 'ú', 'ü', 'ű', 'v', 'z', '='
+        'a', 'á', 'b', 'c', 'e', 'é', 'h', 'i', 'í', 'j',
+        'k', 'l', 'm', 'n', 'o', 'ó', 'ö', 'ő', 'p', 'r',
+        's', 't', 'u', 'ú', 'ü', 'ű', 'v', 'z', '='
     ];
     for (let i = 0; i < window.wordList.length; i++)
     {
@@ -91,32 +92,34 @@ async function refreshClick()
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-document.addEventListener("DOMContentLoaded", async function(event) {
-    // Create our page.
-    const body = document.getElementsByTagName('body')[0];
-    const word = document.createElement('p');
-    word.id = 'word';
-    word.style.position = 'fixed';
-    word.style.font = '100px sans-serif';
-    word.style.top = '25%';
-    word.style.left = '50%';
-    word.style.transform = 'translate(-50%, -50%)';
-    body.appendChild(word);
+document.addEventListener("DOMContentLoaded", async function(event)
+                          {
+                              // Create our page.
+                              const body =
+                                  document.getElementsByTagName('body')[0];
+                              const word = document.createElement('p');
+                              word.id = 'word';
+                              word.style.position = 'fixed';
+                              word.style.font = '100px sans-serif';
+                              word.style.top = '25%';
+                              word.style.left = '50%';
+                              word.style.transform = 'translate(-50%, -50%)';
+                              body.appendChild(word);
 
-    const refresh = document.createElement('img');
-    refresh.style.position = 'fixed';
-    refresh.style.top = '75%';
-    refresh.style.left = '50%';
-    refresh.style.width = '100px';
-    refresh.style.height = '100px';
-    refresh.style.transform = 'translate(-50%, -50%)';
-    refresh.style.cursor = 'pointer';
-    refresh.src = 'refresh.svg';
-    refresh.onclick = refreshClick;
-    body.appendChild(refresh);
+                              const refresh = document.createElement('img');
+                              refresh.style.position = 'fixed';
+                              refresh.style.top = '75%';
+                              refresh.style.left = '50%';
+                              refresh.style.width = '100px';
+                              refresh.style.height = '100px';
+                              refresh.style.transform = 'translate(-50%, -50%)';
+                              refresh.style.cursor = 'pointer';
+                              refresh.src = 'refresh.svg';
+                              refresh.onclick = refreshClick;
+                              body.appendChild(refresh);
 
-    // Show the initial word.
-    refreshClick();
-});
+                              // Show the initial word.
+                              refreshClick();
+                          });
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:
