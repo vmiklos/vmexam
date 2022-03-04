@@ -66,7 +66,9 @@ async function refreshClick()
         for (let j = 0; j < word.length; j++)
         {
             const letter = word[j];
-            if (!valid_letters.includes(letter))
+            // 'y' is invalid in general, but "gy" is fine.
+            if (!valid_letters.includes(letter) &&
+                !(letter == 'y' && j > 0 && word[j - 1] == 'g'))
             {
                 valid = false;
                 break;
