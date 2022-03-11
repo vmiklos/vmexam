@@ -12,6 +12,8 @@
 
 use super::*;
 
+/// How to generate mock overpass output files:
+/// cat mock/hello.expected-data | curl -d @- -X POST http://overpass-api.de/api/interpreter
 struct URLRoute {
     url: String,
     data_path: String,
@@ -190,6 +192,44 @@ fn test_prefer_buildings() {
     assert_eq!(
         buf_string,
         "47.47690895,19.0512550758533 (1111 Budapest, Karinthy Frigyes út 18)\n"
+    );
+}
+
+/// Test what happens when we try to prefer buildings, but that fails.
+#[test]
+fn test_prefer_buildings_fail() {
+    let args: Vec<String> = vec![
+        "".to_string(),
+        "Karinthy Frigyes út 18, Budapest".to_string(),
+    ];
+
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
+
+    let routes = vec![
+        URLRoute {
+            url: "http://nominatim.openstreetmap.org/search.php?q=Karinthy+Frigyes+%C3%BAt+18%2C+Budapest&format=json".to_string(),
+            data_path: "".to_string(),
+            result_path: "mock/nominatim-prefer-buildings-fail.json".to_string()
+        },
+        URLRoute {
+            url: "http://overpass-api.de/api/interpreter".to_string(),
+            data_path: "mock/overpass-prefer-buildings-fail.expected-data".to_string(),
+            result_path: "mock/overpass-prefer-buildings-fail.json".to_string()
+        }
+    ];
+    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib {
+        routes,
+        isatty: false,
+    });
+
+    let ret = main(args, &mut buf, &urllib);
+
+    let buf_vec = buf.into_inner();
+    let buf_string = String::from_utf8(buf_vec).unwrap();
+    assert_eq!(ret, 1);
+    assert_eq!(
+        buf_string,
+        "failed to osmify\n\nCaused by:\n    failed to parse JSON from overpass: missing field `addr:city` at line 19 column 3\n"
     );
 }
 

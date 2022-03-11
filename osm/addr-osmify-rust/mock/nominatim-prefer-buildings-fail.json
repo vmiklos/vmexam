@@ -1,0 +1,57 @@
+[
+    {
+        "place_id": 268587002,
+        "licence": "Data \u00a9 OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+        "osm_type": "node",
+        "osm_id": 6606034604,
+        "boundingbox": [
+            "47.4767824",
+            "47.4768824",
+            "19.0512267",
+            "19.0513267"
+        ],
+        "lat": "47.4768324",
+        "lon": "19.0512767",
+        "display_name": "Karimi Gyros, 18, Karinthy Frigyes \u00fat, L\u00e1gym\u00e1nyos, 11. ker\u00fclet, Budapest, K\u00f6z\u00e9p-Magyarorsz\u00e1g, 1111, Magyarorsz\u00e1g",
+        "class": "amenity",
+        "type": "fast_food",
+        "importance": 0.5209999999999999,
+        "icon": "https://nominatim.openstreetmap.org/images/mapicons/food_fastfood.p.20.png"
+    },
+    {
+        "place_id": 268587003,
+        "licence": "Data \u00a9 OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+        "osm_type": "node",
+        "osm_id": 6606034605,
+        "boundingbox": [
+            "47.4768091",
+            "47.4769091",
+            "19.0511502",
+            "19.0512502"
+        ],
+        "lat": "47.4768591",
+        "lon": "19.0512002",
+        "display_name": "Z\u00f6lds\u00e9g Gy\u00fcm\u00f6lcs, 18, Karinthy Frigyes \u00fat, L\u00e1gym\u00e1nyos, 11. ker\u00fclet, Budapest, K\u00f6z\u00e9p-Magyarorsz\u00e1g, 1111, Magyarorsz\u00e1g",
+        "class": "shop",
+        "type": "greengrocer",
+        "importance": 0.5209999999999999
+    },
+    {
+        "place_id": 64813823,
+        "licence": "Data \u00a9 OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+        "osm_type": "node",
+        "osm_id": 5445724487,
+        "boundingbox": [
+            "47.4768246",
+            "47.4769246",
+            "19.0510916",
+            "19.0511916"
+        ],
+        "lat": "47.4768746",
+        "lon": "19.0511416",
+        "display_name": "The Donut Library, 18, Karinthy Frigyes \u00fat, L\u00e1gym\u00e1nyos, 11. ker\u00fclet, Budapest, K\u00f6z\u00e9p-Magyarorsz\u00e1g, 1111, Magyarorsz\u00e1g",
+        "class": "shop",
+        "type": "confectionery",
+        "importance": 0.5209999999999999
+    }
+]
