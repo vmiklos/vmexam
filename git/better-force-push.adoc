@@ -1,0 +1,56 @@
+= A better force push: git read-tree
+
+== Motivation
+
+Sometimes the current state of a branch is beyond hope and you think your only way out of a
+situation is to fix things locally and then `git push --force`. The problem with a force push is
+that it rewrites history, so everyone who bases their branch on the old public branch will have
+trouble to rebase to the new public branch.
+
+A better way of handling this is to just create a normal commit that leads to a state that is the
+same as a force push, but without rewriting history. This has the benefit that e.g. it can't happen
+that a pull request or gerrit change is marked as merged, but in practice the work disappears from
+the branch without any trace.
+
+Since you wanted a force push, the resulting state *will* loose the work in question, but if you
+examine history, you'll see that the "force push" commit removed the work, which at least explains
+the situation.
+
+== How to do this?
+
+----
+# Start a new repo to try this.
+$ git init
+Initialized empty Git repository in /home/vmiklos/git/t/.git/
+# Create the initial A state.
+$ echo A > state
+$ git add state 
+$ git commit -m A
+[master (root-commit) 6b2d191] A
+ 1 file changed, 1 insertion(+)
+ create mode 100644 state
+# Change from A to B.
+$ echo B > state
+$ git commit -a -m B
+[master c93a9ae] B
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+# Change from B to C.
+$ echo C > state
+$ git commit -a -m C
+[master 5b24c4d] C
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+$ cat state
+C
+# Now we want to force-push: go from C to A.
+$ git read-tree --reset -u HEAD^^
+$ git commit -a -m "force-push in practice"
+# Verify that we indeed did it:
+$ git show
+diff --git a/state b/state
+index 3cc58df..f70f10e 100644
+--- a/state
++++ b/state
+@@ -1 +1 @@
+-C
++A
+----
