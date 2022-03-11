@@ -60,6 +60,7 @@ async function refreshClick()
         'í', 'j', 'k', 'l', 'm', 'n', 'o', 'ó', 'ö', 'ő', 'p',
         'r', 's', 't', 'u', 'ú', 'ü', 'ű', 'v', 'z', '='
     ];
+    const y_prefixes = [ 'g', 'n' ];
     for (let i = 0; i < window.wordList.length; i++)
     {
         const word = window.wordList[i];
@@ -68,7 +69,7 @@ async function refreshClick()
             const letter = word[j];
             // 'y' is invalid in general, but "gy" is fine.
             if (!valid_letters.includes(letter) &&
-                !(letter == 'y' && j > 0 && word[j - 1] == 'g'))
+                !(letter == 'y' && j > 0 && y_prefixes.includes(word[j - 1])))
             {
                 valid = false;
                 break;
