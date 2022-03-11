@@ -2,7 +2,7 @@
 name = "addr-osmify"
 version = "0.1.0"
 authors = ["Miklos Vajna <vmiklos@vmiklos.hu>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 anyhow = "1.0.55"

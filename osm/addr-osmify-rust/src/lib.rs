@@ -8,6 +8,8 @@
 #![warn(clippy::all)]
 #![warn(missing_docs)]
 #![warn(rust_2018_idioms)]
+// https://github.com/rust-lang/rust/issues/84605
+#![cfg_attr(coverage, feature(no_coverage))]
 
 //! Takes an OSM way ID and turns it into a string that is readable and
 //! e.g. OsmAnd can parse it as well.

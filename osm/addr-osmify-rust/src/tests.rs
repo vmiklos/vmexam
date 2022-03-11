@@ -26,6 +26,7 @@ struct MockUrllib {
 }
 
 impl Urllib for MockUrllib {
+    #[cfg_attr(coverage, no_coverage)]
     fn urlopen(&self, url: &str, data: &str) -> anyhow::Result<String> {
         for route in self.routes.iter() {
             if route.url != url {
@@ -309,13 +310,6 @@ fn test_noargs() {
     assert_eq!(main(args, &mut buf, &urllib), 0);
 
     let buf_vec = buf.into_inner();
-    let buf_string = match std::str::from_utf8(&buf_vec) {
-        Ok(v) => v,
-        Err(e) => panic!("invalid UTF-8 sequence: {}", e),
-    };
-    assert!(
-        buf_string.starts_with("usage: "),
-        "buf_string is '{}'",
-        buf_string
-    );
+    let buf_string = std::str::from_utf8(&buf_vec).unwrap();
+    assert_eq!(buf_string.starts_with("usage: "), true);
 }
