@@ -20,10 +20,11 @@ struct URLRoute {
 
 struct MockUrllib {
     routes: Vec<URLRoute>,
+    isatty: bool,
 }
 
 impl Urllib for MockUrllib {
-    fn urlopen(&self, url: &str, data: &str) -> BoxResult<String> {
+    fn urlopen(&self, url: &str, data: &str) -> anyhow::Result<String> {
         for route in self.routes.iter() {
             if route.url != url {
                 continue;
@@ -34,40 +35,40 @@ impl Urllib for MockUrllib {
                 let contents = match std::fs::read_to_string(&route.data_path) {
                     Ok(value) => value,
                     Err(error) => {
-                        return Err(Box::new(OsmifyError {
-                            details: format!(
-                                "failed read {}: {}",
-                                route.data_path,
-                                error.to_string()
-                            ),
-                        }))
+                        return Err(anyhow::anyhow!(
+                            "failed read {}: {}",
+                            route.data_path,
+                            error.to_string()
+                        ));
                     }
                 };
                 if data != contents {
-                    return Err(Box::new(OsmifyError {
-                        details: format!("unexpected data: '{}' != '{}'", data, contents),
-                    }));
+                    return Err(anyhow::anyhow!(
+                        "unexpected data: '{}' != '{}'",
+                        data,
+                        contents
+                    ));
                 }
             }
 
             let contents = match std::fs::read_to_string(&route.result_path) {
                 Ok(value) => value,
                 Err(error) => {
-                    return Err(Box::new(OsmifyError {
-                        details: format!(
-                            "failed read {}: {}",
-                            route.result_path,
-                            error.to_string()
-                        ),
-                    }))
+                    return Err(anyhow::anyhow!(
+                        "failed read {}: {}",
+                        route.result_path,
+                        error.to_string()
+                    ));
                 }
             };
             return Ok(contents);
         }
 
-        return Err(Box::new(OsmifyError {
-            details: format!("unexpected url: {}", url),
-        }));
+        return Err(anyhow::anyhow!("unexpected url: {}", url));
+    }
+
+    fn isatty(&self) -> bool {
+        self.isatty
     }
 }
 
@@ -89,7 +90,10 @@ fn test_happy() {
             result_path: "mock/overpass-happy.json".to_string()
         }
     ];
-    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
+    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib {
+        routes,
+        isatty: true,
+    });
     assert_eq!(main(args, &mut buf, &urllib), 0);
 
     let buf_vec = buf.into_inner();
@@ -113,14 +117,17 @@ fn test_nominatim_json() {
             result_path: "mock/nominatim-bad.json".to_string()
         },
     ];
-    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
+    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib {
+        routes,
+        isatty: false,
+    });
     assert_eq!(main(args, &mut buf, &urllib), 1);
 
     let buf_vec = buf.into_inner();
     let buf_string = String::from_utf8(buf_vec).unwrap();
     assert_eq!(
         buf_string,
-        "failed to osmify: failed to parse JSON from nominatim: EOF while parsing an object at line 2 column 0",
+        "failed to osmify\n\nCaused by:\n    failed to parse JSON from nominatim: EOF while parsing an object at line 2 column 0\n",
     );
 }
 
@@ -137,12 +144,18 @@ fn test_nominatim_no_result() {
             result_path: "mock/nominatim-no-result.json".to_string()
         },
     ];
-    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
+    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib {
+        routes,
+        isatty: false,
+    });
     assert_eq!(main(args, &mut buf, &urllib), 1);
 
     let buf_vec = buf.into_inner();
     let buf_string = std::str::from_utf8(&buf_vec).unwrap();
-    assert_eq!(buf_string, "failed to osmify: no results from nominatim",);
+    assert_eq!(
+        buf_string,
+        "failed to osmify\n\nCaused by:\n    no results from nominatim\n",
+    );
 }
 
 #[test]
@@ -166,7 +179,10 @@ fn test_prefer_buildings() {
             result_path: "mock/overpass-prefer-buildings.json".to_string()
         }
     ];
-    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
+    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib {
+        routes,
+        isatty: false,
+    });
     assert_eq!(main(args, &mut buf, &urllib), 0);
 
     let buf_vec = buf.into_inner();
@@ -195,14 +211,17 @@ fn test_overpass_json() {
             result_path: "mock/overpass-bad.json".to_string()
         }
     ];
-    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
+    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib {
+        routes,
+        isatty: false,
+    });
     assert_eq!(main(args, &mut buf, &urllib), 1);
 
     let buf_vec = buf.into_inner();
     let buf_string = std::str::from_utf8(&buf_vec).unwrap();
     assert_eq!(
         buf_string,
-        "failed to osmify: failed to parse JSON from overpass: EOF while parsing a value at line 3 column 0",
+        "failed to osmify\n\nCaused by:\n    failed to parse JSON from overpass: EOF while parsing a value at line 3 column 0\n",
     );
 }
 
@@ -224,12 +243,18 @@ fn test_overpass_noresult() {
             result_path: "mock/overpass-noresult.json".to_string()
         }
     ];
-    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib { routes });
+    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib {
+        routes,
+        isatty: false,
+    });
     assert_eq!(main(args, &mut buf, &urllib), 1);
 
     let buf_vec = buf.into_inner();
     let buf_string = std::str::from_utf8(&buf_vec).unwrap();
-    assert_eq!(buf_string, "failed to osmify: no results from overpass",);
+    assert_eq!(
+        buf_string,
+        "failed to osmify\n\nCaused by:\n    no results from overpass\n",
+    );
 }
 
 #[test]
@@ -237,7 +262,10 @@ fn test_noargs() {
     let args: Vec<String> = vec!["".to_string()];
     let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let routes = vec![];
-    let urllib: std::sync::Arc<dyn Urllib> = std::sync::Arc::new(MockUrllib { routes });
+    let urllib: std::sync::Arc<dyn Urllib> = std::sync::Arc::new(MockUrllib {
+        routes,
+        isatty: false,
+    });
     assert_eq!(main(args, &mut buf, &urllib), 0);
 
     let buf_vec = buf.into_inner();
@@ -250,15 +278,4 @@ fn test_noargs() {
         "buf_string is '{}'",
         buf_string
     );
-}
-
-#[test]
-#[allow(deprecated)]
-fn osmify_error_description() {
-    use std::error::Error;
-
-    let error = OsmifyError {
-        details: "test".to_string(),
-    };
-    assert_eq!(error.description(), "test".to_string());
 }

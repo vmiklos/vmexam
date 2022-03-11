@@ -21,7 +21,7 @@ struct ReqwestUrllib {}
 // Network traffic is intentionally mocked.
 #[cfg(not(tarpaulin_include))]
 impl addr_osmify::Urllib for ReqwestUrllib {
-    fn urlopen(&self, url: &str, data: &str) -> addr_osmify::BoxResult<String> {
+    fn urlopen(&self, url: &str, data: &str) -> anyhow::Result<String> {
         if !data.is_empty() {
             let mut buf = isahc::Request::post(url)
                 .redirect_policy(isahc::config::RedirectPolicy::Limit(1))
@@ -37,6 +37,10 @@ impl addr_osmify::Urllib for ReqwestUrllib {
             .send()?;
         let ret = buf.text()?;
         Ok(ret)
+    }
+
+    fn isatty(&self) -> bool {
+        atty::is(atty::Stream::Stdout)
     }
 }
 

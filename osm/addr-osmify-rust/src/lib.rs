@@ -12,33 +12,17 @@
 //! Takes an OSM way ID and turns it into a string that is readable and
 //! e.g. OsmAnd can parse it as well.
 
+use anyhow::Context as _;
 use std::io::Write;
 use std::sync::Arc;
-
-/// A Result which allows any error that implements Error.
-pub type BoxResult<T> = Result<T, Box<dyn std::error::Error>>;
-
-#[derive(Debug)]
-struct OsmifyError {
-    details: String,
-}
-
-impl std::fmt::Display for OsmifyError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.details)
-    }
-}
-
-impl std::error::Error for OsmifyError {
-    fn description(&self) -> &str {
-        &self.details
-    }
-}
 
 /// Allows HTTP GET and POST requests.
 pub trait Urllib: Send + Sync {
     /// If `data` is empty, that means HTTP GET, otherwise a HTTP POST.
-    fn urlopen(&self, url: &str, data: &str) -> BoxResult<String>;
+    fn urlopen(&self, url: &str, data: &str) -> anyhow::Result<String>;
+
+    /// Is stdout a tty?
+    fn isatty(&self) -> bool;
 }
 
 /// TurboTags contains various tags about one Overpass element.
@@ -66,7 +50,7 @@ struct TurboResult {
     elements: Vec<TurboElement>,
 }
 
-fn query_turbo(urllib: &dyn Urllib, query: &str) -> BoxResult<TurboResult> {
+fn query_turbo(urllib: &dyn Urllib, query: &str) -> anyhow::Result<TurboResult> {
     let url = "http://overpass-api.de/api/interpreter";
 
     let buf = urllib.urlopen(url, query)?;
@@ -74,9 +58,10 @@ fn query_turbo(urllib: &dyn Urllib, query: &str) -> BoxResult<TurboResult> {
     let elements: TurboResult = match serde_json::from_str(&buf) {
         Ok(value) => value,
         Err(error) => {
-            return Err(Box::new(OsmifyError {
-                details: format!("failed to parse JSON from overpass: {}", error),
-            }));
+            return Err(anyhow::anyhow!(
+                "failed to parse JSON from overpass: {}",
+                error
+            ));
         }
     };
 
@@ -93,7 +78,7 @@ struct NominatimResult {
     osm_id: u64,
 }
 
-fn query_nominatim(urllib: &dyn Urllib, query: &str) -> BoxResult<Vec<NominatimResult>> {
+fn query_nominatim(urllib: &dyn Urllib, query: &str) -> anyhow::Result<Vec<NominatimResult>> {
     let prefix = "http://nominatim.openstreetmap.org/search.php?";
     let encoded: String = url::form_urlencoded::Serializer::new(String::new())
         .append_pair("q", query)
@@ -106,21 +91,20 @@ fn query_nominatim(urllib: &dyn Urllib, query: &str) -> BoxResult<Vec<NominatimR
     let elements: Vec<NominatimResult> = match serde_json::from_str(&buf) {
         Ok(value) => value,
         Err(error) => {
-            return Err(Box::new(OsmifyError {
-                details: format!("failed to parse JSON from nominatim: {}", error),
-            }));
+            return Err(anyhow::anyhow!(
+                "failed to parse JSON from nominatim: {}",
+                error
+            ));
         }
     };
 
     Ok(elements)
 }
 
-fn osmify(query: &str, urllib: &dyn Urllib) -> BoxResult<String> {
+fn osmify(query: &str, urllib: &dyn Urllib) -> anyhow::Result<String> {
     let mut elements = query_nominatim(urllib, query)?;
     if elements.is_empty() {
-        return Err(Box::new(OsmifyError {
-            details: "no results from nominatim".to_string(),
-        }));
+        return Err(anyhow::anyhow!("no results from nominatim"));
     }
 
     if elements.len() > 1 {
@@ -154,9 +138,7 @@ out body;"#,
     let turbo_result = query_turbo(urllib, &overpass_query)?;
     let elements = turbo_result.elements;
     if elements.is_empty() {
-        return Err(Box::new(OsmifyError {
-            details: "no results from overpass".to_string(),
-        }));
+        return Err(anyhow::anyhow!("no results from overpass"));
     }
 
     let element = &elements[0];
@@ -172,15 +154,16 @@ out body;"#,
 }
 
 fn spinner(
-    rx: &std::sync::mpsc::Receiver<Result<String, String>>,
+    rx: &std::sync::mpsc::Receiver<anyhow::Result<String>>,
     stream: &mut dyn Write,
-) -> BoxResult<()> {
+    urllib: &Arc<dyn Urllib>,
+) -> anyhow::Result<()> {
     let spin_characters = vec!['\\', '|', '/', '-'];
     let mut spin_index = 0;
     loop {
         match rx.try_recv() {
             Ok(result) => {
-                if atty::is(atty::Stream::Stdout) {
+                if urllib.isatty() {
                     print!("\r");
                 }
                 std::io::stdout().flush()?;
@@ -189,7 +172,7 @@ fn spinner(
                 return Ok(());
             }
             Err(_) => {
-                if atty::is(atty::Stream::Stdout) {
+                if urllib.isatty() {
                     print!("\r [{}] ", spin_characters[spin_index]);
                 }
                 std::io::stdout().flush()?;
@@ -200,13 +183,9 @@ fn spinner(
     }
 }
 
-fn worker(query: &str, urllib: &dyn Urllib, tx: &std::sync::mpsc::Sender<Result<String, String>>) {
+fn worker(query: &str, urllib: &dyn Urllib, tx: &std::sync::mpsc::Sender<anyhow::Result<String>>) {
     let result = osmify(query, urllib);
-    match result {
-        Ok(value) => tx.send(Ok(value)),
-        Err(error) => tx.send(Err(format!("failed to osmify: {}", error))),
-    }
-    .unwrap()
+    tx.send(result.context("failed to osmify")).unwrap()
 }
 
 /// Inner main() that is allowed to fail.
@@ -214,12 +193,14 @@ pub fn our_main(
     args: Vec<String>,
     stream: &mut dyn Write,
     urllib: &Arc<dyn Urllib>,
-) -> BoxResult<()> {
+) -> anyhow::Result<()> {
     if args.len() > 1 {
         let (tx, rx) = std::sync::mpsc::channel();
-        let urllib = urllib.clone();
-        std::thread::spawn(move || worker(&args[1], &*urllib, &tx));
-        spinner(&rx, stream)?;
+        {
+            let urllib = urllib.clone();
+            std::thread::spawn(move || worker(&args[1], &*urllib, &tx));
+        }
+        spinner(&rx, stream, urllib)?;
     } else {
         writeln!(stream, "usage: addr-osmify <query>")?;
         writeln!(stream)?;
@@ -234,7 +215,7 @@ pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: &Arc<dyn Urllib>)
     match our_main(args, stream, urllib) {
         Ok(_) => 0,
         Err(err) => {
-            stream.write_all(err.to_string().as_bytes()).unwrap();
+            stream.write_all(format!("{:?}\n", err).as_bytes()).unwrap();
             1
         }
     }
