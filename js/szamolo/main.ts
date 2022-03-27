@@ -101,8 +101,7 @@ function createRHS(p: HTMLParagraphElement)
     const down = document.createElement("input");
     down.type = "button";
     down.style.verticalAlign = "middle";
-    down.style.width = "50px";
-    down.style.height = "50px";
+    down.style.font = "50px sans-serif";
     down.id = "down";
     down.value = "▼";
     down.onclick = decrementAnswer;
@@ -119,8 +118,7 @@ function createRHS(p: HTMLParagraphElement)
     const up = document.createElement("input");
     up.type = "button";
     up.style.verticalAlign = "middle";
-    up.style.width = "50px";
-    up.style.height = "50px";
+    up.style.font = "50px sans-serif";
     up.id = "up";
     up.value = "▲";
     up.onclick = incrementAnswer;
@@ -131,8 +129,7 @@ function createRHS(p: HTMLParagraphElement)
     const check = document.createElement("input");
     check.type = "button";
     check.style.verticalAlign = "middle";
-    check.style.width = "50px";
-    check.style.height = "50px";
+    check.style.font = "50px sans-serif";
     check.id = "check";
     check.value = "✓";
     check.onclick = checkAnswer;
