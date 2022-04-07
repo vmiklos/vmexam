@@ -60,4 +60,10 @@
 - Proposal: https://issues.oasis-open.org/browse/OFFICE-4105
 - Status: open
 
+== clearing breaks
+
+- Date: 2022-03-29
+- Proposal: https://issues.oasis-open.org/browse/OFFICE-4124
+- Status: open
+
 // vim: ft=asciidoc
