@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iostream>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
@@ -22,6 +23,16 @@ int main()
         const std::string& rType = rPair.second.get<std::string>("type");
         const std::string& rValue = rPair.second.get<std::string>("value");
         std::cout << "key is " << rPair.first << ", type is " << rType << ", value is " << rValue << std::endl;
+
+        auto it = rPair.second.find("type");
+        if (it == rPair.second.not_found())
+        {
+            std::cout << "key is not found" << std::endl;
+        }
+        else
+        {
+            std::cout << "key is found: " << it->second.get_value<std::string>() << std::endl;
+        }
     }
 
     return 0;
