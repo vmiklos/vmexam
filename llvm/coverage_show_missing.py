@@ -5,6 +5,9 @@
 # found in the LICENSE file.
 #
 # Takes a HTML output from llvm-cov and shows uncovered lines.
+#
+# Usage example:
+# $HOME/git/vmexam/llvm/coverage_show_missing.py target/llvm-cov/html/coverage$PWD/src/cron.rs.html
 
 from html.parser import HTMLParser
 import os
