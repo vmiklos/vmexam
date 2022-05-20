@@ -24,8 +24,8 @@ class App(args: Array<String>, out: OutputStream) {
             if (!thread.isAlive) {
                 System.err.print("\r")
                 System.err.flush()
-                out.write(
-                        (context.out + "\n").toByteArray(Charset.forName("UTF-8")))
+                val buf = context.out + "\n"
+                out.write(buf.toByteArray(Charset.forName("UTF-8")))
                 break
             }
             System.err.print("\r [" + spinCharacters[spinIndex] + "] ")
@@ -40,8 +40,10 @@ class App(args: Array<String>, out: OutputStream) {
          * Send query to overpass turbo.
          */
         private fun queryTurbo(query: String): String {
-            return urlopener.urlopen("http://overpass-api.de/api/interpreter",
-                    query)
+            return urlopener.urlopen(
+                "http://overpass-api.de/api/interpreter",
+                query
+            )
         }
 
         /**

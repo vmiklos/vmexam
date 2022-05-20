@@ -6,10 +6,10 @@
 
 package hu.vmiklos.addr_osmify
 
+import org.junit.Test
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 import kotlin.test.assertEquals
-import org.junit.Test
 
 class AppTest {
     @Test

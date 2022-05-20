@@ -23,7 +23,7 @@ class MockUrlopener internal constructor(var urlopenSuffix: String) : Urlopener 
             val content = readFile(path, StandardCharsets.UTF_8)
             require(data == content) {
                 "data vs content mismatch: data is '" + data +
-                        "', content is '" + content + "'"
+                    "', content is '" + content + "'"
             }
         }
         var path = URLEncoder.encode(urlString, "UTF-8")

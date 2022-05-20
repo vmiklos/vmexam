@@ -5,13 +5,13 @@
  */
 package hu.vmiklos.addr_osmify
 
+import org.apache.commons.io.IOUtils
 import java.io.OutputStream
 import java.io.StringReader
 import java.io.StringWriter
-import java.nio.charset.Charset
 import java.net.HttpURLConnection
 import java.net.URL
-import org.apache.commons.io.IOUtils
+import java.nio.charset.Charset
 
 /**
  * Default urlopen(), using HttpURLConnection.
