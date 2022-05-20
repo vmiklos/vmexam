@@ -8,6 +8,7 @@ package hu.vmiklos.addr_osmify
 import java.io.OutputStream
 import java.io.StringReader
 import java.io.StringWriter
+import java.nio.charset.Charset
 import java.net.HttpURLConnection
 import java.net.URL
 import org.apache.commons.io.IOUtils
@@ -19,9 +20,10 @@ class DefaultUrlopener : Urlopener {
     override fun urlopen(urlString: String, data: String): String {
         val url = URL(urlString)
         val connection = url.openConnection() as HttpURLConnection
+        val charset: Charset? = null
         if (data.isEmpty()) {
             val writer = StringWriter()
-            IOUtils.copy(connection.inputStream, writer)
+            IOUtils.copy(connection.inputStream, writer, charset)
             return writer.toString()
         }
         val reader = StringReader(data)
@@ -30,9 +32,9 @@ class DefaultUrlopener : Urlopener {
             connection.requestMethod = "POST"
             connection.doOutput = true
             outputStream = connection.outputStream
-            IOUtils.copy(reader, outputStream)
+            IOUtils.copy(reader, outputStream, charset)
             val writer = StringWriter()
-            IOUtils.copy(connection.inputStream, writer)
+            IOUtils.copy(connection.inputStream, writer, charset)
             writer.toString()
         } catch (e: Exception) {
             throw e
