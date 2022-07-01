@@ -1,21 +1,21 @@
-= openSUSE notes
+# openSUSE notes
 
-== osc
+## osc
 
 - Updating a package in OBS, examples:
 
-----
+```
 osc build --alternative-project openSUSE:Leap:15.2 standard
 osc build --alternative-project openSUSE:Leap:42.3 --release 9999 standard (custom release)
 osc build --alternative-project openSUSE:Leap:15.1:Update ports (ARM)
-----
+```
 
 then:
 
-----
+```
 osc vc
 osc commit
-----
+```
 
 - Updating its git mirror:
 
@@ -25,7 +25,7 @@ $HOME/git/bsgit/bsgit.py fetch home:vmiklos/gtimelog
 git merge remotes/api.opensuse.org/home/vmiklos/gtimelog
 git push origin
 
-== zypper
+## zypper
 
 - zypper factory bootstrap:
 
@@ -43,9 +43,11 @@ zypper --root $PWD install patterns-openSUSE-base
 
 - upgrade to some package from a custom repo:
 
+```
 zypper -p http://download.opensuse.org/repositories/KDE:/Extra/openSUSE_13.1/ in gtk2-engine-oxygen-1.4.4-11.1.x86_64 gtk2-theme-oxygen-1.4.4-11.1.x86_64
+```
 
-== cubox-i
+## cubox-i
 
 - attach screen:
 
@@ -65,42 +67,34 @@ dracut --force
 
 without any parameters, and it'll work.
 
-== Upgrade notes
+## Upgrade notes
 
-=== openSUSE 13.1 -> 13.2
+### openSUSE 13.1 -> 13.2
 
-- virt-manager is broken by default
+- [virt-manager is broken by default](https://bugzilla.suse.com/show_bug.cgi?id=901869)
 
-https://bugzilla.suse.com/show_bug.cgi?id=901869
-
-TL;DR: zypper in typelib-1_0-Gtk-3_0 typelib-1_0-SpiceClientGtk-3_0 typelib-1_0-GtkVnc-2_0
+TL;DR: `zypper in typelib-1_0-Gtk-3_0 typelib-1_0-SpiceClientGtk-3_0 typelib-1_0-GtkVnc-2_0`
 
 - STL container pretty-printers do not work by default in gdb anymore (debuginfo uninstalled on upgrade?):
 
 Can be fixed with: 'zypper in libstdc++6-debuginfo'
 
-- virt-resize is broken by default
+- [virt-resize is broken by default](https://bugzilla.novell.com/show_bug.cgi?id=908632)
 
-https://bugzilla.novell.com/show_bug.cgi?id=908632
+TL;DR: `zypper -p http://download.opensuse.org/repositories/Virtualization/openSUSE_13.2/ in guestfs-data-1.26.9-163.1.x86_64`
 
-TL;DR: zypper -p http://download.opensuse.org/repositories/Virtualization/openSUSE_13.2/ in guestfs-data-1.26.9-163.1.x86_64
-
-=== openSUSE 13.2 -> openSUSE Leap 42.1
+### openSUSE 13.2 -> openSUSE Leap 42.1
 
 - adjust repos:
 
   * 13.2 -> Leap-13.2 in names
   * 13.2 -> leap/42.1 in URLs
 
-- cpm fails to build
-
-https://bugzilla.novell.com/show_bug.cgi?id=918553
+- [cpm fails to build](https://bugzilla.novell.com/show_bug.cgi?id=918553)
 
 Fixed in <24 hours. :-)
 
-- cxoffice is broken
-
-https://bugzilla.novell.com/show_bug.cgi?id=845916
+- [cxoffice is broken](https://bugzilla.novell.com/show_bug.cgi?id=845916)
 
 Fix: cd /opt/cxoffice/lib; mkdir t; mv libxcb* t
 
@@ -134,7 +128,7 @@ libata.force=noncq kernel param seems to improve the situation. More info:
 
 http://www.howtoeverything.net/linux/hardware/ubuntu-freeze-issue-after-ssd-upgrade
 
-=== openSUSE 42.1 -> openSUSE Leap 42.2
+### openSUSE 42.1 -> openSUSE Leap 42.2
 
 - adjust repos trivially (42.1 -> 42.2)
 - mutt again prints "NBOX" for "INBOX"
@@ -142,7 +136,7 @@ http://www.howtoeverything.net/linux/hardware/ubuntu-freeze-issue-after-ssd-upgr
     to be fixed, but old enough to be fully backwards-compatible; rpm is at
     <https://people.freedesktop.org/~vmiklos/2016/mutt-1.5.24-9999.x86_64.rpm>
 
-=== openSUSE 13.2 -> openSUSE Leap 42.2 for ARMV7
+### openSUSE 13.2 -> openSUSE Leap 42.2 for ARMV7
 
 - images: http://download.opensuse.org/ports/armv7hl/distribution/leap/42.2/appliances/
   - openSUSE-Leap42.2-ARM-JeOS-cuboxi.armv7l-2016.11.25-Build1.8.raw.xz is what I used
@@ -152,7 +146,7 @@ http://www.howtoeverything.net/linux/hardware/ubuntu-freeze-issue-after-ssd-upgr
     - copy from /usr, comment out hostonly=
     - also 'add_drivers+="ci_hdrc_imx"' is needed for some reason to see the USB raid1 HDDs + run dracut
 
-=== openSUSE 42.2 -> openSUSE Leap 42.3
+### openSUSE 42.2 -> openSUSE Leap 42.3
 
 - mutt is replaced by neomutt, minor tweaks to config is necessary: https://github.com/vmiklos/dotfiles/commit/ac3dd6b0989527131c8bccd8602463aac3b05b33
   - gets rid of "unknown config key" error on startup + number of unread mails are shown again on the sidebar
@@ -167,12 +161,12 @@ http://www.howtoeverything.net/linux/hardware/ubuntu-freeze-issue-after-ssd-upgr
 
 - KDE5 restart:
 
-----
+```
 killall plasmashell #to stop it
 kstart plasmashell #to restart it
-----
+```
 
-=== openSUSE Leap 42.2 -> openSUSE Leap 42.3 for ARMV7
+### openSUSE Leap 42.2 -> openSUSE Leap 42.3 for ARMV7
 
 - repo-update's URL is now http://download.opensuse.org/ports/update/42.3/oss (extra /oss at the end of the URL)
 - migrate to new raid1:
@@ -181,7 +175,7 @@ kstart plasmashell #to restart it
   - need to find the values in /dev/disk/by-uuid/ (root) and /dev/disk/by-id/ (rd.md.uuid)
   - then update these in /boot/boot.script + run mkimage, reboot, then mdadm can stop the old raid1 and re-assign the now unused disk to the new one
 
-=== openSUSE Leap 42.3 -> openSUSE Leap 15.0 (x86_64)
+### openSUSE Leap 42.3 -> openSUSE Leap 15.0 (x86-64)
 
 - the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (sed the config, zypper ref, zypper dup)
 - konsole: font antialiasing seems to be rather aggressive now, settings -> edit current profile -> appearance -> smooth fonts -> disable is a workaround
@@ -194,19 +188,19 @@ kstart plasmashell #to restart it
 - `convert` to PDF is blacklisted by default, need to remove the blacklist from `/etc/ImageMagick-7_Q16HDRI6/policy.xml` manually
 - also swithced to tmpfs for /tmp, fstab line is `tmpfs /tmp tmpfs defaults,noatime,mode=1777 0 0`
 
-=== openSUSE Leap 42.3 -> openSUSE Leap 15.0 (armv7l)
+### openSUSE Leap 42.3 -> openSUSE Leap 15.0 (armv7l)
 
 - repo-update url changed to <http://download.opensuse.org/ports/update/leap/15.0/oss>
 - ifconfig and route is no more, see <https://dougvitale.wordpress.com/2011/12/21/deprecated-linux-networking-commands-and-their-replacements/> for their replacements
 - rss2email broke: `.config/rss2email.cfg` has to be updated: `smtp-ssl-protocol` needs to be `TLSv1` (while `SSLv3` was fine previously)
 
-=== openSUSE Leap 15.0 -> openSUSE Leap 15.1 (x86_64)
+### openSUSE Leap 15.0 -> openSUSE Leap 15.1 (x86-64)
 
 - usual fix with html5 video codecs in firefox/chromium: https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support
 - STL container pretty-printers do not work by default in gdb anymore:
   - can be fixed with: 'zypper in libstdc++6-devel-gcc8'
 
-=== openSUSE Leap 15.1 -> openSUSE Leap 15.2 (x86_64)
+### openSUSE Leap 15.1 -> openSUSE Leap 15.2 (x86-64)
 
 - the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (sed the config, zypper ref, zypper dup)
 - the usual fix with html5 video codecs in firefox/chromium: https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support
@@ -215,7 +209,7 @@ kstart plasmashell #to restart it
   - ctrl-shift-left/right also broke (no longer moves the current tab left/right), can be fixed at the same place
 - https://www.phoronix.com/scan.php?page=news_item&px=KDE-Plasma-5.18-Emojis windows + '.' now allows inserting turtles...
 
-=== openSUSE Leap 15.1 -> openSUSE Leap 15.2 (aarch64)
+### openSUSE Leap 15.1 -> openSUSE Leap 15.2 (aarch64)
 
 - the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (zypper --releasever=15.2 ref, zypper --releasever=15.2 dup)
 - samba: unix extensions are now disabled, it can be enabled with `server min protocol = LANMAN1` in `/etc/samba/smb.conf`, see <https://www.samba.org/samba/history/samba-4.11.0.html>
@@ -224,7 +218,7 @@ kstart plasmashell #to restart it
   - chown wwwrun .htaccess
   - sudo -u wwwrun php ./occ maintenance:update:htaccess
 
-=== openSUSE Leap 15.2 -> openSUSE Leap 15.3 (x86_64)
+### openSUSE Leap 15.2 -> openSUSE Leap 15.3 (x86_64)
 
 - the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (zypper --releasever=15.3 ref, zypper --releasever=15.3 dup)
 - the usual fix with html5 video codecs in firefox/chromium: https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support
@@ -238,24 +232,26 @@ kstart plasmashell #to restart it
 - STL container pretty-printers do not work by default in gdb anymore:
   - can be fixed with: 'zypper in libstdc++6-devel-gcc11 libstdc++6-pp-gcc11'
 
-=== openSUSE Leap 15.2 -> openSUSE Leap 15.3 (aarch64)
+### openSUSE Leap 15.2 -> openSUSE Leap 15.3 (aarch64)
 
 - the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (zypper --releasever=15.3 ref, zypper --releasever=15.3 dup)
 - added the 2 new repos
 
-=== openSUSE Leap 15.3 -> openSUSE Leap 15.4 (x86_64)
+### openSUSE Leap 15.3 -> openSUSE Leap 15.4 (x86-64)
 
 - the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (zypper --releasever=15.4 ref, zypper --releasever=15.4 dup)
-  - zypper -p https://download.opensuse.org/repositories/server:/mail/15.4/ in mutt
-  - zypper -p https://download.opensuse.org/repositories/X11:/common:/Factory/openSUSE_Leap_15.3/ in libicu-devel
-  - zypper -p https://download.opensuse.org/repositories/devel:/languages:/python/15.4/ in git-review
-  - zypper -p https://download.opensuse.org/repositories/editors/openSUSE_Leap_15.4/ in vim
+  - `zypper -p https://download.opensuse.org/repositories/server:/mail/15.4/ in mutt`
+  - `zypper -p https://download.opensuse.org/repositories/X11:/common:/Factory/openSUSE_Leap_15.3/ in libicu-devel`
+  - `zypper -p https://download.opensuse.org/repositories/devel:/languages:/python/15.4/ in git-review`
+  - `zypper -p https://download.opensuse.org/repositories/editors/openSUSE_Leap_15.4/ in vim`
     - python is now compiled with python3 support (only), need to replace "py" with "py3" in vim config
     - this also causes https://github.com/actionshrimp/vim-xpath/issues/16, will have to look for a replacement
-- the usual fix with html5 video codecs in firefox/chromium: https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support
+- the usual fix with html5 video codecs in firefox/chromium: <https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support>
 - konsole:
   - hide the new, not needed toolbar in konsole: https://forum.kde.org/viewtopic.php?f=227&t=170988
   - konsole now (again) catches alt-<number>, need to disable that in settings -> configure keyboard shortcuts, so it rearches e.g. irssi
-- kde in general: https://www.reddit.com/r/openSUSE/comments/pmdcno/display_problems_after_tumbleweed_update/ seems to be the solution for some rendering issues
+- kde in general: <https://www.reddit.com/r/openSUSE/comments/pmdcno/display_problems_after_tumbleweed_update/> seems to be the solution for some rendering issues
 
-// vim: ft=asciidoc paste
+### openSUSE Leap 15.3 -> openSUSE Leap 15.4 (aarch64)
+
+- the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (zypper --releasever=15.4 ref, zypper --releasever=15.4 dup)
