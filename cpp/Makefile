@@ -1,35 +1,37 @@
+CXXFLAGS = -std=c++17 -g
+
 json: json.cc Makefile
-	g++ -std=c++11 -o json json.cc
+	g++ ${CXXFLAGS} -o json json.cc
 
 json-array-read: json-array-read.cc Makefile
-	g++ -std=c++11 -o json-array-read json-array-read.cc
+	g++ ${CXXFLAGS} -o json-array-read json-array-read.cc
 
 poco: poco.cc Makefile
-	g++ -std=c++11 -o poco poco.cc -lPocoFoundation -lPocoJSON
+	g++ ${CXXFLAGS} -o poco poco.cc -lPocoFoundation -lPocoJSON
 
 crtp: crtp.cc Makefile
-	g++ -std=c++11 -o crtp crtp.cc
+	g++ ${CXXFLAGS} -o crtp crtp.cc
 
 python-filter: python-filter.cxx Makefile
-	g++ -std=c++11 -o python-filter python-filter.cxx
+	g++ ${CXXFLAGS} -o python-filter python-filter.cxx
 
 python-map: python-map.cxx Makefile
-	g++ -std=c++11 -o python-map python-map.cxx
+	g++ ${CXXFLAGS} -o python-map python-map.cxx
 
 python-random-choice: python-random-choice.cxx Makefile
-	g++ -std=c++11 -o python-random-choice python-random-choice.cxx
+	g++ ${CXXFLAGS} -o python-random-choice python-random-choice.cxx
 
 scope-guard: scope-guard.cxx Makefile
-	g++ -std=c++11 -o scope-guard scope-guard.cxx
+	g++ ${CXXFLAGS} -o scope-guard scope-guard.cxx
 
 async: async.cxx Makefile
-	g++ -std=c++11 -pthread -g -o async async.cxx
+	g++ ${CXXFLAGS} -pthread -o async async.cxx
 
 asan: asan.cxx Makefile
-	clang++ -std=c++11 -o asan -g -O0 -fsanitize=address asan.cxx
+	clang++ ${CXXFLAGS} -o asan -O0 -fsanitize=address asan.cxx
 
 icu4c: icu4c.cxx Makefile
-	clang++ -std=c++11 -o icu4c -g -o icu4c $(shell icu-config --ldflags) icu4c.cxx
+	clang++ ${CXXFLAGS} -o icu4c -o icu4c $(shell icu-config --ldflags) icu4c.cxx
 
 move: move.cxx Makefile
-	clang++ -D_GLIBCXX_DEBUG -std=c++17 -o move move.cxx
+	clang++ -D_GLIBCXX_DEBUG ${CXXFLAGS} -o move move.cxx
