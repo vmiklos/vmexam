@@ -41,10 +41,9 @@ func newCreateCommand(db *sql.DB) *cobra.Command {
 }
 
 func newReadCommand(db *sql.DB) *cobra.Command {
-	var machine string
-	var service string
-	var user string
-	var password string
+	var machineFlag string
+	var serviceFlag string
+	var userFlag string
 	var cmd = &cobra.Command{
 		Use:   "search",
 		Short: "searches passwords",
@@ -56,9 +55,25 @@ func newReadCommand(db *sql.DB) *cobra.Command {
 
 			defer rows.Close()
 			for rows.Next() {
+				var machine string
+				var service string
+				var user string
+				var password string
 				err = rows.Scan(&machine, &service, &user, &password)
 				if err != nil {
 					return fmt.Errorf("rows.Scan() failed: %s", err)
+				}
+
+				if len(machineFlag) > 0 && machine != machineFlag {
+					continue
+				}
+
+				if len(serviceFlag) > 0 && service != serviceFlag {
+					continue
+				}
+
+				if len(userFlag) > 0 && user != userFlag {
+					continue
 				}
 
 				fmt.Printf("%s %s@%s %s\n", service, user, machine, password)
@@ -67,12 +82,9 @@ func newReadCommand(db *sql.DB) *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringVarP(&machine, "machine", "m", "", "machine (required)")
-	cmd.MarkFlagRequired("machine")
-	cmd.Flags().StringVarP(&service, "service", "s", "", "service (required)")
-	cmd.MarkFlagRequired("service")
-	cmd.Flags().StringVarP(&user, "user", "u", "", "user (required)")
-	cmd.MarkFlagRequired("user")
+	cmd.Flags().StringVarP(&machineFlag, "machine", "m", "", "machine (required)")
+	cmd.Flags().StringVarP(&serviceFlag, "service", "s", "", "service (required)")
+	cmd.Flags().StringVarP(&userFlag, "user", "u", "", "user (required)")
 
 	return cmd
 }
