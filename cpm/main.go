@@ -40,6 +40,43 @@ func newCreateCommand(db *sql.DB) *cobra.Command {
 	return cmd
 }
 
+func newReadCommand(db *sql.DB) *cobra.Command {
+	var machine string
+	var service string
+	var user string
+	var password string
+	var cmd = &cobra.Command{
+		Use:   "search",
+		Short: "searches passwords",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			rows, err := db.Query("select machine, service, user, password from passwords")
+			if err != nil {
+				return fmt.Errorf("db.Query(insert) failed: %s", err)
+			}
+
+			defer rows.Close()
+			for rows.Next() {
+				err = rows.Scan(&machine, &service, &user, &password)
+				if err != nil {
+					return fmt.Errorf("rows.Scan() failed: %s", err)
+				}
+
+				fmt.Printf("%s %s@%s %s\n", service, user, machine, password)
+			}
+
+			return nil
+		},
+	}
+	cmd.Flags().StringVarP(&machine, "machine", "m", "", "machine (required)")
+	cmd.MarkFlagRequired("machine")
+	cmd.Flags().StringVarP(&service, "service", "s", "", "service (required)")
+	cmd.MarkFlagRequired("service")
+	cmd.Flags().StringVarP(&user, "user", "u", "", "user (required)")
+	cmd.MarkFlagRequired("user")
+
+	return cmd
+}
+
 func newRootCommand(db *sql.DB) *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "cpm",
@@ -50,6 +87,7 @@ func newRootCommand(db *sql.DB) *cobra.Command {
 		},
 	}
 	cmd.AddCommand(newCreateCommand(db))
+	cmd.AddCommand(newReadCommand(db))
 
 	return cmd
 }
