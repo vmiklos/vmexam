@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/spf13/cobra"
@@ -152,10 +153,6 @@ func newRootCommand(db *sql.DB) *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "cpm",
 		Short: "cpm is a console password manager",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Println("rootCmd.Run")
-			return nil
-		},
 	}
 	cmd.AddCommand(newCreateCommand(db))
 	cmd.AddCommand(newReadCommand(db))
@@ -163,6 +160,10 @@ func newRootCommand(db *sql.DB) *cobra.Command {
 	cmd.AddCommand(newDeleteCommand(db))
 
 	return cmd
+}
+
+func getCommands() []string {
+	return []string{"create", "read", "update", "delete"}
 }
 
 func newDatabase() (*sql.DB, error) {
@@ -193,7 +194,23 @@ func main() {
 	}
 	defer db.Close()
 
+	var commandFound bool
+	commands := getCommands()
+	for _, a := range commands {
+		for _, b := range os.Args[1:] {
+			if a == b {
+				commandFound = true
+				break
+			}
+		}
+	}
 	var cmd = newRootCommand(db)
+	if !commandFound {
+		// Default to the search subcommand.
+		args := append([]string{"search"}, os.Args[1:]...)
+		cmd.SetArgs(args)
+	}
+
 	err = cmd.Execute()
 	if err != nil {
 		log.Fatalf("rootCmd.Execute() failed: %s", err)
