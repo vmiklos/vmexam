@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/spf13/cobra"
@@ -173,12 +174,30 @@ type CpmDatabase struct {
 	Database *sql.DB
 }
 
+func pathExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
+}
+
 func openDatabase() (*CpmDatabase, error) {
 	var db CpmDatabase
 	var err error
 	db.File, err = ioutil.TempFile("", "cpm")
 	if err != nil {
 		return nil, fmt.Errorf("ioutil.TempFile() failed: %s", err)
+	}
+
+	if pathExists("./cpmdb") {
+		os.Remove(db.File.Name())
+		cmd := exec.Command("gpg", "--decrypt", "-a", "-o", db.File.Name(), "./cpmdb")
+		err := cmd.Start()
+		if err != nil {
+			return nil, fmt.Errorf("cmd.Start() failed: %s", err)
+		}
+		err = cmd.Wait()
+		if err != nil {
+			return nil, fmt.Errorf("cmd.Wait() failed: %s", err)
+		}
 	}
 
 	db.Database, err = sql.Open("sqlite3", db.File.Name())
@@ -203,6 +222,19 @@ func openDatabase() (*CpmDatabase, error) {
 
 func closeDatabase(db *CpmDatabase) {
 	db.Database.Close()
+
+	os.Remove("./cpmdb")
+	// TODO harcoded uid
+	cmd := exec.Command("gpg", "--encrypt", "--sign", "-a", "-r", "03915096", "-o", "./cpmdb", db.File.Name())
+	err := cmd.Start()
+	if err != nil {
+		log.Fatalf("cmd.Start(gpg encrypt) failed: %s", err)
+	}
+	err = cmd.Wait()
+	if err != nil {
+		log.Fatalf("cmd.Wait(gpg encrypt) failed: %s", err)
+	}
+
 	os.Remove(db.File.Name())
 }
 
