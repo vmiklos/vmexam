@@ -17,16 +17,20 @@ func newCreateCommand(db *sql.DB) *cobra.Command {
 	var service string
 	var user string
 	var password string
+	var passwordType string
 	var cmd = &cobra.Command{
 		Use:   "create",
 		Short: "creates a new password",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			query, err := db.Prepare("insert into passwords (machine, service, user, password) values(?, ?, ?, ?)")
+			query, err := db.Prepare("insert into passwords (machine, service, user, password, type) values(?, ?, ?, ?, ?)")
 			if err != nil {
-				return fmt.Errorf("db.Prepare(insert) failed: %s", err)
+				return fmt.Errorf("db.Prepare() failed: %s", err)
 			}
 
-			_, err = query.Exec(machine, service, user, password)
+			_, err = query.Exec(machine, service, user, password, passwordType)
+			if err != nil {
+				return fmt.Errorf("query.Exec() failed: %s", err)
+			}
 
 			return nil
 		},
@@ -39,6 +43,7 @@ func newCreateCommand(db *sql.DB) *cobra.Command {
 	cmd.MarkFlagRequired("user")
 	cmd.Flags().StringVarP(&password, "password", "p", "", "password (required)")
 	cmd.MarkFlagRequired("password")
+	cmd.Flags().StringVarP(&passwordType, "type", "t", "plain", "password type ('plain' or 'totp', default: plain)")
 
 	return cmd
 }
@@ -48,16 +53,17 @@ func newUpdateCommand(db *sql.DB) *cobra.Command {
 	var service string
 	var user string
 	var password string
+	var passwordType string
 	var cmd = &cobra.Command{
 		Use:   "update",
 		Short: "updates an existing password",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			query, err := db.Prepare("update passwords set password=? where machine=? and service=? and user=?")
+			query, err := db.Prepare("update passwords set password=? where machine=? and service=? and user=? and type=?")
 			if err != nil {
 				return fmt.Errorf("db.Prepare(update) failed: %s", err)
 			}
 
-			_, err = query.Exec(password, machine, service, user)
+			_, err = query.Exec(password, machine, service, user, passwordType)
 
 			return nil
 		},
@@ -70,6 +76,7 @@ func newUpdateCommand(db *sql.DB) *cobra.Command {
 	cmd.MarkFlagRequired("user")
 	cmd.Flags().StringVarP(&password, "password", "p", "", "new password (required)")
 	cmd.MarkFlagRequired("password")
+	cmd.Flags().StringVarP(&passwordType, "type", "t", "plain", "password type ('plain' or 'totp', default: plain)")
 
 	return cmd
 }
@@ -78,16 +85,17 @@ func newDeleteCommand(db *sql.DB) *cobra.Command {
 	var machine string
 	var service string
 	var user string
+	var passwordType string
 	var cmd = &cobra.Command{
 		Use:   "delete",
 		Short: "deletes an existing password",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			query, err := db.Prepare("delete from passwords where machine=? and service=? and user=?")
+			query, err := db.Prepare("delete from passwords where machine=? and service=? and user=? and type=?")
 			if err != nil {
 				return fmt.Errorf("db.Prepare(delete) failed: %s", err)
 			}
 
-			_, err = query.Exec(machine, service, user)
+			_, err = query.Exec(machine, service, user, passwordType)
 
 			return nil
 		},
@@ -98,6 +106,7 @@ func newDeleteCommand(db *sql.DB) *cobra.Command {
 	cmd.MarkFlagRequired("service")
 	cmd.Flags().StringVarP(&user, "user", "u", "", "user (required)")
 	cmd.MarkFlagRequired("user")
+	cmd.Flags().StringVarP(&passwordType, "type", "t", "plain", "password type ('plain' or 'totp', default: plain)")
 
 	return cmd
 }
@@ -106,11 +115,12 @@ func newReadCommand(db *sql.DB) *cobra.Command {
 	var machineFlag string
 	var serviceFlag string
 	var userFlag string
+	var typeFlag string
 	var cmd = &cobra.Command{
 		Use:   "search",
 		Short: "searches passwords",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			rows, err := db.Query("select machine, service, user, password from passwords")
+			rows, err := db.Query("select machine, service, user, password, type from passwords")
 			if err != nil {
 				return fmt.Errorf("db.Query(insert) failed: %s", err)
 			}
@@ -121,7 +131,8 @@ func newReadCommand(db *sql.DB) *cobra.Command {
 				var service string
 				var user string
 				var password string
-				err = rows.Scan(&machine, &service, &user, &password)
+				var passwordType string
+				err = rows.Scan(&machine, &service, &user, &password, &passwordType)
 				if err != nil {
 					return fmt.Errorf("rows.Scan() failed: %s", err)
 				}
@@ -147,6 +158,7 @@ func newReadCommand(db *sql.DB) *cobra.Command {
 	cmd.Flags().StringVarP(&machineFlag, "machine", "m", "", "machine (required)")
 	cmd.Flags().StringVarP(&serviceFlag, "service", "s", "", "service (required)")
 	cmd.Flags().StringVarP(&userFlag, "user", "u", "", "user (required)")
+	cmd.Flags().StringVarP(&typeFlag, "type", "t", "plain", "password type ('plain' or 'totp', default: plain)")
 
 	return cmd
 }
@@ -210,7 +222,8 @@ func openDatabase() (*CpmDatabase, error) {
 		machine text not null,
 		service text not null,
 		user text not null,
-		password text not null
+		password text not null,
+		type text not null
 	)`)
 	if err != nil {
 		return nil, err
