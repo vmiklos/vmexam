@@ -149,7 +149,7 @@ func newReadCommand(db *sql.DB) *cobra.Command {
 					continue
 				}
 
-				fmt.Printf("%s %s@%s %s\n", service, user, machine, password)
+				fmt.Printf("machine: %s service: %s user: %s password: %s, password type: %s\n", machine, service, user, password, passwordType)
 			}
 
 			return nil
