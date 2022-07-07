@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 
@@ -166,13 +167,26 @@ func getCommands() []string {
 	return []string{"create", "read", "update", "delete"}
 }
 
-func newDatabase() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "./cpmdb")
+// CpmDatabase is an opened tempfile, containing an sqlite database.
+type CpmDatabase struct {
+	File     *os.File
+	Database *sql.DB
+}
+
+func openDatabase() (*CpmDatabase, error) {
+	var db CpmDatabase
+	var err error
+	db.File, err = ioutil.TempFile("", "cpm")
 	if err != nil {
-		log.Fatalf("sql.Open() failed: %s", err)
+		return nil, fmt.Errorf("ioutil.TempFile() failed: %s", err)
 	}
 
-	query, err := db.Prepare(`create table if not exists passwords (
+	db.Database, err = sql.Open("sqlite3", db.File.Name())
+	if err != nil {
+		return nil, fmt.Errorf("sql.Open() failed: %s", err)
+	}
+
+	query, err := db.Database.Prepare(`create table if not exists passwords (
 		id integer primary key,
 		machine text not null,
 		service text not null,
@@ -184,15 +198,20 @@ func newDatabase() (*sql.DB, error) {
 	}
 	query.Exec()
 
-	return db, nil
+	return &db, nil
+}
+
+func closeDatabase(db *CpmDatabase) {
+	db.Database.Close()
+	os.Remove(db.File.Name())
 }
 
 func main() {
-	db, err := newDatabase()
+	db, err := openDatabase()
 	if err != nil {
-		log.Fatalf("newDatabase() failed: %s", err)
+		log.Fatalf("openDatabase() failed: %s", err)
 	}
-	defer db.Close()
+	defer closeDatabase(db)
 
 	var commandFound bool
 	commands := getCommands()
@@ -204,7 +223,7 @@ func main() {
 			}
 		}
 	}
-	var cmd = newRootCommand(db)
+	var cmd = newRootCommand(db.Database)
 	if !commandFound {
 		// Default to the search subcommand.
 		args := append([]string{"search"}, os.Args[1:]...)
