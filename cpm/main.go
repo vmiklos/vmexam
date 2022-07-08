@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"database/sql"
+	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -113,12 +115,46 @@ func newDeleteCommand(db *sql.DB) *cobra.Command {
 	return cmd
 }
 
+// XMLPassword is the 4th <node> element from cpm's XML database.
+type XMLPassword struct {
+	XMLName xml.Name `xml:"node"`
+	Label   string   `xml:"label,attr"`
+	Totp    string   `xml:"totp,attr"`
+}
+
+// XMLUser is the 3rd <node> element from cpm's XML database.
+type XMLUser struct {
+	XMLName   xml.Name      `xml:"node"`
+	Label     string        `xml:"label,attr"`
+	Passwords []XMLPassword `xml:"node"`
+}
+
+// XMLService is the 2nd <node> element from cpm's XML database.
+type XMLService struct {
+	XMLName xml.Name  `xml:"node"`
+	Label   string    `xml:"label,attr"`
+	Users   []XMLUser `xml:"node"`
+}
+
+// XMLMachine is the 1st <node> element from cpm's XML database.
+type XMLMachine struct {
+	XMLName  xml.Name     `xml:"node"`
+	Label    string       `xml:"label,attr"`
+	Services []XMLService `xml:"node"`
+}
+
+// XMLMachines is the <root> element from cpm's XML database.
+type XMLMachines struct {
+	XMLName  xml.Name     `xml:"root"`
+	Machines []XMLMachine `xml:"node"`
+}
+
 func newImportCommand(db *sql.DB) *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "import",
 		Short: "imports an old XML database",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// Decrypt ~/.cpmdb to a temp file.
+			// Decrypt and uncompress ~/.cpmdb to a temp file.
 			usr, err := user.Current()
 			if err != nil {
 				return fmt.Errorf("user.Current() failed: %s", err)
@@ -127,12 +163,13 @@ func newImportCommand(db *sql.DB) *cobra.Command {
 			encryptedPath := usr.HomeDir + "/.cpmdb"
 			decryptedFile, err := ioutil.TempFile("", "cpm")
 			decryptedPath := decryptedFile.Name()
+			defer os.Remove(decryptedPath)
 			if err != nil {
 				return fmt.Errorf("ioutil.TempFile() failed: %s", err)
 			}
 
 			os.Remove(decryptedPath)
-			gpg := exec.Command("gpg", "--decrypt", "-a", "-o", decryptedPath, encryptedPath)
+			gpg := exec.Command("gpg", "--decrypt", "-a", "-o", decryptedPath+".gz", encryptedPath)
 			err = gpg.Start()
 			if err != nil {
 				return fmt.Errorf("cmd.Start() failed: %s", err)
@@ -142,9 +179,53 @@ func newImportCommand(db *sql.DB) *cobra.Command {
 				return fmt.Errorf("cmd.Wait() failed: %s", err)
 			}
 
-			// TODO actuall parse the XML
+			gunzip := exec.Command("gunzip", decryptedPath+".gz")
+			err = gunzip.Start()
+			if err != nil {
+				return fmt.Errorf("cmd.Start(gunzip) failed: %s", err)
+			}
+			err = gunzip.Wait()
+			if err != nil {
+				return fmt.Errorf("cmd.Wait(gunzip) failed: %s", err)
+			}
 
-			os.Remove(decryptedPath)
+			// Parse the XML.
+			xmlFile, err := os.Open(decryptedPath)
+			if err != nil {
+				return fmt.Errorf("os.Open(decryptedPath) failed: %s", err)
+			}
+			defer xmlFile.Close()
+
+			xmlBytes, err := ioutil.ReadAll(xmlFile)
+			if err != nil {
+				return fmt.Errorf("ioutil.ReadAll(xmlFile) failed: %s", err)
+			}
+
+			// Avoid 'encoding "ISO-8859-1" declared but Decoder.CharsetReader is nil'.
+			xmlBytes = bytes.ReplaceAll(xmlBytes, []byte(`encoding="ISO-8859-1"`), []byte(`encoding="UTF-8"`))
+
+			var machines XMLMachines
+			err = xml.Unmarshal(xmlBytes, &machines)
+			if err != nil {
+				return fmt.Errorf("xml.Unmarshal() failed: %s", err)
+			}
+
+			// TODO import the parsed data
+			for _, machine := range machines.Machines {
+				machineLabel := machine.Label
+				for _, service := range machine.Services {
+					serviceLabel := service.Label
+					for _, user := range service.Users {
+						userLabel := user.Label
+						for _, password := range user.Passwords {
+							passwordLabel := password.Label
+							passwordTotp := password.Totp
+							fmt.Printf("machine: %s service: %s user: %s password: %s, password type: '%s'\n", machineLabel, serviceLabel, userLabel, passwordLabel, passwordTotp)
+						}
+					}
+				}
+			}
+
 			return nil
 		},
 	}
