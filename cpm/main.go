@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/user"
 	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -112,6 +113,45 @@ func newDeleteCommand(db *sql.DB) *cobra.Command {
 	return cmd
 }
 
+func newImportCommand(db *sql.DB) *cobra.Command {
+	var cmd = &cobra.Command{
+		Use:   "import",
+		Short: "imports an old XML database",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// Decrypt ~/.cpmdb to a temp file.
+			usr, err := user.Current()
+			if err != nil {
+				return fmt.Errorf("user.Current() failed: %s", err)
+			}
+
+			encryptedPath := usr.HomeDir + "/.cpmdb"
+			decryptedFile, err := ioutil.TempFile("", "cpm")
+			decryptedPath := decryptedFile.Name()
+			if err != nil {
+				return fmt.Errorf("ioutil.TempFile() failed: %s", err)
+			}
+
+			os.Remove(decryptedPath)
+			gpg := exec.Command("gpg", "--decrypt", "-a", "-o", decryptedPath, encryptedPath)
+			err = gpg.Start()
+			if err != nil {
+				return fmt.Errorf("cmd.Start() failed: %s", err)
+			}
+			err = gpg.Wait()
+			if err != nil {
+				return fmt.Errorf("cmd.Wait() failed: %s", err)
+			}
+
+			// TODO actuall parse the XML
+
+			os.Remove(decryptedPath)
+			return nil
+		},
+	}
+
+	return cmd
+}
+
 func newReadCommand(db *sql.DB) *cobra.Command {
 	var machineFlag string
 	var serviceFlag string
@@ -194,12 +234,20 @@ func newRootCommand(db *sql.DB) *cobra.Command {
 	cmd.AddCommand(newReadCommand(db))
 	cmd.AddCommand(newUpdateCommand(db))
 	cmd.AddCommand(newDeleteCommand(db))
+	cmd.AddCommand(newImportCommand(db))
 
 	return cmd
 }
 
 func getCommands() []string {
-	return []string{"create", "search", "update", "delete", "--help"}
+	return []string{
+		"--help",
+		"create",
+		"delete",
+		"import",
+		"search",
+		"update",
+	}
 }
 
 // CpmDatabase is an opened tempfile, containing an sqlite database.
