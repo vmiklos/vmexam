@@ -293,6 +293,16 @@ func newReadCommand(db *sql.DB) *cobra.Command {
 					continue
 				}
 
+				if len(args) > 0 {
+					// Allow simply matching a sub-string: e.g. search for a service type or a part
+					// of a machine without explicitly telling if the query is a service or a
+					// machine.
+					s := fmt.Sprintf("%s %s %s %s", machine, service, user, passwordType)
+					if !strings.Contains(s, args[0]) {
+						continue
+					}
+				}
+
 				if passwordType == "totp" {
 					if totpFlag {
 						// This is a TOTP password and the current value is required: invoke
