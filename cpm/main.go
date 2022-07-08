@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/spf13/cobra"
@@ -116,6 +117,7 @@ func newReadCommand(db *sql.DB) *cobra.Command {
 	var serviceFlag string
 	var userFlag string
 	var typeFlag string
+	var totpFlag bool
 	var cmd = &cobra.Command{
 		Use:   "search",
 		Short: "searches passwords",
@@ -149,6 +151,21 @@ func newReadCommand(db *sql.DB) *cobra.Command {
 					continue
 				}
 
+				if passwordType == "totp" {
+					if totpFlag {
+						// This is a TOTP password and the current value is required: invoke
+						// oathtool to generate it.
+						passwordType = "current totp"
+						output, err := exec.Command("oathtool", "-b", "--totp", password).Output()
+						if err != nil {
+							return fmt.Errorf("exec.Command(oathtool) failed: %s", err)
+						}
+						password = strings.TrimSpace(string(output))
+					} else {
+						passwordType = "totp key"
+					}
+				}
+
 				fmt.Printf("machine: %s service: %s user: %s password: %s, password type: %s\n", machine, service, user, password, passwordType)
 			}
 
@@ -159,6 +176,7 @@ func newReadCommand(db *sql.DB) *cobra.Command {
 	cmd.Flags().StringVarP(&serviceFlag, "service", "s", "", "service (required)")
 	cmd.Flags().StringVarP(&userFlag, "user", "u", "", "user (required)")
 	cmd.Flags().StringVarP(&typeFlag, "type", "t", "plain", "password type ('plain' or 'totp', default: plain)")
+	cmd.Flags().BoolVarP(&totpFlag, "totp", "T", false, "show current TOTP, not the TOTP key (default: false)")
 
 	return cmd
 }
