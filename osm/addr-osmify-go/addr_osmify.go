@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"os"
 	"time"
 )
 
@@ -161,9 +162,9 @@ func spinner(ch chan SpinnerResult, stream io.Writer) int {
 }
 
 // Main is the commandline interface to this package.
-func Main(args []string, stream io.Writer) int {
-	flags := flag.NewFlagSet(args[0], flag.ContinueOnError)
-	flags.Parse(args[1:])
+func Main(stream io.Writer) int {
+	flags := flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
+	flags.Parse(os.Args[1:])
 	if flags.NArg() > 0 {
 		ch := make(chan SpinnerResult)
 		go func() {

@@ -11,7 +11,7 @@ addr-osmify-go: Makefile addr_osmify.go
 check: check-format check-lint check-race check-unit
 
 check-lint:
-	golint
+	golint -set_exit_status
 
 check-unit:
 	./coverage.sh
