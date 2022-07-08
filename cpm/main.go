@@ -199,7 +199,7 @@ func newRootCommand(db *sql.DB) *cobra.Command {
 }
 
 func getCommands() []string {
-	return []string{"create", "read", "update", "delete"}
+	return []string{"create", "search", "update", "delete", "--help"}
 }
 
 // CpmDatabase is an opened tempfile, containing an sqlite database.
