@@ -363,8 +363,9 @@ func getCommands() []string {
 
 // CpmDatabase is an opened tempfile, containing an sqlite database.
 type CpmDatabase struct {
-	File     *os.File
-	Database *sql.DB
+	TempFile      *os.File
+	PermanentPath string
+	Database      *sql.DB
 }
 
 func pathExists(path string) bool {
@@ -372,17 +373,39 @@ func pathExists(path string) bool {
 	return err == nil
 }
 
+func getDatabasePath() (string, error) {
+	usr, err := user.Current()
+	if err != nil {
+		return "", fmt.Errorf("user.Current() failed: %s", err)
+	}
+
+	databaseDir := usr.HomeDir + "/.local/state/cpm"
+	databasePath := databaseDir + "/passwords.db"
+	if !pathExists(databasePath) {
+		err = os.MkdirAll(databaseDir, os.ModePerm)
+		if err != nil {
+			return "", fmt.Errorf("os.MkdirAll() failed: %s", err)
+		}
+	}
+
+	return databasePath, nil
+}
+
 func openDatabase() (*CpmDatabase, error) {
 	var db CpmDatabase
 	var err error
-	db.File, err = ioutil.TempFile("", "cpm")
+	db.TempFile, err = ioutil.TempFile("", "cpm")
 	if err != nil {
 		return nil, fmt.Errorf("ioutil.TempFile() failed: %s", err)
 	}
 
-	if pathExists("./cpmdb") {
-		os.Remove(db.File.Name())
-		cmd := exec.Command("gpg", "--decrypt", "-a", "-o", db.File.Name(), "./cpmdb")
+	db.PermanentPath, err = getDatabasePath()
+	if err != nil {
+		return nil, fmt.Errorf("getDatabasePath() failed: %s", err)
+	}
+	if pathExists(db.PermanentPath) {
+		os.Remove(db.TempFile.Name())
+		cmd := exec.Command("gpg", "--decrypt", "-a", "-o", db.TempFile.Name(), db.PermanentPath)
 		err := cmd.Start()
 		if err != nil {
 			return nil, fmt.Errorf("cmd.Start() failed: %s", err)
@@ -393,7 +416,7 @@ func openDatabase() (*CpmDatabase, error) {
 		}
 	}
 
-	db.Database, err = sql.Open("sqlite3", db.File.Name())
+	db.Database, err = sql.Open("sqlite3", db.TempFile.Name())
 	if err != nil {
 		return nil, fmt.Errorf("sql.Open() failed: %s", err)
 	}
@@ -417,9 +440,9 @@ func openDatabase() (*CpmDatabase, error) {
 func closeDatabase(db *CpmDatabase) {
 	db.Database.Close()
 
-	os.Remove("./cpmdb")
+	os.Remove(db.PermanentPath)
 	// TODO harcoded uid
-	cmd := exec.Command("gpg", "--encrypt", "--sign", "-a", "-r", "03915096", "-o", "./cpmdb", db.File.Name())
+	cmd := exec.Command("gpg", "--encrypt", "--sign", "-a", "-r", "03915096", "-o", db.PermanentPath, db.TempFile.Name())
 	err := cmd.Start()
 	if err != nil {
 		log.Fatalf("cmd.Start(gpg encrypt) failed: %s", err)
@@ -429,7 +452,7 @@ func closeDatabase(db *CpmDatabase) {
 		log.Fatalf("cmd.Wait(gpg encrypt) failed: %s", err)
 	}
 
-	os.Remove(db.File.Name())
+	os.Remove(db.TempFile.Name())
 }
 
 func main() {
