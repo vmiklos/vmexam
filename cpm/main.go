@@ -16,6 +16,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func createPassword(db *sql.DB, machine, service, user, password, passwordType string) error {
+	query, err := db.Prepare("insert into passwords (machine, service, user, password, type) values(?, ?, ?, ?, ?)")
+	if err != nil {
+		return fmt.Errorf("db.Prepare() failed: %s", err)
+	}
+
+	_, err = query.Exec(machine, service, user, password, passwordType)
+	if err != nil {
+		return fmt.Errorf("query.Exec() failed: %s", err)
+	}
+	return nil
+}
+
 func newCreateCommand(db *sql.DB) *cobra.Command {
 	var machine string
 	var service string
@@ -26,14 +39,9 @@ func newCreateCommand(db *sql.DB) *cobra.Command {
 		Use:   "create",
 		Short: "creates a new password",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			query, err := db.Prepare("insert into passwords (machine, service, user, password, type) values(?, ?, ?, ?, ?)")
+			err := createPassword(db, machine, service, user, password, passwordType)
 			if err != nil {
-				return fmt.Errorf("db.Prepare() failed: %s", err)
-			}
-
-			_, err = query.Exec(machine, service, user, password, passwordType)
-			if err != nil {
-				return fmt.Errorf("query.Exec() failed: %s", err)
+				return fmt.Errorf("createPassword() failed: %s", err)
 			}
 
 			return nil
@@ -210,7 +218,7 @@ func newImportCommand(db *sql.DB) *cobra.Command {
 				return fmt.Errorf("xml.Unmarshal() failed: %s", err)
 			}
 
-			// TODO import the parsed data
+			// Import the parsed data.
 			for _, machine := range machines.Machines {
 				machineLabel := machine.Label
 				for _, service := range machine.Services {
@@ -219,8 +227,17 @@ func newImportCommand(db *sql.DB) *cobra.Command {
 						userLabel := user.Label
 						for _, password := range user.Passwords {
 							passwordLabel := password.Label
-							passwordTotp := password.Totp
-							fmt.Printf("machine: %s service: %s user: %s password: %s, password type: '%s'\n", machineLabel, serviceLabel, userLabel, passwordLabel, passwordTotp)
+							var passwordType string
+							if password.Totp == "true" {
+								passwordType = "totp"
+							} else {
+								passwordType = "plain"
+							}
+
+							err = createPassword(db, machineLabel, serviceLabel, userLabel, passwordLabel, passwordType)
+							if err != nil {
+								return fmt.Errorf("createPassword(machine='%s', service='%s', user='%s', type='%s') failed: %s", machineLabel, serviceLabel, userLabel, passwordType, err)
+							}
 						}
 					}
 				}
@@ -291,7 +308,7 @@ func newReadCommand(db *sql.DB) *cobra.Command {
 					}
 				}
 
-				fmt.Printf("machine: %s service: %s user: %s password: %s, password type: %s\n", machine, service, user, password, passwordType)
+				fmt.Printf("machine: %s, service: %s, user: %s, password: %s, password type: %s\n", machine, service, user, password, passwordType)
 			}
 
 			return nil
