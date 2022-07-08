@@ -151,6 +151,10 @@ func newReadCommand(db *sql.DB) *cobra.Command {
 					continue
 				}
 
+				if len(typeFlag) > 0 && passwordType != typeFlag {
+					continue
+				}
+
 				if passwordType == "totp" {
 					if totpFlag {
 						// This is a TOTP password and the current value is required: invoke
