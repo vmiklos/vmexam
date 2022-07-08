@@ -288,12 +288,12 @@ func openDatabase() (*CpmDatabase, error) {
 	}
 
 	query, err := db.Database.Prepare(`create table if not exists passwords (
-		id integer primary key,
 		machine text not null,
 		service text not null,
 		user text not null,
 		password text not null,
-		type text not null
+		type text not null,
+		unique(machine, service, user, type)
 	)`)
 	if err != nil {
 		return nil, err
