@@ -260,6 +260,9 @@ func newReadCommand(db *sql.DB) *cobra.Command {
 		Use:   "search",
 		Short: "searches passwords",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if totpFlag {
+				typeFlag = "totp"
+			}
 			rows, err := db.Query("select machine, service, user, password, type from passwords")
 			if err != nil {
 				return fmt.Errorf("db.Query(insert) failed: %s", err)
@@ -328,7 +331,7 @@ func newReadCommand(db *sql.DB) *cobra.Command {
 	cmd.Flags().StringVarP(&serviceFlag, "service", "s", "", "service (required)")
 	cmd.Flags().StringVarP(&userFlag, "user", "u", "", "user (required)")
 	cmd.Flags().StringVarP(&typeFlag, "type", "t", "plain", "password type ('plain' or 'totp', default: plain)")
-	cmd.Flags().BoolVarP(&totpFlag, "totp", "T", false, "show current TOTP, not the TOTP key (default: false)")
+	cmd.Flags().BoolVarP(&totpFlag, "totp", "T", false, "show current TOTP, not the TOTP key (default: false, implies '--type totp')")
 
 	return cmd
 }
