@@ -1,0 +1,13 @@
+#!/bin/bash -e
+#
+# Copyright 2022 Miklos Vajna. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Renders a markdown file with Python and opens it in a browser.
+
+html="$(echo $1 |sed 's/md$/html/')"
+python3 -m markdown $1 > $html
+firefox $html
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
