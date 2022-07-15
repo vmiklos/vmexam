@@ -8,7 +8,7 @@ import sys
 up2dates = {
     "lcov": "lynx -dump https://github.com/linux-test-project/lcov/releases|grep /lcov-.*tar.gz$ |sed -e 's|.*lcov-||;s|.tar.gz.*||;q' |sed 's/1.16/1.16+git.20220603.dfeb750/'",
     # just check that we're packaging the latest commit
-    "gtimelog": "[ $(git ls-remote https://gitlab.collabora.com/collabora/gtimelog.git |grep master|cut -c 1-8) == '24abd436' ] && echo 0.6.0",
+    "gtimelog": "[ $(git ls-remote https://gitlab.collabora.com/collabora/gtimelog.git |grep master|cut -c 1-7) == 'ae1f65c' ] && echo 0.6.0",
 }
 
 
