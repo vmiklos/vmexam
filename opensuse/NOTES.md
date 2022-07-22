@@ -245,11 +245,12 @@ kstart plasmashell #to restart it
   - `zypper -p https://download.opensuse.org/repositories/devel:/languages:/python/15.4/ in git-review`
   - `zypper -p https://download.opensuse.org/repositories/editors/openSUSE_Leap_15.4/ in vim`
     - python is now compiled with python3 support (only), need to replace "py" with "py3" in vim config
-    - this also causes https://github.com/actionshrimp/vim-xpath/issues/16, will have to look for a replacement
+    - this also causes <https://github.com/actionshrimp/vim-xpath/issues/16>, will have to look for a replacement
 - the usual fix with html5 video codecs in firefox/chromium: <https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support>
 - konsole:
-  - hide the new, not needed toolbar in konsole: https://forum.kde.org/viewtopic.php?f=227&t=170988
+  - hide the new, not needed toolbar in konsole: <https://forum.kde.org/viewtopic.php?f=227&t=170988>
   - konsole now (again) catches alt-<number>, need to disable that in settings -> configure keyboard shortcuts, so it rearches e.g. irssi
+  - and <https://forum.kde.org/viewtopic.php?f=227&t=167471> explains how to get rid of the new left blue line
 - kde in general: <https://www.reddit.com/r/openSUSE/comments/pmdcno/display_problems_after_tumbleweed_update/> seems to be the solution for some rendering issues
 
 ### openSUSE Leap 15.3 -> openSUSE Leap 15.4 (aarch64)
