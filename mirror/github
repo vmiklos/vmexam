@@ -3,16 +3,25 @@
 import json
 import urllib.request, urllib.parse, urllib.error
 import os
+import sys
 
 
 def system(cmd):
     os.system("%s 2>&1 |tee -a mirror.log" % cmd)
 
 
+search = len(sys.argv) > 1 and sys.argv[1] == "--search"
 os.chdir(os.path.dirname(__file__))
 sock = urllib.request.urlopen('https://api.github.com/users/%s/repos?per_page=100' % os.environ['USER'])
 repos = json.loads(sock.read().decode('utf-8'))
+
 for i in repos:
+    if search:
+        if i["archived"] or i["fork"]:
+            continue
+        print(i["name"])
+        continue
+
     if os.path.exists("%s.git" % i['name']):
         # Update existing repo
         os.chdir("%s.git" % i['name'])
