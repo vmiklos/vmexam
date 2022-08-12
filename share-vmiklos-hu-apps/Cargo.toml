@@ -1,0 +1,9 @@
+[package]
+name = "share-vmiklos-hu-apps"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.61"
+evalexpr = "8.1.0"
+rouille = "3.5.0"
