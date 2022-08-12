@@ -1,3 +1,9 @@
+#![deny(warnings)]
+#![warn(clippy::all)]
+#![warn(missing_docs)]
+
+//! Provides a set of simple Rust apps in a single web server process.
+
 mod calc;
 
 fn main() {

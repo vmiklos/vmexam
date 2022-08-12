@@ -1,3 +1,7 @@
+#![deny(warnings)]
+#![warn(clippy::all)]
+#![warn(missing_docs)]
+
 use anyhow::Context as _;
 
 pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
