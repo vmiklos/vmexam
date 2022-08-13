@@ -6,4 +6,5 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.61"
 evalexpr = "8.1.0"
+html-escape = "0.2.11"
 rouille = "3.5.0"

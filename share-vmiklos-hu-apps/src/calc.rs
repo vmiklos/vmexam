@@ -2,41 +2,54 @@
 #![warn(clippy::all)]
 #![warn(missing_docs)]
 
+use crate::yattag;
 use anyhow::Context as _;
 
 pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
-    if request.method() == "POST" {
-        let data = rouille::post_input!(request, { formula: String, })
-            .context("missing POST parameter")?;
-        let evaluated = evalexpr::eval(&data.formula).context("evail() failed")?;
-        Ok(format!(
-            r#"<html>
-    <head>
-        <title>calc</title>
-    </head>
-    <body>
-        Ok: {}
-    </body>
-</html>
-"#,
-            evaluated
-        ))
-    } else {
-        Ok(r#"<html>
-    <head>
-        <title>calc</title>
-    </head>
-    <body>
-        <label for="formula">Formula:</label><br/>
-        <form action="/apps/calc/" method="POST" enctype="multipart/form-data">
-            <p><input type="text" name="formula"/></p>
-            <p><button>Evaluate</button></p>
-        </form>
-    </body>
-</html>
-"#
-        .into())
+    let doc = yattag::Doc::new();
+    {
+        let html = doc.tag("html", &[]);
+        {
+            let head = html.tag("head", &[]);
+            let title = head.tag("title", &[]);
+            title.text("calc");
+        }
+        {
+            let body = html.tag("body", &[]);
+            if request.method() == "POST" {
+                let data = rouille::post_input!(request, { formula: String, })
+                    .context("missing POST parameter")?;
+                let evaluated = evalexpr::eval(&data.formula).context("evail() failed")?;
+                body.text(&format!("Ok: {}", evaluated))
+            } else {
+                {
+                    let label = body.tag("label", &[("for", "formula")]);
+                    label.text("Formula:");
+                }
+                body.stag("br", &[]);
+                {
+                    let form = body.tag(
+                        "form",
+                        &[
+                            ("action", "/apps/calc/"),
+                            ("method", "POST"),
+                            ("enctype", "multipart/form-data"),
+                        ],
+                    );
+                    {
+                        let p = form.tag("p", &[]);
+                        p.tag("input", &[("type", "text"), ("name", "formula")]);
+                    }
+                    {
+                        let p = form.tag("p", &[]);
+                        let button = p.tag("button", &[]);
+                        button.text("Evaluate");
+                    }
+                }
+            }
+        }
     }
+    Ok(doc.get_value())
 }
 
 pub fn app(request: &rouille::Request) -> rouille::Response {
