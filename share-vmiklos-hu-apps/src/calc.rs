@@ -15,7 +15,7 @@ pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
         <title>calc</title>
     </head>
     <body>
-        {}
+        Ok: {}
     </body>
 </html>
 "#,
@@ -42,6 +42,6 @@ pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
 pub fn app(request: &rouille::Request) -> rouille::Response {
     match our_app(request) {
         Ok(html) => rouille::Response::html(&html),
-        Err(err) => rouille::Response::text(&format!("{:?}", err)),
+        Err(err) => rouille::Response::text(&format!("Err: {:?}", err)),
     }
 }
