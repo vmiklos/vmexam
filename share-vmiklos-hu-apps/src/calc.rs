@@ -11,6 +11,13 @@ pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
         let html = doc.tag("html", &[]);
         {
             let head = html.tag("head", &[]);
+            head.stag(
+                "meta",
+                &[
+                    ("name", "viewport"),
+                    ("content", "width=device-width, initial-scale=1"),
+                ],
+            );
             let title = head.tag("title", &[]);
             title.text("calc");
         }
