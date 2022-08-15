@@ -72,5 +72,5 @@ fn main() -> anyhow::Result<()> {
     );
     isahc::Request::post(url).body(json)?.send()?;
 
-    Ok(())
+    std::process::exit(exit_code);
 }
