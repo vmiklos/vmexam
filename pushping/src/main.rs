@@ -46,7 +46,11 @@ fn main() -> anyhow::Result<()> {
     let exit_code = exit_status.code().context("code() failed")?;
     let command = subprocess_args.join(" ");
     // passed or failed
-    let result = if exit_code == 0 { "\u{2713}" } else { "\u{2717}" };
+    let result = if exit_code == 0 {
+        "\u{2713}"
+    } else {
+        "\u{2717}"
+    };
     let hostname = gethostname::gethostname();
     let host = hostname.to_str().context("to_str() failed")?;
     let current_dir = std::env::current_dir()?;
@@ -54,10 +58,7 @@ fn main() -> anyhow::Result<()> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let home_dir: String = home_dir.to_str().context("to_str() failed")?.into();
     working_directory = working_directory.replace(&home_dir, "~");
-    let body = format!(
-        "{} {}:{}$ {}: exit code is {}",
-        result, host, working_directory, command, exit_code
-    );
+    let body = format!("{result} {host}:{working_directory}$ {command}: exit code is {exit_code}");
     let payload = Message {
         msgtype: "m.text".into(),
         body,
