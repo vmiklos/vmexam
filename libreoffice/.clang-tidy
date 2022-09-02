@@ -12,9 +12,13 @@
 # - bugprone-reserved-identifier: sometimes warns without a code location
 # - readability-function-cognitive-complexity: noisy, we already have readability-function-size instead
 # - readability-uppercase-literal-suffix: does not report *where* the problem is
+# - readability-identifier-length: i / it may be fine
+# - clang-analyzer-core.StackAddressEscape: rtl::OStringConcatMarker seems dubious
+# - bugprone-assignment-in-if-condition: needs disabling in macros
 Checks: "clang-diagnostic-*,\
 -clang-analyzer-cplusplus.NewDelete,\
 -clang-analyzer-cplusplus.NewDeleteLeaks,\
+-clang-analyzer-core.StackAddressEscape,\
 performance-*,\
 unused-*,\
 modernize-*,\
@@ -40,6 +44,8 @@ readability-*,\
 -readability-qualified-auto,\
 -readability-function-cognitive-complexity,\
 -readability-uppercase-literal-suffix,\
+-readability-identifier-length,\
+-bugprone-assignment-in-if-condition,\
 "
 WarningsAsErrors: '*'
 
