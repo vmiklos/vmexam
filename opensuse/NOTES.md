@@ -27,10 +27,10 @@ git push origin
 
 ## zypper
 
-- zypper factory bootstrap:
+- zypper tumbleweed bootstrap:
 
-zypper --root /var/chroot/opensuse-factory addrepo http://download.opensuse.org/factory/repo/oss/ repo-oss
-zypper --root /var/chroot/opensuse-factory install patterns-openSUSE-base
+zypper --root /var/chroot/opensuse-tumbleweed addrepo http://download.opensuse.org/tumbleweed/repo/oss/ repo-oss
+zypper --root /var/chroot/opensuse-tumbleweed install patterns-openSUSE-base
 
 - zypper stable bootstrap:
 
