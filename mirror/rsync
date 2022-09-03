@@ -17,7 +17,7 @@ o7050-hdd)
     ;;
 o7050-ssd)
     cd o7050-ssd
-    if ! rsync -avP --delete-after -x /home/vmiklos/git/libreoffice/ .; then
+    if ! rsync -avP --delete-after --exclude=workdir --exclude=.ccache --delete-excluded -x /home/vmiklos/git/libreoffice/ .; then
         echo "rsync failed giving up"
         exit 1
     fi
