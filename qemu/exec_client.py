@@ -24,7 +24,7 @@ import urllib.request
 
 
 ALIASES = {
-    "acroread": "c:/program files (x86)/adobe/acrobat reader dc/reader/acrord32.exe",
+    "acroread": "c:/program files/adobe/acrobat dc/acrobat/acrobat.exe",
     "excel": "c:/program files/microsoft office/root/office16/excel.exe",
     "powerpnt": "c:/program files/microsoft office/root/office16/powerpnt.exe",
     "winword": "c:/program files/microsoft office/root/office16/winword.exe",
