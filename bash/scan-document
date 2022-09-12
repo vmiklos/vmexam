@@ -10,8 +10,8 @@
 # Example usage: scan-document ~/Downloads/<date>.jpg receipt1.pdf
 
 downscaled=$(mktemp --suffix=.jpg)
-convert $1 -density 96 $downscaled
-convert $downscaled $2
+convert "$1" -density 96 $downscaled
+convert $downscaled "$2"
 rm $downscaled
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
