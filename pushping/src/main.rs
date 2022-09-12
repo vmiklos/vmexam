@@ -36,6 +36,8 @@ struct Config {
 }
 
 fn main() -> anyhow::Result<()> {
+    let start = chrono::Local::now();
+
     // Run the command and build a json to be sent.
     let args: Vec<String> = std::env::args().collect();
     let (_, subprocess_args) = args.split_first().context("args.split_first() failed")?;
@@ -58,7 +60,12 @@ fn main() -> anyhow::Result<()> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let home_dir: String = home_dir.to_str().context("to_str() failed")?.into();
     working_directory = working_directory.replace(&home_dir, "~");
-    let body = format!("{result} {host}:{working_directory}$ {command}: exit code is {exit_code}");
+    let duration = chrono::Local::now() - start;
+    let seconds = duration.num_seconds() % 60;
+    let minutes = duration.num_minutes() % 60;
+    let hours = duration.num_hours();
+    let duration = format!("{}:{:0>2}:{:0>2}", hours, minutes, seconds);
+    let body = format!("{result} {host}:{working_directory}$ {command}: exit code is {exit_code}, finished in {duration}");
     let payload = Message {
         msgtype: "m.text".into(),
         body,
@@ -74,5 +81,6 @@ fn main() -> anyhow::Result<()> {
     );
     isahc::Request::post(url).body(json)?.send()?;
 
+    println!("Finished in {duration}");
     std::process::exit(exit_code);
 }

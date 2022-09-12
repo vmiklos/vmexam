@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.58"
+chrono = "0.4.22"
 gethostname = "0.2.3"
 home = "0.5.3"
 isahc = "1.7.2"
