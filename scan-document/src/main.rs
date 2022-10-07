@@ -41,7 +41,7 @@ fn main() -> anyhow::Result<()> {
 
     // Convert downconverted intputs into a single output.
     let mut convert_args = converteds.clone();
-    convert_args.push(output.clone());
+    convert_args.push(output);
     println!("convert {}", convert_args.join(" "));
     let exit_status = std::process::Command::new("convert")
         .args(convert_args)
