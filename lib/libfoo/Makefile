@@ -1,4 +1,4 @@
-CFLAGS ?= -Wall -march=i686 -O2 -pipe
+CFLAGS ?= -Wall -O2 -pipe
 INSTALL = /usr/bin/install -c
 DESTDIR =
 prefix = /usr/local
