@@ -41,9 +41,7 @@ fn main() -> anyhow::Result<()> {
     // Run the command and build a json to be sent.
     let args: Vec<String> = std::env::args().collect();
     let (_, subprocess_args) = args.split_first().context("args.split_first() failed")?;
-    let (first, rest) = subprocess_args
-        .split_first()
-        .context("subprocess_args.split_first() failed")?;
+    let (first, rest) = subprocess_args.split_first().context("missing command")?;
     let exit_status = std::process::Command::new(first).args(rest).status()?;
     let exit_code = exit_status.code().context("code() failed")?;
     let command = subprocess_args.join(" ");
@@ -73,8 +71,10 @@ fn main() -> anyhow::Result<()> {
     let json = serde_json::to_string(&payload)?;
 
     // Send the json to a URL based on a config.
-    let config: Config =
-        toml::from_str(&std::fs::read_to_string(home_dir + "/.config/pushpingrc")?).unwrap();
+    let config_path = home_dir + "/.config/pushpingrc";
+    let config_string = std::fs::read_to_string(&config_path)
+        .context(format!("failed to read config from '{}'", config_path))?;
+    let config: Config = toml::from_str(&config_string)?;
     let url = format!(
         "{}/send/m.room.message?access_token={}",
         config.room_url, config.access_token
