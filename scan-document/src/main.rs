@@ -6,6 +6,15 @@
 
 use anyhow::Context as _;
 
+/// Converts a tempfile to a path that external commands can access.
+fn tempfile_to_path(tempfile: &tempfile::NamedTempFile) -> anyhow::Result<String> {
+    Ok(tempfile
+        .path()
+        .to_str()
+        .context("to_str() failed")?
+        .to_string())
+}
+
 /// Downscales a bitmap (scanned document) to 96x96 DPI to avoid huge PDFs and then converts the
 /// result to PDF.
 ///
@@ -18,17 +27,10 @@ fn main() -> anyhow::Result<()> {
     args.pop();
 
     // Downconvert inputs.
-    let mut converteds: Vec<String> = Vec::new();
+    let mut converteds: Vec<tempfile::NamedTempFile> = Vec::new();
     for arg in args {
-        let path: String;
-        {
-            let tempfile = tempfile::Builder::new().suffix(".jpg").tempfile()?;
-            path = tempfile
-                .path()
-                .to_str()
-                .context("to_str() failed")?
-                .to_string();
-        }
+        let tempfile = tempfile::Builder::new().suffix(".jpg").tempfile()?;
+        let path = tempfile_to_path(&tempfile)?;
         let convert_args = vec![arg.clone(), "-density".into(), "96".into(), path.clone()];
         println!("convert {}", convert_args.join(" "));
         let exit_status = std::process::Command::new("convert")
@@ -38,11 +40,14 @@ fn main() -> anyhow::Result<()> {
         if exit_code != 0 {
             return Err(anyhow::anyhow!("convert failed"));
         }
-        converteds.push(path.to_string());
+        converteds.push(tempfile);
     }
 
     // Convert downconverted intputs into a single output.
-    let mut convert_args = converteds.clone();
+    let mut convert_args: Vec<String> = converteds
+        .iter()
+        .map(|tempfile| Ok(tempfile_to_path(&tempfile)?))
+        .collect::<anyhow::Result<Vec<String>>>()?;
     convert_args.push(output);
     println!("convert {}", convert_args.join(" "));
     let exit_status = std::process::Command::new("convert")
@@ -51,10 +56,6 @@ fn main() -> anyhow::Result<()> {
     let exit_code = exit_status.code().context("code() failed")?;
     if exit_code != 0 {
         return Err(anyhow::anyhow!("convert failed"));
-    }
-
-    for converted in converteds {
-        std::fs::remove_file(converted)?;
     }
 
     Ok(())
