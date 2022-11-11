@@ -20,14 +20,16 @@ fn main() -> anyhow::Result<()> {
     // Downconvert inputs.
     let mut converteds: Vec<String> = Vec::new();
     for arg in args {
-        let tempfile = tempfile::Builder::new().suffix(".jpg").tempfile()?;
-        let path = tempfile
-            .path()
-            .file_name()
-            .context("file_name() failed")?
-            .to_str()
-            .context("to_str() failed")?;
-        let convert_args = vec![arg.clone(), "-density".into(), "96".into(), path.into()];
+        let path: String;
+        {
+            let tempfile = tempfile::Builder::new().suffix(".jpg").tempfile()?;
+            path = tempfile
+                .path()
+                .to_str()
+                .context("to_str() failed")?
+                .to_string();
+        }
+        let convert_args = vec![arg.clone(), "-density".into(), "96".into(), path.clone()];
         println!("convert {}", convert_args.join(" "));
         let exit_status = std::process::Command::new("convert")
             .args(convert_args)
