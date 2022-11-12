@@ -19,7 +19,7 @@ class MockUrlopener internal constructor(var urlopenSuffix: String) : Urlopener 
     override fun urlopen(urlString: String, data: String): String {
         if (!data.isEmpty()) {
             var path = URLEncoder.encode(urlString, "UTF-8")
-            path = "mock/$path$urlopenSuffix.expected-data"
+            path = "mock/$path$urlopenSuffix.overpassql"
             val content = readFile(path, StandardCharsets.UTF_8)
             require(data == content) {
                 "data vs content mismatch: data is '" + data +

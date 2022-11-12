@@ -7,10 +7,10 @@
 package hu.vmiklos.addr_osmify;
 
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.charset.StandardCharsets;
-import java.nio.charset.Charset;
 
 /**
  * Test urlopen(), using mocking.
@@ -30,7 +30,7 @@ public class MockUrlopener implements Urlopener
         if (!data.isEmpty())
         {
             String path = URLEncoder.encode(url, "UTF-8");
-            path = "mock/" + path + urlopenSuffix + ".expected-data";
+            path = "mock/" + path + urlopenSuffix + ".overpassql";
             String content = readFile(path, StandardCharsets.UTF_8);
             if (!data.equals(content))
             {

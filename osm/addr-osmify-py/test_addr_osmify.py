@@ -65,7 +65,7 @@ class TestMain(unittest.TestCase):
                      data_path="",
                      result_path="mock/nominatim-happy.json"),
             URLRoute(url="http://overpass-api.de/api/interpreter",
-                     data_path="mock/overpass-happy.expected-data",
+                     data_path="mock/overpass-happy.overpassql",
                      result_path="mock/overpass-happy.json")
         ]
         with unittest.mock.patch('urllib.request.urlopen', self.mock_urlopen(routes)):
@@ -87,7 +87,7 @@ class TestMain(unittest.TestCase):
                      data_path="",
                      result_path="mock/nominatim-prefer-buildings.json"),
             URLRoute(url="http://overpass-api.de/api/interpreter",
-                     data_path="mock/overpass-prefer-buildings.expected-data",
+                     data_path="mock/overpass-prefer-buildings.overpassql",
                      result_path="mock/overpass-prefer-buildings.json")
         ]
         with unittest.mock.patch('urllib.request.urlopen', self.mock_urlopen(routes)):
@@ -110,7 +110,7 @@ class TestMain(unittest.TestCase):
                      data_path="",
                      result_path="mock/nominatim-no-buildings.json"),
             URLRoute(url="http://overpass-api.de/api/interpreter",
-                     data_path="mock/overpass-no-buildings.expected-data",
+                     data_path="mock/overpass-no-buildings.overpassql",
                      result_path="mock/overpass-no-buildings.json")
         ]
         with unittest.mock.patch('urllib.request.urlopen', self.mock_urlopen(routes)):
@@ -152,7 +152,7 @@ class TestMain(unittest.TestCase):
                      data_path="",
                      result_path="mock/nominatim-overpass-noresult.json"),
             URLRoute(url="http://overpass-api.de/api/interpreter",
-                     data_path="mock/overpass-noresult.expected-data",
+                     data_path="mock/overpass-noresult.overpassql",
                      result_path="mock/overpass-noresult.json")
         ]
         with unittest.mock.patch('urllib.request.urlopen', self.mock_urlopen(routes)):

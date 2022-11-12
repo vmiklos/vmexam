@@ -13,7 +13,7 @@
 use super::*;
 
 /// How to generate mock overpass output files:
-/// cat mock/hello.expected-data | curl -d @- -X POST http://overpass-api.de/api/interpreter
+/// cat mock/hello.overpassql | curl -d @- -X POST http://overpass-api.de/api/interpreter
 struct URLRoute {
     url: String,
     data_path: String,
@@ -89,7 +89,7 @@ fn test_happy() {
         },
         URLRoute {
             url: "http://overpass-api.de/api/interpreter".to_string(),
-            data_path: "mock/overpass-happy.expected-data".to_string(),
+            data_path: "mock/overpass-happy.overpassql".to_string(),
             result_path: "mock/overpass-happy.json".to_string()
         }
     ];
@@ -178,7 +178,7 @@ fn test_prefer_buildings() {
         },
         URLRoute {
             url: "http://overpass-api.de/api/interpreter".to_string(),
-            data_path: "mock/overpass-prefer-buildings.expected-data".to_string(),
+            data_path: "mock/overpass-prefer-buildings.overpassql".to_string(),
             result_path: "mock/overpass-prefer-buildings.json".to_string()
         }
     ];
@@ -214,7 +214,7 @@ fn test_prefer_buildings_fail() {
         },
         URLRoute {
             url: "http://overpass-api.de/api/interpreter".to_string(),
-            data_path: "mock/overpass-prefer-buildings-fail.expected-data".to_string(),
+            data_path: "mock/overpass-prefer-buildings-fail.overpassql".to_string(),
             result_path: "mock/overpass-prefer-buildings-fail.json".to_string()
         }
     ];
@@ -248,7 +248,7 @@ fn test_overpass_json() {
         },
         URLRoute {
             url: "http://overpass-api.de/api/interpreter".to_string(),
-            data_path: "mock/overpass-happy.expected-data".to_string(),
+            data_path: "mock/overpass-happy.overpassql".to_string(),
             result_path: "mock/overpass-bad.json".to_string()
         }
     ];
@@ -280,7 +280,7 @@ fn test_overpass_noresult() {
         },
         URLRoute {
             url: "http://overpass-api.de/api/interpreter".to_string(),
-            data_path: "mock/overpass-happy.expected-data".to_string(),
+            data_path: "mock/overpass-happy.overpassql".to_string(),
             result_path: "mock/overpass-noresult.json".to_string()
         }
     ];

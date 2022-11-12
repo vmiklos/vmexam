@@ -121,8 +121,7 @@ TEST(TestMain, testHappy)
                  "20Budapest&format=json",
                  "", "mock/nominatim-happy.json"},
         URLRoute{"https://overpass-api.de/api/interpreter",
-                 "mock/overpass-happy.expected-data",
-                 "mock/overpass-happy.json"},
+                 "mock/overpass-happy.overpassql", "mock/overpass-happy.json"},
     };
     MockUrlopen urlopen(routes);
     std::vector<const char*> args{"", "Mészáros utca 58/a, Budapest"};
@@ -141,7 +140,7 @@ TEST(TestMain, testPreferBuildings)
                  "format=json",
                  "", "mock/nominatim-prefer-buildings.json"},
         URLRoute{"https://overpass-api.de/api/interpreter",
-                 "mock/overpass-prefer-buildings.expected-data",
+                 "mock/overpass-prefer-buildings.overpassql",
                  "mock/overpass-prefer-buildings.json"},
     };
     MockUrlopen urlopen(routes);
@@ -161,7 +160,7 @@ TEST(TestMain, testNoBuildings)
                  "format=json",
                  "", "mock/nominatim-no-buildings.json"},
         URLRoute{"https://overpass-api.de/api/interpreter",
-                 "mock/overpass-no-buildings.expected-data",
+                 "mock/overpass-no-buildings.overpassql",
                  "mock/overpass-no-buildings.json"},
     };
     MockUrlopen urlopen(routes);
@@ -197,7 +196,7 @@ TEST(TestMain, testOverpassNoResult)
                  "20Budapest&format=json",
                  "", "mock/nominatim-happy.json"},
         URLRoute{"https://overpass-api.de/api/interpreter",
-                 "mock/overpass-no-result.expected-data",
+                 "mock/overpass-no-result.overpassql",
                  "mock/overpass-no-result.json"},
     };
     MockUrlopen urlopen(routes);
@@ -233,7 +232,7 @@ TEST(TestMain, testOverpassBadJson)
                  "20Budapest&format=json",
                  "", "mock/nominatim-happy.json"},
         URLRoute{"https://overpass-api.de/api/interpreter",
-                 "mock/overpass-happy.expected-data", "mock/overpass-bad.json"},
+                 "mock/overpass-happy.overpassql", "mock/overpass-bad.json"},
     };
     MockUrlopen urlopen(routes);
     std::vector<const char*> args{"", "Mészáros utca 58/a, Budapest"};

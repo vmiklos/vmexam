@@ -58,7 +58,7 @@ func TestHappy(t *testing.T) {
 	routes = append(routes, route)
 	route = URLRoute{
 		URL:        "http://overpass-api.de/api/interpreter",
-		DataPath:   "mock/overpass-happy.expected-data",
+		DataPath:   "mock/overpass-happy.overpassql",
 		ResultPath: "mock/overpass-happy.json",
 	}
 	routes = append(routes, route)
@@ -85,7 +85,7 @@ func TestPreferBuildings(t *testing.T) {
 	routes = append(routes, route)
 	route = URLRoute{
 		URL:        "http://overpass-api.de/api/interpreter",
-		DataPath:   "mock/overpass-prefer-buildings.expected-data",
+		DataPath:   "mock/overpass-prefer-buildings.overpassql",
 		ResultPath: "mock/overpass-prefer-buildings.json",
 	}
 	routes = append(routes, route)
@@ -131,7 +131,7 @@ func TestOverpassNoresults(t *testing.T) {
 	routes = append(routes, route)
 	route = URLRoute{
 		URL:        "http://overpass-api.de/api/interpreter",
-		DataPath:   "mock/overpass-noresult.expected-data",
+		DataPath:   "mock/overpass-noresult.overpassql",
 		ResultPath: "mock/overpass-noresult.json",
 	}
 	routes = append(routes, route)
@@ -232,7 +232,7 @@ func TestOverpassJson(t *testing.T) {
 	routes = append(routes, route)
 	route = URLRoute{
 		URL:        "http://overpass-api.de/api/interpreter",
-		DataPath:   "mock/overpass-happy.expected-data",
+		DataPath:   "mock/overpass-happy.overpassql",
 		ResultPath: "mock/overpass-bad.json",
 	}
 	routes = append(routes, route)
