@@ -10,6 +10,11 @@ This can run outside, on a host Linux machine:
 - if you symlink the script script to e.g. ~/bin/winword, then it will inject the exe for you
 - it'll try to map between the host and guest paths
 
+Config file: ~/.config/qemu-exec-clientrc
+
+[qemu-exec-client]
+guest-ip = 192.168.x.y
+
 You may want to customize:
 - shared directory
 - network drive letter
@@ -17,6 +22,7 @@ You may want to customize:
 - guest port
 """
 
+import configparser
 import json
 import os
 import sys
@@ -31,8 +37,20 @@ ALIASES = {
 }
 
 
+def get_config() -> configparser.ConfigParser:
+    """Parses the config."""
+    home = os.path.expanduser('~')
+    config_home = os.environ.get('XDG_CONFIG_HOME') or os.path.join(home, '.config')
+    config_path = os.path.join(config_home, 'qemu-exec-clientrc')
+    config = configparser.ConfigParser()
+    config.read(config_path)
+    return config
+
+
 def main() -> None:
     """Commandline interface to this module."""
+    config = get_config()
+    guest_ip = config.get('qemu-exec-client', 'guest-ip').strip()
     argv = sys.argv[1:]
 
     # If my name is an alias, inject it.
@@ -62,7 +80,7 @@ def main() -> None:
         "command": abs_argv
     }
     payload = json.dumps(payload_dict)
-    url = "http://192.168.122.216:8000/exec"
+    url = "http://{}:8000/exec".format(guest_ip)
     with urllib.request.urlopen(url, bytes(payload, "utf-8")) as stream:
         buf = stream.read()
         print(str(buf, "utf-8"))
