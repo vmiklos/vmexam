@@ -20,13 +20,12 @@ struct URLRoute {
     result_path: String,
 }
 
-struct MockUrllib {
+struct TestNetwork {
     routes: Vec<URLRoute>,
     isatty: bool,
 }
 
-impl Urllib for MockUrllib {
-    #[cfg_attr(coverage, no_coverage)]
+impl Network for TestNetwork {
     fn urlopen(&self, url: &str, data: &str) -> anyhow::Result<String> {
         for route in self.routes.iter() {
             if route.url != url {
@@ -34,36 +33,15 @@ impl Urllib for MockUrllib {
             }
 
             if !route.data_path.is_empty() {
-                // Can't use assert_eq!() here, failure would result in a hang.
-                let contents = match std::fs::read_to_string(&route.data_path) {
-                    Ok(value) => value,
-                    Err(error) => {
-                        return Err(anyhow::anyhow!(
-                            "failed read {}: {}",
-                            route.data_path,
-                            error.to_string()
-                        ));
-                    }
-                };
-                if data != contents {
-                    return Err(anyhow::anyhow!(
-                        "unexpected data: '{}' != '{}'",
-                        data,
-                        contents
-                    ));
-                }
+                let expected = std::fs::read_to_string(&route.data_path)?;
+                assert_eq!(data, expected);
             }
 
-            let contents = match std::fs::read_to_string(&route.result_path) {
-                Ok(value) => value,
-                Err(error) => {
-                    return Err(anyhow::anyhow!(
-                        "failed read {}: {}",
-                        route.result_path,
-                        error.to_string()
-                    ));
-                }
-            };
+            if route.result_path.is_empty() {
+                return Err(anyhow::anyhow!("empty result_path for url '{}'", url));
+            }
+
+            let contents = std::fs::read_to_string(&route.result_path)?;
             return Ok(contents);
         }
 
@@ -93,7 +71,7 @@ fn test_happy() {
             result_path: "mock/overpass-happy.json".to_string()
         }
     ];
-    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib {
+    let urllib: Arc<dyn Network> = Arc::new(TestNetwork {
         routes,
         isatty: true,
     });
@@ -120,7 +98,7 @@ fn test_nominatim_json() {
             result_path: "mock/nominatim-bad.json".to_string()
         },
     ];
-    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib {
+    let urllib: Arc<dyn Network> = Arc::new(TestNetwork {
         routes,
         isatty: false,
     });
@@ -147,7 +125,7 @@ fn test_nominatim_no_result() {
             result_path: "mock/nominatim-no-result.json".to_string()
         },
     ];
-    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib {
+    let urllib: Arc<dyn Network> = Arc::new(TestNetwork {
         routes,
         isatty: false,
     });
@@ -182,7 +160,7 @@ fn test_prefer_buildings() {
             result_path: "mock/overpass-prefer-buildings.json".to_string()
         }
     ];
-    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib {
+    let urllib: Arc<dyn Network> = Arc::new(TestNetwork {
         routes,
         isatty: false,
     });
@@ -218,7 +196,7 @@ fn test_prefer_buildings_fail() {
             result_path: "mock/overpass-prefer-buildings-fail.json".to_string()
         }
     ];
-    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib {
+    let urllib: Arc<dyn Network> = Arc::new(TestNetwork {
         routes,
         isatty: false,
     });
@@ -252,7 +230,7 @@ fn test_overpass_json() {
             result_path: "mock/overpass-bad.json".to_string()
         }
     ];
-    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib {
+    let urllib: Arc<dyn Network> = Arc::new(TestNetwork {
         routes,
         isatty: false,
     });
@@ -284,7 +262,7 @@ fn test_overpass_noresult() {
             result_path: "mock/overpass-noresult.json".to_string()
         }
     ];
-    let urllib: Arc<dyn Urllib> = Arc::new(MockUrllib {
+    let urllib: Arc<dyn Network> = Arc::new(TestNetwork {
         routes,
         isatty: false,
     });
@@ -303,7 +281,7 @@ fn test_noargs() {
     let args: Vec<String> = vec!["".to_string()];
     let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let routes = vec![];
-    let urllib: std::sync::Arc<dyn Urllib> = std::sync::Arc::new(MockUrllib {
+    let urllib: std::sync::Arc<dyn Network> = std::sync::Arc::new(TestNetwork {
         routes,
         isatty: false,
     });
@@ -312,4 +290,29 @@ fn test_noargs() {
     let buf_vec = buf.into_inner();
     let buf_string = std::str::from_utf8(&buf_vec).unwrap();
     assert_eq!(buf_string.starts_with("usage: "), true);
+}
+
+/// Checks if the test network impl catches missing mocks.
+#[test]
+fn test_network() {
+    let routes = vec![URLRoute {
+        url: "http://www.example1.com".to_string(),
+        data_path: "".to_string(),
+        result_path: "".to_string(),
+    }];
+
+    // Empty result_path.
+    let urllib: std::sync::Arc<dyn Network> = std::sync::Arc::new(TestNetwork {
+        routes,
+        isatty: false,
+    });
+
+    let ret = urllib.urlopen("http://www.example1.com", "");
+
+    assert_eq!(ret.is_err(), true);
+
+    // Not routed URL.
+    let ret = urllib.urlopen("http://www.example2.com", "");
+
+    assert_eq!(ret.is_err(), true);
 }

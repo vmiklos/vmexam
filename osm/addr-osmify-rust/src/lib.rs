@@ -7,9 +7,6 @@
 #![deny(warnings)]
 #![warn(clippy::all)]
 #![warn(missing_docs)]
-#![warn(rust_2018_idioms)]
-// https://github.com/rust-lang/rust/issues/84605
-#![cfg_attr(coverage, feature(no_coverage))]
 
 //! Takes an OSM way ID and turns it into a string that is readable and
 //! e.g. OsmAnd can parse it as well.
@@ -19,13 +16,15 @@ use std::io::Write;
 use std::sync::Arc;
 
 /// Allows HTTP GET and POST requests.
-pub trait Urllib: Send + Sync {
+pub trait Network: Send + Sync {
     /// If `data` is empty, that means HTTP GET, otherwise a HTTP POST.
     fn urlopen(&self, url: &str, data: &str) -> anyhow::Result<String>;
 
     /// Is stdout a tty?
     fn isatty(&self) -> bool;
 }
+
+pub use system::StdNetwork;
 
 /// TurboTags contains various tags about one Overpass element.
 #[derive(serde::Deserialize)]
@@ -52,7 +51,7 @@ struct TurboResult {
     elements: Vec<TurboElement>,
 }
 
-fn query_turbo(urllib: &dyn Urllib, query: &str) -> anyhow::Result<TurboResult> {
+fn query_turbo(urllib: &dyn Network, query: &str) -> anyhow::Result<TurboResult> {
     let url = "http://overpass-api.de/api/interpreter";
 
     let buf = urllib.urlopen(url, query)?;
@@ -80,7 +79,7 @@ struct NominatimResult {
     osm_id: u64,
 }
 
-fn query_nominatim(urllib: &dyn Urllib, query: &str) -> anyhow::Result<Vec<NominatimResult>> {
+fn query_nominatim(urllib: &dyn Network, query: &str) -> anyhow::Result<Vec<NominatimResult>> {
     let prefix = "http://nominatim.openstreetmap.org/search.php?";
     let encoded: String = url::form_urlencoded::Serializer::new(String::new())
         .append_pair("q", query)
@@ -103,7 +102,7 @@ fn query_nominatim(urllib: &dyn Urllib, query: &str) -> anyhow::Result<Vec<Nomin
     Ok(elements)
 }
 
-fn osmify(query: &str, urllib: &dyn Urllib) -> anyhow::Result<String> {
+fn osmify(query: &str, urllib: &dyn Network) -> anyhow::Result<String> {
     let mut elements = query_nominatim(urllib, query)?;
     if elements.is_empty() {
         return Err(anyhow::anyhow!("no results from nominatim"));
@@ -158,7 +157,7 @@ out body;"#,
 fn spinner(
     rx: &std::sync::mpsc::Receiver<anyhow::Result<String>>,
     stream: &mut dyn Write,
-    urllib: &Arc<dyn Urllib>,
+    urllib: &Arc<dyn Network>,
 ) -> anyhow::Result<()> {
     let spin_characters = vec!['\\', '|', '/', '-'];
     let mut spin_index = 0;
@@ -185,7 +184,7 @@ fn spinner(
     }
 }
 
-fn worker(query: &str, urllib: &dyn Urllib, tx: &std::sync::mpsc::Sender<anyhow::Result<String>>) {
+fn worker(query: &str, urllib: &dyn Network, tx: &std::sync::mpsc::Sender<anyhow::Result<String>>) {
     let result = osmify(query, urllib);
     tx.send(result.context("failed to osmify")).unwrap()
 }
@@ -194,7 +193,7 @@ fn worker(query: &str, urllib: &dyn Urllib, tx: &std::sync::mpsc::Sender<anyhow:
 pub fn our_main(
     args: Vec<String>,
     stream: &mut dyn Write,
-    urllib: &Arc<dyn Urllib>,
+    urllib: &Arc<dyn Network>,
 ) -> anyhow::Result<()> {
     if args.len() > 1 {
         let (tx, rx) = std::sync::mpsc::channel();
@@ -213,7 +212,7 @@ pub fn our_main(
 }
 
 /// Similar to plain main(), but with an interface that allows testing.
-pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: &Arc<dyn Urllib>) -> i32 {
+pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: &Arc<dyn Network>) -> i32 {
     match our_main(args, stream, urllib) {
         Ok(_) => 0,
         Err(err) => {
@@ -223,6 +222,7 @@ pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: &Arc<dyn Urllib>)
     }
 }
 
+/// Real (not test) trait implementations.
+pub mod system;
 #[cfg(test)]
-#[cfg(not(tarpaulin_include))]
 mod tests;
