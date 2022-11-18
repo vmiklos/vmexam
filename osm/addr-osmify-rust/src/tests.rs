@@ -13,7 +13,7 @@
 use super::*;
 
 /// How to generate mock overpass output files:
-/// cat mock/hello.overpassql | curl -d @- -X POST http://overpass-api.de/api/interpreter
+/// cat src/fixtures/hello.overpassql | curl -d @- -X POST http://overpass-api.de/api/interpreter
 struct URLRoute {
     url: String,
     data_path: String,
@@ -63,12 +63,12 @@ fn test_happy() {
         URLRoute {
             url: "http://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json".to_string(),
             data_path: "".to_string(),
-            result_path: "mock/nominatim-happy.json".to_string()
+            result_path: "src/fixtures/nominatim-happy.json".to_string()
         },
         URLRoute {
             url: "http://overpass-api.de/api/interpreter".to_string(),
-            data_path: "mock/overpass-happy.overpassql".to_string(),
-            result_path: "mock/overpass-happy.json".to_string()
+            data_path: "src/fixtures/overpass-happy.overpassql".to_string(),
+            result_path: "src/fixtures/overpass-happy.json".to_string()
         }
     ];
     let urllib: Arc<dyn Network> = Arc::new(TestNetwork {
@@ -95,7 +95,7 @@ fn test_nominatim_json() {
         URLRoute {
             url: "http://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json".to_string(),
             data_path: "".to_string(),
-            result_path: "mock/nominatim-bad.json".to_string()
+            result_path: "src/fixtures/nominatim-bad.json".to_string()
         },
     ];
     let urllib: Arc<dyn Network> = Arc::new(TestNetwork {
@@ -122,7 +122,7 @@ fn test_nominatim_no_result() {
         URLRoute {
             url: "http://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapestt&format=json".to_string(),
             data_path: "".to_string(),
-            result_path: "mock/nominatim-no-result.json".to_string()
+            result_path: "src/fixtures/nominatim-no-result.json".to_string()
         },
     ];
     let urllib: Arc<dyn Network> = Arc::new(TestNetwork {
@@ -152,12 +152,12 @@ fn test_prefer_buildings() {
         URLRoute {
             url: "http://nominatim.openstreetmap.org/search.php?q=Karinthy+Frigyes+%C3%BAt+18%2C+Budapest&format=json".to_string(),
             data_path: "".to_string(),
-            result_path: "mock/nominatim-prefer-buildings.json".to_string()
+            result_path: "src/fixtures/nominatim-prefer-buildings.json".to_string()
         },
         URLRoute {
             url: "http://overpass-api.de/api/interpreter".to_string(),
-            data_path: "mock/overpass-prefer-buildings.overpassql".to_string(),
-            result_path: "mock/overpass-prefer-buildings.json".to_string()
+            data_path: "src/fixtures/overpass-prefer-buildings.overpassql".to_string(),
+            result_path: "src/fixtures/overpass-prefer-buildings.json".to_string()
         }
     ];
     let urllib: Arc<dyn Network> = Arc::new(TestNetwork {
@@ -188,12 +188,12 @@ fn test_prefer_buildings_fail() {
         URLRoute {
             url: "http://nominatim.openstreetmap.org/search.php?q=Karinthy+Frigyes+%C3%BAt+18%2C+Budapest&format=json".to_string(),
             data_path: "".to_string(),
-            result_path: "mock/nominatim-prefer-buildings-fail.json".to_string()
+            result_path: "src/fixtures/nominatim-prefer-buildings-fail.json".to_string()
         },
         URLRoute {
             url: "http://overpass-api.de/api/interpreter".to_string(),
-            data_path: "mock/overpass-prefer-buildings-fail.overpassql".to_string(),
-            result_path: "mock/overpass-prefer-buildings-fail.json".to_string()
+            data_path: "src/fixtures/overpass-prefer-buildings-fail.overpassql".to_string(),
+            result_path: "src/fixtures/overpass-prefer-buildings-fail.json".to_string()
         }
     ];
     let urllib: Arc<dyn Network> = Arc::new(TestNetwork {
@@ -222,12 +222,12 @@ fn test_overpass_json() {
         URLRoute {
             url: "http://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json".to_string(),
             data_path: "".to_string(),
-            result_path: "mock/nominatim-happy.json".to_string()
+            result_path: "src/fixtures/nominatim-happy.json".to_string()
         },
         URLRoute {
             url: "http://overpass-api.de/api/interpreter".to_string(),
-            data_path: "mock/overpass-happy.overpassql".to_string(),
-            result_path: "mock/overpass-bad.json".to_string()
+            data_path: "src/fixtures/overpass-happy.overpassql".to_string(),
+            result_path: "src/fixtures/overpass-bad.json".to_string()
         }
     ];
     let urllib: Arc<dyn Network> = Arc::new(TestNetwork {
@@ -254,12 +254,12 @@ fn test_overpass_noresult() {
         URLRoute {
             url: "http://nominatim.openstreetmap.org/search.php?q=M%C3%A9sz%C3%A1ros+utca+58%2Fa%2C+Budapest&format=json".to_string(),
             data_path: "".to_string(),
-            result_path: "mock/nominatim-happy.json".to_string()
+            result_path: "src/fixtures/nominatim-happy.json".to_string()
         },
         URLRoute {
             url: "http://overpass-api.de/api/interpreter".to_string(),
-            data_path: "mock/overpass-happy.overpassql".to_string(),
-            result_path: "mock/overpass-noresult.json".to_string()
+            data_path: "src/fixtures/overpass-happy.overpassql".to_string(),
+            result_path: "src/fixtures/overpass-noresult.json".to_string()
         }
     ];
     let urllib: Arc<dyn Network> = Arc::new(TestNetwork {
