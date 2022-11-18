@@ -18,7 +18,6 @@ guest-ip = 192.168.x.y
 You may want to customize:
 - shared directory
 - network drive letter
-- guest IP
 - guest port
 """
 
