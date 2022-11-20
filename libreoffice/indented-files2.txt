@@ -37,6 +37,7 @@ include/vcl/pdf/PDFBitmapType.hxx
 include/vcl/pdf/PDFErrorType.hxx
 include/vcl/pdf/PDFFillMode.hxx
 include/vcl/pdf/PDFFindFlags.hxx
+include/vcl/pdf/PDFFormFieldType.hxx
 include/vcl/pdf/PDFObjectType.hxx
 include/vcl/pdf/PDFPageObjectType.hxx
 include/vcl/pdf/PDFSegmentType.hxx
@@ -60,6 +61,7 @@ sd/qa/filter/eppt/eppt.cxx
 sfx2/qa/cppunit/doc.cxx
 sfx2/qa/cppunit/view.cxx
 sfx2/qa/uitest/doc/objserv.py
+slideshow/qa/engine/engine.cxx
 starmath/source/rtfexport.cxx
 starmath/source/rtfexport.hxx
 starmath/source/unofilter.cxx
@@ -102,8 +104,12 @@ sw/qa/extras/layout/layout2.cxx
 sw/qa/extras/rtfexport/rtfexport.cxx
 sw/qa/extras/rtfimport/rtfimport.cxx
 sw/qa/extras/uiwriter/uiwriter2.cxx
+sw/qa/extras/uiwriter/uiwriter8.cxx
 sw/qa/extras/unowriter/unowriter.cxx
+sw/qa/filter/html/html.cxx
+sw/qa/filter/ww8/ww8.cxx
 sw/qa/uibase/dochdl/dochdl.cxx
+sw/qa/uibase/docvw/docvw.cxx
 sw/qa/uibase/fldui/fldui.cxx
 sw/qa/uibase/frmdlg/frmdlg.cxx
 sw/qa/uibase/shells/shells.cxx
@@ -111,9 +117,11 @@ sw/qa/uibase/uno/uno.cxx
 sw/qa/uibase/wrtsh/wrtsh.cxx
 sw/qa/unit/swmodeltestbase.cxx
 sw/source/core/crsr/contentcontrolbutton.cxx
+sw/source/core/crsr/datecontentcontrolbutton.cxx
 sw/source/core/crsr/dropdowncontentcontrolbutton.cxx
 sw/source/core/doc/textboxhelper.cxx
 sw/source/core/inc/contentcontrolbutton.hxx
+sw/source/core/inc/datecontentcontrolbutton.hxx
 sw/source/core/inc/dropdowncontentcontrolbutton.hxx
 sw/source/core/inc/unocontentcontrol.hxx
 sw/source/core/inc/unolinebreak.hxx
@@ -139,6 +147,8 @@ sw/source/filter/ww8/rtfstringbuffer.hxx
 sw/source/filter/ww8/sprmids.hxx
 sw/source/ui/misc/contentcontroldlg.cxx
 sw/source/ui/misc/contentcontrollistitemdlg.cxx
+sw/source/uibase/docvw/contentcontrolaliasbutton.cxx
+sw/source/uibase/inc/contentcontrolaliasbutton.hxx
 sw/source/uibase/inc/contentcontroldlg.hxx
 sw/source/uibase/inc/contentcontrollistitemdlg.hxx
 vcl/inc/pdf/objectcopier.hxx
@@ -161,6 +171,7 @@ writerfilter/qa/cppunittests/dmapper/PropertyMap.cxx
 writerfilter/qa/cppunittests/dmapper/SdtHelper.cxx
 writerfilter/qa/cppunittests/dmapper/TextEffectsHandler.cxx
 writerfilter/qa/cppunittests/filters-test/filters-test.cxx
+writerfilter/qa/cppunittests/rtftok/rtfdispatchsymbol.cxx
 writerfilter/qa/cppunittests/rtftok/rtfdispatchvalue.cxx
 writerfilter/qa/cppunittests/rtftok/rtfdocumentimpl.cxx
 writerfilter/qa/cppunittests/rtftok/rtfsdrimport.cxx
