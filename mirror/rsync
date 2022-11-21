@@ -31,6 +31,7 @@ plug3-root)
     ;;
 plug3-home)
     cd plug3-home
+    # Restore: rsync -avP ./ plug.vmiklos.hu:/home
     if ! rsync -avP --delete-after -x --exclude=plug2 plug.vmiklos.hu:/home/ .; then
         echo "rsync failed giving up"
         exit 1
