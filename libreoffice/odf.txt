@@ -66,4 +66,10 @@
 - Proposal: https://issues.oasis-open.org/browse/OFFICE-4124
 - Status: open
 
+== content controls
+
+- Date: 2022-07-01
+- Proposal: https://issues.oasis-open.org/browse/OFFICE-4131
+- Status: open
+
 // vim: ft=asciidoc
