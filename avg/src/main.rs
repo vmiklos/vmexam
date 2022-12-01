@@ -1,11 +1,11 @@
 fn main() {
-    let mut sum: f64 = 0.0;
-    let mut count: f64 = 0.0;
+    let mut sum: i64 = 0;
+    let mut count: i64 = 0;
     let mut iter = std::env::args();
     iter.next().unwrap();
     for arg in iter {
-        sum += arg.parse::<f64>().unwrap();
-        count += 1.0;
+        sum += arg.parse::<i64>().unwrap();
+        count += 1;
     }
-    println!("{:.3}", sum / count);
+    println!("{}", sum / count);
 }
