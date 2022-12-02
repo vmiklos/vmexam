@@ -1,11 +1,7 @@
 fn main() {
-    let mut sum: i64 = 0;
-    let mut count: i64 = 0;
+    let count = (std::env::args().count() - 1) as i64;
     let mut iter = std::env::args();
     iter.next().unwrap();
-    for arg in iter {
-        sum += arg.parse::<i64>().unwrap();
-        count += 1;
-    }
+    let sum: i64 = iter.map(|arg| arg.parse::<i64>().unwrap()).sum();
     println!("{}", sum / count);
 }
