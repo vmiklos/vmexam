@@ -17,7 +17,7 @@ class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
     {
         if (const auto stmt = result.Nodes.getNodeAs<clang::Stmt>("stmt"))
         {
-            clang::SourceRange range(stmt->getLocStart());
+            clang::SourceRange range(stmt->getBeginLoc());
             report(result.Context, "ast-matcher", range.getBegin()) << range;
         }
     }
@@ -65,9 +65,10 @@ llvm::cl::OptionCategory category("ast-matcher options");
 int main(int argc, const char** argv)
 {
     llvm::sys::PrintStackTraceOnErrorSignal(argv[0]);
-    clang::tooling::CommonOptionsParser optionsParser(argc, argv, category);
-    clang::tooling::RefactoringTool tool(optionsParser.getCompilations(),
-                                         optionsParser.getSourcePathList());
+    llvm::Expected<clang::tooling::CommonOptionsParser> optionsParser =
+        clang::tooling::CommonOptionsParser::create(argc, argv, category);
+    clang::tooling::RefactoringTool tool(optionsParser->getCompilations(),
+                                         optionsParser->getSourcePathList());
     clang::ast_matchers::MatchFinder finder;
     Callback callback;
     finder.addMatcher(makeMatcher(), &callback);
