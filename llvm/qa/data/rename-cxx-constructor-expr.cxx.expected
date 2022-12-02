@@ -1,8 +1,0 @@
-class D
-{
-};
-
-int main()
-{
-    D* pC = new D();
-}
