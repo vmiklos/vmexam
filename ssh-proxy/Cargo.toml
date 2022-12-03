@@ -1,0 +1,10 @@
+[package]
+name = "ssh-proxy"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.66"
+home = "0.5.4"
+serde = { version = "1.0.126", features = ["derive"] }
+toml = "0.5.9"
