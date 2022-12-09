@@ -13,9 +13,9 @@ time (
         -DCMAKE_CXX_COMPILER="g++" \
         -DLLVM_ENABLE_PROJECTS="compiler-rt;clang;clang-tools-extra;lld" \
         ../llvm
-    make -j8
+    make -j$(getconf _NPROCESSORS_ONLN)
     make install
-    make -j8 check-clang-tools
+    make -j$(getconf _NPROCESSORS_ONLN) check-clang-tools
 ) 2>&1 |tee log
 exit ${PIPESTATUS[0]}
 
