@@ -43,7 +43,8 @@ fn main() -> anyhow::Result<()> {
 
     let items: Vec<NotmuchItem> = serde_json::from_slice(&output.stdout)?;
     let item = &items[0];
-    let date_time = chrono::NaiveDateTime::from_timestamp(item.timestamp, 0);
+    let date_time = chrono::NaiveDateTime::from_timestamp_opt(item.timestamp, 0)
+        .context("from_timestamp_opt() failed")?;
     let date = date_time.format("%Y-%m-%d").to_string();
 
     println!("{} ({}, {})", msgid, item.subject, date);
