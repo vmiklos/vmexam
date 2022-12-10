@@ -18,8 +18,8 @@ time (
     ./configure \
         --prefix=$PWD/install \
         --enable-debug \
-        --with-lo-path=$HOME/git/libreoffice/master/instdir \
-        --with-lokit-path=$HOME/git/libreoffice/master/include \
+        --with-lo-path=$HOME/git/libreoffice/core/instdir \
+        --with-lokit-path=$HOME/git/libreoffice/core/include \
         CFLAGS="-g -O0 $CFLAGS" \
         CXXFLAGS="-g -O0 $CXXFLAGS" \
 
