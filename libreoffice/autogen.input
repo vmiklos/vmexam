@@ -2,3 +2,4 @@
 --enable-werror
 # online.git is not compatible with system nss
 --without-system-nss
+--disable-librelogo
