@@ -32,37 +32,13 @@ stdin = sys.stdin.buffer.read().decode("utf-8", errors="replace")
 stdin_stream = io.StringIO(stdin)
 lines = stdin_stream.readlines()
 
-ignorenext = False
-ignoresf = False
-ym = None
-msgid = None
-
 o = []
 
 for i in lines:
 	# add local date _as well_ if the timezone differs to our one
 	if i.startswith("Date: "):
 		date = i[6:-1]
-		try:
-			ym = time.strftime("%Y-%m", email.utils.parsedate_tz(date)[:-1])
-		except TypeError:
-			pass
 		o.append("Date: %s\n" % improve_date(date))
-		continue
-
-	# gpg spam
-	elif re.search("^gpg:.*aka", i):
-		continue
-
-	# sch archive permalink
-	elif i.startswith("Message-id: "):
-		msgid = i[13:-2]
-	elif i.startswith("List-Archive: <https://lists.sch.bme.hu/wws/arc/"):
-		l = i.split('/')[-1].split('>')[0]
-		if ym:
-			o.append("X-Sch-Url: https://lists.sch.bme.hu/wws/arcsearch_id/%s/%s/%s\n" % (l, ym, msgid))
-			continue
-	elif i.startswith("List-Archive: "):
 		continue
 
 	o.append(i)
