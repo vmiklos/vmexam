@@ -8,16 +8,10 @@
 # This script backs up data using rsync from various machines.
 
 case $1 in
-o7050-hdd)
-    cd o7050-hdd
-    if ! rsync -avP --delete-after -x / .; then
-        echo "rsync failed giving up"
-        exit 1
-    fi
-    ;;
-o7050-ssd)
-    cd o7050-ssd
-    if ! rsync -avP --delete-after --exclude=workdir --exclude=.ccache --delete-excluded -x /home/vmiklos/git/libreoffice/ .; then
+vostro)
+    mkdir -p vostro
+    cd vostro
+    if ! rsync -avP --delete-after --exclude=workdir --exclude=.ccache --delete-excluded -x / .; then
         echo "rsync failed giving up"
         exit 1
     fi
