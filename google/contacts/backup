@@ -60,7 +60,7 @@ def main(argv):
             interactive = False
         optIndex += 1
 
-    configPath = os.path.expanduser("~/.google-contacts")
+    configPath = os.path.expanduser("~/.config/google-contacts")
     clientSecretsPath = os.path.join(configPath, "client_secrets.json")
     contactsJsonPath = os.path.join(configPath, "contacts.json")
     contactsXmlPath = os.path.join(configPath, "contacts.xml")
