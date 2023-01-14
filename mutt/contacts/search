@@ -81,8 +81,9 @@ def main(arg):
     if "MUTT_ACCOUNT" in os.environ:
         account = os.environ["MUTT_ACCOUNT"]
         xmlPath = os.path.expanduser("~/.mutt/contacts/%s.xml" % account)
-        select(xmlPath, arg)
-        return
+        if os.path.exists(xmlPath):
+            select(xmlPath, arg)
+            return
 
     # The directory is expected to have multiple XML files as data sources.
     configPath = os.path.expanduser("~/.mutt/contacts")
