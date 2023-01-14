@@ -4,10 +4,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
-# Renders a markdown file with Python and opens it in a browser.
+# Renders a markdown file with Python and opens it in a browser. This has the benefit that it's the
+# same implementation as what Pelican uses, if you use that for blog purposes.
+#
+# If you want to test how it would look like on GitHub, then
+# <https://jbt.github.io/markdown-editor/> is a better tool.
 
 html="$(echo $1 |sed 's/md$/html/')"
-python3 -m markdown $1 > $html
+python3 -m markdown --extension tables $1 > $html
 firefox $html
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
