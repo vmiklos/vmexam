@@ -9,9 +9,11 @@ import confetti from 'canvas-confetti';
 
 declare global
 {
-    interface Window {
+    interface Window
+    {
         wordList: Array<string>|undefined;
         lastConfetti: number;
+        lastCount: number;
     }
 }
 
@@ -28,6 +30,8 @@ async function refreshClick()
     }
     value = urlParams.get('filter');
     const filter = value == null || Number(value) != 0;
+    value = urlParams.get('counter');
+    const counter = Number(value) != 0;
     let confettiTimeout = 600; // 10 minutes
     value = urlParams.get('confetti');
     if (value != null)
@@ -43,6 +47,7 @@ async function refreshClick()
         window.wordList = await response.json();
 
         window.lastConfetti = now;
+        window.lastCount = 0;
     }
 
     // Decide what color to use.
@@ -77,7 +82,13 @@ async function refreshClick()
         }
         if ((valid && word.length >= 2) || !filter)
         {
-            wordElement.innerHTML = word.replace(/=/g, '-');
+            let prefix = '';
+            if (counter)
+            {
+                window.lastCount += 1;
+                prefix = window.lastCount + '. ';
+            }
+            wordElement.innerHTML = prefix + word.replace(/=/g, '-');
             wordElement.style.color = color;
             break;
         }
@@ -95,34 +106,32 @@ async function refreshClick()
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-document.addEventListener("DOMContentLoaded", async function(event)
-                          {
-                              // Create our page.
-                              const body =
-                                  document.getElementsByTagName('body')[0];
-                              const word = document.createElement('p');
-                              word.id = 'word';
-                              word.style.position = 'fixed';
-                              word.style.font = '100px sans-serif';
-                              word.style.top = '25%';
-                              word.style.left = '50%';
-                              word.style.transform = 'translate(-50%, -50%)';
-                              body.appendChild(word);
+document.addEventListener("DOMContentLoaded", async function(event) {
+    // Create our page.
+    const body = document.getElementsByTagName('body')[0];
+    const word = document.createElement('p');
+    word.id = 'word';
+    word.style.position = 'fixed';
+    word.style.font = '100px sans-serif';
+    word.style.top = '25%';
+    word.style.left = '50%';
+    word.style.transform = 'translate(-50%, -50%)';
+    body.appendChild(word);
 
-                              const refresh = document.createElement('img');
-                              refresh.style.position = 'fixed';
-                              refresh.style.top = '75%';
-                              refresh.style.left = '50%';
-                              refresh.style.width = '100px';
-                              refresh.style.height = '100px';
-                              refresh.style.transform = 'translate(-50%, -50%)';
-                              refresh.style.cursor = 'pointer';
-                              refresh.src = 'refresh.svg';
-                              refresh.onclick = refreshClick;
-                              body.appendChild(refresh);
+    const refresh = document.createElement('img');
+    refresh.style.position = 'fixed';
+    refresh.style.top = '75%';
+    refresh.style.left = '50%';
+    refresh.style.width = '100px';
+    refresh.style.height = '100px';
+    refresh.style.transform = 'translate(-50%, -50%)';
+    refresh.style.cursor = 'pointer';
+    refresh.src = 'refresh.svg';
+    refresh.onclick = refreshClick;
+    body.appendChild(refresh);
 
-                              // Show the initial word.
-                              refreshClick();
-                          });
+    // Show the initial word.
+    refreshClick();
+});
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:
