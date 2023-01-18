@@ -20,22 +20,23 @@ struct Account {
     pub url: String,
 }
 
-fn main() -> anyhow::Result<()> {
-    // Get the config path.
+fn get_nextcloud_config() -> anyhow::Result<HashMap<String, HashMap<String, Option<String>>>> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let home_dir: String = home_dir.to_str().context("to_str() failed")?.into();
     let config_path = home_dir + "/.config/Nextcloud/nextcloud.cfg";
 
     let mut config = configparser::ini::Ini::new();
-    let config_map = match config.load(config_path) {
-        Ok(value) => value,
-        Err(value) => {
-            return Err(anyhow::anyhow!(value));
-        }
-    };
+    match config.load(config_path) {
+        Ok(value) => Ok(value),
+        Err(value) => Err(anyhow::anyhow!(value)),
+    }
+}
 
-    // Get the config: each account has an ID.
-    let accounts_config = &config_map["accounts"];
+fn get_accounts(
+    nextcloud_config: &HashMap<String, HashMap<String, Option<String>>>,
+) -> anyhow::Result<Vec<Account>> {
+    // Each account has an ID.
+    let accounts_config = &nextcloud_config["accounts"];
     let mut accounts: HashMap<i64, Account> = HashMap::new();
     for (account_key, account_value) in accounts_config {
         let mut tokens = account_key.split('\\');
@@ -57,33 +58,42 @@ fn main() -> anyhow::Result<()> {
         }
     }
 
-    // Build a list of accounts.
-    let accounts: Vec<Account> = accounts.into_iter().map(|(_k, v)| v).collect();
+    Ok(accounts.into_iter().map(|(_k, v)| v).collect())
+}
 
-    // Find out the abs path of the first user argument.
+fn get_first_user_path() -> anyhow::Result<String> {
     let mut args = std::env::args();
     let _first = args.next().context("no self")?;
     let relative = args.next().context("no relative")?;
     let path_buf = std::fs::canonicalize(relative)?;
-    let absolute = path_buf.to_str().context("to_str() failed")?;
-    let mut account: Account = Default::default();
-    for a in accounts.iter() {
-        if absolute.starts_with(&a.local_path) {
-            account = a.clone();
-            break;
+    Ok(path_buf.to_str().context("to_str() failed")?.to_string())
+}
+
+fn get_account(accounts: &[Account], absolute: &str) -> anyhow::Result<Account> {
+    for account in accounts.iter() {
+        if absolute.starts_with(&account.local_path) {
+            return Ok(account.clone());
         }
     }
 
-    // Build the final URL that can be opened.
+    Err(anyhow::anyhow!("local path not in sync directory"))
+}
+
+fn get_url(account: &Account, absolute: &str) -> anyhow::Result<url::Url> {
     let path = absolute
         .strip_prefix(&account.local_path)
         .context("unexpected prefix")?;
     let encoded_path = urlencoding::encode(path);
     let full_url = format!("{}/apps/files/?dir=/{}/", account.url, encoded_path);
-    let url = url::Url::parse(&full_url)?;
+    Ok(url::Url::parse(&full_url)?)
+}
 
-    // Finally open it.
+fn main() -> anyhow::Result<()> {
+    let nextcloud_config = get_nextcloud_config()?;
+    let accounts = get_accounts(&nextcloud_config)?;
+    let absolute = get_first_user_path()?;
+    let account = get_account(&accounts, &absolute)?;
+    let url = get_url(&account, &absolute)?;
     url.open();
-
     Ok(())
 }
