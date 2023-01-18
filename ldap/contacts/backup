@@ -18,6 +18,7 @@ def main():
     # - ldapuri: refers to the LDAP server, e.g. ldaps://ldap.example.co.hu/
     # - searchbase: the starting point for the search, e.g. dc=example,dc=co,dc=hu
     # - password
+    # - aliases: this is optional, may contain key-value (name-email) pairs which are not in LDAP.
     secretsPath = os.path.join(configPath, "secrets.json")
     contactsPath = os.path.join(configPath, "contacts.xml")
 
@@ -48,6 +49,13 @@ def main():
 
     # Dump XML.
     feed = ElementTree.Element("feed")
+    if "aliases" in secrets:
+        for k, v in secrets["aliases"].items():
+            entry = ElementTree.SubElement(feed, "entry")
+            name = ElementTree.SubElement(entry, "name")
+            ElementTree.SubElement(name, "fullName").text = k
+            ElementTree.SubElement(entry, "email", address=v)
+
     for k, v in contacts.items():
         entry = ElementTree.SubElement(feed, "entry")
         name = ElementTree.SubElement(entry, "name")
