@@ -14,7 +14,7 @@ use anyhow::Context as _;
 use std::collections::HashMap;
 use url_open::UrlOpen as _;
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default)]
 struct Account {
     pub local_path: String,
     pub url: String,
@@ -51,9 +51,9 @@ fn get_accounts(
         let key_suffix = tokens.next_back().context("no suffix")?;
         if let Some(value) = account_value {
             if key_suffix == "localpath" {
-                entry.local_path = value.clone();
+                entry.local_path = value.to_string();
             } else if key_suffix == "url" {
-                entry.url = value.clone();
+                entry.url = value.to_string();
             }
         }
     }
@@ -69,10 +69,10 @@ fn get_first_user_path() -> anyhow::Result<String> {
     Ok(path_buf.to_str().context("to_str() failed")?.to_string())
 }
 
-fn get_account(accounts: &[Account], absolute: &str) -> anyhow::Result<Account> {
+fn get_account<'a>(accounts: &'a [Account], absolute: &str) -> anyhow::Result<&'a Account> {
     for account in accounts.iter() {
         if absolute.starts_with(&account.local_path) {
-            return Ok(account.clone());
+            return Ok(account);
         }
     }
 
@@ -91,9 +91,9 @@ fn get_url(account: &Account, absolute: &str) -> anyhow::Result<url::Url> {
 fn main() -> anyhow::Result<()> {
     let nextcloud_config = get_nextcloud_config()?;
     let accounts = get_accounts(&nextcloud_config)?;
-    let absolute = get_first_user_path()?;
-    let account = get_account(&accounts, &absolute)?;
-    let url = get_url(&account, &absolute)?;
+    let user_path = get_first_user_path()?;
+    let account = get_account(&accounts, &user_path)?;
+    let url = get_url(account, &user_path)?;
     url.open();
     Ok(())
 }
