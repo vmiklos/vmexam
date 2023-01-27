@@ -11,6 +11,13 @@ import os
 import xml.etree.ElementTree as ElementTree
 
 
+def to_json(name, email):
+    ret = {}
+    ret["names"] = [{"displayName": name}]
+    ret["emailAddresses"] = [{"value": email}]
+    return ret
+
+
 def main():
     configPath = os.path.expanduser("~/.ldap-contacts")
     # The JSON is expected to have the following keys:
@@ -21,6 +28,7 @@ def main():
     # - aliases: this is optional, may contain key-value (name-email) pairs which are not in LDAP.
     secretsPath = os.path.join(configPath, "secrets.json")
     contactsPath = os.path.join(configPath, "contacts.xml")
+    contactsJsonPath = os.path.join(configPath, "contacts.json")
 
     # Parse the credentials.
     with open(secretsPath) as jsonSock:
@@ -63,6 +71,16 @@ def main():
         ElementTree.SubElement(entry, "email", address=v)
     tree = ElementTree.ElementTree(feed)
     tree.write(contactsPath)
+
+    # Dump JSON.
+    contact_list = []
+    if "aliases" in secrets:
+        for k, v in secrets["aliases"].items():
+            contact_list.append(to_json(k, v))
+    for k, v in contacts.items():
+        contact_list.append(to_json(k, v))
+    with open(contactsJsonPath, "w") as sock:
+        json.dump(contact_list, sock)
 
 
 if __name__ == "__main__":

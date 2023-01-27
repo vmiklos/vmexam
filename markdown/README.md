@@ -13,7 +13,7 @@ For the markup itself, markdown has one single benefit for me: if you have a lis
 - outer list item
   - inner list item
 
-This is does what I mean for markdown, but not for asciidoc.
+This does what I mean for markdown, but not for asciidoc.
 
 There are also a few drawbacks:
 
