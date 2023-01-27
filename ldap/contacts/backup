@@ -19,7 +19,7 @@ def to_json(name, email):
 
 
 def main():
-    configPath = os.path.expanduser("~/.ldap-contacts")
+    configPath = os.path.expanduser("~/.config/ldap-contacts")
     # The JSON is expected to have the following keys:
     # - binddn: a Distinguished Name, e.g. uid=john,dc=example,dc=co,dc=hu
     # - ldapuri: refers to the LDAP server, e.g. ldaps://ldap.example.co.hu/
