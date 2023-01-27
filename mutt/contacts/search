@@ -5,8 +5,8 @@
 # found in the LICENSE file.
 #
 
-from xml.dom import minidom
 import glob
+import json
 import os
 import sys
 
@@ -29,22 +29,7 @@ class Match(object):
         return hash(self.email)
 
 
-def select(xmlPath, arg):
-    def getName(entryNode):
-        nameNodes = [i for i in entryNode.childNodes if i.localName == "name"]
-        for nameNode in nameNodes:
-            fullNameNodes = [i for i in nameNode.childNodes if i.localName == "fullName"]
-            for fullNameNode in fullNameNodes:
-                return fullNameNode.childNodes[0].wholeText
-
-    def getEmails(entryNode):
-        emails = []
-        emailNodes = [i for i in entryNode.childNodes if i.localName == "email"]
-        for emailNode in emailNodes:
-            if emailNode.hasAttribute("address"):
-                emails.append(emailNode.getAttribute("address"))
-        return emails
-
+def select(jsonPath, arg):
     def match(pattern, name, email):
         if email:
             pattern = pattern.lower()
@@ -59,16 +44,23 @@ def select(xmlPath, arg):
         return False
 
     patternString = arg
-    if not os.path.exists(xmlPath):
+    if not os.path.exists(jsonPath):
         return
-    contacts = minidom.parse(xmlPath)
-    feedNode = [i for i in contacts.childNodes if i.localName == "feed"][0]
-    contactNodes = [i for i in feedNode.childNodes if i.localName == "entry"]
+    with open(jsonPath) as stream:
+        contacts = json.load(stream)
     matches = []
-    for contactNode in contactNodes:
-        name = getName(contactNode)
-        emails = getEmails(contactNode)
-        for email in emails:
+    for person in contacts:
+        name = None
+        names = person.get("names", [])
+        if names:
+            name = names[0].get("displayName")
+
+        email = None
+        emails = person.get("emailAddresses", [])
+        if emails:
+            email = emails[0].get("value")
+
+        if name and email:
             if match(patternString, name, email):
                 matches.append(Match(name, email))
     matches = sorted(set(matches))
@@ -80,15 +72,15 @@ def select(xmlPath, arg):
 def main(arg):
     if "MUTT_ACCOUNT" in os.environ:
         account = os.environ["MUTT_ACCOUNT"]
-        xmlPath = os.path.expanduser("~/.mutt/contacts/%s.xml" % account)
-        if os.path.exists(xmlPath):
-            select(xmlPath, arg)
+        jsonPath = os.path.expanduser("~/.mutt/contacts/%s.json" % account)
+        if os.path.exists(jsonPath):
+            select(jsonPath, arg)
             return
 
-    # The directory is expected to have multiple XML files as data sources.
+    # The directory is expected to have multiple JSON files as data sources.
     configPath = os.path.expanduser("~/.mutt/contacts")
-    for xmlPath in glob.glob(os.path.join(configPath, "*.xml")):
-        select(xmlPath, arg)
+    for jsonPath in glob.glob(os.path.join(configPath, "*.json")):
+        select(jsonPath, arg)
 
 
 if __name__ == "__main__":
