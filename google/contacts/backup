@@ -63,7 +63,6 @@ def main(argv):
     configPath = os.path.expanduser("~/.config/google-contacts")
     clientSecretsPath = os.path.join(configPath, "client_secrets.json")
     contactsJsonPath = os.path.join(configPath, "contacts.json")
-    contactsXmlPath = os.path.join(configPath, "contacts.xml")
     oauth2ClientJsonPath = os.path.join(configPath, "oauth2client.json")
 
     store = file.Storage(clientSecretsPath)
@@ -108,16 +107,6 @@ def main(argv):
 
     contactsJson = open(contactsJsonPath, "w")
     json.dump(allPersons, contactsJson, indent=4, sort_keys=True)
-
-    # Dump XML.
-    feed = ElementTree.Element("feed")
-    for k, v in xmlPersons.items():
-        entry = ElementTree.SubElement(feed, "entry")
-        name = ElementTree.SubElement(entry, "name")
-        ElementTree.SubElement(name, "fullName").text = k
-        ElementTree.SubElement(entry, "email", address=v)
-    tree = ElementTree.ElementTree(feed)
-    tree.write(contactsXmlPath)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
