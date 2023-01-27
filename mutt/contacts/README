@@ -1,4 +1,4 @@
-The 'search' script aims to search in multiple XML files, something you can
+The 'search' script aims to search in multiple JSON files, something you can
 configure as address book source. Let's say e.g. one source is Google
 Contacts, a second source is from LDAP.
 
