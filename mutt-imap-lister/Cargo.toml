@@ -1,0 +1,12 @@
+[package]
+name = "mutt-imap-lister"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.68"
+home = "0.5.4"
+imap = "2.4.1"
+native-tls = "0.2.11"
+serde = { version = "1.0.152", features = ["derive"] }
+serde_yaml = "0.9.17"
