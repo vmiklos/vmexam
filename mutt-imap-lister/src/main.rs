@@ -11,6 +11,7 @@
 //! Simple IMAP folder lister for mutt, supports ignoring domain-specific subscribed folders.
 
 use anyhow::Context as _;
+use clap::Parser as _;
 use std::collections::HashMap;
 
 #[derive(serde::Deserialize)]
@@ -18,36 +19,54 @@ struct Config {
     pub ignore: HashMap<String, Vec<String>>,
 }
 
-fn main() -> anyhow::Result<()> {
-    // Parse the arguments.
-    let mut args = std::env::args();
-    let _ = args.next();
-    let domain: &str = &args.next().context("no domain")?;
-    let user = args.next().context("no user")?;
-    let password = args.next().context("no password")?;
+#[derive(clap::Parser)]
+struct Arguments {
+    /// Domain name of the IMAP server.
+    server: String,
 
-    // Parse the config.
+    /// User name.
+    user: String,
+
+    /// User password.
+    password: String,
+}
+
+/// Parses the config.
+fn parse_config() -> anyhow::Result<Config> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let home_dir: String = home_dir.to_str().context("home_dir is not utf8")?.into();
     let config_path = home_dir + "/.mutt/imap-lister.yaml";
     let config_str = std::fs::read_to_string(config_path)?;
     let config: Config = serde_yaml::from_str(&config_str)?;
+    Ok(config)
+}
 
-    // Connect to the IMAP server.
-    eprint!("Listing {}...", domain);
+/// Connects to the IMAP server.
+fn create_session(
+    args: &Arguments,
+) -> anyhow::Result<imap::Session<native_tls::TlsStream<std::net::TcpStream>>> {
     let tls = native_tls::TlsConnector::builder().build()?;
-    let client = imap::connect((domain, 993), domain, &tls).context("connect failed")?;
-    let mut session = match client.login(user, password) {
-        Ok(s) => s,
-        Err((e, _)) => {
-            return Err(anyhow::Error::new(e).context("login failed"));
-        }
-    };
+    let server: &str = &args.server;
+    let client = imap::connect((server, 993), server, &tls).context("connect failed")?;
+    let session: imap::Session<native_tls::TlsStream<std::net::TcpStream>> =
+        match client.login(&args.user, &args.password) {
+            Ok(s) => s,
+            Err((e, _)) => {
+                return Err(anyhow::Error::new(e).context("login failed"));
+            }
+        };
+    Ok(session)
+}
 
-    // List the subscribed folders.
+/// Lists the subscribed folders.
+fn get_subscribed_folders(
+    session: &mut imap::Session<native_tls::TlsStream<std::net::TcpStream>>,
+    args: &Arguments,
+    config: &Config,
+) -> anyhow::Result<Vec<String>> {
     let folders = session.lsub(None, Some("*"))?;
     let mut folder_names: Vec<String> = Vec::new();
-    let ignored_folders = config.ignore.get(domain);
+    let ignored_folders = config.ignore.get(&args.server);
     for folder in folders.iter() {
         let folder_name: String = folder.name().to_string();
         if let Some(value) = ignored_folders {
@@ -58,16 +77,29 @@ fn main() -> anyhow::Result<()> {
         folder_names.push(folder_name);
     }
     folder_names.sort();
-    eprintln!(" done.");
+    Ok(folder_names)
+}
 
-    // Print the non-ignored folders.
-    print!(r#""imaps://{}/INBOX" "#, domain);
+/// Prints the non-ignored folders.
+fn print_folders(args: &Arguments, folder_names: &Vec<String>) {
+    print!(r#""imaps://{}/INBOX" "#, args.server);
     for folder_name in folder_names {
         if folder_name == "INBOX" {
             continue;
         }
-        print!(r#""imaps://{}/{}" "#, domain, folder_name);
+        print!(r#""imaps://{}/{}" "#, args.server, folder_name);
     }
+}
 
+fn main() -> anyhow::Result<()> {
+    let args = Arguments::parse();
+    let config = parse_config()?;
+
+    eprint!("Listing {}...", args.server);
+    let mut session = create_session(&args)?;
+    let folder_names = get_subscribed_folders(&mut session, &args, &config)?;
+    eprintln!(" done.");
+
+    print_folders(&args, &folder_names);
     Ok(())
 }
