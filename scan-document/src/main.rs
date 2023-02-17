@@ -46,7 +46,7 @@ fn main() -> anyhow::Result<()> {
     // Convert downconverted intputs into a single output.
     let mut convert_args: Vec<String> = converteds
         .iter()
-        .map(|tempfile| Ok(tempfile_to_path(&tempfile)?))
+        .map(tempfile_to_path)
         .collect::<anyhow::Result<Vec<String>>>()?;
     convert_args.push(output);
     println!("convert {}", convert_args.join(" "));
