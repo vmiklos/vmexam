@@ -23,12 +23,12 @@ fn main() -> anyhow::Result<()> {
         if in_header {
             if let Some(input_date) = line.strip_prefix("Date: ") {
                 if let Ok(improved) = improve_date(input_date) {
-                    println!("Date: {} ({})", improved, input_date);
+                    println!("Date: {improved} ({input_date})");
                     continue;
                 }
             }
         }
-        println!("{}", line);
+        println!("{line}");
     }
 
     Ok(())
