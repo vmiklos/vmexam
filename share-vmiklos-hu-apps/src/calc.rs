@@ -27,7 +27,7 @@ pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
                 let data = rouille::post_input!(request, { formula: String, })
                     .context("missing POST parameter")?;
                 let evaluated = evalexpr::eval(&data.formula).context("evail() failed")?;
-                body.text(&format!("Ok: {}", evaluated))
+                body.text(&format!("Ok: {evaluated}"))
             } else {
                 {
                     let label = body.tag("label", &[("for", "formula")]);
@@ -61,7 +61,7 @@ pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
 
 pub fn app(request: &rouille::Request) -> rouille::Response {
     match our_app(request) {
-        Ok(html) => rouille::Response::html(&html),
-        Err(err) => rouille::Response::text(&format!("Err: {:?}", err)),
+        Ok(html) => rouille::Response::html(html),
+        Err(err) => rouille::Response::text(format!("Err: {err:?}")),
     }
 }

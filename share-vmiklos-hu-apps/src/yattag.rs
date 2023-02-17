@@ -48,7 +48,7 @@ impl Doc {
 
     /// Starts a new tag and closes it as well.
     pub fn stag(&self, name: &str) {
-        self.append_value(format!("<{} />", name));
+        self.append_value(format!("<{name} />"));
     }
 
     /// Appends unescaped content to the document.
@@ -76,11 +76,11 @@ pub struct Tag {
 impl Tag {
     fn new(value: &Rc<RefCell<String>>, name: &str, attrs: &[(&str, &str)]) -> Tag {
         let mut guard = value.borrow_mut();
-        write!(guard, "<{}", name).unwrap();
+        write!(guard, "<{name}").unwrap();
         for attr in attrs {
             let key = attr.0;
             let val = html_escape::encode_double_quoted_attribute(&attr.1);
-            write!(guard, " {}=\"{}\"", key, val).unwrap();
+            write!(guard, " {key}=\"{val}\"").unwrap();
         }
         guard.push('>');
         let value = value.clone();
@@ -103,11 +103,11 @@ impl Tag {
 
     /// Starts a new tag and closes it as well, inside a tag.
     pub fn stag(&self, name: &str, attrs: &[(&str, &str)]) {
-        self.append_value(format!("<{}", name));
+        self.append_value(format!("<{name}"));
         for attr in attrs {
             let key = attr.0;
             let value = html_escape::encode_double_quoted_attribute(&attr.1);
-            self.append_value(format!(" {}=\"{}\"", key, value));
+            self.append_value(format!(" {key}=\"{value}\""));
         }
         self.append_value(String::from("/>"))
     }
