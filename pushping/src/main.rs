@@ -62,7 +62,7 @@ fn main() -> anyhow::Result<()> {
     let seconds = duration.num_seconds() % 60;
     let minutes = duration.num_minutes() % 60;
     let hours = duration.num_hours();
-    let duration = format!("{}:{:0>2}:{:0>2}", hours, minutes, seconds);
+    let duration = format!("{hours}:{minutes:0>2}:{seconds:0>2}");
     let body = format!("{result} {host}:{working_directory}$ {command}: exit code is {exit_code}, finished in {duration}");
     let payload = Message {
         msgtype: "m.text".into(),
@@ -73,7 +73,7 @@ fn main() -> anyhow::Result<()> {
     // Send the json to a URL based on a config.
     let config_path = home_dir + "/.config/pushpingrc";
     let config_string = std::fs::read_to_string(&config_path)
-        .context(format!("failed to read config from '{}'", config_path))?;
+        .context(format!("failed to read config from '{config_path}'"))?;
     let config: Config = toml::from_str(&config_string)?;
     let url = format!(
         "{}/send/m.room.message?access_token={}",
