@@ -34,7 +34,7 @@ fn main() -> anyhow::Result<()> {
     args.next().context("missing self name")?;
     let msgid = args.next().context("missing msgid")?;
 
-    let query = format!("id:{}", msgid);
+    let query = format!("id:{msgid}");
     let output = std::process::Command::new("notmuch")
         .arg("search")
         .arg("--format=json")
