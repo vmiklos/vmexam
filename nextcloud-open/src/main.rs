@@ -58,7 +58,7 @@ fn get_accounts(
         }
     }
 
-    Ok(accounts.into_iter().map(|(_k, v)| v).collect())
+    Ok(accounts.into_values().collect())
 }
 
 fn get_first_user_path() -> anyhow::Result<String> {
