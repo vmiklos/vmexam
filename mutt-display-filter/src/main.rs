@@ -1,4 +1,4 @@
-use std::io::BufRead as _;
+use std::io::Write as _;
 
 /// Try to improve input_date by wrapping a non-local date in a local one.
 fn improve_date(input_date: &str) -> anyhow::Result<String> {
@@ -13,22 +13,25 @@ fn improve_date(input_date: &str) -> anyhow::Result<String> {
 }
 
 fn main() -> anyhow::Result<()> {
-    let stdin = std::io::stdin();
+    let stdin = std::io::stdin().lock();
+    let mut stdout = std::io::stdout().lock();
     let mut in_header = true;
-    for line in stdin.lock().lines() {
+    for line in bytelines::ByteLines::new(stdin) {
         let line = line?;
         if line.is_empty() {
             in_header = false;
         }
         if in_header {
-            if let Some(input_date) = line.strip_prefix("Date: ") {
-                if let Ok(improved) = improve_date(input_date) {
+            if let Some(input_date) = line.strip_prefix(b"Date: ") {
+                let input_date = String::from_utf8(input_date.to_vec())?;
+                if let Ok(improved) = improve_date(&input_date) {
                     println!("Date: {improved} ({input_date})");
                     continue;
                 }
             }
         }
-        println!("{line}");
+        stdout.write_all(&line)?;
+        stdout.write_all(b"\n")?;
     }
 
     Ok(())

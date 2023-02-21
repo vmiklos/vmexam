@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.68"
+bytelines = "2.4.0"
 time = { version = "0.3.17", features = ["formatting", "local-offset", "parsing"] }
