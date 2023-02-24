@@ -1,0 +1,26 @@
+[
+    {
+        "text": "// This is going to get a bit insidious now. If you're faint of heart,\n// you'd better look away here.",
+        "url": "https://github.com/libreoffice/core/blob/f07b4c242c8768b8a361d0aa551ba2e0c2d8eed2/sw/source/core/layout/calcmove.cxx#L2015-L2016"
+    },
+    {
+        "text": "// Following Arthur Dent, we do the only thing that you can do with\n// an unsolvable problem: We ignore it with all our power.",
+        "url": "https://github.com/libreoffice/core/blob/f07b4c242c8768b8a361d0aa551ba2e0c2d8eed2/sw/source/core/layout/tabfrm.cxx#L2403-L2404"
+    },
+    {
+        "text": "// For internal use only - who ignores this will be put in a sack and has\n// to stay there for two days",
+        "url": "https://github.com/libreoffice/core/blob/f07b4c242c8768b8a361d0aa551ba2e0c2d8eed2/sw/source/core/inc/frame.hxx#L540-L541"
+    },
+    {
+        "text": "// Dancing on the volcano",
+        "url": "https://github.com/libreoffice/core/blob/f07b4c242c8768b8a361d0aa551ba2e0c2d8eed2/sw/source/core/text/frmform.cxx#L605"
+    },
+    {
+        "text": "// Ok, this looks like a hack, indeed, it is a hack.",
+        "url": "https://github.com/libreoffice/core/blob/f07b4c242c8768b8a361d0aa551ba2e0c2d8eed2/sw/source/core/layout/tabfrm.cxx#L4791"
+    },
+    {
+        "text": "Gather round children and hear of a tale that will raise the\nhairs on the back of your neck this dark halloween night.",
+        "url": "https://github.com/libreoffice/core/blob/0bcce236059ae68c6dcc7bce8ceaec5d39c28f1c/sw/source/filter/ww8/ww8graf.cxx#L2032-L2033"
+    }
+]
