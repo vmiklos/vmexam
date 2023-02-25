@@ -14,7 +14,7 @@ if ! ~/git/vmexam/google/contacts/backup -n; then
     exit
 fi
 
-cp ~/.google-contacts/contacts.json .
+cp ~/.config/google-contacts/contacts.json .
 
 git add contacts.json && git commit --quiet -m "$(date +%Y-%m-%d)"
 
