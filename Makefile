@@ -1,7 +1,4 @@
-check: check-gammu check-gcontacts check-osm check-mirror
-
-check-gammu:
-	cd gammu && $(MAKE) check
+check: check-gcontacts check-osm check-mirror
 
 check-gcontacts:
 	cd gcontacts && $(MAKE) check
