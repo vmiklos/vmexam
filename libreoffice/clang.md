@@ -2,28 +2,27 @@
 
 ## Member prefixing effort
 
-There are two modes:
-
-- prefix the first class we hit in a module (this happens when large-scale
-  changes are not wanted)
-- prefix the largest classes (this happens when large-scale changes are
-  welcome)
-
-### Handling the first non-conforming class in a module
+### Handling the first non-conforming class in a module, with public headers
 
 ```
-make -C writerfilter -sr -j$(nproc) -O gb_SUPPRESS_TESTS=y FORCE_COMPILE=all COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD/writerfilter -yaml" 2>&1 |tee ~/rename.yaml
+make -C xmloff -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper RENAME_ARGS="-yaml -path-prefix=$PWD/include/xmloff " FORCE_COMPILE=all 2>&1 |tee ~/rename.yaml
 # Touch the header of the relevant class.
 make check gb_SUPPRESS_TESTS=y COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=clang-rename-wrapper RENAME_ARGS="-input=$HOME/rename.yaml -force"
 clang-apply-replacements -remove-change-desc-files /tmp/rename
 make check gb_SUPPRESS_TESTS=y
 ```
 
+### Handling the first non-conforming class in a module, when the module doesn't have public headers
+
+```
+make -C writerfilter -sr -j$(nproc) -O gb_SUPPRESS_TESTS=y FORCE_COMPILE=all COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper RENAME_ARGS="-path-prefix=$PWD/writerfilter -yaml" 2>&1 |tee ~/rename.yaml
+```
+
 ### Finding a class with a known name in a module
 
 ```
 # Touch the header of the relevant class.
-make check gb_SUPPRESS_TESTS=y COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-class-name=SwFieldPortion -yaml" 2>&1 |tee ~/rename.yaml
+make check gb_SUPPRESS_TESTS=y COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper RENAME_ARGS="-class-name=SwFieldPortion -yaml" 2>&1 |tee ~/rename.yaml
 ```
 
 (See above for the rest: clang-rename and clang-apply-replacements invocations.)
@@ -31,7 +30,7 @@ make check gb_SUPPRESS_TESTS=y COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unpre
 Building a complete list of non-conforming members for a module:
 
 ```
-make -k -sr -j8 -O FORCE_COMPILE=all COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD" 2>&1 |grep :: | tee ~/sw-to-prefix.log
+make -k -sr -j8 -O FORCE_COMPILE=all COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper RENAME_ARGS="-path-prefix=$PWD" 2>&1 |grep :: | tee ~/sw-to-prefix.log
 ```
 
 ### Other examples:
@@ -39,22 +38,20 @@ make -k -sr -j8 -O FORCE_COMPILE=all COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find
 Detect unprefixed members in a whole module:
 
 ```
-make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-class-prefix=Sw" FORCE_COMPILE=all
+make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper RENAME_ARGS="-class-prefix=Sw" FORCE_COMPILE=all
 ```
-
-(The '2' version is the same as the rename wrapper, just s/rename/find-unprefixed-members/.)
 
 Detect unprefixed members for a class:
 
 ```
-make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-class-name=SdrDragView -yaml" 2>&1 |tee ~/rename.yaml
-make build-nocheck COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-class-name=SdrDragView"
+make -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper RENAME_ARGS="-class-name=SdrDragView -yaml" 2>&1 |tee ~/rename.yaml
+make build-nocheck COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper RENAME_ARGS="-class-name=SdrDragView"
 ```
 
 Detect unprefixed members in a directory:
 
 ```
-make -sr COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper2 RENAME_ARGS="-path-prefix=$PWD/source/filter/ww8/rtf"
+make -sr COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=find-unprefixed-members-wrapper RENAME_ARGS="-path-prefix=$PWD/source/filter/ww8/rtf"
 ```
 
 Example `rename.csv` for a member function rename:
@@ -81,7 +78,7 @@ for i in $(find . -name "*.new-rename"); do mv -f $i ${i%%.new-rename}; done
 Detect:
 
 ```
-make -j8 CCACHE_PREFIX=find-unprefixed-members-wrapper2 CCACHE_DISABLE=1 RENAME_ARGS="-poco -class-excluded-prefix=std::,Poco::"
+make -j8 CCACHE_PREFIX=find-unprefixed-members-wrapper CCACHE_DISABLE=1 RENAME_ARGS="-poco -class-excluded-prefix=std::,Poco::"
 ```
 
 Rename:
