@@ -87,6 +87,9 @@ async function refreshClick()
             {
                 window.lastCount += 1;
                 prefix = window.lastCount + '. ';
+                const listElement =
+                    <HTMLElement>document.querySelector('#list');
+                listElement.innerText += "\n" + word;
             }
             wordElement.innerHTML = prefix + word.replace(/=/g, '-');
             wordElement.style.color = color;
@@ -129,6 +132,11 @@ document.addEventListener("DOMContentLoaded", async function(event) {
     refresh.src = 'refresh.svg';
     refresh.onclick = refreshClick;
     body.appendChild(refresh);
+
+    const list = document.createElement('p');
+    list.id = 'list';
+    list.style.position = 'fixed';
+    body.appendChild(list);
 
     // Show the initial word.
     refreshClick();
