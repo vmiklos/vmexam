@@ -8,7 +8,7 @@
 #![warn(clippy::all)]
 #![warn(missing_docs)]
 
-//! Opens a local directory in nextcloud, assuming the directory is inside a sync folder.
+//! Opens a local directory or file in nextcloud, assuming the directory is inside a sync folder.
 
 use anyhow::Context as _;
 use std::collections::HashMap;
@@ -61,12 +61,35 @@ fn get_accounts(
     Ok(accounts.into_values().collect())
 }
 
-fn get_first_user_path() -> anyhow::Result<String> {
+struct UserPath {
+    pub parent: String,
+    pub file_name: String,
+}
+
+fn get_first_user_path() -> anyhow::Result<UserPath> {
     let mut args = std::env::args();
     let _first = args.next().context("no self")?;
     let relative = args.next().context("no relative")?;
     let path_buf = std::fs::canonicalize(relative)?;
-    Ok(path_buf.to_str().context("to_str() failed")?.to_string())
+    if path_buf.is_dir() {
+        let parent = path_buf.to_str().context("to_str() failed")?.to_string();
+        let file_name = "".into();
+        Ok(UserPath { parent, file_name })
+    } else {
+        let parent = path_buf
+            .parent()
+            .context("no parent")?
+            .to_str()
+            .context("to_str() failed")?
+            .to_string();
+        let file_name = path_buf
+            .file_name()
+            .context("no file_name")?
+            .to_str()
+            .context("to_str() failed")?
+            .to_string();
+        Ok(UserPath { parent, file_name })
+    }
 }
 
 fn get_account<'a>(accounts: &'a [Account], absolute: &str) -> anyhow::Result<&'a Account> {
@@ -79,12 +102,17 @@ fn get_account<'a>(accounts: &'a [Account], absolute: &str) -> anyhow::Result<&'
     Err(anyhow::anyhow!("local path not in sync directory"))
 }
 
-fn get_url(account: &Account, absolute: &str) -> anyhow::Result<url::Url> {
-    let path = absolute
+fn get_url(account: &Account, user_path: &UserPath) -> anyhow::Result<url::Url> {
+    let path = user_path
+        .parent
         .strip_prefix(&account.local_path)
         .context("unexpected prefix")?;
     let encoded_path = urlencoding::encode(path);
-    let full_url = format!("{}/apps/files/?dir=/{}/", account.url, encoded_path);
+    let mut full_url = format!("{}/apps/files/?dir=/{}/", account.url, encoded_path);
+    if !user_path.file_name.is_empty() {
+        full_url += &format!("&scrollto={}", urlencoding::encode(&user_path.file_name));
+    }
+    println!("Opening <{}>.", full_url);
     Ok(url::Url::parse(&full_url)?)
 }
 
@@ -92,7 +120,7 @@ fn main() -> anyhow::Result<()> {
     let nextcloud_config = get_nextcloud_config()?;
     let accounts = get_accounts(&nextcloud_config)?;
     let user_path = get_first_user_path()?;
-    let account = get_account(&accounts, &user_path)?;
+    let account = get_account(&accounts, &user_path.parent)?;
     let url = get_url(account, &user_path)?;
     url.open();
     Ok(())
