@@ -25,6 +25,7 @@ RUST_PROJECTS = \
 	scan-document \
 	share-vmiklos-hu-apps \
 	ssh-proxy \
+	weechat-calc \
 
 check-build:
 	for i in $(RUST_PROJECTS); do cd $$i; cargo build || exit 1; cd ..; done
