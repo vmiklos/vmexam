@@ -8,6 +8,10 @@
         "url": "https://github.com/libreoffice/core/blob/f07b4c242c8768b8a361d0aa551ba2e0c2d8eed2/sw/source/core/layout/calcmove.cxx#L2015-L2016"
     },
     {
+        "text": "// Wrote an eMail to FS, he is on vacation currently. (Unchanged since 2007-08-06).",
+        "url": "https://github.com/libreoffice/core/blob/e713d9be05b788d5da0fff59c6070cca95b73b37/drawinglayer/source/processor2d/vclmetafileprocessor2d.cxx#L730"
+    },
+    {
         "text": "// Following Arthur Dent, we do the only thing that you can do with\n// an unsolvable problem: We ignore it with all our power.",
         "url": "https://github.com/libreoffice/core/blob/f07b4c242c8768b8a361d0aa551ba2e0c2d8eed2/sw/source/core/layout/tabfrm.cxx#L2403-L2404"
     },
