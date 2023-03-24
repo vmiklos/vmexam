@@ -1,3 +1,15 @@
+/*
+ * Copyright 2023 Miklos Vajna. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#![deny(warnings)]
+#![warn(clippy::all)]
+#![warn(missing_docs)]
+
+//! Simple calculator for weechat.
+
 use anyhow::Context as _;
 
 fn main() -> anyhow::Result<()> {
