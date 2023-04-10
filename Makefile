@@ -2,6 +2,7 @@ check: check-doc check-build check-rustfmt check-clippy
 
 RUST_PROJECTS = \
 	avg \
+	csp \
 	mutt-display-filter \
 	mutt-imap-lister \
 	nextcloud-open \
