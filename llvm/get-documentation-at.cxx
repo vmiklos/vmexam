@@ -1,7 +1,7 @@
 /*
- * Copyright 2019 Miklos Vajna. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Copyright 2019 Miklos Vajna
+ *
+ * SPDX-License-Identifier: MIT
  *
  * libclang version of
  * <http://vim.wikia.com/wiki/Show_current_function_name_in_C_programs>, i.e.

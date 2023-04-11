@@ -2,9 +2,9 @@
 <?php declare(strict_types=1);
 
 /*
- * Copyright 2020 Miklos Vajna. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Copyright 2020 Miklos Vajna
+ *
+ * SPDX-License-Identifier: MIT
  *
  * Takes an OSM way ID and turns it into a string that is readable and
  * e.g. OsmAnd can parse it as well.

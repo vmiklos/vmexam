@@ -1,7 +1,7 @@
 #!/bin/bash -ex
-# Copyright 2019 Miklos Vajna. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# Copyright 2019 Miklos Vajna
+#
+# SPDX-License-Identifier: MIT
 
 cmake_args="-DCMAKE_INSTALL_PREFIX:PATH=$PWD/instdir"
 

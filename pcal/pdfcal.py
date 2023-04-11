@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 #
-# Copyright 2018 Miklos Vajna. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# Copyright 2018 Miklos Vajna
+#
+# SPDX-License-Identifier: MIT
 #
 
 # pdfcal: builds on top of pcal, adding image support.

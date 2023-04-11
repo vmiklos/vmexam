@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #
 # Copyright (c) 2019 Miklos Vajna and contributors.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+#
+# SPDX-License-Identifier: MIT
 
 """The test_addr_osmify module covers the addr_osmify module."""
 

@@ -1,8 +1,8 @@
 #!/bin/bash -e
 #
-# Copyright 2022 Miklos Vajna. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# Copyright 2022 Miklos Vajna
+#
+# SPDX-License-Identifier: MIT
 #
 # Renders a markdown file with Python and opens it in a browser. This has the benefit that it's the
 # same implementation as what Pelican uses, if you use that for blog purposes.

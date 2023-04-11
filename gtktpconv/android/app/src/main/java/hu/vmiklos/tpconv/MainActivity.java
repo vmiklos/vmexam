@@ -1,13 +1,13 @@
 /*
- * Copyright 2019 Miklos Vajna. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Copyright 2019 Miklos Vajna
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 package hu.vmiklos.tpconv;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;

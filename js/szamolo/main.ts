@@ -1,7 +1,7 @@
 /*
- * Copyright 2022 Miklos Vajna. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Copyright 2022 Miklos Vajna
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 import confetti from 'canvas-confetti';
@@ -166,8 +166,7 @@ function randomIntFromInterval(min: number, max: number):
     number{return Math.floor(Math.random() * (max - min + 1) + min)}
 
 function
-challenge()
-{
+challenge() {
     const limit = isJunior() ? 20 : 999;
     let a: number;
     let bMax: number;
@@ -204,10 +203,9 @@ challenge()
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-document.addEventListener("DOMContentLoaded", function(event)
-                          {
-                              createPage();
-                              challenge();
-                          });
+document.addEventListener("DOMContentLoaded", function(event) {
+    createPage();
+    challenge();
+});
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:

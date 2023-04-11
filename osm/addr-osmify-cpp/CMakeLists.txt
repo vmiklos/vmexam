@@ -1,6 +1,6 @@
-# Copyright 2019 Miklos Vajna. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# Copyright 2019 Miklos Vajna
+#
+# SPDX-License-Identifier: MIT
 
 cmake_minimum_required(VERSION 3.4.3)
 project(addr_osmify)

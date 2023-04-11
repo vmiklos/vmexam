@@ -1,8 +1,8 @@
 #!/bin/bash -ex
 #
-# Copyright 2019 Miklos Vajna. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# Copyright 2019 Miklos Vajna
+#
+# SPDX-License-Identifier: MIT
 #
 # This script is a wrapper around the libxmlsec nmake build system, so it works
 # out of the box at least on my 64bit MSVC inside cygwin install.

@@ -1,15 +1,16 @@
 /*
- * Copyright 2019 Miklos Vajna. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Copyright 2019 Miklos Vajna
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 package hu.vmiklos.addr_osmify;
 
 import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import org.junit.Test;
 
 public class AppTest
 {

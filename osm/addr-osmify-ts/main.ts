@@ -1,11 +1,12 @@
 /*
- * Copyright 2020 Miklos Vajna. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Copyright 2020 Miklos Vajna
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 // NominatimResult represents one element in the result array from Nominatim.
-interface NominatimResult {
+interface NominatimResult
+{
     'class': string;
     lat: string;
     lon: string;
@@ -14,7 +15,8 @@ interface NominatimResult {
 }
 
 // TurboTags contains various tags about one Overpass element.
-interface TurboTags {
+interface TurboTags
+{
     'addr:city': string;
     'addr:housenumber': string;
     'addr:postcode': string;
@@ -22,12 +24,14 @@ interface TurboTags {
 }
 
 // TurboElement represents one result from Overpass.
-interface TurboElement {
+interface TurboElement
+{
     'tags': TurboTags;
 }
 
 // TurboResult is the result from Overpass.
-interface TurboResult {
+interface TurboResult
+{
     'elements': TurboElement[];
 }
 

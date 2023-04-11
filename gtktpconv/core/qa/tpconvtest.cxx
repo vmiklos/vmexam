@@ -1,7 +1,7 @@
 /*
- * Copyright 2019 Miklos Vajna. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * Copyright 2019 Miklos Vajna
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 #include <cppunit/extensions/HelperMacros.h>
@@ -19,10 +19,11 @@ class TpconvTest : public CPPUNIT_NS::TestFixture
 
 void TpconvTest::testConvert()
 {
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(
-        72, tpconv::convert(1, tpconv::ConversionUnit::Inch,
-                            tpconv::ConversionUnit::Point),
-        10e-4);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(72,
+                                 tpconv::convert(1,
+                                                 tpconv::ConversionUnit::Inch,
+                                                 tpconv::ConversionUnit::Point),
+                                 10e-4);
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TpconvTest);
