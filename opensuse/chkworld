@@ -8,7 +8,7 @@ import sys
 up2dates = {
     "lcov": "curl -s https://api.github.com/repos/linux-test-project/lcov/tags |jq --raw-output '.[0].name' |sed 's/^v//' |sed 's/1.16/1.16+git.20220603.dfeb750/'",
     # just check that we're packaging the latest commit
-    "gtimelog": "[ $(git ls-remote https://gitlab.collabora.com/collabora/gtimelog.git |grep master|cut -c 1-7) == '80112a7' ] && echo 0.6.0",
+    "gtimelog": "[ $(git ls-remote https://gitlab.collabora.com/collabora/gtimelog.git |grep master|cut -c 1-7) == '4bb8e72' ] && echo 0.6.0",
 }
 
 
