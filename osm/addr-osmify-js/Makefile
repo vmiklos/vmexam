@@ -24,7 +24,7 @@ check-unit:
 	npx nyc report --reporter=html
 
 check-lint:
-	npx eslint main.js cypress/integration/main.spec.js
+	npx eslint main.js cypress/e2e/main.cy.js
 
 run:
 	python3 -m http.server

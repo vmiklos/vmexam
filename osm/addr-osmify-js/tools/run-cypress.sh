@@ -14,9 +14,9 @@ python3 -m http.server &
 echo "Waiting for the HTTP server to start up..."
 PID=$!
 trap 'kill $PID' EXIT
-node_modules/.bin/wait-on http://0.0.0.0:8000/
+npx wait-on http://0.0.0.0:8000/
 
 echo "Starting the tests..."
-node_modules/.bin/cypress run "$@"
+npx cypress run "$@"
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
