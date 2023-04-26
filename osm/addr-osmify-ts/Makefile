@@ -28,7 +28,7 @@ check-unit-interactive:
 	npx cypress open
 
 check-lint:
-	npx eslint main.ts cypress/integration/main.spec.ts
+	npx eslint main.ts cypress/e2e/main.cy.ts
 
 run:
 	python3 -m http.server
