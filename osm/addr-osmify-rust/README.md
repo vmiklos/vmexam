@@ -1,4 +1,4 @@
-= addr-osmify-rust
+# addr-osmify-rust
 
 Takes an nominatim query (e.g. 'Mészáros utca 58/a, Budapest') and turns it
 into a string that is readable (so that you can save it to your contacts) and
@@ -16,9 +16,9 @@ This implementation is written in Rust:
 
 - [x] static code analysis (cargo clippy)
 
-== Install
+## Install
 
-----
+```
 cargo build --release
 cargo run
-----
+```
