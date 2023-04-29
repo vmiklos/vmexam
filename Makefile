@@ -1,27 +1,33 @@
-check: check-doc check-build check-rustfmt check-clippy
+# $(call RustPackage,path)
+define RustPackage
+build: build-$(1)
+check: check-doc-$(1)
+check: check-rustfmt-$(1)
+check: check-clippy-$(1)
 
-RUST_PROJECTS = \
-	avg \
-	csp \
-	mutt-display-filter \
-	mutt-imap-lister \
-	nextcloud-open \
-	notmuch-showref \
-	osm/addr-osmify-rust \
-	pushping \
-	scan-document \
-	share-vmiklos-hu-apps \
-	ssh-proxy \
-	weechat-calc \
+check-doc-$(1):
+	ls $(1)/README.md >/dev/null
 
-check-doc:
-	for i in $(RUST_PROJECTS); do ls $$i/README.md >/dev/null || exit 1; done
+build-$(1):
+	cd $(1) && cargo build
 
-check-build:
-	for i in $(RUST_PROJECTS); do cd $$i; cargo build || exit 1; cd -; done
+check-rustfmt-$(1):
+	cd $(1) && cargo fmt -- --check
 
-check-rustfmt:
-	for i in $(RUST_PROJECTS); do cd $$i; cargo fmt -- --check || exit 1; cd -; done
+check-clippy-$(1):
+	cd $(1) && cargo clippy
 
-check-clippy:
-	for i in $(RUST_PROJECTS); do cd $$i; cargo clippy || exit 1; cd -; done
+endef
+
+$(eval $(call RustPackage,avg))
+$(eval $(call RustPackage,csp))
+$(eval $(call RustPackage,mutt-display-filter))
+$(eval $(call RustPackage,mutt-imap-lister))
+$(eval $(call RustPackage,nextcloud-open))
+$(eval $(call RustPackage,notmuch-showref))
+$(eval $(call RustPackage,osm/addr-osmify-rust))
+$(eval $(call RustPackage,pushping))
+$(eval $(call RustPackage,scan-document))
+$(eval $(call RustPackage,share-vmiklos-hu-apps))
+$(eval $(call RustPackage,ssh-proxy))
+$(eval $(call RustPackage,weechat-calc))
