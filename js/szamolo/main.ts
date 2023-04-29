@@ -20,7 +20,8 @@ function isSenior()
 {
     const urlParams = new URLSearchParams(window.location.search);
     let value = urlParams.get('senior');
-    return value != null;
+    let date = urlParams.get('20230429');
+    return value != null || date != null;
 }
 
 function createSpan(label: string)
