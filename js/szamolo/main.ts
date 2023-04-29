@@ -6,10 +6,20 @@
 
 import confetti from 'canvas-confetti';
 
-function isJunior()
+function isMedior()
 {
     const urlParams = new URLSearchParams(window.location.search);
-    let value = urlParams.get('junior');
+    let value = urlParams.get('medior');
+    return value != null;
+}
+
+/**
+ * Senior mode means "a" is 1..10, "b" is 1..10 and "c" is 0.
+ */
+function isSenior()
+{
+    const urlParams = new URLSearchParams(window.location.search);
+    let value = urlParams.get('senior');
     return value != null;
 }
 
@@ -23,7 +33,7 @@ function createSpan(label: string)
 function checkAnswer()
 {
     let a: number;
-    if (isJunior())
+    if (isMedior())
     {
         a = 1;
     }
@@ -35,7 +45,11 @@ function checkAnswer()
     const bSpan = document.getElementById("b");
     const b = Number(bSpan.innerText);
     const cSpan = document.getElementById("c");
-    const c = Number(cSpan.innerText);
+    let c = 0;
+    if (!isSenior())
+    {
+        c = Number(cSpan.innerText);
+    }
     const retSpan = document.getElementById("ret");
     const ret = Number(retSpan.innerText);
     const scoreSpan = document.getElementById("score");
@@ -76,7 +90,7 @@ function decrementAnswer() { changeAnswer(-1); }
 
 function createLHS(p: HTMLParagraphElement)
 {
-    if (!isJunior())
+    if (!isMedior())
     {
         const a = document.createElement("span");
         a.id = "a";
@@ -88,12 +102,15 @@ function createLHS(p: HTMLParagraphElement)
     const b = document.createElement("span");
     b.id = "b";
     p.appendChild(b);
-    const add = document.createElement("span");
-    add.innerText = " + ";
-    p.appendChild(add);
-    const c = document.createElement("span");
-    c.id = "c";
-    p.appendChild(c);
+    if (!isSenior())
+    {
+        const add = document.createElement("span");
+        add.innerText = " + ";
+        p.appendChild(add);
+        const c = document.createElement("span");
+        c.id = "c";
+        p.appendChild(c);
+    }
 }
 
 function createRHS(p: HTMLParagraphElement)
@@ -167,11 +184,12 @@ function randomIntFromInterval(min: number, max: number):
 
 function
 challenge() {
-    const limit = isJunior() ? 20 : 999;
+    const limit = isMedior() ? 20 : 999;
     let a: number;
     let bMax: number;
     let cMax: number;
-    if (isJunior())
+    let c: number;
+    if (isMedior())
     {
         a = 1;
         bMax = limit / 2;
@@ -181,17 +199,33 @@ challenge() {
     {
         // E.g. 3 * 250 + 249 = limit
         const aSpan = document.getElementById("a");
-        a = randomIntFromInterval(1, 3);
-        aSpan.innerText = a.toString();
-        bMax = limit / 4;
-        cMax = limit / 4 - 1;
+        if (isSenior())
+        {
+            a = randomIntFromInterval(1, 10);
+            aSpan.innerText = a.toString();
+            bMax = 10;
+        }
+        else
+        {
+            a = randomIntFromInterval(1, 3);
+            aSpan.innerText = a.toString();
+            bMax = limit / 4;
+            cMax = limit / 4 - 1;
+        }
     }
     const bSpan = document.getElementById("b");
     const b = randomIntFromInterval(1, bMax);
     bSpan.innerText = b.toString();
-    const cSpan = document.getElementById("c");
-    const c = randomIntFromInterval(1, cMax);
-    cSpan.innerText = c.toString();
+    if (isSenior())
+    {
+        c = 0;
+    }
+    else
+    {
+        const cSpan = document.getElementById("c");
+        c = randomIntFromInterval(1, cMax);
+        cSpan.innerText = c.toString();
+    }
     const retSpan = document.getElementById("ret");
     let ret = a * b + c;
     ret += randomIntFromInterval(-4, 4);
