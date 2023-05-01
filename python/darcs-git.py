@@ -977,6 +977,10 @@ Options:
 	os.system("git fsck")
 
 def main(argv):
+	import time
+	date_prefix = time.strftime("%Y-%m-%d %H:%M:%S")
+	with open(os.path.expanduser("~/.local/state/darcs-git/commands.log"), "a") as stream:
+		stream.write("{} {}\n".format(date_prefix, argv))
 	def usage(ret):
 		os.system("man darcs-git")
 		sys.exit(ret)
