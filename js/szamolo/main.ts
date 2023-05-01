@@ -187,6 +187,7 @@ function
 challenge() {
     const limit = isMedior() ? 20 : 999;
     let a: number;
+    let bMin = 1;
     let bMax: number;
     let cMax: number;
     let c: number;
@@ -202,9 +203,10 @@ challenge() {
         const aSpan = document.getElementById("a");
         if (isSenior())
         {
-            a = randomIntFromInterval(1, 10);
+            a = randomIntFromInterval(2, 9);
             aSpan.innerText = a.toString();
-            bMax = 10;
+            bMin = 2;
+            bMax = 9;
         }
         else
         {
@@ -215,7 +217,7 @@ challenge() {
         }
     }
     const bSpan = document.getElementById("b");
-    const b = randomIntFromInterval(1, bMax);
+    const b = randomIntFromInterval(bMin, bMax);
     bSpan.innerText = b.toString();
     if (isSenior())
     {
