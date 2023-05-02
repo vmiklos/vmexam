@@ -183,55 +183,6 @@ def darcs_check():
     return os.path.exists(os.path.join(cdup, ".git/darcs"))
 
 
-def askhunks(hunks, preans=None, action="record"):
-    total = len(hunks)
-    hunknum = 0
-    commit = False
-    for i in hunks:
-        if preans is None:
-            while True:
-                sys.stdout.write(i.text)
-                sys.stdout.flush()
-                ret = ask("Shall I %s this change? (%d/%d)  [ynqad], or ? for help:" % (action, hunknum + 1, total))
-                if ret == "y":
-                    commit = True
-                    hunks[hunknum].picked = True
-                    break
-                if ret == "n":
-                    hunks[hunknum].picked = False
-                    break
-                if ret == "a":
-                    commit = True
-                    preans = True
-                    break
-                if ret == "d":
-                    preans = False
-                    break
-                if ret == "q":
-                    sys.exit(0)
-                    break
-                if ret == "?" or ret == "h":
-                    print("""How to use %(action)s...
-y: %(action)s this patch
-n: don't %(action)s it
-
-d: %(action)s selected patches, skipping all the remaining patches
-a: %(action)s all the remaining patches
-q: cancel %(action)s
-
-h or ?: show this help""" % {'action': action})
-                print("Invalid response, try again!")
-        if preans is not None:
-            if preans:
-                commit = True
-            hunks[hunknum].picked = preans
-        hunknum += 1
-    if not commit:
-        return commit
-    else:
-        return hunks
-
-
 def diff2filename(diff):
     return re.sub(r".* [a-z]/([^ ]+) .*", r"\1", diff)
 
