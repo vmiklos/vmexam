@@ -309,102 +309,12 @@ def record(argv):
     subprocess.run(commit, check=True)
 
 
-def revert_stale():
-    """revert changes when only the modification date is changed. returns
-    True if we did something"""
-    ret = False
-    lines = get_diff()
-    prevdiff = False
-    linenum = 0
-    for i in lines:
-        if i.startswith("diff "):
-            if prevdiff:
-                os.system("git checkout %s" % diff2filename(lines[linenum - 1]))
-                ret = True
-            prevdiff = True
-        else:
-            prevdiff = False
-        linenum += 1
-    if prevdiff:
-        os.system("git checkout %s" % diff2filename(lines[linenum - 1]))
-        ret = True
-    return ret
-
-
 def revert(argv):
-    def usage(ret):
-        print("""Usage: darcs-git revert [OPTION]... [FILE or DIRECTORY]...
-Revert to the committed version (you may loose your work).
-
-Options:
-  -a            --all                    answer yes to all hunks
-  -h            --help                   shows brief description of command and its arguments""")
-        sys.exit(ret)
-
-    class Options:
-        def __init__(self):
-            self.all = None
-            self.help = False
-            self.files = ""
-    options = Options()
-
-    try:
-        opts, args = getopt.getopt(argv, "ah", ["all", "help"])
-    except getopt.GetoptError:
-        usage(1)
-    optind = 0
-    for opt, arg in opts:
-        if opt in ("-a", "--all"):
-            options.all = True
-        elif opt in ("-h", "--help"):
-            options.help = True
-        optind += 1
-    if optind < len(argv):
-        options.files = " ".join(argv[optind:])
-    if options.help:
-        usage(0)
-    # check if we have anything to revert
-    lines = get_diff(options.files)
-    if not len(lines):
-        print("There are no changes to revert!")
+    s = subprocess.run(["git", "diff", "--quiet", "HEAD"])
+    if s.returncode == 0:
+        print("Ok, if you don't want to revert anything, that's fine!")
         sys.exit(0)
-    if options.all:
-        if(len(options.files)):
-            os.system("git checkout %s" % options.files)
-        else:
-            os.system("git checkout -f")
-        print("Finished reverting.")
-        sys.exit(0)
-    status = scan_dir(options.files)
-    status.hunks = askhunks(status.hunks, action="revert")
-    if not status.hunks:
-        if revert_stale():
-            print("Finished reverting.")
-        else:
-            print("Ok, if you don't want to revert anything, that's fine!")
-        sys.exit(0)
-    root = os.path.split(get_root())[0]
-    if len(root):
-        os.chdir(root)
-    for i in status.hunks:
-        p = []
-        if i.picked:
-            p.append(i.text)
-        sock = os.popen("git apply -R 2>/dev/null", "w")
-        sock.write("".join(p))
-        sock.close()
-    # we need git reset too if we revert deleted files
-    for i in status.hunks:
-        lines = i.text.split("\n")
-        new = False
-        for j in lines:
-            if j.startswith("index 0000000"):
-                new = True
-                break
-        if new:
-            os.system("git reset -q HEAD %s" % diff2filename(lines[0]))
-    revert_stale()
-    print("Finished reverting.")
+    subprocess.run(["git", "checkout", "--patch"], check=True)
 
 
 def whatsnew(argv):
