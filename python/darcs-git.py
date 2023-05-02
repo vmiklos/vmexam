@@ -29,6 +29,7 @@ import os
 import re
 import getopt
 import hashlib
+import subprocess
 
 
 class File:
@@ -287,158 +288,25 @@ def diff2filename(diff):
     return re.sub(r".* [a-z]/([^ ]+) .*", r"\1", diff)
 
 
-def record(argv, amend=False):
-    def usage(ret):
-        print("""Usage: darcs-git record [OPTION]... [FILE or DIRECTORY]...
-Save changes in the unstaged index to the current branch as a commit.
-
-Options:
-  -m PATCHNAME  --commit-name=PATCHNAME  name of commit
-  -a            --all                    answer yes to all hunks
-  -e            --edit-long-comment      backward compatibility
-  -s            --skip-long-comment      Don't give a long comment
-  -h            --help                   shows brief description of command and its arguments""")
-        sys.exit(ret)
-
-    class Options:
-        def __init__(self, amend):
-            self.name = None
-            self.all = None
-            self.edit = None
-            self.help = False
-            self.files = ""
-            if amend:
-                self.amend = "--amend"
-            else:
-                self.amend = ""
-    options = Options(amend)
-
-    try:
-        opts, args = getopt.getopt(argv, "m:aesh", [
-            "commit-name=", "all", "edit-long-comment", "skip-long-comment", "help"
-        ])
-    except getopt.GetoptError:
-        usage(1)
-    optind = 0
-    for opt, arg in opts:
-        if opt in ("-m", "--commit-name"):
-            options.name = arg
-            optind += 1
-        elif opt in ("-e", "--edit-long-comment"):
-            options.edit = "-e"
-        elif opt in ("-s", "--skip-long-comment"):
-            options.edit = ""
-        elif opt in ("-a", "--all"):
-            options.all = True
-        elif opt in ("-h", "--help"):
-            options.help = True
-        optind += 1
-    if optind < len(argv):
-        options.files = " ".join(argv[optind:])
-    if options.help:
-        usage(0)
-    root = get_root()
-    first = False
-    if os.system("git rev-parse --verify HEAD >/dev/null 2>&1"):
-        first = True
-        sock = os.popen("git status")
-        lines = sock.readlines()
-        sock.close()
-        changes = True
-        for i in lines:
-            if i.startswith("nothing"):
-                changes = False
-        if changes:
-            print("This is a new repo, can't cherry-pick for the first commit.")
-        else:
-            print("No changes!")
-            sys.exit(0)
-    merge = False
-    if merge_check():
-        print("This is a merge, can't cherry-pick for this commit.")
-        merge = True
-    if first or merge:
-        status = Files([])
-    else:
-        # we need the overall status too, to exclude new files if necessary
-        allstatus = scan_dir()
-        status = scan_dir(options.files)
-        if not options.all:
-            status.hunks = askhunks(status.hunks)
-    if first or merge or status.hunks:
-        if not options.name:
-            options.name = ask("What is the patch name?", str)
-    else:
+def record(argv):
+    s = subprocess.run(["git", "diff", "--quiet", "HEAD"])
+    if s.returncode == 0:
         print("Ok, if you don't want to record anything, that's fine!")
         sys.exit(0)
-    if options.edit is None:
-        while True:
-            ret = ask("Do you want to add a long comment? [ynq]")
-            if ret == "y":
-                options.edit = "-e"
-                break
-            if ret == "n":
-                options.edit = ""
-                break
-            if ret == "q":
-                sys.exit(0)
-            print("Invalid response, try again!")
-    root = os.path.split(get_root())[0]
-    if len(root):
-        os.chdir(root)
-    if first or merge or options.all:
-        os.system("""git commit -a -m "%s" %s %s %s""" %
-                  (options.name.replace('"', r'\"'), options.edit, options.amend, options.files))
-        sys.exit(0)
-    for i in status.hunks:
-        p = []
-        if i.picked:
-            p.append(i.text)
-        sock = os.popen("git apply --cached 2>/dev/null", "w")
-        sock.write("".join(p))
-        sock.close()
-    # a list for new/deleted files. we'll revert their addition/deletion,
-    # commit and add/remove them again
-    newlist = []
-    dellist = []
-    for i in allstatus.hunks:
-        if not status.ispicked(i):
-            lines = i.text.split("\n")
-            new = False
-            old = False
-            for j in lines:
-                if j.startswith("index 0000000"):
-                    new = True
-                    break
-                elif re.match(r"index [0-9a-f]{7}\.\.0000000", j):
-                    old = True
-                    break
-            if new:
-                newlist.append(diff2filename(lines[0]))
-            if old:
-                dellist.append(i.text)
-        else:
-            lines = i.text.split("\n")
-            new = False
-            for j in lines:
-                if j.startswith("index 0000000"):
-                    new = True
-                    break
-            if new:
-                # this is a newly added file but maybe it has
-                # been updated since add. add it again
-                os.system("git add %s" % diff2filename(lines[0]))
-    for i in newlist:
-        os.system("git reset -q HEAD %s" % i)
-    for i in dellist:
-        sock = os.popen("git apply --cached -R 2>/dev/null", "w")
-        sock.write(i)
-        sock.close()
-    os.system("""git commit -m '%s' %s %s""" %
-              (options.name.replace("'", """'"'"'"""), options.edit, options.amend))
-    # readd the uncommitted new files
-    for i in newlist:
-        os.system("git add %s" % i)
+    subprocess.run(["git", "add", "--patch"], check=True)
+    message = ask("What is the commit message?", str)
+    while True:
+        ret = ask("Do you want to add a long comment? [ynq]")
+        if ret == "q":
+            sys.exit(0)
+        if ret in ("y", "n"):
+            edit = ret == "y"
+            break
+        print("Invalid response, try again!")
+    commit = ["git", "commit", "-m", message]
+    if edit:
+        commit.append("-e")
+    subprocess.run(commit, check=True)
 
 
 def revert_stale():
@@ -1052,8 +920,6 @@ PURPOSE.""" % __version__)
             os.environ['GIT_PAGER'] = 'cat'
         if sys.argv[1][:3] == "rec":
             return record(argv[1:])
-        elif sys.argv[1] == "amend-record":
-            return record(argv[1:], amend=True)
         elif sys.argv[1][:3] == "rev":
             return revert(argv[1:])
         elif sys.argv[1][:4] == "what":
