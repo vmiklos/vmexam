@@ -183,58 +183,6 @@ def darcs_check():
     return os.path.exists(os.path.join(cdup, ".git/darcs"))
 
 
-def scan_dir(files=""):
-    ret = []
-    lines = get_diff(files)
-
-    inheader = False
-    inhunk = False
-    header = []
-    hunk = []
-    file = None
-    binary = False
-    for i in lines:
-        if i.startswith("#"):
-            continue
-        elif i.startswith("diff"):
-            binary = False
-            if inhunk:
-                file.hunks.append("".join(hunk))
-                hunk = []
-                inhunk = False
-            if file:
-                ret.append(file)
-            file = File()
-            inheader = True
-            header.append(i)
-        elif i.startswith("+++ ") or i.startswith("--- ") or i.startswith("index ") or i.startswith("deleted "):
-            header.append(i)
-        elif i.startswith("@@") or i.startswith("GIT binary patch"):
-            if i.startswith("GIT binary patch"):
-                binary = True
-            if inheader:
-                inheader = False
-                file.header = "".join(header)
-                header = []
-            if inhunk:
-                file.hunks.append("".join(hunk))
-                hunk = []
-            inhunk = True
-            hunk.append(i)
-        elif i[0] == "+" or i[0] == "-" or i[0] == " " or binary:
-            if inhunk:
-                hunk.append(i)
-            else:
-                bug("expected to be in a hunk")
-    if inhunk:
-        file.hunks.append("".join(hunk))
-        hunk = []
-        inhunk = False
-    if file:
-        ret.append(file)
-    return Files(ret)
-
-
 def askhunks(hunks, preans=None, action="record"):
     total = len(hunks)
     hunknum = 0
