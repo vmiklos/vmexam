@@ -192,7 +192,9 @@ def record(argv):
     if s.returncode == 0:
         print("Ok, if you don't want to record anything, that's fine!")
         sys.exit(0)
-    subprocess.run(["git", "add", "--patch"], check=True)
+    add = ["git", "add", "--patch"]
+    add.extend(argv)
+    subprocess.run(add, check=True)
     message = ask("What is the commit message?", str)
     while True:
         ret = ask("Do you want to add a long comment? [ynq]")
@@ -213,7 +215,9 @@ def revert(argv):
     if s.returncode == 0:
         print("Ok, if you don't want to revert anything, that's fine!")
         sys.exit(0)
-    subprocess.run(["git", "checkout", "--patch"], check=True)
+    checkout = ["git", "checkout", "--patch"]
+    checkout.extend(argv)
+    subprocess.run(checkout, check=True)
 
 
 def whatsnew(argv):
