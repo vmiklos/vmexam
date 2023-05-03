@@ -158,56 +158,6 @@ Options:
         print("No changes!")
 
 
-def changes(argv):
-    def usage(ret):
-        print("""Usage: darcs-git changes [OPTION]... [FILE or DIRECTORY]...
-Gives a changelog-style summary of the branch history.
-
-Options:
-  -l         --last=NUMBER         select the last NUMBER patches
-  -s         --summary             summarize changes
-  -v         --verbose             give verbose output
-  -t         --tags                include tags in the log (darcs-git only)
-  -h         --help                shows brief description of command and its arguments""")
-        sys.exit(ret)
-
-    class Options:
-        def __init__(self):
-            self.last = ""
-            self.logopts = ""
-            self.help = False
-            self.tags = ""
-            self.abbrev = "--abbrev-commit --abbrev=7"
-            self.files = ""
-    options = Options()
-
-    try:
-        opts, args = getopt.getopt(argv, "l:svth", ["last=", "summary", "verbose", "tags", "help"])
-    except getopt.GetoptError:
-        usage(1)
-    optind = 0
-    for opt, arg in opts:
-        if opt in ("-l", "--last"):
-            options.last = "-%s" % arg
-            optind += 1
-        elif opt in ("-s", "--summary"):
-            options.logopts = "-r --name-status"
-        elif opt in ("-v", "--verbose"):
-            options.logopts = "-p"
-        elif opt in ("-t", "--tags"):
-            options.tags = "| git name-rev --tags --stdin"
-            options.abbrev = ""
-        elif opt in ("-h", "--help"):
-            options.help = True
-        optind += 1
-    if optind < len(argv):
-        options.files = " ".join(argv[optind:])
-    if options.help:
-        usage(0)
-    return os.system(" ".join(['git log -M',
-                     options.last, options.logopts, options.files, options.tags, options.abbrev]))
-
-
 def push(argv):
     def usage(ret):
         print("""Usage: darcs-git push [OPTION]... [GIT OPTIONS]...
@@ -346,22 +296,6 @@ Options:
         return(1)
 
 
-def get(argv):
-    def usage(ret):
-        print("""Usage: darcs-git get [OPTION]... <REPOSITORY> [<DIRECTORY>]
-Create a local copy of another repository.
-Use "darcs-git help clone" for more information.
-
-Options:
-  -h  --help                         shows brief description of command and its arguments""")
-        sys.exit(ret)
-    if len(argv) and argv[0] in ("-h", "--help"):
-        usage(0)
-    ret = os.system("git clone --recursive %s" % " ".join(argv))
-    if ret:
-        return ret
-
-
 def unrecord(argv):
     def usage(ret):
         print("""Usage: darcs-git unrecord [OPTION]...
@@ -408,20 +342,6 @@ Options:
     print("Finished unpulling.")
 
 
-def check(argv):
-    def usage(ret):
-        print("""Usage: darcs-git check [OPTION]...
-Check the repository for consistency.
-This is an alias for "git fsck".
-
-Options:
-  -h         --help                shows brief description of command and its arguments""")
-        sys.exit(ret)
-    if len(argv) and argv[0] in ("-h", "--help"):
-        usage(0)
-    os.system("git fsck")
-
-
 def main(argv):
     import time
     date_prefix = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -444,31 +364,21 @@ PURPOSE.""" % __version__)
     if sys.argv[1] in ["-v", "--version"]:
         version()
     else:
-        # this will exit if no root found
-        if sys.argv[1] not in ["init", "get"]:
-            get_root()
-        if sys.argv[1][:4] != "chan":
-            os.environ['GIT_PAGER'] = 'cat'
+        os.environ['GIT_PAGER'] = 'cat'
         if sys.argv[1][:3] == "rec":
             return record(argv[1:])
         elif sys.argv[1][:3] == "rev":
             return revert(argv[1:])
         elif sys.argv[1][:4] == "what":
             return whatsnew(argv[1:])
-        elif sys.argv[1][:4] == "chan":
-            return changes(argv[1:])
         elif sys.argv[1] == "push":
             return push(argv[1:])
         elif sys.argv[1] == "pull":
             return pull(argv[1:])
-        elif sys.argv[1] == "get":
-            return get(argv[1:])
         elif sys.argv[1][:5] == "unrec":
             return unrecord(argv[1:])
         elif sys.argv[1] == "unpull":
             return unpull(argv[1:])
-        elif sys.argv[1] == "check":
-            return check(argv[1:])
         else:
             return os.system("git '%s'" % "' '".join(argv))
 
