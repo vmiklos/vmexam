@@ -26,37 +26,9 @@ import sys
 import tty
 import termios
 import os
-import re
 import getopt
 import hashlib
 import subprocess
-
-
-class File:
-    def __init__(self):
-        self.header = None
-        self.hunks = []
-
-
-class FileHunk:
-    def __init__(self, hunk, picked=False):
-        self.text = hunk
-        self.picked = picked
-
-
-class Files:
-    def __init__(self, l):
-        self.files = l
-        self.hunks = []
-        for i in self.files:
-            for j in i.hunks:
-                self.hunks.append(FileHunk(i.header + j))
-
-    def ispicked(self, hunk):
-        needle = diff2filename(hunk.text.split("\n")[0])
-        for i in self.hunks:
-            if needle == diff2filename(i.text.split("\n")[0]):
-                return i.picked
 
 
 def ask(s, type=None):
@@ -78,26 +50,6 @@ def ask(s, type=None):
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         print(c)
         return c
-
-
-def bug(s=None):
-    import inspect
-    if s:
-        print("%s" % s)
-    else:
-        print("bug in darcs-git!")
-    print("at %s:%d" % inspect.stack()[1][1:3])
-
-
-def emptydir(dir):
-    ret = True
-    for root, dirs, files in os.walk(dir):
-        for file in files:
-            ret = False
-            break
-        if not ret:
-            break
-    return ret
 
 
 def get_root():
@@ -130,61 +82,6 @@ def get_remote(branch):
     if sock.close():
         sys.exit(0)
     return remote
-
-
-def get_diff(files=""):
-    sock = os.popen("git diff HEAD --binary %s" % files)
-    lines = sock.readlines()
-    sock.close()
-    if len(lines) and lines[0].startswith("[1m"):
-        print("""It seems that you force using colors in your diffs
-which is not compatible with darcs-git. Please set that value
-to false or auto. Example:
-
-git config diff.color auto""")
-        sys.exit(0)
-    return lines
-
-
-def merge_check():
-    ret = False
-    sock = os.popen("git diff")
-    lines = sock.readlines()
-    sock.close()
-    for i in lines:
-        if i.startswith("diff --cc "):
-            ret = True
-            break
-    return ret
-
-
-def svn_check():
-    sock = os.popen("git rev-parse --show-cdup")
-    cdup = sock.read().strip()
-    sock.close()
-    return os.path.exists(os.path.join(cdup, ".git/svn"))
-
-
-def svn_get_remote():
-    sock = os.popen("git config svn-remote.svn.fetch")
-    # Returns something like ':refs/remotes/origin/master'.
-    fetch = sock.readline().strip()
-    sock.close()
-    if not len(fetch):
-        return "git-svn"
-    else:
-        return fetch[1:]
-
-
-def darcs_check():
-    sock = os.popen("git rev-parse --show-cdup")
-    cdup = sock.read().strip()
-    sock.close()
-    return os.path.exists(os.path.join(cdup, ".git/darcs"))
-
-
-def diff2filename(diff):
-    return re.sub(r".* [a-z]/([^ ]+) .*", r"\1", diff)
 
 
 def record(argv):
@@ -355,10 +252,6 @@ Options:
     if options.help:
         usage(0)
     remote = "%s/%s" % (options.gitopts, get_merge(branch))
-    if svn_check():
-        remote = svn_get_remote()
-    elif darcs_check():
-        remote = "darcs/upstream"
     logopts = ""
     if options.verbose:
         logopts += "-p "
@@ -379,18 +272,13 @@ Options:
             if ret in ("n", "q"):
                 return(0)
             print("Invalid response, try again!")
-    if svn_check():
-        os.system("git svn dcommit")
-    elif darcs_check():
-        os.system("git darcs push upstream")
-    else:
-        ret = os.system("git push %s" % options.gitopts)
-        if ret:
-            ret = pull(['-a'])
-            if not ret:
-                ret = os.system("git push %s" % options.gitopts)
-                if ret:
-                    return(1)
+    ret = os.system("git push %s" % options.gitopts)
+    if ret:
+        ret = pull(['-a'])
+        if not ret:
+            ret = os.system("git push %s" % options.gitopts)
+            if ret:
+                return(1)
     return(0)
 
 
@@ -429,17 +317,8 @@ Options:
         options.gitopts = get_remote(branch)
     if options.help:
         usage(0)
-    if svn_check():
-        os.system("git svn fetch")
-    elif darcs_check():
-        os.system("git darcs fetch upstream")
-    else:
-        os.system("git fetch %s" % options.gitopts)
+    os.system("git fetch %s" % options.gitopts)
     remote = "%s/%s" % (options.gitopts, get_merge(branch))
-    if svn_check():
-        remote = svn_get_remote()
-    elif darcs_check():
-        remote = "darcs/upstream"
     sock = os.popen("git log %s..%s 2>&1" % (branch, remote))
     lines = sock.readlines()
     ret = sock.close()
@@ -461,79 +340,10 @@ Options:
             return(1)
     else:
         changes = False
-    if svn_check():
-        if os.system("git svn rebase -l") != 0:
-            return(1)
-    elif darcs_check():
-        if os.system("git rebase darcs/upstream") != 0:
-            return(1)
-    else:
-        if os.system("git pull --rebase %s" % options.gitopts) != 0:
-            return(1)
+    if os.system("git pull --rebase %s" % options.gitopts) != 0:
+        return(1)
     if changes and os.system("git stash pop") != 0:
         return(1)
-
-
-def send(argv):
-    def usage(ret):
-        print("""Usage: darcs-git send [OPTION]... <PATCHES>
-Send by email a bundle of one or more patches.
-
-The recommended workflow is:
-
-    1) darcs-git format-patch
-       Optionally you can now edit the patches to add custom headers like
-       In-Reply-To ones and/or custom message between --- and the diffstat.
-    2) darcs-git send --to="M A Intener <m8r@example.com>" *.patch
-
-Use "darcs-git help send-email" for more information.
-
-Options:
-  -d  --dry-run                      don't actually take the action
-  -h  --help                         shows brief description of command and its arguments
-  -t  --to                           specify destination EMAIL
-  -c  --cc                           additional EMAIL(s).""")
-        sys.exit(ret)
-
-    class Options:
-        def __init__(self):
-            self.dryrun = ""
-            self.help = False
-            self.to = ""
-            self.cc = ""
-            self.gitopts = ""
-    options = Options()
-
-    try:
-        opts, args = getopt.getopt(argv, "c:dt:", ["cc=", "dry-run", "to="])
-    except getopt.GetoptError:
-        usage(1)
-    optind = 0
-    for opt, arg in opts:
-        if opt in ("-d", "--dry-run"):
-            options.dryrun = "--dry-run"
-        elif opt in ("-h", "--help"):
-            options.help = True
-        elif opt in ("-t", "--to"):
-            for i in arg.split(', '):
-                options.to += ' --to="%s"' % i.replace('"', r'\"')
-        elif opt in ("-c", "--cc"):
-            for i in arg.split(', '):
-                options.cc += ' --cc="%s"' % i.replace('"', r'\"')
-        optind += 1
-    if optind < len(argv):
-        options.gitopts = " ".join(argv[optind:])
-    if options.help:
-        usage(0)
-    sock = os.popen("git config user.name")
-    author = sock.readline().strip()
-    sock.close()
-    sock = os.popen("git config user.email")
-    author += " <%s>" % sock.readline().strip()
-    sock.close()
-    return os.system("""git send-email --envelope-sender "%s" --from "%s" --suppress-from %s %s %s %s""" % (
-        author, author, options.dryrun, options.to, options.cc, options.gitopts
-    ))
 
 
 def get(argv):
@@ -550,57 +360,6 @@ Options:
     ret = os.system("git clone --recursive %s" % " ".join(argv))
     if ret:
         return ret
-
-
-def setpref(argv):
-    def usage(ret):
-        print("""Usage: darcs-git setpref [OPTION]...
-Set a value for a preference.
-Use "darcs-git help config" for more information.
-
-Options:
-  -h  --help                         shows brief description of command and its arguments""")
-        sys.exit(ret)
-    if len(argv) and argv[0] in ("-h", "--help"):
-        usage(0)
-    return os.system("git config %s" % " ".join(argv))
-
-
-def tag(argv):
-    def usage(ret):
-        print("""Usage: darcs-git tag [PROJECTNAME] <VERSION>
-Tag the contents of the repository with a version name.
-Use "darcs-git help tag" for more information.
-
-Options:
-  -h  --help                         shows brief description of command and its arguments""")
-        sys.exit(ret)
-    if len(argv) and argv[0] in ("-h", "--help"):
-        usage(0)
-    ret = 0
-    ret += os.system("git commit --allow-empty -m 'TAG %s'" % argv[-1])
-    if len(argv) > 1:
-        msg = " ".join(argv[:2])
-    else:
-        msg = argv[0]
-    ret += os.system("git tag -a -m '%s' '%s'" % (msg, argv[-1]))
-    if ret:
-        os.system("git reset --hard HEAD^")
-    return ret
-
-
-def rollback(argv):
-    def usage(ret):
-        print("""Usage: darcs-git rollback [OPTION]... <COMMIT-HASH>
-Commit an inverse patch.
-Use "darcs-git help revert" for more information.
-
-Options:
-  -h         --help                shows brief description of command and its arguments""")
-        sys.exit(ret)
-    if len(argv) and argv[0] in ("-h", "--help"):
-        usage(0)
-    return os.system("git revert %s" % " ".join(argv))
 
 
 def unrecord(argv):
@@ -647,47 +406,6 @@ Options:
         print("Invalid response, try again!")
     os.system("git reset --hard HEAD^ %s" % " ".join(argv))
     print("Finished unpulling.")
-
-
-def optimize(argv):
-    def usage(ret):
-        print("""Usage: darcs-git optimize [OPTION]...
-Optimize the repository.
-This is an alias for "git gc".
-
-Options:
-  -h         --help                shows brief description of command and its arguments""")
-        sys.exit(ret)
-    if len(argv) and argv[0] in ("-h", "--help"):
-        usage(0)
-    print("Checking how much disk space is wasted...")
-    os.system("git count-objects")
-    print("Cleaning up...")
-    os.system("git gc")
-
-
-def query(argv):
-    def usage(ret):
-        print("""Usage: darcs-git query SUBCOMMAND ...
-Query information which is stored by darcs.
-
-Subcommands:
-
-  manifest      List version-controlled files in the working copy.
-  tags          List all tags in the repository.
-
-Options:
-  -h         --help                shows brief description of command and its arguments""")
-        sys.exit(ret)
-    if len(argv) and argv[0] in ("-h", "--help"):
-        usage(0)
-    if len(argv) and argv[0] == "manifest":
-        return os.system("git ls-files")
-    elif len(argv) and argv[0] == "tags":
-        return os.system("git tag -l")
-    else:
-        print("Invalid subcommand!")
-        usage(1)
 
 
 def check(argv):
@@ -743,28 +461,14 @@ PURPOSE.""" % __version__)
             return push(argv[1:])
         elif sys.argv[1] == "pull":
             return pull(argv[1:])
-        elif sys.argv[1] == "send":
-            return send(argv[1:])
-        elif sys.argv[1] == "setpref":
-            return setpref(argv[1:])
         elif sys.argv[1] == "get":
             return get(argv[1:])
-        elif sys.argv[1] == "tag":
-            return tag(argv[1:])
-        elif sys.argv[1][:4] == "roll":
-            return rollback(argv[1:])
         elif sys.argv[1][:5] == "unrec":
             return unrecord(argv[1:])
         elif sys.argv[1] == "unpull":
             return unpull(argv[1:])
-        elif sys.argv[1] == "obliterate":
-            return unpull(argv[1:])
-        elif sys.argv[1][:3] == "opt":
-            return optimize(argv[1:])
         elif sys.argv[1] == "check":
             return check(argv[1:])
-        elif sys.argv[1] == "query":
-            return query(argv[1:])
         else:
             return os.system("git '%s'" % "' '".join(argv))
 
