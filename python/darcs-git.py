@@ -52,14 +52,6 @@ def ask(s, type=None):
         return c
 
 
-def get_root():
-    sock = os.popen("git rev-parse --git-dir")
-    root = sock.read().strip()
-    if sock.close():
-        sys.exit(0)
-    return root
-
-
 def get_branch():
     sock = os.popen("git symbolic-ref HEAD")
     branch = sock.read().strip()[11:]
