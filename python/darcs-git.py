@@ -27,7 +27,6 @@ import tty
 import termios
 import os
 import getopt
-import hashlib
 import subprocess
 
 
@@ -110,42 +109,19 @@ def revert(argv):
 
 
 def whatsnew(argv):
-    def usage(ret):
-        print("""Usage: darcs-git whatsnew [OPTION]... [FILE or DIRECTORY]...
-Display uncommitted changes in the working directory.
+    summary = ""
+    files = ""
 
-Options:
-  -s  --summary             summarize changes
-  -h  --help                shows brief description of command and its arguments""")
-        sys.exit(ret)
-
-    class Options:
-        def __init__(self):
-            self.summary = ""
-            self.help = False
-            self.files = ""
-            self.head = "HEAD"
-    options = Options()
-
-    try:
-        opts, args = getopt.getopt(argv, "sh", ["summary", "help"])
-    except getopt.GetoptError:
-        usage(1)
+    opts, args = getopt.getopt(argv, "s", ["summary"])
     optind = 0
     for opt, arg in opts:
         if opt in ("-s", "--summary"):
-            options.summary = "--name-status"
-        elif opt in ("-h", "--help"):
-            options.help = True
+            summary = "--name-status"
         optind += 1
     if optind < len(argv):
-        options.files = " ".join(argv[optind:])
-    if options.help:
-        usage(0)
-    if os.system("git rev-parse --verify HEAD >/dev/null 2>&1"):
-        options.head = hashlib.sha1("tree 0\0").hexdigest()
+        files = " ".join(argv[optind:])
     os.system("git update-index --refresh >/dev/null")
-    ret = os.system("git diff %s -M -C --exit-code %s %s" % (options.head, options.summary, options.files))
+    ret = os.system("git diff HEAD -M -C --exit-code %s %s" % (summary, files))
     if not ret:
         print("No changes!")
 
