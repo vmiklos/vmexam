@@ -137,77 +137,11 @@ def push(argv):
             sys.exit(0)
         print("Invalid response, try again!")
     ret = os.system("git push")
-    if ret:
-        ret = pull(['-a'])
-        if not ret:
-            ret = os.system("git push")
-            if ret:
-                return(1)
+    s = subprocess.run(["git", "push"])
+    if s.returncode != 0:
+        subprocess.run(["git", "pull", "-r"], check=True)
+        subprocess.run(["git", "push"], check=True)
     return(0)
-
-
-def pull(argv):
-    def usage(ret):
-        print("""Usage: darcs-git pull [OPTION]... [GIT OPTIONS]...
-Copy and apply patches to this repository from another one.
-
-Options:
-  -a         --all                 answer yes to all questions
-  -h         --help                shows brief description of command and its arguments""")
-        sys.exit(ret)
-
-    class Options:
-        def __init__(self):
-            self.all = False
-            self.help = False
-            self.gitopts = ""
-    options = Options()
-
-    try:
-        opts, args = getopt.getopt(argv, "ah", ["all", "help"])
-    except getopt.GetoptError:
-        usage(1)
-    optind = 0
-    for opt, arg in opts:
-        if opt in ("-a", "--all"):
-            options.all = True
-        elif opt in ("-h", "--help"):
-            options.help = True
-        optind += 1
-    branch = get_branch()
-    if optind < len(argv):
-        options.gitopts = " ".join(argv[optind:])
-    else:
-        options.gitopts = get_remote(branch)
-    if options.help:
-        usage(0)
-    os.system("git fetch %s" % options.gitopts)
-    remote = "%s/%s" % (options.gitopts, get_merge(branch))
-    sock = os.popen("git log %s..%s 2>&1" % (branch, remote))
-    lines = sock.readlines()
-    ret = sock.close()
-    if not len(lines):
-        print("No remote changes to pull!")
-        return 0
-    print("".join(lines))
-    if not options.all:
-        while True:
-            ret = ask("Do you want to pull these patches? [ynq]")
-            if ret == "y":
-                break
-            if ret in ("n", "q"):
-                return(0)
-            print("Invalid response, try again!")
-    if os.system("git diff-index --quiet --cached HEAD && git diff-files --quiet") != 0:
-        changes = True
-        if os.system("git stash") != 0:
-            return(1)
-    else:
-        changes = False
-    if os.system("git pull --rebase %s" % options.gitopts) != 0:
-        return(1)
-    if changes and os.system("git stash pop") != 0:
-        return(1)
 
 
 def unrecord(argv):
@@ -287,8 +221,6 @@ PURPOSE.""" % __version__)
             return whatsnew(argv[1:])
         elif sys.argv[1] == "push":
             return push(argv[1:])
-        elif sys.argv[1] == "pull":
-            return pull(argv[1:])
         elif sys.argv[1][:5] == "unrec":
             return unrecord(argv[1:])
         elif sys.argv[1] == "unpull":
