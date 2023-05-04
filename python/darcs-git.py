@@ -124,74 +124,23 @@ def whatsnew(argv):
 
 
 def push(argv):
-    def usage(ret):
-        print("""Usage: darcs-git push [OPTION]... [GIT OPTIONS]...
-Copy and apply patches from this repository to another one.
-
-Options:
-  -a         --all                 answer yes to all questions
-  -s         --summary             summarize changes
-  -v         --verbose             give verbose output
-  -h         --help                shows brief description of command and its arguments""")
-        sys.exit(ret)
-
-    class Options:
-        def __init__(self):
-            self.all = False
-            self.verbose = False
-            self.summary = False
-            self.help = False
-            self.gitopts = ""
-    options = Options()
-
-    try:
-        opts, args = getopt.getopt(argv, "asvh", ["all", "summary", "verbose", "help"])
-    except getopt.GetoptError:
-        usage(1)
-    optind = 0
-    for opt, arg in opts:
-        if opt in ("-a", "--all"):
-            options.all = True
-        elif opt in ("-s", "--summary"):
-            options.summary = True
-        elif opt in ("-v", "--verbose"):
-            options.verbose = True
-        elif opt in ("-h", "--help"):
-            options.help = True
-        optind += 1
-    branch = get_branch()
-    if optind < len(argv):
-        options.gitopts = " ".join(argv[optind:])
-    else:
-        options.gitopts = get_remote(branch)
-    if options.help:
-        usage(0)
-    remote = "%s/%s" % (options.gitopts, get_merge(branch))
-    logopts = ""
-    if options.verbose:
-        logopts += "-p "
-    if options.summary:
-        logopts += "--name-status"
-    sock = os.popen("git log %s %s..%s 2>&1" % (logopts, remote, branch))
-    lines = sock.readlines()
-    ret = sock.close()
-    if not len(lines):
+    output = subprocess.check_output(["git", "log", "HEAD@{upstream}.."])
+    if not len(output):
         print("No recorded local changes to push!")
         return 0
-    print("".join(lines))
-    if not options.all:
-        while True:
-            ret = ask("Do you want to push these patches? [ynq]")
-            if ret == "y":
-                break
-            if ret in ("n", "q"):
-                return(0)
-            print("Invalid response, try again!")
-    ret = os.system("git push %s" % options.gitopts)
+    print(output.decode("utf-8"))
+    while True:
+        ret = ask("Do you want to push these patches? [ynq]")
+        if ret == "y":
+            break
+        if ret in ("n", "q"):
+            sys.exit(0)
+        print("Invalid response, try again!")
+    ret = os.system("git push")
     if ret:
         ret = pull(['-a'])
         if not ret:
-            ret = os.system("git push %s" % options.gitopts)
+            ret = os.system("git push")
             if ret:
                 return(1)
     return(0)
