@@ -109,20 +109,17 @@ def revert(argv):
 
 
 def whatsnew(argv):
-    summary = ""
-    files = ""
-
+    diff = ["git", "diff", "HEAD", "-M", "-C", "--exit-code"]
     opts, args = getopt.getopt(argv, "s", ["summary"])
     optind = 0
     for opt, arg in opts:
         if opt in ("-s", "--summary"):
-            summary = "--name-status"
+            diff.append("--name-status")
         optind += 1
     if optind < len(argv):
-        files = " ".join(argv[optind:])
-    os.system("git update-index --refresh >/dev/null")
-    ret = os.system("git diff HEAD -M -C --exit-code %s %s" % (summary, files))
-    if not ret:
+        diff.extend(argv[optind:])
+    s = subprocess.run(diff)
+    if s.returncode == 0:
         print("No changes!")
 
 
