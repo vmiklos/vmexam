@@ -21,6 +21,7 @@ endef
 
 $(eval $(call RustPackage,avg))
 $(eval $(call RustPackage,csp))
+$(eval $(call RustPackage,darcs-git))
 $(eval $(call RustPackage,mutt-display-filter))
 $(eval $(call RustPackage,mutt-imap-lister))
 $(eval $(call RustPackage,nextcloud-open))
