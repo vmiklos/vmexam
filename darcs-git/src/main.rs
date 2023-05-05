@@ -80,12 +80,20 @@ struct What {
 #[derive(clap::Args)]
 struct Push {}
 
+#[derive(clap::Args)]
+struct Unrec {}
+
+#[derive(clap::Args)]
+struct Unpull {}
+
 #[derive(clap::Subcommand)]
 enum Commands {
     Rec(Rec),
     Rev(Rev),
     What(What),
     Push(Push),
+    Unrec(Unrec),
+    Unpull(Unpull),
 }
 
 #[derive(clap::Parser)]
@@ -182,6 +190,38 @@ fn push() -> anyhow::Result<()> {
     Ok(())
 }
 
+fn unrec() -> anyhow::Result<()> {
+    checked_run("git", &["log", "-1"])?;
+    loop {
+        let ret = ask_char("Do you want to unrecord this patch? [ynq]")?;
+        if ret == "n" || ret == "q" {
+            return Ok(());
+        } else if ret == "y" {
+            break;
+        }
+        println!("Invalid response, try again!");
+    }
+    checked_run("git", &["reset", "--quiet", "HEAD^"])?;
+    println!("Finished unrecording.");
+    Ok(())
+}
+
+fn unpull() -> anyhow::Result<()> {
+    checked_run("git", &["log", "-1"])?;
+    loop {
+        let ret = ask_char("Do you want to unpull this patch? [ynq]")?;
+        if ret == "n" || ret == "q" {
+            return Ok(());
+        } else if ret == "y" {
+            break;
+        }
+        println!("Invalid response, try again!");
+    }
+    checked_run("git", &["reset", "--hard", "HEAD^"])?;
+    println!("Finished unpulling.");
+    Ok(())
+}
+
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
     match &cli.command {
@@ -189,5 +229,7 @@ fn main() -> anyhow::Result<()> {
         Commands::Rev(args) => revert(args),
         Commands::What(args) => whatsnew(args),
         Commands::Push(_) => push(),
+        Commands::Unrec(_) => unrec(),
+        Commands::Unpull(_) => unpull(),
     }
 }
