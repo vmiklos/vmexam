@@ -25,7 +25,6 @@ __version__ = "0.7"
 import sys
 import tty
 import termios
-import os
 import getopt
 import subprocess
 
@@ -49,30 +48,6 @@ def ask(s, type=None):
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         print(c)
         return c
-
-
-def get_branch():
-    sock = os.popen("git symbolic-ref HEAD")
-    branch = sock.read().strip()[11:]
-    if sock.close():
-        sys.exit(0)
-    return branch
-
-
-def get_merge(branch):
-    sock = os.popen("git config branch.%s.merge" % branch)
-    merge = sock.read().strip()[11:]
-    if sock.close():
-        sys.exit(0)
-    return merge
-
-
-def get_remote(branch):
-    sock = os.popen("git config branch.%s.remote" % branch)
-    remote = sock.read().strip()
-    if sock.close():
-        sys.exit(0)
-    return remote
 
 
 def record(argv):
@@ -136,103 +111,54 @@ def push(argv):
         if ret in ("n", "q"):
             sys.exit(0)
         print("Invalid response, try again!")
-    ret = os.system("git push")
     s = subprocess.run(["git", "push"])
     if s.returncode != 0:
         subprocess.run(["git", "pull", "-r"], check=True)
         subprocess.run(["git", "push"], check=True)
-    return(0)
 
 
 def unrecord(argv):
-    def usage(ret):
-        print("""Usage: darcs-git unrecord [OPTION]...
-Remove last committed patch without changing the working directory.
-This is an alias for "git reset -q HEAD^".
-
-Options:
-  -h         --help                shows brief description of command and its arguments""")
-        sys.exit(ret)
-    if len(argv) and argv[0] in ("-h", "--help"):
-        usage(0)
+    subprocess.run(["git", "log", "-1"], check=True)
     while True:
-        os.system("git log -1")
         ret = ask("Do you want to unrecord this patch? [ynq]")
         if ret == "y":
             break
         if ret in ("n", "q"):
             sys.exit(0)
         print("Invalid response, try again!")
-    os.system("git reset -q HEAD^ %s >/dev/null" % " ".join(argv))
+    subprocess.run(["git", "reset", "--quiet", "HEAD^"], check=True)
     print("Finished unrecording.")
 
 
 def unpull(argv):
-    def usage(ret):
-        print("""Usage: darcs-git unpull [OPTION]...
-Opposite of pull; unsafe if the latest patch is not in remote repository.
-This is an alias for "git reset --hard HEAD^".
-
-Options:
-  -h         --help                shows brief description of command and its arguments""")
-        sys.exit(ret)
-    if len(argv) and argv[0] in ("-h", "--help"):
-        usage(0)
+    subprocess.run(["git", "log", "-1"], check=True)
     while True:
-        os.system("git log -1")
         ret = ask("Do you want to unpull this patch? [ynq]")
         if ret == "y":
             break
         if ret in ("n", "q"):
             sys.exit(0)
         print("Invalid response, try again!")
-    os.system("git reset --hard HEAD^ %s" % " ".join(argv))
+    subprocess.run(["git", "reset", "--hard", "HEAD^"], check=True)
     print("Finished unpulling.")
 
 
 def main(argv):
-    import time
-    date_prefix = time.strftime("%Y-%m-%d %H:%M:%S")
-    with open(os.path.expanduser("~/.local/state/darcs-git/commands.log"), "a") as stream:
-        stream.write("{} {}\n".format(date_prefix, argv))
-
-    def usage(ret):
-        os.system("man darcs-git")
-        sys.exit(ret)
-
-    def version():
-        print("""darcs-git (pacman-tools) %s
-
-Copyright (c) 2007 by Miklos Vajna <vmiklos@frugalware.org>
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR \
-PURPOSE.""" % __version__)
-    if len(sys.argv) == 1 or sys.argv[1] in ["-h", "--help"]:
-        usage(0)
-    if sys.argv[1] in ["-v", "--version"]:
-        version()
-    else:
-        os.environ['GIT_PAGER'] = 'cat'
-        if sys.argv[1][:3] == "rec":
-            return record(argv[1:])
-        elif sys.argv[1][:3] == "rev":
-            return revert(argv[1:])
-        elif sys.argv[1][:4] == "what":
-            return whatsnew(argv[1:])
-        elif sys.argv[1] == "push":
-            return push(argv[1:])
-        elif sys.argv[1][:5] == "unrec":
-            return unrecord(argv[1:])
-        elif sys.argv[1] == "unpull":
-            return unpull(argv[1:])
-        else:
-            return os.system("git '%s'" % "' '".join(argv))
+    if sys.argv[1][:3] == "rec":
+        record(argv[1:])
+    elif sys.argv[1][:3] == "rev":
+        revert(argv[1:])
+    elif sys.argv[1][:4] == "what":
+        whatsnew(argv[1:])
+    elif sys.argv[1] == "push":
+        push(argv[1:])
+    elif sys.argv[1][:5] == "unrec":
+        unrecord(argv[1:])
+    elif sys.argv[1] == "unpull":
+        unpull(argv[1:])
 
 
 if __name__ == "__main__":
-    if main(sys.argv[1:]) != 0:
-        sys.exit(1)
-    else:
-        sys.exit(0)
+    main(sys.argv[1:])
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
