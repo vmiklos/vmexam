@@ -1,0 +1,10 @@
+[package]
+name = "darcs-git"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.71"
+clap = { version = "4.2.7", features = ["derive"] }
+libc = "0.2.142"
+termios = "0.3.3"
