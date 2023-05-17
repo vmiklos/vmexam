@@ -28,6 +28,10 @@
         "url": "https://github.com/libreoffice/core/blob/f07b4c242c8768b8a361d0aa551ba2e0c2d8eed2/sw/source/core/layout/tabfrm.cxx#L4791"
     },
     {
+        "text": "//given that we never write fastsaved files you can use it, otherwise\n//I will beat you with a stick",
+        "url": "https://github.com/libreoffice/core/blob/3d6b0594267e42945a87bc98105a2e820d2229f6/sw/source/filter/ww8/ww8scan.hxx#L1087-L1088"
+    },
+    {
         "text": "Gather round children and hear of a tale that will raise the\nhairs on the back of your neck this dark halloween night.",
         "url": "https://github.com/libreoffice/core/blob/0bcce236059ae68c6dcc7bce8ceaec5d39c28f1c/sw/source/filter/ww8/ww8graf.cxx#L2032-L2033"
     }
