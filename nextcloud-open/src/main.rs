@@ -70,7 +70,8 @@ fn get_first_user_path() -> anyhow::Result<UserPath> {
     let mut args = std::env::args();
     let _first = args.next().context("no self")?;
     let relative = args.next().context("no relative")?;
-    let path_buf = std::fs::canonicalize(relative)?;
+    let path_buf =
+        std::fs::canonicalize(&relative).context(format!("failed to canonicalize '{relative}'"))?;
     if path_buf.is_dir() {
         let parent = path_buf.to_str().context("to_str() failed")?.to_string();
         let file_name = "".into();
