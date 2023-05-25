@@ -1,0 +1,16 @@
+#!/bin/sh
+
+for i in */UITest_*.mk
+do
+     if grep -q oneprocess $i; then
+         continue
+     fi
+
+     if grep -q $i $(dirname $0)/count-slow-uitests.blacklist; then
+         continue
+     fi
+
+     echo $i
+done
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
