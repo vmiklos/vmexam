@@ -22,11 +22,13 @@ struct Account {
 
 fn get_nextcloud_config() -> anyhow::Result<HashMap<String, HashMap<String, Option<String>>>> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
-    let home_dir: String = home_dir.to_str().context("to_str() failed")?.into();
-    let config_path = home_dir + "/.config/Nextcloud/nextcloud.cfg";
+    let root: vfs::VfsPath = vfs::PhysicalFS::new(home_dir.as_path()).into();
+    let mut config_file = root.join(".config/Nextcloud/nextcloud.cfg")?.open_file()?;
+    let mut content = String::new();
+    config_file.read_to_string(&mut content)?;
 
     let mut config = configparser::ini::Ini::new();
-    match config.load(config_path) {
+    match config.read(content) {
         Ok(value) => Ok(value),
         Err(value) => Err(anyhow::anyhow!(value)),
     }
@@ -70,9 +72,17 @@ fn get_first_user_path() -> anyhow::Result<UserPath> {
     let mut args = std::env::args();
     let _first = args.next().context("no self")?;
     let relative = args.next().context("no relative")?;
+    let home_dir = home::home_dir().context("home_dir() failed")?;
     let path_buf =
         std::fs::canonicalize(&relative).context(format!("failed to canonicalize '{relative}'"))?;
-    if path_buf.is_dir() {
+    let path = path_buf
+        .strip_prefix(home_dir.as_path())?
+        .as_os_str()
+        .to_str()
+        .context("to_str() failed")?;
+    let root: vfs::VfsPath = vfs::PhysicalFS::new(home_dir.as_path()).into();
+    let path = root.join(path)?;
+    if path.is_dir()? {
         let parent = path_buf.to_str().context("to_str() failed")?.to_string();
         let file_name = "".into();
         Ok(UserPath { parent, file_name })

@@ -17,6 +17,11 @@ check-rustfmt-$(1):
 check-clippy-$(1):
 	cd $(1) && cargo clippy
 
+.PHONY: $(1)
+.PHONY: $(1).check
+
+$(1): build-$(1)
+$(1).check: $(1) check-doc-$(1) check-rustfmt-$(1) check-clippy-$(1)
 endef
 
 $(eval $(call RustPackage,avg))
