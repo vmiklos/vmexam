@@ -11,6 +11,7 @@
 //! Opens a local directory or file in nextcloud, assuming the directory is inside a sync folder.
 
 use anyhow::Context as _;
+use clap::Parser as _;
 use std::collections::HashMap;
 use url_open::UrlOpen as _;
 
@@ -68,31 +69,26 @@ struct UserPath {
     pub file_name: String,
 }
 
-fn get_first_user_path(root: &vfs::VfsPath) -> anyhow::Result<UserPath> {
-    let mut args = std::env::args();
-    let _first = args.next().context("no self")?;
-    let relative = args.next().context("no relative")?;
+fn get_first_user_path(root: &vfs::VfsPath, input: &std::path::Path) -> anyhow::Result<UserPath> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
-    let path_buf =
-        std::fs::canonicalize(&relative).context(format!("failed to canonicalize '{relative}'"))?;
-    let path = path_buf
+    let path = input
         .strip_prefix(home_dir.as_path())?
         .as_os_str()
         .to_str()
         .context("to_str() failed")?;
     let path = root.join(path)?;
     if path.is_dir()? {
-        let parent = path_buf.to_str().context("to_str() failed")?.to_string();
+        let parent = input.to_str().context("to_str() failed")?.to_string();
         let file_name = "".into();
         Ok(UserPath { parent, file_name })
     } else {
-        let parent = path_buf
+        let parent = input
             .parent()
             .context("no parent")?
             .to_str()
             .context("to_str() failed")?
             .to_string();
-        let file_name = path_buf
+        let file_name = input
             .file_name()
             .context("no file_name")?
             .to_str()
@@ -126,18 +122,25 @@ fn get_url(account: &Account, user_path: &UserPath) -> anyhow::Result<url::Url> 
     Ok(url::Url::parse(&full_url)?)
 }
 
-fn nextcloud_open(root: &vfs::VfsPath) -> anyhow::Result<()> {
+fn nextcloud_open(root: &vfs::VfsPath, input: &std::path::Path) -> anyhow::Result<()> {
     let nextcloud_config = get_nextcloud_config(root)?;
     let accounts = get_accounts(&nextcloud_config)?;
-    let user_path = get_first_user_path(root)?;
+    let user_path = get_first_user_path(root, input)?;
     let account = get_account(&accounts, &user_path.parent)?;
     let url = get_url(account, &user_path)?;
     url.open();
     Ok(())
 }
 
+#[derive(clap::Parser)]
+struct Arguments {
+    user_path: std::path::PathBuf,
+}
+
 fn main() -> anyhow::Result<()> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let root: vfs::VfsPath = vfs::PhysicalFS::new(home_dir.as_path()).into();
-    nextcloud_open(&root)
+    let args = Arguments::parse();
+    let input: std::path::PathBuf = args.user_path.canonicalize()?;
+    nextcloud_open(&root, &input)
 }

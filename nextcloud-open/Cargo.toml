@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.68"
+clap = { version = "4.3.0", features = ["derive"] }
 configparser = "3.0.2"
 home = "0.5.4"
 url = "2.3.1"
