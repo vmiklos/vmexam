@@ -141,6 +141,9 @@ fn main() -> anyhow::Result<()> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let root: vfs::VfsPath = vfs::PhysicalFS::new(home_dir.as_path()).into();
     let args = Arguments::parse();
-    let input: std::path::PathBuf = args.user_path.canonicalize()?;
+    let input: std::path::PathBuf = args
+        .user_path
+        .canonicalize()
+        .context(format!("failed to canonicalize {:?}", args.user_path))?;
     nextcloud_open(&root, &input)
 }
