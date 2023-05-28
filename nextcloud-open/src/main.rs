@@ -20,9 +20,9 @@ struct Account {
     pub url: String,
 }
 
-fn get_nextcloud_config() -> anyhow::Result<HashMap<String, HashMap<String, Option<String>>>> {
-    let home_dir = home::home_dir().context("home_dir() failed")?;
-    let root: vfs::VfsPath = vfs::PhysicalFS::new(home_dir.as_path()).into();
+fn get_nextcloud_config(
+    root: &vfs::VfsPath,
+) -> anyhow::Result<HashMap<String, HashMap<String, Option<String>>>> {
     let mut config_file = root.join(".config/Nextcloud/nextcloud.cfg")?.open_file()?;
     let mut content = String::new();
     config_file.read_to_string(&mut content)?;
@@ -68,7 +68,7 @@ struct UserPath {
     pub file_name: String,
 }
 
-fn get_first_user_path() -> anyhow::Result<UserPath> {
+fn get_first_user_path(root: &vfs::VfsPath) -> anyhow::Result<UserPath> {
     let mut args = std::env::args();
     let _first = args.next().context("no self")?;
     let relative = args.next().context("no relative")?;
@@ -80,7 +80,6 @@ fn get_first_user_path() -> anyhow::Result<UserPath> {
         .as_os_str()
         .to_str()
         .context("to_str() failed")?;
-    let root: vfs::VfsPath = vfs::PhysicalFS::new(home_dir.as_path()).into();
     let path = root.join(path)?;
     if path.is_dir()? {
         let parent = path_buf.to_str().context("to_str() failed")?.to_string();
@@ -127,12 +126,18 @@ fn get_url(account: &Account, user_path: &UserPath) -> anyhow::Result<url::Url> 
     Ok(url::Url::parse(&full_url)?)
 }
 
-fn main() -> anyhow::Result<()> {
-    let nextcloud_config = get_nextcloud_config()?;
+fn nextcloud_open(root: &vfs::VfsPath) -> anyhow::Result<()> {
+    let nextcloud_config = get_nextcloud_config(root)?;
     let accounts = get_accounts(&nextcloud_config)?;
-    let user_path = get_first_user_path()?;
+    let user_path = get_first_user_path(root)?;
     let account = get_account(&accounts, &user_path.parent)?;
     let url = get_url(account, &user_path)?;
     url.open();
     Ok(())
+}
+
+fn main() -> anyhow::Result<()> {
+    let home_dir = home::home_dir().context("home_dir() failed")?;
+    let root: vfs::VfsPath = vfs::PhysicalFS::new(home_dir.as_path()).into();
+    nextcloud_open(&root)
 }
