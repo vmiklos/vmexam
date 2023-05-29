@@ -153,3 +153,6 @@ pub fn nextcloud_open(ctx: &Context, input: &std::path::Path) -> anyhow::Result<
     ctx.network.open_browser(&url);
     Ok(())
 }
+
+#[cfg(test)]
+mod tests;
