@@ -12,6 +12,15 @@
 
 use anyhow::Context as _;
 use clap::Parser as _;
+use std::rc::Rc;
+
+struct StdNetwork {}
+
+impl nextcloud_open::Network for StdNetwork {
+    fn open_browser(&self, url: &url::Url) {
+        url_open::open(url);
+    }
+}
 
 #[derive(clap::Parser)]
 struct Arguments {
@@ -21,7 +30,8 @@ struct Arguments {
 fn main() -> anyhow::Result<()> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let root: vfs::VfsPath = vfs::PhysicalFS::new(home_dir.as_path()).into();
-    let ctx = nextcloud_open::Context::new(root);
+    let network = Rc::new(StdNetwork {});
+    let ctx = nextcloud_open::Context::new(root, network);
     let args = Arguments::parse();
     let input: std::path::PathBuf = args
         .user_path

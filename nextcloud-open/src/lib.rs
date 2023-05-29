@@ -12,16 +12,24 @@
 
 use anyhow::Context as _;
 use std::collections::HashMap;
+use std::rc::Rc;
+
+/// Network interface.
+pub trait Network {
+    /// Opens an URL in a browser.
+    fn open_browser(&self, url: &url::Url);
+}
 
 /// Abstracts away the physical filesystem / browser opener.
 pub struct Context {
     fs: vfs::VfsPath,
+    network: Rc<dyn Network>,
 }
 
 impl Context {
     /// Creates a new Context.
-    pub fn new(fs: vfs::VfsPath) -> Self {
-        Context { fs }
+    pub fn new(fs: vfs::VfsPath, network: Rc<dyn Network>) -> Self {
+        Context { fs, network }
     }
 }
 
@@ -142,6 +150,6 @@ pub fn nextcloud_open(ctx: &Context, input: &std::path::Path) -> anyhow::Result<
     let user_path = get_first_user_path(ctx, input)?;
     let account = get_account(&accounts, &user_path.parent)?;
     let url = get_url(account, &user_path)?;
-    url_open::open(&url);
+    ctx.network.open_browser(&url);
     Ok(())
 }
