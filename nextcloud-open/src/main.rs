@@ -21,10 +21,11 @@ struct Arguments {
 fn main() -> anyhow::Result<()> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let root: vfs::VfsPath = vfs::PhysicalFS::new(home_dir.as_path()).into();
+    let ctx = nextcloud_open::Context::new(root);
     let args = Arguments::parse();
     let input: std::path::PathBuf = args
         .user_path
         .canonicalize()
         .context(format!("failed to canonicalize {:?}", args.user_path))?;
-    nextcloud_open::nextcloud_open(&root, &input)
+    nextcloud_open::nextcloud_open(&ctx, &input)
 }

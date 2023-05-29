@@ -12,7 +12,18 @@
 
 use anyhow::Context as _;
 use std::collections::HashMap;
-use url_open::UrlOpen as _;
+
+/// Abstracts away the physical filesystem / browser opener.
+pub struct Context {
+    fs: vfs::VfsPath,
+}
+
+impl Context {
+    /// Creates a new Context.
+    pub fn new(fs: vfs::VfsPath) -> Self {
+        Context { fs }
+    }
+}
 
 #[derive(Debug, Default)]
 struct Account {
@@ -21,9 +32,12 @@ struct Account {
 }
 
 fn get_nextcloud_config(
-    root: &vfs::VfsPath,
+    ctx: &Context,
 ) -> anyhow::Result<HashMap<String, HashMap<String, Option<String>>>> {
-    let mut config_file = root.join(".config/Nextcloud/nextcloud.cfg")?.open_file()?;
+    let mut config_file = ctx
+        .fs
+        .join(".config/Nextcloud/nextcloud.cfg")?
+        .open_file()?;
     let mut content = String::new();
     config_file.read_to_string(&mut content)?;
 
@@ -68,14 +82,14 @@ struct UserPath {
     pub file_name: String,
 }
 
-fn get_first_user_path(root: &vfs::VfsPath, input: &std::path::Path) -> anyhow::Result<UserPath> {
+fn get_first_user_path(ctx: &Context, input: &std::path::Path) -> anyhow::Result<UserPath> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let path = input
         .strip_prefix(home_dir.as_path())?
         .as_os_str()
         .to_str()
         .context("to_str() failed")?;
-    let path = root.join(path)?;
+    let path = ctx.fs.join(path)?;
     if path.is_dir()? {
         let parent = input.to_str().context("to_str() failed")?.to_string();
         let file_name = "".into();
@@ -122,12 +136,12 @@ fn get_url(account: &Account, user_path: &UserPath) -> anyhow::Result<url::Url> 
 }
 
 /// Opens the server version of `input` in a browser.
-pub fn nextcloud_open(root: &vfs::VfsPath, input: &std::path::Path) -> anyhow::Result<()> {
-    let nextcloud_config = get_nextcloud_config(root)?;
+pub fn nextcloud_open(ctx: &Context, input: &std::path::Path) -> anyhow::Result<()> {
+    let nextcloud_config = get_nextcloud_config(ctx)?;
     let accounts = get_accounts(&nextcloud_config)?;
-    let user_path = get_first_user_path(root, input)?;
+    let user_path = get_first_user_path(ctx, input)?;
     let account = get_account(&accounts, &user_path.parent)?;
     let url = get_url(account, &user_path)?;
-    url.open();
+    url_open::open(&url);
     Ok(())
 }
