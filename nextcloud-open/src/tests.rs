@@ -29,6 +29,10 @@ impl Network for TestNetwork {
     fn open_browser(&self, url: &url::Url) {
         self.open_browsers.borrow_mut().push(url.clone());
     }
+
+    fn as_any(&self) -> &dyn std::any::Any {
+        self
+    }
 }
 
 #[test]
@@ -59,4 +63,10 @@ fn test_happy() {
         std::path::PathBuf::from(format!("{home_path}/Nextcloud-Example/my dir/my file.md"));
 
     nextcloud_open(&ctx, &input).unwrap();
+
+    let network = ctx.network.as_any().downcast_ref::<TestNetwork>().unwrap();
+    let open_browsers = network.open_browsers.borrow_mut();
+    assert_eq!(open_browsers.len(), 1);
+    let expected = "https://nextcloud.example.com/apps/files/?dir=/my%20dir/&scrollto=my%20file.md";
+    assert_eq!(open_browsers[0].to_string(), expected);
 }

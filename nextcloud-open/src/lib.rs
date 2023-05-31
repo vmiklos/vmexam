@@ -18,6 +18,9 @@ use std::rc::Rc;
 pub trait Network {
     /// Opens an URL in a browser.
     fn open_browser(&self, url: &url::Url);
+
+    /// Allows accessing the implementing struct.
+    fn as_any(&self) -> &dyn std::any::Any;
 }
 
 /// Abstracts away the physical filesystem / browser opener.

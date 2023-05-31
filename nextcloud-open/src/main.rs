@@ -20,6 +20,10 @@ impl nextcloud_open::Network for StdNetwork {
     fn open_browser(&self, url: &url::Url) {
         url_open::open(url);
     }
+
+    fn as_any(&self) -> &dyn std::any::Any {
+        self
+    }
 }
 
 #[derive(clap::Parser)]
@@ -37,5 +41,6 @@ fn main() -> anyhow::Result<()> {
         .user_path
         .canonicalize()
         .context(format!("failed to canonicalize {:?}", args.user_path))?;
+
     nextcloud_open::nextcloud_open(&ctx, &input)
 }
