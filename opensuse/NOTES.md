@@ -17,6 +17,19 @@ osc vc
 osc commit
 ```
 
+- old meta XML snippets:
+
+```
+<repository name="openSUSE_Leap_15.3_ARM">
+  <path project="openSUSE:Leap:15.3" repository="ports"/>
+  <arch>aarch64</arch>
+</repository>
+<repository name="openSUSE_Factory_ARM">
+  <path project="openSUSE:Factory:ARM" repository="standard"/>
+  <arch>aarch64</arch>
+</repository>
+```
+
 - Updating its git mirror:
 
 cd $HOME/git/opensuse-packages
@@ -256,3 +269,12 @@ kstart plasmashell #to restart it
 ### openSUSE Leap 15.3 -> openSUSE Leap 15.4 (aarch64)
 
 - the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (zypper --releasever=15.4 ref, zypper --releasever=15.4 dup)
+
+### openSUSE Leap 15.4 -> openSUSE Leap 15.5 (x86-64)
+
+- the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (zypper --releasever=15.5 ref, zypper --releasever=15.5 dup)
+  - `zypper -p https://download.opensuse.org/repositories/server:/mail/15.5/ in mutt`
+  - `zypper -p https://download.opensuse.org/repositories/X11:/common:/Factory/15.5/ in libicu-devel`
+  - `zypper -p https://download.opensuse.org/repositories/devel:/languages:/python/15.5/ in git-review`
+  - `zypper -p https://download.opensuse.org/repositories/editors/15.5/ in vim`
+- the usual fix with html5 video codecs in firefox/chromium: <https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support>
