@@ -53,7 +53,8 @@ fn test_happy() {
                 "[Accounts]\n\
 0\\Folders\\1\\localPath={home_path}/Nextcloud-Example/\n\
 0\\url=https://nextcloud.example.com\n\
-version=2"
+version=4\n\
+0\\keyWithNoValue"
             )
             .as_bytes(),
         )
