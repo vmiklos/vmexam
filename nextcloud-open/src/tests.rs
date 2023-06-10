@@ -70,3 +70,30 @@ fn test_happy() {
     let expected = "https://nextcloud.example.com/apps/files/?dir=/my%20dir/&scrollto=my%20file.md";
     assert_eq!(open_browsers[0].to_string(), expected);
 }
+
+/// Tests what happens when the nextcloud config file can't be parsed.
+#[test]
+fn test_config_read_error() {
+    let home_dir = home::home_dir().unwrap();
+    let home_path = home_dir.to_string_lossy();
+    let root: vfs::VfsPath = vfs::MemoryFS::new().into();
+    root.join(".config/Nextcloud")
+        .unwrap()
+        .create_dir_all()
+        .unwrap();
+    let config_file = root.join(".config/Nextcloud/nextcloud.cfg").unwrap();
+    // Opening bracket for section name but no closing bracket.
+    config_file
+        .create_file()
+        .unwrap()
+        .write_all(format!("[Invalid").as_bytes())
+        .unwrap();
+    let network: Rc<dyn Network> = Rc::new(TestNetwork::new());
+    let ctx = Context::new(root, network);
+    let input =
+        std::path::PathBuf::from(format!("{home_path}/Nextcloud-Example/my dir/my file.md"));
+
+    let ret = nextcloud_open(&ctx, &input);
+
+    assert_eq!(ret.is_err(), true);
+}

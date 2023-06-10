@@ -1,27 +1,30 @@
 # $(call RustPackage,path)
 define RustPackage
-build: build-$(1)
-check: check-doc-$(1)
-check: check-rustfmt-$(1)
-check: check-clippy-$(1)
+build: $(1).build
+check: $(1).check-doc
+check: $(1).check-rustfmt
+check: $(1).check-clippy
 
-check-doc-$(1):
+$(1).check-doc:
 	ls $(1)/README.md >/dev/null
 
-build-$(1):
+$(1).build:
 	cd $(1) && cargo build
 
-check-rustfmt-$(1):
+$(1).check-rustfmt:
 	cd $(1) && cargo fmt -- --check
 
-check-clippy-$(1):
+$(1).check-clippy:
 	cd $(1) && cargo clippy
+
+$(1).check-cov:
+	cd $(1) && cargo llvm-cov --lib  --show-missing-lines --fail-under-lines 100 -- --test-threads=1
 
 .PHONY: $(1)
 .PHONY: $(1).check
 
-$(1): build-$(1)
-$(1).check: $(1) check-doc-$(1) check-rustfmt-$(1) check-clippy-$(1)
+$(1): $(1).build
+$(1).check: $(1) $(1).check-doc $(1).check-rustfmt $(1).check-clippy
 endef
 
 $(eval $(call RustPackage,avg))
