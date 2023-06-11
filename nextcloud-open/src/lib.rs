@@ -36,7 +36,7 @@ impl Context {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 struct Account {
     pub local_path: String,
     pub url: String,
@@ -109,13 +109,11 @@ fn get_first_user_path(input: &vfs::VfsPath) -> anyhow::Result<UserPath> {
 }
 
 fn get_account<'a>(accounts: &'a [Account], absolute: &str) -> anyhow::Result<&'a Account> {
-    for account in accounts.iter() {
-        if absolute.starts_with(&account.local_path) {
-            return Ok(account);
-        }
-    }
-
-    Err(anyhow::anyhow!("local path not in sync directory"))
+    Ok(accounts
+        .iter()
+        .filter(|account| absolute.starts_with(&account.local_path))
+        .next()
+        .context("local path not in a sync directory")?)
 }
 
 fn get_url(account: &Account, user_path: &UserPath) -> anyhow::Result<url::Url> {
