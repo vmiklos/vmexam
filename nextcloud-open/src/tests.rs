@@ -40,11 +40,12 @@ fn test_happy() {
     let home_dir = home::home_dir().unwrap();
     let home_path = home_dir.to_string_lossy();
     let root: vfs::VfsPath = vfs::MemoryFS::new().into();
-    root.join(".config/Nextcloud")
+    let home = root.join(&home_path).unwrap();
+    home.join(".config/Nextcloud")
         .unwrap()
         .create_dir_all()
         .unwrap();
-    let config_file = root.join(".config/Nextcloud/nextcloud.cfg").unwrap();
+    let config_file = home.join(".config/Nextcloud/nextcloud.cfg").unwrap();
     config_file
         .create_file()
         .unwrap()
@@ -79,11 +80,12 @@ fn test_config_read_error() {
     let home_dir = home::home_dir().unwrap();
     let home_path = home_dir.to_string_lossy();
     let root: vfs::VfsPath = vfs::MemoryFS::new().into();
-    root.join(".config/Nextcloud")
+    let home = root.join(&home_path).unwrap();
+    home.join(".config/Nextcloud")
         .unwrap()
         .create_dir_all()
         .unwrap();
-    let config_file = root.join(".config/Nextcloud/nextcloud.cfg").unwrap();
+    let config_file = home.join(".config/Nextcloud/nextcloud.cfg").unwrap();
     // Opening bracket for section name but no closing bracket.
     config_file
         .create_file()

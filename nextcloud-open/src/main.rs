@@ -32,8 +32,7 @@ struct Arguments {
 }
 
 fn main() -> anyhow::Result<()> {
-    let home_dir = home::home_dir().context("home_dir() failed")?;
-    let root: vfs::VfsPath = vfs::PhysicalFS::new(home_dir.as_path()).into();
+    let root: vfs::VfsPath = vfs::PhysicalFS::new("/").into();
     let network = Rc::new(StdNetwork {});
     let ctx = nextcloud_open::Context::new(root, network);
     let args = Arguments::parse();

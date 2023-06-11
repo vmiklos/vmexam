@@ -45,8 +45,11 @@ struct Account {
 fn get_nextcloud_config(
     ctx: &Context,
 ) -> anyhow::Result<HashMap<String, HashMap<String, Option<String>>>> {
+    let home_dir = home::home_dir().context("home_dir() failed")?;
+    let home_path = home_dir.to_string_lossy();
     let mut config_file = ctx
         .fs
+        .join(home_path)?
         .join(".config/Nextcloud/nextcloud.cfg")?
         .open_file()?;
     let mut content = String::new();
@@ -94,9 +97,7 @@ struct UserPath {
 }
 
 fn get_first_user_path(ctx: &Context, input: &std::path::Path) -> anyhow::Result<UserPath> {
-    let home_dir = home::home_dir().context("home_dir() failed")?;
     let path = input
-        .strip_prefix(home_dir.as_path())?
         .as_os_str()
         .to_str()
         .context("to_str() failed")?;
