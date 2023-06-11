@@ -96,29 +96,14 @@ struct UserPath {
     pub file_name: String,
 }
 
-fn get_first_user_path(ctx: &Context, input: &std::path::Path) -> anyhow::Result<UserPath> {
-    let path = input
-        .as_os_str()
-        .to_str()
-        .context("to_str() failed")?;
-    let path = ctx.fs.join(path)?;
-    if path.is_dir()? {
-        let parent = input.to_str().context("to_str() failed")?.to_string();
+fn get_first_user_path(input: &vfs::VfsPath) -> anyhow::Result<UserPath> {
+    if input.is_dir()? {
+        let parent = input.as_str().to_string();
         let file_name = "".into();
         Ok(UserPath { parent, file_name })
     } else {
-        let parent = input
-            .parent()
-            .context("no parent")?
-            .to_str()
-            .context("to_str() failed")?
-            .to_string();
-        let file_name = input
-            .file_name()
-            .context("no file_name")?
-            .to_str()
-            .context("to_str() failed")?
-            .to_string();
+        let parent = input.parent().as_str().to_string();
+        let file_name = input.filename();
         Ok(UserPath { parent, file_name })
     }
 }
@@ -148,10 +133,10 @@ fn get_url(account: &Account, user_path: &UserPath) -> anyhow::Result<url::Url> 
 }
 
 /// Opens the server version of `input` in a browser.
-pub fn nextcloud_open(ctx: &Context, input: &std::path::Path) -> anyhow::Result<()> {
+pub fn nextcloud_open(ctx: &Context, input: &vfs::VfsPath) -> anyhow::Result<()> {
     let nextcloud_config = get_nextcloud_config(ctx)?;
     let accounts = get_accounts(&nextcloud_config)?;
-    let user_path = get_first_user_path(ctx, input)?;
+    let user_path = get_first_user_path(input)?;
     let account = get_account(&accounts, &user_path.parent)?;
     let url = get_url(account, &user_path)?;
     ctx.network.open_browser(&url);

@@ -34,12 +34,13 @@ struct Arguments {
 fn main() -> anyhow::Result<()> {
     let root: vfs::VfsPath = vfs::PhysicalFS::new("/").into();
     let network = Rc::new(StdNetwork {});
-    let ctx = nextcloud_open::Context::new(root, network);
     let args = Arguments::parse();
-    let input: std::path::PathBuf = args
+    let input = args
         .user_path
         .canonicalize()
         .context(format!("failed to canonicalize {:?}", args.user_path))?;
+    let input = root.join(input.to_string_lossy()).unwrap();
+    let ctx = nextcloud_open::Context::new(root, network);
 
     nextcloud_open::nextcloud_open(&ctx, &input)
 }

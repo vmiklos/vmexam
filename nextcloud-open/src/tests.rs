@@ -61,9 +61,10 @@ version=4\n\
         )
         .unwrap();
     let network: Rc<dyn Network> = Rc::new(TestNetwork::new());
+    let input = root
+        .join(format!("{home_path}/Nextcloud-Example/my dir/my file.md"))
+        .unwrap();
     let ctx = Context::new(root, network);
-    let input =
-        std::path::PathBuf::from(format!("{home_path}/Nextcloud-Example/my dir/my file.md"));
 
     nextcloud_open(&ctx, &input).unwrap();
 
@@ -93,9 +94,10 @@ fn test_config_read_error() {
         .write_all(format!("[Invalid").as_bytes())
         .unwrap();
     let network: Rc<dyn Network> = Rc::new(TestNetwork::new());
+    let input = root
+        .join(format!("{home_path}/Nextcloud-Example/my dir/my file.md"))
+        .unwrap();
     let ctx = Context::new(root, network);
-    let input =
-        std::path::PathBuf::from(format!("{home_path}/Nextcloud-Example/my dir/my file.md"));
 
     let ret = nextcloud_open(&ctx, &input);
 
