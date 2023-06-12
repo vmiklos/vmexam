@@ -4,3 +4,5 @@
 --without-myspell-dicts
 --without-help
 --without-java
+# online.git is not compatible with system nss
+--without-system-nss

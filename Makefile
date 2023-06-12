@@ -1,14 +1,18 @@
-# $(call RustPackage,path)
-define RustPackage
-build: $(1).build
+true := T
+false :=
+
+# $(call RustPackage_RustPackage,path)
+define RustPackage_RustPackage
+build: $(1)
 check: $(1).check-doc
 check: $(1).check-rustfmt
 check: $(1).check-clippy
+check: $(1).check-test
 
 $(1).check-doc:
 	ls $(1)/README.md >/dev/null
 
-$(1).build:
+$(1):
 	cd $(1) && cargo build
 
 $(1).check-rustfmt:
@@ -17,26 +21,33 @@ $(1).check-rustfmt:
 $(1).check-clippy:
 	cd $(1) && cargo clippy
 
-$(1).check-cov:
-	cd $(1) && cargo llvm-cov --lib  --show-missing-lines --fail-under-lines 100 -- --test-threads=1
+$(1).check-test:
+	$$(if $$(COVERAGE), cd $(1) && cargo llvm-cov --lib  --show-missing-lines --fail-under-lines 100 -- --test-threads=1)
 
 .PHONY: $(1)
 .PHONY: $(1).check
 
-$(1): $(1).build
-$(1).check: $(1) $(1).check-doc $(1).check-rustfmt $(1).check-clippy
+$(1).check: $(1) $(1).check-doc $(1).check-rustfmt $(1).check-clippy $(1).check-test
+$(1).check-test : COVERAGE := $(false)
+
 endef
 
-$(eval $(call RustPackage,avg))
-$(eval $(call RustPackage,csp))
-$(eval $(call RustPackage,darcs-git))
-$(eval $(call RustPackage,mutt-display-filter))
-$(eval $(call RustPackage,mutt-imap-lister))
-$(eval $(call RustPackage,nextcloud-open))
-$(eval $(call RustPackage,notmuch-showref))
-$(eval $(call RustPackage,osm/addr-osmify-rust))
-$(eval $(call RustPackage,pushping))
-$(eval $(call RustPackage,scan-document))
-$(eval $(call RustPackage,share-vmiklos-hu-apps))
-$(eval $(call RustPackage,ssh-proxy))
-$(eval $(call RustPackage,weechat-calc))
+define RustPackage_use_coverage
+$(1).check-test : COVERAGE := $(true)
+
+endef
+
+$(eval $(call RustPackage_RustPackage,avg))
+$(eval $(call RustPackage_RustPackage,csp))
+$(eval $(call RustPackage_RustPackage,darcs-git))
+$(eval $(call RustPackage_RustPackage,mutt-display-filter))
+$(eval $(call RustPackage_RustPackage,mutt-imap-lister))
+$(eval $(call RustPackage_RustPackage,nextcloud-open))
+$(eval $(call RustPackage_use_coverage,nextcloud-open))
+$(eval $(call RustPackage_RustPackage,notmuch-showref))
+$(eval $(call RustPackage_RustPackage,osm/addr-osmify-rust))
+$(eval $(call RustPackage_RustPackage,pushping))
+$(eval $(call RustPackage_RustPackage,scan-document))
+$(eval $(call RustPackage_RustPackage,share-vmiklos-hu-apps))
+$(eval $(call RustPackage_RustPackage,ssh-proxy))
+$(eval $(call RustPackage_RustPackage,weechat-calc))
