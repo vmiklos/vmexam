@@ -1,6 +1,13 @@
 true := T
 false :=
 
+check:
+	@echo "make check: ok"
+
+%.check-test:
+	$(if $(COVERAGE), cd $* && cargo llvm-cov --lib  --show-missing-lines --fail-under-lines 100 -- --test-threads=1)
+
+
 # $(call RustPackage_RustPackage,path)
 define RustPackage_RustPackage
 build: $(1)
@@ -21,9 +28,6 @@ $(1).check-rustfmt:
 $(1).check-clippy:
 	cd $(1) && cargo clippy
 
-$(1).check-test:
-	$$(if $$(COVERAGE), cd $(1) && cargo llvm-cov --lib  --show-missing-lines --fail-under-lines 100 -- --test-threads=1)
-
 .PHONY: $(1)
 .PHONY: $(1).check
 
@@ -40,6 +44,7 @@ endef
 $(eval $(call RustPackage_RustPackage,avg))
 $(eval $(call RustPackage_RustPackage,csp))
 $(eval $(call RustPackage_RustPackage,darcs-git))
+$(eval $(call RustPackage_RustPackage,hyphen-sys))
 $(eval $(call RustPackage_RustPackage,mutt-display-filter))
 $(eval $(call RustPackage_RustPackage,mutt-imap-lister))
 $(eval $(call RustPackage_RustPackage,nextcloud-open))
