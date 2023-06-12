@@ -109,11 +109,10 @@ fn get_first_user_path(input: &vfs::VfsPath) -> anyhow::Result<UserPath> {
 }
 
 fn get_account<'a>(accounts: &'a [Account], absolute: &str) -> anyhow::Result<&'a Account> {
-    Ok(accounts
+    accounts
         .iter()
-        .filter(|account| absolute.starts_with(&account.local_path))
-        .next()
-        .context("local path not in a sync directory")?)
+        .find(|account| absolute.starts_with(&account.local_path))
+        .context("local path not in a sync directory")
 }
 
 fn get_url(account: &Account, user_path: &UserPath) -> anyhow::Result<url::Url> {
