@@ -44,6 +44,7 @@ endef
 $(eval $(call RustPackage_RustPackage,avg))
 $(eval $(call RustPackage_RustPackage,csp))
 $(eval $(call RustPackage_RustPackage,darcs-git))
+$(eval $(call RustPackage_RustPackage,hyphen))
 $(eval $(call RustPackage_RustPackage,hyphen-sys))
 $(eval $(call RustPackage_RustPackage,mutt-display-filter))
 $(eval $(call RustPackage_RustPackage,mutt-imap-lister))

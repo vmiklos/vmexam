@@ -1,3 +1,5 @@
+#![deny(warnings)]
+
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -56,7 +58,7 @@ impl HyphenDict {
         let actual = unsafe { String::from_utf8_unchecked(hword[0..nul_range_end].to_vec()) };
         if !rep.is_null() {
             for i in 0..word.len() {
-                let rep_i = unsafe { *rep.offset(i as isize) };
+                let rep_i = unsafe { *rep.add(i) };
                 if !rep_i.is_null() {
                     unsafe { libc::free(rep_i as *mut libc::c_void) };
                 }
