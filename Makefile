@@ -5,7 +5,8 @@ check:
 	@echo "make check: ok"
 
 %.check-test:
-	$(if $(COVERAGE), cd $* && cargo llvm-cov --lib  --show-missing-lines --fail-under-lines 100 -- --test-threads=1)
+	$(if $(COVERAGE), cd $* && cargo llvm-cov --lib --show-missing-lines --fail-under-lines 100 -- --test-threads=1)
+	$(if $(TEST), cd $* && cargo test --lib)
 
 
 # $(call RustPackage_RustPackage,path)
@@ -18,6 +19,9 @@ check: $(1).check-test
 
 $(1).check-doc:
 	ls $(1)/README.md >/dev/null
+
+$(1).run:
+	cd $(1) && cargo run
 
 $(1):
 	cd $(1) && cargo build
@@ -33,6 +37,7 @@ $(1).check-clippy:
 
 $(1).check: $(1) $(1).check-doc $(1).check-rustfmt $(1).check-clippy $(1).check-test
 $(1).check-test : COVERAGE := $(false)
+$(1).check-test : TEST := $(false)
 
 endef
 
@@ -41,11 +46,18 @@ $(1).check-test : COVERAGE := $(true)
 
 endef
 
+define RustPackage_use_test
+$(1).check-test : TEST := $(true)
+
+endef
+
 $(eval $(call RustPackage_RustPackage,avg))
 $(eval $(call RustPackage_RustPackage,csp))
 $(eval $(call RustPackage_RustPackage,darcs-git))
 $(eval $(call RustPackage_RustPackage,hyphen))
+$(eval $(call RustPackage_use_test,hyphen))
 $(eval $(call RustPackage_RustPackage,hyphen-sys))
+$(eval $(call RustPackage_use_test,hyphen-sys))
 $(eval $(call RustPackage_RustPackage,mutt-display-filter))
 $(eval $(call RustPackage_RustPackage,mutt-imap-lister))
 $(eval $(call RustPackage_RustPackage,nextcloud-open))

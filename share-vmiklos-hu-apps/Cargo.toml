@@ -7,4 +7,5 @@ edition = "2021"
 anyhow = "1.0.61"
 evalexpr = "8.1.0"
 html-escape = "0.2.11"
+hyphen = { path = "../hyphen" }
 rouille = "3.5.0"
