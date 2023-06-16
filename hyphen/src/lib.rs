@@ -6,6 +6,8 @@ use thiserror::Error;
 pub enum HyphenError {
     #[error("an interior nul byte was found")]
     BadString(#[from] std::ffi::NulError),
+    #[error("failed to load dictionary")]
+    FailedDictLoad,
     #[error("failed to hyphenate")]
     FailedHyphenate,
 }
@@ -18,6 +20,9 @@ impl HyphenDict {
     pub fn new(path: &str) -> Result<Self, HyphenError> {
         let c_str = std::ffi::CString::new(path)?;
         let dict = unsafe { hyphen_sys::hnj_hyphen_load(c_str.as_ptr() as *const i8) };
+        if dict.is_null() {
+            return Err(HyphenError::FailedDictLoad);
+        }
         Ok(HyphenDict { dict })
     }
 
