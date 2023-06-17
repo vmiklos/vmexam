@@ -1,4 +1,4 @@
-= Python -> Rust porting notes
+# Python → Rust porting notes
 
 Based on porting osm-gimmisn over from Python to Rust. Read
 <https://blog.waleedkhan.name/port-python-to-rust/> first.
@@ -17,17 +17,17 @@ Before porting:
 - Avoid mocking in test code, replace with interfaces.
 
 This can be a little complex. For example, a Time interface that wraps the current system time needs
-these for incremental porting: context.Time (interface), context.StdTime (real implementation) and
-tests.test_context.TestTime (test implementation) on the Python side. Then context::Time (Rust
-trait), context::StdTime (real impl), context::PyTime (wraps a dyn Time), PyAnyTime (wraps a PyAny,
-implements Time) and TestTime on the Rust side. But this is only temporary, at the end of the
+these for incremental porting: `context.Time` (interface), `context.StdTime` (real implementation) and
+`tests.test_context.TestTime` (test implementation) on the Python side. Then `context::Time` (Rust
+trait), `context::StdTime` (real impl), `context::PyTime` (wraps a `dyn Time`), `PyAnyTime `(wraps a `PyAny`,
+implements `Time`) and `TestTime` on the Rust side. But this is only temporary, at the end of the
 porting you'll again have a single trait and 2 implementations.
 
 - Kill inheritance (except interface classes), replace with encapsulation.
 
 Actual porting:
 
-- Vec<u8> is mapped to List[int] by default, need custom mapping if the wanted result type is bytes.
+- `Vec<u8>` is mapped to `List[int]` by default, need custom mapping if the wanted result type is bytes.
 
 - Maintain Python type hints even for the API exposed from rust.
 
@@ -49,11 +49,11 @@ and the original Python function, which is now just a stub.
 
 Conversions in Rust:
 
-- string -> bytes: `std::str::as_bytes()`.
+- string → bytes: `std::str::as_bytes()`.
 
-- bytes -> string: `std::str::from_utf8()`.
+- bytes → string: `std::str::from_utf8()`.
 
-- vector of tuples -> map: `let map: HashMap<_, _> = vec.into_iter().collect();`
+- vector of tuples → map: `let map: HashMap<_, _> = vec.into_iter().collect();`
 
 Overall a very positive experience. If you have a larger hobby project, then can definitely
 recommend the incremental porting way. It takes more time, but small fixes and features can be added
