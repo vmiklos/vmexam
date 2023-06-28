@@ -1,6 +1,7 @@
 #!/bin/bash
 
 mydir=$(dirname $0)
+myname=ast-matcher
 if [ -h $0 ]; then
     mydir=$(dirname $(readlink -f $0))
 fi
@@ -24,7 +25,9 @@ done
 
 ret=0
 if [ -n "$file" ]; then
-    $mydir/ast-matcher $RENAME_ARGS $file -- "$@"
+    # Avoid "error: unable to find plugin 'loplugin'".
+    args="$(echo "$@"|sed "s|-Xclang -load -Xclang $SRC_ROOT/compilerplugins/clang/plugin.so -Xclang -add-plugin -Xclang loplugin||")"
+    $mydir/$myname $RENAME_ARGS $file -- $args
     ret=$?
 fi
 

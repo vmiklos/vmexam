@@ -15,9 +15,9 @@ class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
     void
     run(const clang::ast_matchers::MatchFinder::MatchResult& result) override
     {
-        if (const auto stmt = result.Nodes.getNodeAs<clang::Stmt>("stmt"))
+        if (const auto expr = result.Nodes.getNodeAs<clang::Expr>("expr"))
         {
-            clang::SourceRange range(stmt->getBeginLoc());
+            clang::SourceRange range(expr->getBeginLoc());
             report(result.Context, "ast-matcher", range.getBegin()) << range;
         }
     }
@@ -41,22 +41,9 @@ class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
 clang::ast_matchers::StatementMatcher makeMatcher()
 {
     using namespace clang::ast_matchers;
-    // Finds cases like:
-    // v[0] == "foo"
-    // i.e. operator ==() has an argument, which is a StringVector::operator
-    // []() result.
-    // But filter out LOOLProtocol::getFirstToken(v[0]) == "foo".
-    return cxxOperatorCallExpr(
-               hasDescendant(
-                   declRefExpr(to(functionDecl(hasName("operator=="))))),
-               hasDescendant(cxxOperatorCallExpr(
-                   hasDescendant(
-                       declRefExpr(to(cxxMethodDecl(hasName("operator[]"))))),
-                   hasDescendant(declRefExpr(to(varDecl(
-                       hasType(cxxRecordDecl(hasName("StringVector"))))))))),
-               unless(hasDescendant(declRefExpr(
-                   to(functionDecl(hasName("LOOLProtocol::getFirstToken")))))))
-        .bind("stmt");
+    return cxxStaticCastExpr(hasDestinationType(pointsTo(
+                                 cxxRecordDecl(hasName("SwTextFrame")))))
+        .bind("expr");
 }
 
 llvm::cl::OptionCategory category("ast-matcher options");

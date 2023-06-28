@@ -12,6 +12,12 @@ clang-apply-replacements -remove-change-desc-files /tmp/rename
 make check gb_SUPPRESS_TESTS=y
 ```
 
+### Find all places pointed out by an ast matcher
+
+```
+make -C sw -sr -j8 COMPILER_EXTERNAL_TOOL=1 CCACHE_PREFIX=ast-matcher-wrapper FORCE_COMPILE=all
+```
+
 ### Handling the first non-conforming class in a module, when the module doesn't have public headers
 
 ```
