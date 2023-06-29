@@ -41,8 +41,10 @@ class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
 clang::ast_matchers::StatementMatcher makeMatcher()
 {
     using namespace clang::ast_matchers;
-    return cxxStaticCastExpr(hasDestinationType(pointsTo(
-                                 cxxRecordDecl(hasName("SwTextFrame")))))
+    return cxxStaticCastExpr(
+               hasDestinationType(
+                   anyOf(pointsTo(cxxRecordDecl(hasName("SwTextFrame"))),
+                         references(cxxRecordDecl(hasName("SwTextFrame"))))))
         .bind("expr");
 }
 
