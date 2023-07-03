@@ -12,6 +12,7 @@ use super::*;
 use isahc::config::Configurable;
 use isahc::ReadResponseExt;
 use isahc::RequestExt;
+use std::io::IsTerminal as _;
 
 /// Real (not test) network trait implementation.
 pub struct StdNetwork {}
@@ -36,6 +37,6 @@ impl Network for StdNetwork {
     }
 
     fn isatty(&self) -> bool {
-        atty::is(atty::Stream::Stdout)
+        std::io::stdout().is_terminal()
     }
 }
