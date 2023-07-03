@@ -18,7 +18,16 @@ class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
         if (const auto expr = result.Nodes.getNodeAs<clang::Expr>("expr"))
         {
             clang::SourceRange range(expr->getBeginLoc());
-            report(result.Context, "ast-matcher", range.getBegin()) << range;
+            clang::SourceLocation location(range.getBegin());
+#if 0
+            clang::StringRef fileName =
+                result.SourceManager->getFilename(location);
+            if (fileName.endswith("sw/inc/calbck.hxx"))
+            {
+                return;
+            }
+#endif
+            report(result.Context, "ast-matcher", location) << range;
         }
     }
 
