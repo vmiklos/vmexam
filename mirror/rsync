@@ -40,18 +40,11 @@ plug3-boot-efi)
     ;;
 wilson)
     cd wilson
-    if ! rsync -avP --delete-after -x --exclude=swapfile wilson.vmiklos.hu:/ .; then
-        echo "rsync failed giving up"
-        exit 1
-    fi
-    ;;
-genesis)
-    cd genesis
-    if ! ssh genesis.vmiklos.hu 'cd /srv/www/sqldumps; ./backup.sh'; then
+    if ! ssh genesis.vmiklos.hu 'cd /var/lib/nextcloud; ./backup.sh'; then
         echo "sqldump failed, giving up"
         exit 1
     fi
-    if ! rsync -avP --delete-after -x genesis.vmiklos.hu:/srv/www/{htdocs,sqldumps} .; then
+    if ! rsync -avP --delete-after -x --exclude=swapfile wilson.vmiklos.hu:/ .; then
         echo "rsync failed giving up"
         exit 1
     fi
