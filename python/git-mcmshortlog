@@ -8,16 +8,25 @@ import json
 import os
 import re
 import sys
+import csv
 
 
 # Searches for a string (e.g. name or email) in the MCM db.
-def searchInMcm(query):
-    pwd = os.getcwd()
-    os.chdir(os.path.join(os.environ['HOME'], ".mcm/db"))
-    ret = os.system("git grep -q '%s'" % query)
-    os.chdir(pwd)
-    return ret == 0
+def searchInMcm(mcm, query):
+    for member in mcm:
+        if query in member:
+            return True
+    return False
 
+
+def readMcm():
+    mcm = []
+    with open('current_members.txt') as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        for row in csv_reader:
+            # id, given, family, email, rest
+            mcm.append("{} {} <{}>".format(row[1], row[2], row[3]))
+    return sorted(set(mcm))
 
 # Filters git shortlog about, hiding already existing TDF members.
 def main(argv):
@@ -31,6 +40,7 @@ def main(argv):
         sock = os.popen("git shortlog -s -n -e --since=6.months.ago")
     else:
         sock = open("qa.csv")
+    mcm = readMcm()
     while True:
         line = sock.readline().strip()
         if git:
@@ -53,11 +63,11 @@ def main(argv):
 
         if email in emailMap.keys():
             email = emailMap[email]
-        if searchInMcm(email):
+        if searchInMcm(mcm, email):
             # Found by email.
             continue
 
-        if searchInMcm(name):
+        if searchInMcm(mcm, name):
             # Found by name.
             continue
 
