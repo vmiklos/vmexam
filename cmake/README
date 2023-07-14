@@ -1,8 +1,7 @@
 Hello-world cmake skeleton that allows you to try out something easily on
-Linux/Windows/OS X.
+Linux/Windows/macOS.
 
 Usage:
 
 - 'make' to build the code
-   - 'make OS=Android' to build on Linux for Android
 - 'make run' to run it
