@@ -41,31 +41,48 @@ $(1).check-test : TEST := $(false)
 
 endef
 
+# $(call RustPackage_use_coverage,path)
 define RustPackage_use_coverage
 $(1).check-test : COVERAGE := $(true)
 
 endef
 
+# $(call RustPackage_use_test,path)
 define RustPackage_use_test
 $(1).check-test : TEST := $(true)
 
 endef
 
 $(eval $(call RustPackage_RustPackage,avg))
+
 $(eval $(call RustPackage_RustPackage,csp))
+
 $(eval $(call RustPackage_RustPackage,darcs-git))
+
 $(eval $(call RustPackage_RustPackage,hyphen))
 $(eval $(call RustPackage_use_test,hyphen))
+
 $(eval $(call RustPackage_RustPackage,hyphen-sys))
 $(eval $(call RustPackage_use_test,hyphen-sys))
+
 $(eval $(call RustPackage_RustPackage,mutt-display-filter))
+
 $(eval $(call RustPackage_RustPackage,mutt-imap-lister))
+
 $(eval $(call RustPackage_RustPackage,nextcloud-open))
 $(eval $(call RustPackage_use_coverage,nextcloud-open))
+
 $(eval $(call RustPackage_RustPackage,notmuch-showref))
+
 $(eval $(call RustPackage_RustPackage,osm/addr-osmify-rust))
+$(eval $(call RustPackage_use_coverage,osm/addr-osmify-rust-open))
+
 $(eval $(call RustPackage_RustPackage,pushping))
+
 $(eval $(call RustPackage_RustPackage,scan-document))
+
 $(eval $(call RustPackage_RustPackage,share-vmiklos-hu-apps))
+
 $(eval $(call RustPackage_RustPackage,ssh-proxy))
+
 $(eval $(call RustPackage_RustPackage,weechat-calc))
