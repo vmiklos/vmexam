@@ -43,7 +43,10 @@ def application(
         payload = environ["wsgi.input"].read(content_length).decode("utf-8")
         payload_dict = json.loads(payload)
         command = payload_dict["command"]
-        if os.name == "nt":
+        detach = True
+        if "sync" in payload_dict:
+            detach = False
+        if os.name == "nt" and detach:
             flags = 0
             flags |= 0x00000008  # DETACHED_PROCESS
             flags |= 0x00000200  # CREATE_NEW_PROCESS_GROUP

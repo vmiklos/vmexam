@@ -33,6 +33,10 @@ ALIASES = {
     "excel": "c:/program files/microsoft office/root/office16/excel.exe",
     "powerpnt": "c:/program files/microsoft office/root/office16/powerpnt.exe",
     "winword": "c:/program files/microsoft office/root/office16/winword.exe",
+    "docto": {
+        "command": "c:/users/vmiklos/downloads/docto.exe",
+        "sync": True,
+    }
 }
 
 
@@ -55,10 +59,16 @@ def main() -> None:
     # If my name is an alias, inject it.
     my_name = sys.argv[0]
     command = ""
+    sync = False
     for key, value in ALIASES.items():
         if not my_name.endswith(key):
             continue
-        command = value
+        if type(value) is dict:
+            command = value["command"]
+            if "sync" in value:
+                sync = True
+        else:
+            command = value
     if command:
         argv = [command] + argv
 
@@ -73,11 +83,12 @@ def main() -> None:
         else:
             abs_argv.append(arg)
     abs_argv = [i.replace(os.path.join(os.environ["HOME"], "git"), 'z:') for i in abs_argv]
-    abs_argv = [i.replace("/", "\\") for i in abs_argv]
 
     payload_dict = {
         "command": abs_argv
     }
+    if sync:
+        payload_dict["sync"] = "true"
     payload = json.dumps(payload_dict)
     url = "http://{}:8000/exec".format(guest_ip)
     with urllib.request.urlopen(url, bytes(payload, "utf-8")) as stream:
