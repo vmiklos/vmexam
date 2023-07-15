@@ -19,13 +19,21 @@ struct Arguments {
     input: String,
 }
 
+fn get_format(to: &str) -> &str {
+    match to {
+        "pdf" => "wdFormatPDF",
+        "doc" => "wdFormatDocument97",
+        _ => unreachable!(),
+    }
+}
+
 fn main() {
     let args = Arguments::parse();
     let input = std::path::PathBuf::from(&args.input);
     let input_file_name = input.file_name().unwrap().to_str().unwrap();
     let mut output = std::path::PathBuf::from(input_file_name);
     // E.g. if our input is test.docx, the output should be test.pdf.
-    output.set_extension(args.to);
+    output.set_extension(&args.to);
     let current_dir = std::env::current_dir().unwrap();
     let working_directory: String = current_dir.to_str().unwrap().into();
     // Convert to abs path, so host -> guest path can be converted.
@@ -47,7 +55,7 @@ fn main() {
         "-o",
         &output_file_name,
         "-t",
-        "wdFormatPDF",
+        get_format(&args.to),
     ];
     let exit_status = std::process::Command::new("docto")
         .args(args)
