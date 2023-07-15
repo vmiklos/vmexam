@@ -37,6 +37,7 @@ def application(
         start_response: 'StartResponse'
 ) -> Iterable[bytes]:
     """The entry point of this WSGI app."""
+    out = ""
     try:
         body = "OK"
         content_length = int(environ['CONTENT_LENGTH'])
@@ -55,7 +56,9 @@ def application(
                              close_fds=True,  # close stdin/stdout/stderr on child
                              creationflags=flags)
         else:
-            subprocess.run(command, check=True)
+            process = subprocess.run(command, stdout=subprocess.PIPE)
+            out = process.stdout.decode("utf-8")
+            process.check_returncode()
     # pylint: disable=broad-except
     except Exception:
         body = "KO"
@@ -63,6 +66,8 @@ def application(
 
     status = '200 OK'
     headers = [('Content-type', 'text/plain; charset=utf-8')]
+    if out:
+        body = body + "\n" + out.strip()
     body_bytes = body.encode('utf-8')
     start_response(status, headers)
     return [body_bytes]
