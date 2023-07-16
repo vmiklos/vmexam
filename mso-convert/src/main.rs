@@ -13,7 +13,7 @@
 use clap::Parser as _;
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, clap::ValueEnum)]
-enum FormatExtension {
+enum TargetExtension {
     Pdf,
     Doc,
 }
@@ -21,21 +21,21 @@ enum FormatExtension {
 #[derive(clap::Parser)]
 struct Arguments {
     #[arg(short, long, value_enum)]
-    to: FormatExtension,
+    to: TargetExtension,
     input: String,
 }
 
-fn get_format(to: FormatExtension) -> &'static str {
+fn get_format(to: TargetExtension) -> &'static str {
     match to {
-        FormatExtension::Pdf => "wdFormatPDF",
-        FormatExtension::Doc => "wdFormatDocument97",
+        TargetExtension::Pdf => "wdFormatPDF",
+        TargetExtension::Doc => "wdFormatDocument97",
     }
 }
 
-fn get_extension(to: FormatExtension) -> &'static str {
+fn get_extension(to: TargetExtension) -> &'static str {
     match to {
-        FormatExtension::Pdf => "pdf",
-        FormatExtension::Doc => "doc",
+        TargetExtension::Pdf => "pdf",
+        TargetExtension::Doc => "doc",
     }
 }
 
