@@ -12,18 +12,30 @@
 
 use clap::Parser as _;
 
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, clap::ValueEnum)]
+enum FormatExtension {
+    Pdf,
+    Doc,
+}
+
 #[derive(clap::Parser)]
 struct Arguments {
-    #[arg(short, long)]
-    to: String,
+    #[arg(short, long, value_enum)]
+    to: FormatExtension,
     input: String,
 }
 
-fn get_format(to: &str) -> &str {
+fn get_format(to: FormatExtension) -> &'static str {
     match to {
-        "pdf" => "wdFormatPDF",
-        "doc" => "wdFormatDocument97",
-        _ => unreachable!(),
+        FormatExtension::Pdf => "wdFormatPDF",
+        FormatExtension::Doc => "wdFormatDocument97",
+    }
+}
+
+fn get_extension(to: FormatExtension) -> &'static str {
+    match to {
+        FormatExtension::Pdf => "pdf",
+        FormatExtension::Doc => "doc",
     }
 }
 
@@ -33,7 +45,7 @@ fn main() {
     let input_file_name = input.file_name().unwrap().to_str().unwrap();
     let mut output = std::path::PathBuf::from(input_file_name);
     // E.g. if our input is test.docx, the output should be test.pdf.
-    output.set_extension(&args.to);
+    output.set_extension(get_extension(args.to));
     let current_dir = std::env::current_dir().unwrap();
     let working_directory: String = current_dir.to_str().unwrap().into();
     // Convert to abs path, so host -> guest path can be converted.
@@ -47,7 +59,6 @@ fn main() {
         std::fs::remove_file(&output_file_name).unwrap();
     }
 
-    // Format is hardcoded for now, could be generated based on --to.
     let args = [
         "-WD",
         "-f",
@@ -55,7 +66,7 @@ fn main() {
         "-o",
         &output_file_name,
         "-t",
-        get_format(&args.to),
+        get_format(args.to),
     ];
     let exit_status = std::process::Command::new("docto")
         .args(args)
