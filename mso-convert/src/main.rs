@@ -17,6 +17,7 @@ enum TargetExtension {
     Pdf,
     Doc,
     Docx,
+    Rtf,
 }
 
 #[derive(clap::Parser)]
@@ -32,6 +33,7 @@ fn get_format(to: TargetExtension) -> &'static str {
         TargetExtension::Pdf => "wdFormatPDF",
         TargetExtension::Doc => "wdFormatDocument97",
         TargetExtension::Docx => "wdFormatDocumentDefault",
+        TargetExtension::Rtf => "wdFormatRTF",
     }
 }
 
@@ -40,6 +42,7 @@ fn get_extension(to: TargetExtension) -> &'static str {
         TargetExtension::Pdf => "pdf",
         TargetExtension::Doc => "doc",
         TargetExtension::Docx => "docx",
+        TargetExtension::Rtf => "rtf",
     }
 }
 
