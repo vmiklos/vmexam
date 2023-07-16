@@ -16,6 +16,7 @@ use clap::Parser as _;
 enum TargetExtension {
     Pdf,
     Doc,
+    Docx,
 }
 
 #[derive(clap::Parser)]
@@ -26,9 +27,11 @@ struct Arguments {
 }
 
 fn get_format(to: TargetExtension) -> &'static str {
+    // https://learn.microsoft.com/en-us/office/vba/api/word.wdsaveformat
     match to {
         TargetExtension::Pdf => "wdFormatPDF",
         TargetExtension::Doc => "wdFormatDocument97",
+        TargetExtension::Docx => "wdFormatDocumentDefault",
     }
 }
 
@@ -36,6 +39,7 @@ fn get_extension(to: TargetExtension) -> &'static str {
     match to {
         TargetExtension::Pdf => "pdf",
         TargetExtension::Doc => "doc",
+        TargetExtension::Docx => "docx",
     }
 }
 
