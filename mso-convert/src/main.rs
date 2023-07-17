@@ -10,6 +10,7 @@
 #![warn(clippy::all)]
 #![warn(missing_docs)]
 
+use anyhow::Context as _;
 use clap::Parser as _;
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, clap::ValueEnum)]
@@ -46,24 +47,32 @@ fn get_extension(to: TargetExtension) -> &'static str {
     }
 }
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     let args = Arguments::parse();
     let input = std::path::PathBuf::from(&args.input);
-    let input_file_name = input.file_name().unwrap().to_str().unwrap();
+    let input_file_name = input
+        .file_name()
+        .context("no file name")?
+        .to_str()
+        .context("to_str() failed")?;
     let mut output = std::path::PathBuf::from(input_file_name);
     // E.g. if our input is test.docx, the output should be test.pdf.
     output.set_extension(get_extension(args.to));
-    let current_dir = std::env::current_dir().unwrap();
-    let working_directory: String = current_dir.to_str().unwrap().into();
+    let current_dir = std::env::current_dir()?;
+    let working_directory: String = current_dir.to_str().context("to_str() failed")?.into();
     // Convert to abs path, so host -> guest path can be converted.
     let output_file_name = format!(
         "{}/{}",
         working_directory,
-        output.file_name().unwrap().to_str().unwrap()
+        output
+            .file_name()
+            .context("no file name")?
+            .to_str()
+            .context("to_str() failed")?
     );
     // Remove output, so outdated output is not around on failure.
     if std::path::Path::new(&output_file_name).exists() {
-        std::fs::remove_file(&output_file_name).unwrap();
+        std::fs::remove_file(&output_file_name)?;
     }
 
     let args = [
@@ -75,10 +84,12 @@ fn main() {
         "-t",
         get_format(args.to),
     ];
-    let exit_status = std::process::Command::new("docto")
-        .args(args)
-        .status()
-        .unwrap();
-    let exit_code = exit_status.code().unwrap();
-    assert_eq!(exit_code, 0);
+    let exit_status = std::process::Command::new("docto").args(args).status()?;
+    let exit_code = exit_status.code().context("code() failed")?;
+    match exit_code {
+        0 => Ok(()),
+        _ => Err(anyhow::anyhow!(
+            "executing docto failed with exit code {exit_code}"
+        )),
+    }
 }
