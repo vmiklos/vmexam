@@ -84,7 +84,10 @@ fn main() -> anyhow::Result<()> {
         "-t",
         get_format(args.to),
     ];
-    let exit_status = std::process::Command::new("docto").args(args).status()?;
+    let exit_status = std::process::Command::new("docto")
+        .args(args)
+        .status()
+        .context("failed to execute 'docto' and collect its status")?;
     let exit_code = exit_status.code().context("code() failed")?;
     match exit_code {
         0 => Ok(()),
