@@ -81,6 +81,8 @@ $(eval $(call RustPackage_use_coverage,osm/addr-osmify-rust-open))
 
 $(eval $(call RustPackage_RustPackage,pushping))
 
+$(eval $(call RustPackage_RustPackage,rubik))
+
 $(eval $(call RustPackage_RustPackage,scan-document))
 
 $(eval $(call RustPackage_RustPackage,share-vmiklos-hu-apps))
