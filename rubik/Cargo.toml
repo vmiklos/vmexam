@@ -9,3 +9,9 @@ edition = "2021"
 anyhow = "1.0.72"
 clap = { version = "4.2.7", features = ["derive"] }
 rand = "0.8.5"
+cube = "0.1.0"
+two-phase = "0.1.0"
+
+[patch.crates-io]
+cube = { git = "https://github.com/luckasRanarison/kewb", rev = "b4c4b0a6074002b8b5e3124ce0d270379d0708a9" }
+two-phase = { git = "https://github.com/luckasRanarison/kewb", rev = "b4c4b0a6074002b8b5e3124ce0d270379d0708a9" }
