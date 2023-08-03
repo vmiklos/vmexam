@@ -36,12 +36,12 @@ fn shuffle() -> anyhow::Result<()> {
         loop {
             // Randomly pick one side of the cube.
             side = match rand::thread_rng().gen_range(1..7) {
-                1 => "s",
-                2 => "t",
-                3 => "k",
-                4 => "n",
-                5 => "f",
-                6 => "l",
+                1 => "F",
+                2 => "B",
+                3 => "R",
+                4 => "L",
+                5 => "U",
+                6 => "D",
                 _ => {
                     unreachable!();
                 }
@@ -55,9 +55,9 @@ fn shuffle() -> anyhow::Result<()> {
         prev_side = side.to_string();
         // Randomly pick a direction.
         let direction = match rand::thread_rng().gen_range(1..4) {
-            1 => "e",
-            2 => "i",
-            3 => "u",
+            1 => " ",
+            2 => "'",
+            3 => "2",
             _ => {
                 unreachable!();
             }
