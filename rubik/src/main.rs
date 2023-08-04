@@ -114,12 +114,12 @@ fn colors_to_faces(colors: &Option<String>) -> anyhow::Result<String> {
     let mut faces: Vec<u8> = Vec::new();
     for color in colors.chars() {
         let face = match color {
-            'B' => 'U',
-            'Y' => 'R',
-            'R' => 'F',
-            'G' => 'D',
-            'W' => 'L',
-            'O' => 'B',
+            'B' | 'b' => 'U',
+            'Y' | 'y' => 'R',
+            'R' | 'r' => 'F',
+            'G' | 'g' => 'D',
+            'W' | 'w' => 'L',
+            'O' | 'o' => 'B',
             _ => {
                 return Err(anyhow::anyhow!("invalid color: {}", color));
             }

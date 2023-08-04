@@ -28,7 +28,32 @@ L2 B' D R F B' L U B R' U' B2 D L2 D2 R2 B2 D' B2 D F2 U
 A solved state would be BBBBBBBBBYYYYYYYYYRRRRRRRRRGGGGGGGGGWWWWWWWWWOOOOOOOOO, for blue, yellow,
 red, green, white and orange.
 
+You can also omit `--colors` and enter each side separately. In that case the cube is laid out like
+this:
+
+```
+            |************|
+            |*B1**B2**U3*|
+            |************|
+            |*B4**B5**U6*|
+            |************|
+            |*B7**B8**B9*|
+            |************|
+************|************|************|************|
+*W1**W2**W3*|*R1**R2**R3*|*Y1**Y2**Y3*|*O1**O2**O3*|
+************|************|************|************|
+*W4**W5**W6*|*R4**R5**R6*|*Y4**Y5**Y6*|*O4**O5**O6*|
+************|************|************|************|
+*W7**W8**W9*|*R7**R8**R9*|*Y7**Y8**Y9*|*O7**O8**O9*|
+************|************|************|************|
+            |************|
+            |*G1**G2**G3*|
+            |************|
+            |*G4**G5**G6*|
+            |************|
+            |*G7**G8**G9*|
+            |************|
+```
+
 (Internally, this is facelet DRBLUURLDRBLRRBFLFFUBFFDRUDURRBDFBBULDUDLUDLBUFFDBFLRL, a solved state
 would be UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB).
-
-You can also omit `--colors` and enter each side separately.
