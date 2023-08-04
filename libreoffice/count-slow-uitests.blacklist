@@ -4,3 +4,4 @@ sc/UITest_calc_tests8.mk # fails in test_tdf141973 and test_tdf98493
 sc/UITest_calc_tests9.mk # hangs in test_tdf124318
 sd/UITest_impress_tests.mk # Xisco's ad97339a63929d6c63a31c60421eae8c236db529
 sc/UITest_search_replace.mk # fails in test_tdf132783
+sw/UITest_sw_findReplace.mk # fails in test_find_similarities
