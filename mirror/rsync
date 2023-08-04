@@ -40,7 +40,7 @@ plug3-boot-efi)
     ;;
 wilson)
     cd wilson
-    if ! ssh genesis.vmiklos.hu 'cd /var/lib/nextcloud; ./backup.sh'; then
+    if ! ssh wilson.vmiklos.hu 'cd /var/lib/nextcloud; ./backup.sh'; then
         echo "sqldump failed, giving up"
         exit 1
     fi
