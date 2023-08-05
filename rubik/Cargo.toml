@@ -10,7 +10,3 @@ anyhow = "1.0.72"
 clap = { version = "4.2.7", features = ["derive"] }
 rand = "0.8.5"
 kewb = "0.1.0"
-
-# Till <https://github.com/luckasRanarison/kewb/pull/2> hits a release.
-[patch.crates-io]
-kewb = { git = "https://github.com/luckasRanarison/kewb", rev = "2dda12af2de4b1e3acf9e34ee3d0a4526d1e8919" }
