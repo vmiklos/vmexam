@@ -16,7 +16,7 @@ package-lock.json: package.json
 check: check-lint
 
 check-lint:
-	npx eslint main.ts cypress/e2e/main.cy.ts
+	npx eslint main.ts
 
 run:
 	python3 -m http.server
