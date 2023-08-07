@@ -6,6 +6,7 @@
 
 mod calc;
 mod hyphen;
+mod rubik;
 pub mod yattag;
 
 fn main() {
@@ -18,6 +19,9 @@ fn main() {
         }
         if request.url().starts_with("/apps/hyphen") {
             return hyphen::app(request);
+        }
+        if request.url().starts_with("/apps/rubik") {
+            return rubik::app(request);
         }
 
         rouille::Response::empty_404()
