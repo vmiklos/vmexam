@@ -18,6 +18,7 @@ const c: {[index: string]: string} = {
     'B' : '#FF5525', // Orange
     'L' : '#FEFEFE', // White
     'D' : '#199B4C', // Green
+    'X' : '#7f7f7f', // Gray
 };
 
 const notationSwapTable:
@@ -62,7 +63,7 @@ class RubikCube
     {
         if (!colorStr)
         {
-            colorStr = 'UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB';
+            colorStr = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
         }
         this.colors = colorStr.trim().split('');
 
@@ -568,14 +569,58 @@ function onMouseDown(event: MouseEvent)
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
     const intersects = raycaster.intersectObjects(rubikCube.model.children);
-    if (!intersects.length)
+    const faceOfCubelets = intersects.filter(
+        (intersect) => intersect.object.name.startsWith('faceOfCubelet'));
+    if (!faceOfCubelets.length)
     {
         return;
     }
 
-    const intersect = intersects[0];
-    console.log('debug, onMouseDown: intersect object name is ' +
-                intersect.object.name);
+    let face = faceOfCubelets[0].object as THREE.Mesh;
+
+    // Assume that we want to paint the face to 'F' / red for now.
+    const colorName = 'F';
+    const colorValue = '#891214';
+
+    // Update the facelet model.
+    let cubeletIndex = Number(face.name.substr('faceOfCubelet'.length));
+    let faceIndex = 0;
+    // Assume that we always see 'F' for now.
+    switch (cubeletIndex)
+    {
+    case 6:
+        faceIndex = 18;
+        break;
+    case 7:
+        faceIndex = 19;
+        break;
+    case 8:
+        faceIndex = 20;
+        break;
+    case 15:
+        faceIndex = 21;
+        break;
+    case 16:
+        faceIndex = 22;
+        break;
+    case 17:
+        faceIndex = 23;
+        break;
+    case 24:
+        faceIndex = 24;
+        break;
+    case 25:
+        faceIndex = 25;
+        break;
+    case 26:
+        faceIndex = 26;
+        break;
+    }
+    faces[faceIndex] = colorName;
+
+    // Update the view.
+    face.material = new THREE.MeshLambertMaterial(
+        {emissive : colorValue, transparent : true});
 }
 
 function animate(time?: number)
@@ -596,6 +641,8 @@ const screenHeight = window.innerHeight * 0.8;
 const camera =
     new THREE.PerspectiveCamera(75, screenWidth / screenHeight, 0.1, 30);
 const layerGroup = new LayerModel();
+// UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
+let faces = [...'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' ];
 animate();
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:
