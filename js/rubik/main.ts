@@ -12,13 +12,13 @@ import TWEEN from '@tweenjs/tween.js';
 import * as THREE from 'three';
 
 const c: {[index: string]: string} = {
-    'U' : '#0D48AC', // Blue
-    'F' : '#891214', // Red
-    'R' : '#FED52F', // Yellow
-    'B' : '#FF5525', // Orange
-    'L' : '#FEFEFE', // White
-    'D' : '#199B4C', // Green
-    'X' : '#7f7f7f', // Gray
+    'U' : '#01499b', // Blue
+    'F' : '#b12118', // Red
+    'R' : '#e1c501', // Yellow
+    'B' : '#ee3300', // Orange
+    'L' : '#b9d0d8', // White
+    'D' : '#028d76', // Green
+    'X' : '#141517', // Gray
 };
 
 const notationSwapTable:
@@ -538,10 +538,45 @@ async function rotateAll()
     await rotationTransition(layerRorationAxis, rotationRad);
 }
 
+function createPickerCell(row: HTMLTableRowElement, cName: string,
+                          cValue: string)
+{
+    const cell = document.createElement('td');
+    cell.style.width = String(screenWidth / 30) + 'px';
+    cell.style.height = String(screenHeight / 20) + 'px';
+    cell.style.background = cValue;
+    cell.style.borderWidth = 'medium';
+    cell.style.borderStyle = 'solid';
+    if (cName == 'U')
+    {
+        cell.style.borderColor = '#000000';
+    }
+    else
+    {
+        cell.style.borderColor = '#ffffff';
+    }
+    cell.onclick = function() {
+        colorName = cName;
+        colorValue = cValue;
+        colorPickerCells.forEach(function(c) {
+            if (c == cell)
+            {
+                c.style.borderColor = '#000000';
+            }
+            else
+            {
+                c.style.borderColor = '#ffffff';
+            }
+        });
+    };
+    row.appendChild(cell);
+    colorPickerCells.push(cell);
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 document.addEventListener("DOMContentLoaded", async function(event) {
     document.body.style.backgroundColor = '#ffffff';
-    // Create our page.
+    // Create our page: the cube.
     scene.background = new THREE.Color('#ffffff');
     camera.position.x = 0;
     camera.position.y = 0;
@@ -560,9 +595,26 @@ document.addEventListener("DOMContentLoaded", async function(event) {
     rotateAllButton.value = 'rotate all';
     rotateAllButton.onclick = rotateAll;
     document.body.appendChild(rotateAllButton);
+
+    // Color picker table: White, green, red; then blue, orange, yellow; 10%
+    // height in total.
+    const colorsTable = document.createElement('table');
+    colorsTable.style.marginLeft = 'auto';
+    colorsTable.style.marginRight = 'auto';
+    document.body.appendChild(colorsTable);
+    const colorsRow1 = document.createElement('tr');
+    colorsTable.appendChild(colorsRow1);
+    createPickerCell(colorsRow1, 'U', c['U']);
+    createPickerCell(colorsRow1, 'F', c['F']);
+    createPickerCell(colorsRow1, 'R', c['R']);
+    const colorsRow2 = document.createElement('tr');
+    colorsTable.appendChild(colorsRow2);
+    createPickerCell(colorsRow2, 'B', c['B']);
+    createPickerCell(colorsRow2, 'L', c['L']);
+    createPickerCell(colorsRow2, 'D', c['D']);
 });
 
-function onMouseDown(event: MouseEvent)
+function cubeOnClick(event: MouseEvent)
 {
     const x = (event.clientX / screenWidth) * 2 - 1;
     const y = -(event.clientY / screenHeight) * 2 + 1;
@@ -577,10 +629,6 @@ function onMouseDown(event: MouseEvent)
     }
 
     let face = faceOfCubelets[0].object as THREE.Mesh;
-
-    // Assume that we want to paint the face to 'F' / red for now.
-    const colorName = 'F';
-    const colorValue = '#891214';
 
     // Update the facelet model.
     let cubeletIndex = Number(face.name.substr('faceOfCubelet'.length));
@@ -617,6 +665,7 @@ function onMouseDown(event: MouseEvent)
         break;
     }
     faces[faceIndex] = colorName;
+    console.log(faces.join(''));
 
     // Update the view.
     face.material = new THREE.MeshLambertMaterial(
@@ -634,7 +683,7 @@ const rubikCube = new RubikCubeModel();
 // 27 children.
 const cubeletModels = rubikCube.model.children;
 const renderer = new THREE.WebGLRenderer();
-renderer.domElement.addEventListener('mousedown', onMouseDown);
+renderer.domElement.addEventListener('click', cubeOnClick);
 const scene = new THREE.Scene();
 const screenWidth = window.innerWidth;
 const screenHeight = window.innerHeight * 0.8;
@@ -643,6 +692,12 @@ const camera =
 const layerGroup = new LayerModel();
 // UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
 let faces = [...'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' ];
+
+// We want to paint the face to colorName / colorValue.
+let colorName = 'U';
+let colorValue = c['U'];
+let colorPickerCells: HTMLTableCellElement[] = [];
+
 animate();
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:
