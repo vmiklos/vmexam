@@ -528,9 +528,18 @@ async function rotationTransition(axis: Axis, endRad: number)
     layerGroup.initRotation();
 }
 
-async function rotateAll()
+async function nextFaceOnClick()
 {
-    const notation = 'U';
+    // F -> R -> U -> B -> D -> L
+    let faceIndexToNotationMap: {[index: number]: string} = {
+        0 : 'U',
+        1 : 'L',
+        2 : 'U',
+        3 : 'U',
+        4 : 'L',
+    };
+    const notation = faceIndexToNotationMap[pickingFace];
+    pickingFace++;
     const [layerRorationAxis, /*axisValue*/, rotationRad] =
         toRotation(notation);
     rubikCube.move(notation);
@@ -590,12 +599,6 @@ document.addEventListener("DOMContentLoaded", async function(event) {
     scene.add(layerGroup);
     renderer.render(scene, camera);
 
-    const rotateAllButton = document.createElement('input');
-    rotateAllButton.type = 'button';
-    rotateAllButton.value = 'rotate all';
-    rotateAllButton.onclick = rotateAll;
-    document.body.appendChild(rotateAllButton);
-
     // Color picker table: White, green, red; then blue, orange, yellow; 10%
     // height in total.
     const colorsTable = document.createElement('table');
@@ -612,6 +615,12 @@ document.addEventListener("DOMContentLoaded", async function(event) {
     createPickerCell(colorsRow2, 'B', c['B']);
     createPickerCell(colorsRow2, 'L', c['L']);
     createPickerCell(colorsRow2, 'D', c['D']);
+
+    const nextFaceButton = document.createElement('input');
+    nextFaceButton.type = 'button';
+    nextFaceButton.value = 'next >';
+    nextFaceButton.onclick = nextFaceOnClick;
+    document.body.appendChild(nextFaceButton);
 });
 
 function cubeOnClick(event: MouseEvent)
@@ -677,6 +686,8 @@ let faces = [...'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' ];
 let colorName = 'U';
 let colorValue = c['U'];
 let colorPickerCells: HTMLTableCellElement[] = [];
+// The picker is used on this face: 0..5 (FRUBDL).
+let pickingFace = 0;
 
 animate();
 
