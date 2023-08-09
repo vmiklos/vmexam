@@ -632,40 +632,20 @@ function cubeOnClick(event: MouseEvent)
 
     // Update the facelet model.
     let cubeletIndex = Number(face.name.substr('faceOfCubelet'.length));
-    let faceIndex = 0;
     // Assume that we always see 'F' for now.
-    switch (cubeletIndex)
-    {
-    case 6:
-        faceIndex = 18;
-        break;
-    case 7:
-        faceIndex = 19;
-        break;
-    case 8:
-        faceIndex = 20;
-        break;
-    case 15:
-        faceIndex = 21;
-        break;
-    case 16:
-        faceIndex = 22;
-        break;
-    case 17:
-        faceIndex = 23;
-        break;
-    case 24:
-        faceIndex = 24;
-        break;
-    case 25:
-        faceIndex = 25;
-        break;
-    case 26:
-        faceIndex = 26;
-        break;
-    }
+    let cubeToFaceMap: {[index: number]: number} = {
+        6 : 18,
+        7 : 19,
+        8 : 20,
+        15 : 21,
+        16 : 22,
+        17 : 23,
+        24 : 24,
+        25 : 25,
+        26 : 26,
+    };
+    let faceIndex = cubeToFaceMap[cubeletIndex];
     faces[faceIndex] = colorName;
-    console.log(faces.join(''));
 
     // Update the view.
     face.material = new THREE.MeshLambertMaterial(
