@@ -540,6 +540,15 @@ async function nextFaceOnClick()
     };
     const notation = faceIndexToNotationMap[pickingFace];
     pickingFace++;
+    if (pickingFace == 1)
+    {
+        prevFaceButton.disabled = false;
+    }
+    if (pickingFace == 5)
+    {
+        nextFaceButton.disabled = true;
+    }
+
     const [layerRorationAxis, /*axisValue*/, rotationRad] =
         toRotation(notation);
     rubikCube.move(notation);
@@ -559,6 +568,15 @@ async function prevFaceOnClick()
     };
     const notation = faceIndexToNotationMap[pickingFace];
     pickingFace--;
+    if (pickingFace == 4)
+    {
+        nextFaceButton.disabled = false;
+    }
+    if (pickingFace == 0)
+    {
+        prevFaceButton.disabled = true;
+    }
+
     const [layerRorationAxis, /*axisValue*/, rotationRad] =
         toRotation(notation);
     rubikCube.move(notation);
@@ -635,12 +653,13 @@ document.addEventListener("DOMContentLoaded", async function(event) {
     createPickerCell(colorsRow2, 'L', c['L']);
     createPickerCell(colorsRow2, 'D', c['D']);
 
-    const prevFaceButton = document.createElement('input');
+    prevFaceButton = document.createElement('input');
     prevFaceButton.type = 'button';
     prevFaceButton.value = '< prev';
     prevFaceButton.onclick = prevFaceOnClick;
+    prevFaceButton.disabled = true;
     document.body.appendChild(prevFaceButton);
-    const nextFaceButton = document.createElement('input');
+    nextFaceButton = document.createElement('input');
     nextFaceButton.type = 'button';
     nextFaceButton.value = 'next >';
     nextFaceButton.onclick = nextFaceOnClick;
@@ -709,7 +728,11 @@ let faces = [...'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' ];
 // We want to paint the face to colorName / colorValue.
 let colorName = 'U';
 let colorValue = c['U'];
+
 let colorPickerCells: HTMLTableCellElement[] = [];
+let prevFaceButton: HTMLInputElement;
+let nextFaceButton: HTMLInputElement;
+
 // The picker is used on this face: 0..5 (FRUBDL).
 let pickingFace = 0;
 
