@@ -547,6 +547,25 @@ async function nextFaceOnClick()
     await rotationTransition(layerRorationAxis, rotationRad);
 }
 
+async function prevFaceOnClick()
+{
+    // L -> D -> B -> U -> R -> F
+    let faceIndexToNotationMap: {[index: number]: string} = {
+        5 : `L'`,
+        4 : `U'`,
+        3 : `U'`,
+        2 : `L'`,
+        1 : `U'`,
+    };
+    const notation = faceIndexToNotationMap[pickingFace];
+    pickingFace--;
+    const [layerRorationAxis, /*axisValue*/, rotationRad] =
+        toRotation(notation);
+    rubikCube.move(notation);
+    layerGroup.groupAll(layerRorationAxis, cubeletModels);
+    await rotationTransition(layerRorationAxis, rotationRad);
+}
+
 function createPickerCell(row: HTMLTableRowElement, cName: string,
                           cValue: string)
 {
@@ -616,6 +635,11 @@ document.addEventListener("DOMContentLoaded", async function(event) {
     createPickerCell(colorsRow2, 'L', c['L']);
     createPickerCell(colorsRow2, 'D', c['D']);
 
+    const prevFaceButton = document.createElement('input');
+    prevFaceButton.type = 'button';
+    prevFaceButton.value = '< prev';
+    prevFaceButton.onclick = prevFaceOnClick;
+    document.body.appendChild(prevFaceButton);
     const nextFaceButton = document.createElement('input');
     nextFaceButton.type = 'button';
     nextFaceButton.value = 'next >';
