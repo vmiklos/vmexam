@@ -11,6 +11,14 @@
 import TWEEN from '@tweenjs/tween.js';
 import * as THREE from 'three';
 
+declare global
+{
+    interface Window
+    {
+        app: App;
+    }
+}
+
 const c: {[index: string]: string} = {
     'U' : '#01499b', // Blue
     'F' : '#b12118', // Red
@@ -778,6 +786,16 @@ function animate(time?: number)
     renderer.render(scene, camera);
 }
 
+class App
+{
+    constructor()
+    {
+        window.app = this;
+        animate();
+    }
+}
+
+// Globals.
 const rubikCube = new RubikCubeModel();
 // 27 children.
 const cubeletModels = rubikCube.model.children;
@@ -803,6 +821,6 @@ let nextFaceButton: HTMLInputElement;
 // The picker is used on this face: 0..5 (FRUBDL).
 let pickingFace = 0;
 
-animate();
+new App();
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:
