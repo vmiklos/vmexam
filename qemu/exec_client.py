@@ -34,7 +34,7 @@ ALIASES = {
     "powerpnt": "c:/program files/microsoft office/root/office16/powerpnt.exe",
     "winword": "c:/program files/microsoft office/root/office16/winword.exe",
     "docto": {
-        "command": "c:/users/vmiklos/downloads/docto.exe",
+        "command": "c:/program files (x86)/docto/docto.exe",
         "sync": True,
     }
 }
