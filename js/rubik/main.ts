@@ -684,19 +684,86 @@ function cubeOnClick(event: MouseEvent)
 
     // Update the facelet model.
     let cubeletIndex = Number(face.name.substr('faceOfCubelet'.length));
-    // Assume that we always see 'F' for now.
-    let cubeToFaceMap: {[index: number]: number} = {
-        6 : 18,
-        7 : 19,
-        8 : 20,
-        15 : 21,
-        16 : 22,
-        17 : 23,
-        24 : 24,
-        25 : 25,
-        26 : 26,
+    // F -> R -> U -> B -> D -> L
+    // Hit testing gives us a cubelet index. Depending on what face we see,
+    // different cubelet indexes (0..26) refer to different face indexes
+    // (0..53). We need face indexes to construct a facelet string, which will
+    // be the input for the solver.
+    let cubeToFaceMap: {[index: number]: {[index: number]: number}} = {
+        0 : {
+            // F
+            6 : 18,
+            7 : 19,
+            8 : 20,
+            15 : 21,
+            16 : 22,
+            17 : 23,
+            24 : 24,
+            25 : 25,
+            26 : 26,
+        },
+        1 : {
+            // R
+            8 : 9,
+            5 : 10,
+            2 : 11,
+            17 : 12,
+            14 : 13,
+            11 : 14,
+            26 : 15,
+            23 : 16,
+            20 : 17,
+        },
+        2 : {
+            // U
+            0 : 0,
+            1 : 1,
+            2 : 2,
+            3 : 3,
+            4 : 4,
+            5 : 5,
+            6 : 6,
+            7 : 7,
+            8 : 8,
+        },
+        3 : {
+            // B
+            2 : 45,
+            1 : 46,
+            0 : 47,
+            11 : 48,
+            10 : 49,
+            9 : 50,
+            20 : 51,
+            19 : 52,
+            18 : 53,
+        },
+        4 : {
+            // D
+            24 : 27,
+            25 : 28,
+            26 : 29,
+            21 : 30,
+            22 : 31,
+            23 : 32,
+            18 : 33,
+            19 : 34,
+            20 : 35,
+        },
+        5 : {
+            // L
+            0 : 36,
+            3 : 37,
+            6 : 38,
+            9 : 39,
+            12 : 40,
+            15 : 41,
+            18 : 42,
+            21 : 43,
+            24 : 44,
+        },
     };
-    let faceIndex = cubeToFaceMap[cubeletIndex];
+    let faceIndex = cubeToFaceMap[pickingFace][cubeletIndex];
     faces[faceIndex] = colorName;
 
     // Update the view.
