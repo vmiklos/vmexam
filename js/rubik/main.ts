@@ -772,7 +772,7 @@ function cubeOnClick(event: MouseEvent)
         },
     };
     let faceIndex = cubeToFaceMap[pickingFace][cubeletIndex];
-    faces[faceIndex] = colorName;
+    app.faces[faceIndex] = colorName;
 
     // Update the view.
     face.material = new THREE.MeshLambertMaterial(
@@ -788,6 +788,9 @@ function animate(time?: number)
 
 class App
 {
+    // UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
+    faces = [...'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' ];
+
     constructor()
     {
         window.app = this;
@@ -807,8 +810,6 @@ const screenHeight = 480;
 const camera =
     new THREE.PerspectiveCamera(75, screenWidth / screenHeight, 0.1, 30);
 const layerGroup = new LayerModel();
-// UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
-let faces = [...'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' ];
 
 // We want to paint the face to colorName / colorValue.
 let colorName = 'U';
@@ -821,6 +822,6 @@ let nextFaceButton: HTMLInputElement;
 // The picker is used on this face: 0..5 (FRUBDL).
 let pickingFace = 0;
 
-new App();
+const app = new App();
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:
