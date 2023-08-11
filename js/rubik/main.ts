@@ -596,8 +596,8 @@ function createPickerCell(row: HTMLTableRowElement, cName: string,
                           cValue: string)
 {
     const cell = document.createElement('td');
-    cell.style.width = String(screenWidth / 30) + 'px';
-    cell.style.height = String(screenHeight / 20) + 'px';
+    cell.style.width = '64px';
+    cell.style.height = '64px';
     cell.style.background = cValue;
     cell.style.borderWidth = 'medium';
     cell.style.borderStyle = 'solid';
@@ -803,7 +803,7 @@ const renderer = new THREE.WebGLRenderer();
 renderer.domElement.addEventListener('click', cubeOnClick);
 const scene = new THREE.Scene();
 const screenWidth = window.innerWidth;
-const screenHeight = window.innerHeight * 0.8;
+const screenHeight = 480;
 const camera =
     new THREE.PerspectiveCamera(75, screenWidth / screenHeight, 0.1, 30);
 const layerGroup = new LayerModel();
