@@ -531,9 +531,9 @@ function toRotation(notation: string): [ Axis, number, number ]
 
 async function rotationTransition(axis: Axis, endRad: number)
 {
-    await layerGroup.rotationAnimation(axis, endRad);
-    layerGroup.ungroup(rubikCube.model);
-    layerGroup.initRotation();
+    await app.layerGroup.rotationAnimation(axis, endRad);
+    app.layerGroup.ungroup(app.rubikCube.model);
+    app.layerGroup.initRotation();
 }
 
 async function nextFaceOnClick()
@@ -546,21 +546,21 @@ async function nextFaceOnClick()
         3 : 'U',
         4 : 'L',
     };
-    const notation = faceIndexToNotationMap[pickingFace];
-    pickingFace++;
-    if (pickingFace == 1)
+    const notation = faceIndexToNotationMap[app.pickingFace];
+    app.pickingFace++;
+    if (app.pickingFace == 1)
     {
-        prevFaceButton.disabled = false;
+        app.prevFaceButton.disabled = false;
     }
-    if (pickingFace == 5)
+    if (app.pickingFace == 5)
     {
-        nextFaceButton.disabled = true;
+        app.nextFaceButton.disabled = true;
     }
 
     const [layerRorationAxis, /*axisValue*/, rotationRad] =
         toRotation(notation);
-    rubikCube.move(notation);
-    layerGroup.groupAll(layerRorationAxis, cubeletModels);
+    app.rubikCube.move(notation);
+    app.layerGroup.groupAll(layerRorationAxis, app.cubeletModels);
     await rotationTransition(layerRorationAxis, rotationRad);
 }
 
@@ -574,21 +574,21 @@ async function prevFaceOnClick()
         2 : `L'`,
         1 : `U'`,
     };
-    const notation = faceIndexToNotationMap[pickingFace];
-    pickingFace--;
-    if (pickingFace == 4)
+    const notation = faceIndexToNotationMap[app.pickingFace];
+    app.pickingFace--;
+    if (app.pickingFace == 4)
     {
-        nextFaceButton.disabled = false;
+        app.nextFaceButton.disabled = false;
     }
-    if (pickingFace == 0)
+    if (app.pickingFace == 0)
     {
-        prevFaceButton.disabled = true;
+        app.prevFaceButton.disabled = true;
     }
 
     const [layerRorationAxis, /*axisValue*/, rotationRad] =
         toRotation(notation);
-    rubikCube.move(notation);
-    layerGroup.groupAll(layerRorationAxis, cubeletModels);
+    app.rubikCube.move(notation);
+    app.layerGroup.groupAll(layerRorationAxis, app.cubeletModels);
     await rotationTransition(layerRorationAxis, rotationRad);
 }
 
@@ -610,9 +610,9 @@ function createPickerCell(row: HTMLTableRowElement, cName: string,
         cell.style.borderColor = '#ffffff';
     }
     cell.onclick = function() {
-        colorName = cName;
-        colorValue = cValue;
-        colorPickerCells.forEach(function(c) {
+        app.colorName = cName;
+        app.colorValue = cValue;
+        app.colorPickerCells.forEach(function(c) {
             if (c == cell)
             {
                 c.style.borderColor = '#000000';
@@ -624,25 +624,24 @@ function createPickerCell(row: HTMLTableRowElement, cName: string,
         });
     };
     row.appendChild(cell);
-    colorPickerCells.push(cell);
+    app.colorPickerCells.push(cell);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-document.addEventListener("DOMContentLoaded", async function(event) {
+function createPage()
+{
     document.body.style.backgroundColor = '#ffffff';
     // Create our page: the cube.
-    scene.background = new THREE.Color('#ffffff');
-    camera.position.x = 0;
-    camera.position.y = 0;
-    camera.position.z = 5;
-    camera.aspect = screenWidth / screenHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(screenWidth, screenHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    document.body.appendChild(renderer.domElement);
-    scene.add(rubikCube.model);
-    scene.add(layerGroup);
-    renderer.render(scene, camera);
+    app.scene.background = new THREE.Color('#ffffff');
+    app.camera.position.x = 0;
+    app.camera.position.y = 0;
+    app.camera.position.z = 5;
+    app.camera.aspect = app.screenWidth / app.screenHeight;
+    app.camera.updateProjectionMatrix();
+    app.renderer.setSize(app.screenWidth, app.screenHeight);
+    app.renderer.setPixelRatio(window.devicePixelRatio);
+    document.body.appendChild(app.renderer.domElement);
+    app.scene.add(app.rubikCube.model);
+    app.scene.add(app.layerGroup);
 
     // Color picker table: White, green, red; then blue, orange, yellow; 10%
     // height in total.
@@ -661,26 +660,26 @@ document.addEventListener("DOMContentLoaded", async function(event) {
     createPickerCell(colorsRow2, 'L', c['L']);
     createPickerCell(colorsRow2, 'D', c['D']);
 
-    prevFaceButton = document.createElement('input');
-    prevFaceButton.type = 'button';
-    prevFaceButton.value = '< prev';
-    prevFaceButton.onclick = prevFaceOnClick;
-    prevFaceButton.disabled = true;
-    document.body.appendChild(prevFaceButton);
-    nextFaceButton = document.createElement('input');
-    nextFaceButton.type = 'button';
-    nextFaceButton.value = 'next >';
-    nextFaceButton.onclick = nextFaceOnClick;
-    document.body.appendChild(nextFaceButton);
-});
+    app.prevFaceButton = document.createElement('input');
+    app.prevFaceButton.type = 'button';
+    app.prevFaceButton.value = '< prev';
+    app.prevFaceButton.onclick = prevFaceOnClick;
+    app.prevFaceButton.disabled = true;
+    document.body.appendChild(app.prevFaceButton);
+    app.nextFaceButton = document.createElement('input');
+    app.nextFaceButton.type = 'button';
+    app.nextFaceButton.value = 'next >';
+    app.nextFaceButton.onclick = nextFaceOnClick;
+    document.body.appendChild(app.nextFaceButton);
+}
 
 function cubeOnClick(event: MouseEvent)
 {
-    const x = (event.clientX / screenWidth) * 2 - 1;
-    const y = -(event.clientY / screenHeight) * 2 + 1;
+    const x = (event.clientX / app.screenWidth) * 2 - 1;
+    const y = -(event.clientY / app.screenHeight) * 2 + 1;
     const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
-    const intersects = raycaster.intersectObjects(rubikCube.model.children);
+    raycaster.setFromCamera(new THREE.Vector2(x, y), app.camera);
+    const intersects = raycaster.intersectObjects(app.rubikCube.model.children);
     const faceOfCubelets = intersects.filter(
         (intersect) => intersect.object.name.startsWith('faceOfCubelet'));
     if (!faceOfCubelets.length)
@@ -771,56 +770,61 @@ function cubeOnClick(event: MouseEvent)
             24 : 44,
         },
     };
-    let faceIndex = cubeToFaceMap[pickingFace][cubeletIndex];
-    app.faces[faceIndex] = colorName;
+    let faceIndex = cubeToFaceMap[app.pickingFace][cubeletIndex];
+    app.faces[faceIndex] = app.colorName;
 
     // Update the view.
     face.material = new THREE.MeshLambertMaterial(
-        {emissive : colorValue, transparent : true});
+        {emissive : app.colorValue, transparent : true});
 }
 
 function animate(time?: number)
 {
     requestAnimationFrame(animate);
     TWEEN.update(time);
-    renderer.render(scene, camera);
+    app.renderer.render(app.scene, app.camera);
 }
 
 class App
 {
     // UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
     faces = [...'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' ];
+    rubikCube = new RubikCubeModel();
+    // 27 children.
+    cubeletModels = app.rubikCube.model.children;
+    renderer = new THREE.WebGLRenderer();
+    scene = new THREE.Scene();
+    screenWidth = window.innerWidth;
+    screenHeight = 480;
+    camera: THREE.PerspectiveCamera = null;
+    layerGroup = new LayerModel();
+
+    // We want to paint the face to colorName / colorValue.
+    colorName = 'U';
+    colorValue = c['U'];
+
+    colorPickerCells: HTMLTableCellElement[] = [];
+    prevFaceButton: HTMLInputElement;
+    nextFaceButton: HTMLInputElement;
+
+    // The picker is used on this face: 0..5 (FRUBDL).
+    pickingFace = 0;
 
     constructor()
     {
+        this.renderer.domElement.addEventListener('click', cubeOnClick);
+        this.camera = new THREE.PerspectiveCamera(
+            75, app.screenWidth / app.screenHeight, 0.1, 30);
+
         window.app = this;
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        document.addEventListener("DOMContentLoaded",
+                                  async function(event) { createPage(); });
+
         animate();
     }
 }
-
-// Globals.
-const rubikCube = new RubikCubeModel();
-// 27 children.
-const cubeletModels = rubikCube.model.children;
-const renderer = new THREE.WebGLRenderer();
-renderer.domElement.addEventListener('click', cubeOnClick);
-const scene = new THREE.Scene();
-const screenWidth = window.innerWidth;
-const screenHeight = 480;
-const camera =
-    new THREE.PerspectiveCamera(75, screenWidth / screenHeight, 0.1, 30);
-const layerGroup = new LayerModel();
-
-// We want to paint the face to colorName / colorValue.
-let colorName = 'U';
-let colorValue = c['U'];
-
-let colorPickerCells: HTMLTableCellElement[] = [];
-let prevFaceButton: HTMLInputElement;
-let nextFaceButton: HTMLInputElement;
-
-// The picker is used on this face: 0..5 (FRUBDL).
-let pickingFace = 0;
 
 const app = new App();
 
