@@ -791,7 +791,7 @@ class App
     faces = [...'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' ];
     rubikCube = new RubikCubeModel();
     // 27 children.
-    cubeletModels = app.rubikCube.model.children;
+    cubeletModels = this.rubikCube.model.children;
     renderer = new THREE.WebGLRenderer();
     scene = new THREE.Scene();
     screenWidth = window.innerWidth;
@@ -814,18 +814,17 @@ class App
     {
         this.renderer.domElement.addEventListener('click', cubeOnClick);
         this.camera = new THREE.PerspectiveCamera(
-            75, app.screenWidth / app.screenHeight, 0.1, 30);
-
-        window.app = this;
+            75, this.screenWidth / this.screenHeight, 0.1, 30);
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         document.addEventListener("DOMContentLoaded",
-                                  async function(event) { createPage(); });
+                                  async function() { createPage(); });
 
-        animate();
+        window.app = this;
     }
 }
 
 const app = new App();
+animate();
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:
