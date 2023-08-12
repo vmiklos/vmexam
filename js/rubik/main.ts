@@ -536,6 +536,15 @@ async function rotationTransition(axis: Axis, endRad: number)
     app.layerGroup.initRotation();
 }
 
+async function rotate(notation: string)
+{
+    const [layerRorationAxis, /*axisValue*/, rotationRad] =
+        toRotation(notation);
+    app.rubikCube.move(notation);
+    app.layerGroup.groupAll(layerRorationAxis, app.cubeletModels);
+    await rotationTransition(layerRorationAxis, rotationRad);
+}
+
 function updateSolveButton()
 {
     if (app.pickingFace == 5 && !app.faces.includes('X'))
@@ -570,11 +579,7 @@ async function nextFaceOnClick()
     }
     updateSolveButton();
 
-    const [layerRorationAxis, /*axisValue*/, rotationRad] =
-        toRotation(notation);
-    app.rubikCube.move(notation);
-    app.layerGroup.groupAll(layerRorationAxis, app.cubeletModels);
-    await rotationTransition(layerRorationAxis, rotationRad);
+    rotate(notation);
 }
 
 // RubikResult represents the result from the solver.
@@ -599,7 +604,7 @@ async function solveOnClick()
             return;
         }
 
-        console.log(result.solution);
+        app.solution = result.solution.split(' ');
     }
     catch (reason)
     {
@@ -628,11 +633,7 @@ async function prevFaceOnClick()
         app.prevFaceButton.disabled = true;
     }
 
-    const [layerRorationAxis, /*axisValue*/, rotationRad] =
-        toRotation(notation);
-    app.rubikCube.move(notation);
-    app.layerGroup.groupAll(layerRorationAxis, app.cubeletModels);
-    await rotationTransition(layerRorationAxis, rotationRad);
+    rotate(notation);
 }
 
 function createPickerCell(row: HTMLTableRowElement, cName: string,
@@ -842,11 +843,16 @@ function animate(time?: number)
 
 class App
 {
+    // Painting the faces alterns this. Format:
     // UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
-    faces = [...'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' ];
-    rubikCube = new RubikCubeModel();
+    // Once this has no X in it, we can send it to the solver.
+    faces: string[];
+
+    solution: string[] = [];
+
+    rubikCube: RubikCubeModel;
     // 27 children.
-    cubeletModels = this.rubikCube.model.children;
+    cubeletModels: THREE.Object3D<THREE.Event>[];
     renderer = new THREE.WebGLRenderer();
     scene = new THREE.Scene();
     screenWidth = window.innerWidth;
@@ -868,6 +874,17 @@ class App
 
     constructor()
     {
+        let faces = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+        const urlParams = new URLSearchParams(window.location.search);
+        let facesParam = urlParams.get('faces');
+        if (facesParam != null)
+        {
+            faces = facesParam;
+        }
+
+        this.faces = [...faces ];
+        this.rubikCube = new RubikCubeModel(faces);
+        this.cubeletModels = this.rubikCube.model.children;
         this.renderer.domElement.addEventListener('click', cubeOnClick);
         this.camera = new THREE.PerspectiveCamera(
             75, this.screenWidth / this.screenHeight, 0.1, 30);
