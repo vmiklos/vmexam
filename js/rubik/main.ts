@@ -21,9 +21,9 @@ declare global
 
 const c: {[index: string]: string} = {
     'U' : '#01499b', // Blue
-    'F' : '#b12118', // Red
+    'F' : '#7c0000', // Red
     'R' : '#e1c501', // Yellow
-    'B' : '#ee3300', // Orange
+    'B' : '#f55225', // Orange
     'L' : '#b9d0d8', // White
     'D' : '#028d76', // Green
     'X' : '#141517', // Gray
@@ -536,6 +536,18 @@ async function rotationTransition(axis: Axis, endRad: number)
     app.layerGroup.initRotation();
 }
 
+function updateSolveButton()
+{
+    if (app.pickingFace == 5 && !app.faces.includes('X'))
+    {
+        app.solveButton.disabled = false;
+    }
+    else
+    {
+        app.solveButton.disabled = true;
+    }
+}
+
 async function nextFaceOnClick()
 {
     // F -> R -> U -> B -> D -> L
@@ -556,12 +568,43 @@ async function nextFaceOnClick()
     {
         app.nextFaceButton.disabled = true;
     }
+    updateSolveButton();
 
     const [layerRorationAxis, /*axisValue*/, rotationRad] =
         toRotation(notation);
     app.rubikCube.move(notation);
     app.layerGroup.groupAll(layerRorationAxis, app.cubeletModels);
     await rotationTransition(layerRorationAxis, rotationRad);
+}
+
+// RubikResult represents the result from the solver.
+interface RubikResult
+{
+    solution: string;
+    error: string;
+}
+
+async function solveOnClick()
+{
+    const url =
+        'https://share.vmiklos.hu/apps/rubik/?facelet=' + app.faces.join('');
+    const request = new Request(url, {method : 'GET'});
+    try
+    {
+        const response = await window.fetch(request);
+        let result = await<Promise<RubikResult>>response.json();
+        if (result.error.length)
+        {
+            console.log('error from solver: ' + result.error);
+            return;
+        }
+
+        console.log(result.solution);
+    }
+    catch (reason)
+    {
+        console.log(reason);
+    }
 }
 
 async function prevFaceOnClick()
@@ -660,17 +703,28 @@ function createPage()
     createPickerCell(colorsRow2, 'L', c['L']);
     createPickerCell(colorsRow2, 'D', c['D']);
 
+    const buttons = document.createElement('p');
+    buttons.style.textAlign = 'center';
+    document.body.appendChild(buttons);
     app.prevFaceButton = document.createElement('input');
     app.prevFaceButton.type = 'button';
     app.prevFaceButton.value = '< prev';
     app.prevFaceButton.onclick = prevFaceOnClick;
     app.prevFaceButton.disabled = true;
-    document.body.appendChild(app.prevFaceButton);
+    buttons.appendChild(app.prevFaceButton);
+    buttons.appendChild(document.createTextNode(' '));
     app.nextFaceButton = document.createElement('input');
     app.nextFaceButton.type = 'button';
     app.nextFaceButton.value = 'next >';
     app.nextFaceButton.onclick = nextFaceOnClick;
-    document.body.appendChild(app.nextFaceButton);
+    buttons.appendChild(app.nextFaceButton);
+    buttons.appendChild(document.createTextNode(' '));
+    app.solveButton = document.createElement('input');
+    app.solveButton.type = 'button';
+    app.solveButton.value = '✓ solve';
+    app.solveButton.onclick = solveOnClick;
+    app.solveButton.disabled = true;
+    buttons.appendChild(app.solveButton);
 }
 
 function cubeOnClick(event: MouseEvent)
@@ -772,6 +826,7 @@ function cubeOnClick(event: MouseEvent)
     };
     let faceIndex = cubeToFaceMap[app.pickingFace][cubeletIndex];
     app.faces[faceIndex] = app.colorName;
+    updateSolveButton();
 
     // Update the view.
     face.material = new THREE.MeshLambertMaterial(
@@ -806,6 +861,7 @@ class App
     colorPickerCells: HTMLTableCellElement[] = [];
     prevFaceButton: HTMLInputElement;
     nextFaceButton: HTMLInputElement;
+    solveButton: HTMLInputElement;
 
     // The picker is used on this face: 0..5 (FRUBDL).
     pickingFace = 0;
