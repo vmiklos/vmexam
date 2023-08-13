@@ -630,7 +630,8 @@ async function solveOnClick()
         let result = await<Promise<RubikResult>>response.json();
         if (result.error.length)
         {
-            console.log('error from solver: ' + result.error);
+            const p = document.getElementById('p-error');
+            p.innerText = 'error from solver: ' + result.error;
             return;
         }
 
@@ -645,7 +646,8 @@ async function solveOnClick()
     }
     catch (reason)
     {
-        console.log(reason);
+        const p = document.getElementById('p-error');
+        p.innerText = 'failed to fetch from solver: ' + reason;
     }
 }
 
@@ -783,6 +785,10 @@ function createPage()
     app.solveButton.onclick = solveOnClick;
     updateSolveButton();
     buttons.appendChild(app.solveButton);
+    const error = document.createElement('p');
+    error.id = 'p-error';
+    error.style.textAlign = 'center';
+    document.body.appendChild(error);
 }
 
 function cubeOnClick(event: MouseEvent)
