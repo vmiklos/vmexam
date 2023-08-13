@@ -69,10 +69,6 @@ class RubikCube
     colors: string[];
     constructor(colorStr?: string)
     {
-        if (!colorStr)
-        {
-            colorStr = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
-        }
         this.colors = colorStr.trim().split('');
 
         this.generateCoords();
@@ -344,26 +340,6 @@ class RubikCubeModel extends RubikCube
             cubeletModel.attach(plane);
         }
         return cubeletModel;
-    }
-
-    dispose()
-    {
-        for (const cubeletModel of (this.model.children as CubeletModel[]))
-        {
-            if (cubeletModel.material instanceof THREE.Material)
-            {
-                cubeletModel.material.dispose();
-            }
-            cubeletModel.geometry.dispose();
-            for (const plan of (cubeletModel.children as THREE.Mesh[]))
-            {
-                if (plan.material instanceof THREE.Material)
-                {
-                    plan.material.dispose();
-                }
-                (plan as THREE.Mesh).geometry.dispose();
-            }
-        }
     }
 }
 
