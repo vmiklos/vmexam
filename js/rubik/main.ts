@@ -553,7 +553,19 @@ async function rotate(notation: string, cube: boolean = true)
 
 function updateSolveButton()
 {
-    if (app.pickingFace == 5 && !app.faces.includes('X'))
+    let validCounts = true;
+    // UFRBLD is the order of the color picker cells.
+    ['U', 'F', 'R', 'B', 'L', 'D'].forEach(face => {
+        const count = app.faces.filter(i => i === face).length;
+        if (count != 9)
+        {
+            validCounts = false;
+        }
+        const div = document.getElementById('cell-div-' + face);
+        div.innerText = String(count);
+    });
+
+    if (app.pickingFace == 5 && validCounts)
     {
         app.solveButton.disabled = false;
     }
@@ -692,6 +704,26 @@ function createPickerCell(row: HTMLTableRowElement, cName: string,
             }
         });
     };
+    const cellDiv = document.createElement('div');
+    cellDiv.id = 'cell-div-' + cName;
+    cellDiv.style.textAlign = 'center';
+
+    let cellBackground = cell.style.background;
+    // Parse rgb(r, g, b).
+    let [r, g, b] = cellBackground.substring(4, cellBackground.length - 1)
+                        .split(' ')
+                        .map(x => parseInt(x));
+    let isDark = ((b * 29 + g * 151 + r * 76) >> 8) <= 156;
+    if (isDark)
+    {
+        cellDiv.style.color = '#ffffff';
+    }
+    else
+    {
+        cellDiv.style.color = '#000000';
+    }
+
+    cell.appendChild(cellDiv);
     row.appendChild(cell);
     app.colorPickerCells.push(cell);
 }
@@ -749,7 +781,7 @@ function createPage()
     app.solveButton.type = 'button';
     app.solveButton.value = '✓ solve';
     app.solveButton.onclick = solveOnClick;
-    app.solveButton.disabled = true;
+    updateSolveButton();
     buttons.appendChild(app.solveButton);
 }
 
