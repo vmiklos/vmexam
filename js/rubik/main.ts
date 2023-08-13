@@ -536,12 +536,18 @@ async function rotationTransition(axis: Axis, endRad: number)
     app.layerGroup.initRotation();
 }
 
-async function rotate(notation: string)
+async function rotate(notation: string, cube: boolean = true)
 {
-    const [layerRorationAxis, /*axisValue*/, rotationRad] =
-        toRotation(notation);
+    const [layerRorationAxis, axisValue, rotationRad] = toRotation(notation);
     app.rubikCube.move(notation);
-    app.layerGroup.groupAll(layerRorationAxis, app.cubeletModels);
+    if (cube)
+    {
+        app.layerGroup.groupAll(layerRorationAxis, app.cubeletModels);
+    }
+    else
+    {
+        app.layerGroup.group(layerRorationAxis, axisValue, app.cubeletModels);
+    }
     await rotationTransition(layerRorationAxis, rotationRad);
 }
 
@@ -559,6 +565,18 @@ function updateSolveButton()
 
 async function nextFaceOnClick()
 {
+    if (app.solution.length)
+    {
+        const notation = app.solution[app.solutionIndex];
+        app.solutionIndex++;
+        if (app.solutionIndex == app.solution.length)
+        {
+            app.nextFaceButton.disabled = true;
+        }
+        rotate(notation, false);
+        return;
+    }
+
     // F -> R -> U -> B -> D -> L
     let faceIndexToNotationMap: {[index: number]: string} = {
         0 : 'U',
@@ -605,6 +623,13 @@ async function solveOnClick()
         }
 
         app.solution = result.solution.split(' ');
+        app.solveButton.disabled = true;
+        // Back to the starting point.
+        rotate('U');
+        app.camera.position.y = 2.5;
+        app.camera.rotation.x = -Math.PI / 6;
+        app.prevFaceButton.disabled = true;
+        app.nextFaceButton.disabled = false;
     }
     catch (reason)
     {
@@ -730,6 +755,12 @@ function createPage()
 
 function cubeOnClick(event: MouseEvent)
 {
+    if (app.solution.length)
+    {
+        // Showing solution, not painting.
+        return;
+    }
+
     const x = (event.clientX / app.screenWidth) * 2 - 1;
     const y = -(event.clientY / app.screenHeight) * 2 + 1;
     const raycaster = new THREE.Raycaster();
@@ -848,7 +879,12 @@ class App
     // Once this has no X in it, we can send it to the solver.
     faces: string[];
 
+    // The solution we got from the solver. If empty, then we paint faces.
+    // Otherwise we show a solution.
     solution: string[] = [];
+    // If solution is not empty we show this state.
+    // If solution has N moves, this goes from 0..N (inclusive).
+    solutionIndex = 0;
 
     rubikCube: RubikCubeModel;
     // 27 children.
