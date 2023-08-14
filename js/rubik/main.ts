@@ -29,35 +29,6 @@ const c: {[index: string]: string} = {
     'X' : '#141517', // Gray
 };
 
-// Used by RubikCube::move().
-const notationSwapTable:
-    {[indexOf: string]: [ number, number, number, number ][];} = {
-        L : [
-            [ 0, 18, 27, 53 ], [ 3, 21, 30, 50 ], [ 6, 24, 33, 47 ],
-            [ 36, 38, 44, 42 ], [ 37, 41, 43, 39 ]
-        ],
-        R : [
-            [ 20, 2, 51, 29 ], [ 23, 5, 48, 32 ], [ 26, 8, 45, 35 ],
-            [ 9, 11, 17, 15 ], [ 10, 14, 16, 12 ]
-        ],
-        U : [
-            [ 9, 18, 36, 45 ], [ 10, 19, 37, 46 ], [ 11, 20, 38, 47 ],
-            [ 0, 2, 8, 6 ], [ 1, 5, 7, 3 ]
-        ],
-        D : [
-            [ 15, 51, 42, 24 ], [ 16, 52, 43, 25 ], [ 17, 53, 44, 26 ],
-            [ 27, 29, 35, 33 ], [ 28, 32, 34, 30 ]
-        ],
-        F : [
-            [ 6, 9, 29, 44 ], [ 7, 12, 28, 41 ], [ 8, 15, 27, 38 ],
-            [ 18, 20, 26, 24 ], [ 19, 23, 25, 21 ]
-        ],
-        B : [
-            [ 2, 36, 33, 17 ], [ 1, 39, 34, 14 ], [ 0, 42, 35, 11 ],
-            [ 45, 47, 53, 51 ], [ 46, 50, 52, 48 ]
-        ],
-    };
-
 // One cubelet is one piece of the cube, there are 27 cubelets in total.
 interface Cubelet
 {
@@ -69,13 +40,12 @@ interface Cubelet
 class RubikCube
 {
     cubelets: Cubelet[] = [];
-    colors: string[];
     constructor(colorStr?: string)
     {
-        this.colors = colorStr.trim().split('');
+        const colors = colorStr.trim().split('');
 
         this.generateCoords();
-        this.generateColors();
+        this.generateColors(colors);
     }
 
     // Used by the RubikCube ctor.
@@ -105,7 +75,7 @@ class RubikCube
     }
 
     // Used by the RubikCube ctor.
-    generateColors()
+    generateColors(colors: string[])
     {
         const colorNames = 'URFDLB'.split('');
         interface FaceColor
@@ -118,7 +88,7 @@ class RubikCube
             const name = colorNames[i];
             const start = i * 9;
             const end = start + 9;
-            faceColor[name] = this.colors.slice(start, end);
+            faceColor[name] = colors.slice(start, end);
         }
 
         for (const cubelet of this.cubelets)
@@ -171,69 +141,6 @@ class RubikCube
                 cubeColor['B'] = c[faceColor['B'][i]];
             }
             cubelet.color = cubeColor;
-        }
-    }
-
-    // Used by rotate().
-    move(notationStr: string)
-    {
-        const notations = notationStr.trim().split(' ');
-        for (const i of notations)
-        {
-            let toward = 1;
-            let rotationTimes = 1;
-            const notation = i[0];
-            const secondNota = i[1];
-            if (secondNota)
-            {
-                if (secondNota === `'`)
-                {
-                    toward = -1;
-                }
-                else if (secondNota === `2`)
-                {
-                    rotationTimes = 2;
-                }
-                else
-                {
-                    throw new Error(`Wrong secondNota: ${secondNota}`);
-                }
-            }
-
-            for (let j = 0; j < rotationTimes; j++)
-            {
-                const actions = notationSwapTable[notation];
-                for (const k of actions)
-                {
-                    this.swapFaceColor(k, toward);
-                }
-            }
-        }
-    }
-
-    // Used by move().
-    swapFaceColor(faceColorNums: number[], toward: number)
-    {
-        const [a, b, c, d] = faceColorNums;
-        const colors = this.colors;
-        const aColor = colors[a];
-        if (toward === -1)
-        {
-            colors[a] = colors[b];
-            colors[b] = colors[c];
-            colors[c] = colors[d];
-            colors[d] = aColor;
-        }
-        else if (toward === 1)
-        {
-            colors[a] = colors[d];
-            colors[d] = colors[c];
-            colors[c] = colors[b];
-            colors[b] = aColor;
-        }
-        else
-        {
-            throw new Error(`Wrong toward: ${toward}`);
         }
     }
 }
@@ -535,7 +442,6 @@ async function rotationTransition(axis: Axis, endRad: number)
 async function rotate(notation: string, cube = true)
 {
     const [layerRorationAxis, axisValue, rotationRad] = toRotation(notation);
-    app.rubikCube.move(notation);
     if (cube)
     {
         app.layerGroup.groupAll(layerRorationAxis, app.cubeletModels);
