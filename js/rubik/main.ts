@@ -29,6 +29,7 @@ const c: {[index: string]: string} = {
     'X' : '#141517', // Gray
 };
 
+// Used by RubikCube::move().
 const notationSwapTable:
     {[indexOf: string]: [ number, number, number, number ][];} = {
         L : [
@@ -57,12 +58,14 @@ const notationSwapTable:
         ],
     };
 
+// One cubelet is one piece of the cube, there are 27 cubelets in total.
 interface Cubelet
 {
     x: number, y: number, z: number, num: number, type: string,
         color?: {[index: string]: string},
 }
 
+// Base class for RubikCubeModel.
 class RubikCube
 {
     cubelets: Cubelet[] = [];
@@ -75,6 +78,7 @@ class RubikCube
         this.generateColors();
     }
 
+    // Used by the RubikCube ctor.
     generateCoords()
     {
         let num = 0;
@@ -100,6 +104,7 @@ class RubikCube
         }
     }
 
+    // Used by the RubikCube ctor.
     generateColors()
     {
         const colorNames = 'URFDLB'.split('');
@@ -169,8 +174,7 @@ class RubikCube
         }
     }
 
-    asString() { return this.colors.join(''); }
-
+    // Used by rotate().
     move(notationStr: string)
     {
         const notations = notationStr.trim().split(' ');
@@ -207,6 +211,7 @@ class RubikCube
         }
     }
 
+    // Used by move().
     swapFaceColor(faceColorNums: number[], toward: number)
     {
         const [a, b, c, d] = faceColorNums;
@@ -233,6 +238,7 @@ class RubikCube
     }
 }
 
+// Used by RubikCubeModel::generateCubeletModel().
 function roundedEdgeBox(width = 1, height = 1, depth = 1, radius0 = 0.1,
                         smoothness = 4)
 {
@@ -257,8 +263,8 @@ function roundedEdgeBox(width = 1, height = 1, depth = 1, radius0 = 0.1,
     return geometry;
 }
 
-export function roundedPlane(x = 0, y = 0, width = 0.9, height = 0.9,
-                             radius = 0.1)
+// Used by RubikCubeModel::generateCubeletModel().
+function roundedPlane(x = 0, y = 0, width = 0.9, height = 0.9, radius = 0.1)
 {
     const shape = new THREE.Shape();
     const center = new THREE.Vector2(-(x + width / 2), -(y + height / 2));
@@ -278,6 +284,7 @@ export function roundedPlane(x = 0, y = 0, width = 0.9, height = 0.9,
     return geometry;
 }
 
+// Used by RubikCubeModel::generateCubeletModel().
 interface CubeletModel extends THREE.Mesh
 {
     cubeType?: string;
@@ -285,6 +292,7 @@ interface CubeletModel extends THREE.Mesh
     initPosition?: THREE.Vector3;
 }
 
+// Used by RuikCubeModel::generateCubeletModel().
 const faceInfo: {
     [index: string]: {
         position: [ number, number, number ],
@@ -299,6 +307,7 @@ const faceInfo: {
     R : {position : [ 0.51, 0, 0 ], rotation : [ 0, Math.PI / 2, 0 ]},
 };
 
+// The actual 3x3 Rubik cube.
 class RubikCubeModel extends RubikCube
 {
     model = new THREE.Group();
@@ -320,6 +329,7 @@ class RubikCubeModel extends RubikCube
         }
     }
 
+    // Used by the RubikCubeModel ctor.
     generateCubeletModel(info: Cubelet, index: number)
     {
         const geometry = roundedEdgeBox(1, 1, 1, 0.05, 4);
@@ -343,14 +353,16 @@ class RubikCubeModel extends RubikCube
     }
 }
 
-export type Axis = 'x'|'y'|'z';
+type Axis = 'x'|'y'|'z';
 
-export type AxisValue = number;
+type AxisValue = number;
 
-export type Toward = 1|- 1;
+type Toward = 1|- 1;
 
-export class LayerModel extends THREE.Group
+/// Can rotate one face of the cube or the entire cube.
+class LayerModel extends THREE.Group
 {
+    // Used by rotate().
     group(axis: Axis, value: AxisValue, cubelets: THREE.Object3D[])
     {
         // Each Object3d can only have one parent.
@@ -365,6 +377,7 @@ export class LayerModel extends THREE.Group
         }
     }
 
+    // Used by rotate().
     groupAll(axis: Axis, cubelets: THREE.Object3D[])
     {
         // Each Object3d can only have one parent.
@@ -376,6 +389,7 @@ export class LayerModel extends THREE.Group
         }
     }
 
+    // Used by rotationTransition().
     ungroup(target: THREE.Object3D)
     {
         if (!this.children.length)
@@ -409,13 +423,15 @@ export class LayerModel extends THREE.Group
         }
     }
 
-    initRotation()
+    // Used by rotationTransition().
+    resetRotation()
     {
         this.rotation.x = 0;
         this.rotation.y = 0;
         this.rotation.z = 0;
     }
 
+    // Used by rotationTransition().
     async rotationAnimation(axis: Axis, endRad: number)
     {
         if (!['x', 'y', 'z'].includes(axis))
@@ -460,9 +476,10 @@ export class LayerModel extends THREE.Group
     }
 }
 
-export type NotationBase = 'L'|'R'|'D'|'U'|'B'|'F';
-export type NotationExtra = ''|`'`|'2';
+type NotationBase = 'L'|'R'|'D'|'U'|'B'|'F';
+type NotationExtra = ''|`'`|'2';
 
+// Used by toRotation().
 const axisTable: {[key in NotationBase]: [ Axis, AxisValue, Toward ]} = {
     L : [ 'x', -1, 1 ],
     R : [ 'x', 1, -1 ],
@@ -472,6 +489,7 @@ const axisTable: {[key in NotationBase]: [ Axis, AxisValue, Toward ]} = {
     F : [ 'z', 1, -1 ],
 };
 
+// Used by rotate().
 function toRotation(notation: string): [ Axis, number, number ]
 {
     notation = notation.trim();
@@ -505,14 +523,16 @@ function toRotation(notation: string): [ Axis, number, number ]
     return [ axis, axisValue, rad ];
 }
 
+// Used by rotate().
 async function rotationTransition(axis: Axis, endRad: number)
 {
     await app.layerGroup.rotationAnimation(axis, endRad);
     app.layerGroup.ungroup(app.rubikCube.model);
-    app.layerGroup.initRotation();
+    app.layerGroup.resetRotation();
 }
 
-async function rotate(notation: string, cube: boolean = true)
+// Used by e.g. nextFaceOnClick().
+async function rotate(notation: string, cube = true)
 {
     const [layerRorationAxis, axisValue, rotationRad] = toRotation(notation);
     app.rubikCube.move(notation);
@@ -527,6 +547,7 @@ async function rotate(notation: string, cube: boolean = true)
     await rotationTransition(layerRorationAxis, rotationRad);
 }
 
+// Used by e.g. nextFaceOnClick().
 function updateSolveButton()
 {
     let validCounts = true;
@@ -551,6 +572,7 @@ function updateSolveButton()
     }
 }
 
+// Used by createPage().
 async function nextFaceOnClick()
 {
     if (app.solution.length)
@@ -566,7 +588,7 @@ async function nextFaceOnClick()
     }
 
     // F -> R -> U -> B -> D -> L
-    let faceIndexToNotationMap: {[index: number]: string} = {
+    const faceIndexToNotationMap: {[index: number]: string} = {
         0 : 'U',
         1 : 'L',
         2 : 'U',
@@ -595,6 +617,7 @@ interface RubikResult
     error: string;
 }
 
+// Used by createPage().
 async function solveOnClick()
 {
     const url =
@@ -603,7 +626,7 @@ async function solveOnClick()
     try
     {
         const response = await window.fetch(request);
-        let result = await<Promise<RubikResult>>response.json();
+        const result = await<Promise<RubikResult>>response.json();
         if (result.error.length)
         {
             const p = document.getElementById('p-error');
@@ -627,10 +650,11 @@ async function solveOnClick()
     }
 }
 
+// Used by createPage().
 async function prevFaceOnClick()
 {
     // L -> D -> B -> U -> R -> F
-    let faceIndexToNotationMap: {[index: number]: string} = {
+    const faceIndexToNotationMap: {[index: number]: string} = {
         5 : `L'`,
         4 : `U'`,
         3 : `U'`,
@@ -651,6 +675,7 @@ async function prevFaceOnClick()
     rotate(notation);
 }
 
+// Used by createPage().
 function createPickerCell(row: HTMLTableRowElement, cName: string,
                           cValue: string)
 {
@@ -686,12 +711,12 @@ function createPickerCell(row: HTMLTableRowElement, cName: string,
     cellDiv.id = 'cell-div-' + cName;
     cellDiv.style.textAlign = 'center';
 
-    let cellBackground = cell.style.background;
+    const cellBackground = cell.style.background;
     // Parse rgb(r, g, b).
-    let [r, g, b] = cellBackground.substring(4, cellBackground.length - 1)
-                        .split(' ')
-                        .map(x => parseInt(x));
-    let isDark = ((b * 29 + g * 151 + r * 76) >> 8) <= 156;
+    const [r, g, b] = cellBackground.substring(4, cellBackground.length - 1)
+                          .split(' ')
+                          .map(x => parseInt(x));
+    const isDark = ((b * 29 + g * 151 + r * 76) >> 8) <= 156;
     if (isDark)
     {
         cellDiv.style.color = '#ffffff';
@@ -706,6 +731,7 @@ function createPickerCell(row: HTMLTableRowElement, cName: string,
     app.colorPickerCells.push(cell);
 }
 
+// Creates the initial DOM nodes once the empty DOM is ready.
 function createPage()
 {
     document.body.style.backgroundColor = '#ffffff';
@@ -761,12 +787,18 @@ function createPage()
     app.solveButton.onclick = solveOnClick;
     updateSolveButton();
     buttons.appendChild(app.solveButton);
+
     const error = document.createElement('p');
     error.id = 'p-error';
     error.style.textAlign = 'center';
+    error.innerText =
+        'start with the facing side: red on the facing side, yellow on the right side';
     document.body.appendChild(error);
+
+    animate();
 }
 
+// Handles clicks on the cube (scene).
 function cubeOnClick(event: MouseEvent)
 {
     if (app.solution.length)
@@ -787,16 +819,16 @@ function cubeOnClick(event: MouseEvent)
         return;
     }
 
-    let face = faceOfCubelets[0].object as THREE.Mesh;
+    const face = faceOfCubelets[0].object as THREE.Mesh;
 
     // Update the facelet model.
-    let cubeletIndex = Number(face.name.substr('faceOfCubelet'.length));
+    const cubeletIndex = Number(face.name.substr('faceOfCubelet'.length));
     // F -> R -> U -> B -> D -> L
     // Hit testing gives us a cubelet index. Depending on what face we see,
     // different cubelet indexes (0..26) refer to different face indexes
     // (0..53). We need face indexes to construct a facelet string, which will
     // be the input for the solver.
-    let cubeToFaceMap: {[index: number]: {[index: number]: number}} = {
+    const cubeToFaceMap: {[index: number]: {[index: number]: number}} = {
         0 : {
             // F
             6 : 18,
@@ -870,7 +902,7 @@ function cubeOnClick(event: MouseEvent)
             24 : 44,
         },
     };
-    let faceIndex = cubeToFaceMap[app.pickingFace][cubeletIndex];
+    const faceIndex = cubeToFaceMap[app.pickingFace][cubeletIndex];
     app.faces[faceIndex] = app.colorName;
     updateSolveButton();
 
@@ -879,6 +911,7 @@ function cubeOnClick(event: MouseEvent)
         {emissive : app.colorValue, transparent : true});
 }
 
+// Calls render() periodically.
 function animate(time?: number)
 {
     requestAnimationFrame(animate);
@@ -886,6 +919,7 @@ function animate(time?: number)
     app.renderer.render(app.scene, app.camera);
 }
 
+// Encapsulates global variables.
 class App
 {
     // Painting the faces alterns this. Format:
@@ -924,9 +958,9 @@ class App
 
     constructor()
     {
-        let faces = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+        let faces = 'XXXXXXXXXXXXXRXXXXXXXXFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
         const urlParams = new URLSearchParams(window.location.search);
-        let facesParam = urlParams.get('faces');
+        const facesParam = urlParams.get('faces');
         if (facesParam != null)
         {
             faces = facesParam;
@@ -948,6 +982,5 @@ class App
 }
 
 const app = new App();
-animate();
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:
