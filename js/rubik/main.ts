@@ -544,7 +544,13 @@ async function rotate(notation: string, cube = true)
     {
         app.layerGroup.group(layerRorationAxis, axisValue, app.cubeletModels);
     }
+    const p = app.prevFaceButton.disabled;
+    app.prevFaceButton.disabled = true;
+    const n = app.nextFaceButton.disabled;
+    app.nextFaceButton.disabled = true;
     await rotationTransition(layerRorationAxis, rotationRad);
+    app.prevFaceButton.disabled = p;
+    app.nextFaceButton.disabled = n;
 }
 
 // Used by e.g. nextFaceOnClick().
@@ -583,7 +589,8 @@ async function nextFaceOnClick()
         {
             app.nextFaceButton.disabled = true;
         }
-        rotate(notation, false);
+        updateCounterSpan();
+        await rotate(notation, false);
         return;
     }
 
@@ -605,9 +612,10 @@ async function nextFaceOnClick()
     {
         app.nextFaceButton.disabled = true;
     }
+    updateCounterSpan();
     updateSolveButton();
 
-    rotate(notation);
+    await rotate(notation);
 }
 
 // RubikResult represents the result from the solver.
@@ -637,11 +645,12 @@ async function solveOnClick()
         app.solution = result.solution.split(' ');
         app.solveButton.disabled = true;
         // Back to the starting point.
-        rotate('U');
+        await rotate('U');
         app.camera.position.y = 2.5;
         app.camera.rotation.x = -Math.PI / 6;
         app.prevFaceButton.disabled = true;
         app.nextFaceButton.disabled = false;
+        updateCounterSpan();
     }
     catch (reason)
     {
@@ -671,8 +680,9 @@ async function prevFaceOnClick()
     {
         app.prevFaceButton.disabled = true;
     }
+    updateCounterSpan();
 
-    rotate(notation);
+    await rotate(notation);
 }
 
 // Used by createPage().
@@ -731,6 +741,18 @@ function createPickerCell(row: HTMLTableRowElement, cName: string,
     app.colorPickerCells.push(cell);
 }
 
+function updateCounterSpan()
+{
+    if (app.solution.length)
+    {
+        app.counterSpan.innerText = String(app.solutionIndex + 1) + ' / ' +
+                                    (app.solution.length + 1) + ' ';
+        return;
+    }
+
+    app.counterSpan.innerText = String(app.pickingFace + 1) + ' / 6 ';
+}
+
 // Creates the initial DOM nodes once the empty DOM is ready.
 function createPage()
 {
@@ -768,6 +790,9 @@ function createPage()
     const buttons = document.createElement('p');
     buttons.style.textAlign = 'center';
     document.body.appendChild(buttons);
+    app.counterSpan = document.createElement('span');
+    updateCounterSpan();
+    buttons.appendChild(app.counterSpan);
     app.prevFaceButton = document.createElement('input');
     app.prevFaceButton.type = 'button';
     app.prevFaceButton.value = '< prev';
@@ -952,6 +977,8 @@ class App
     prevFaceButton: HTMLInputElement;
     nextFaceButton: HTMLInputElement;
     solveButton: HTMLInputElement;
+
+    counterSpan: HTMLSpanElement;
 
     // The picker is used on this face: 0..5 (FRUBDL).
     pickingFace = 0;
