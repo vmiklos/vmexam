@@ -759,6 +759,8 @@ function cubeOnClick(event: MouseEvent)
     // different cubelet indexes (0..26) refer to different face indexes
     // (0..53). We need face indexes to construct a facelet string, which will
     // be the input for the solver.
+    // Disallow painting the central cublet, which should already have the right
+    // color if you hold the cube with the correct orientation.
     const cubeToFaceMap: {[index: number]: {[index: number]: number}} = {
         0 : {
             // F
@@ -766,7 +768,7 @@ function cubeOnClick(event: MouseEvent)
             7 : 19,
             8 : 20,
             15 : 21,
-            16 : 22,
+            // 16 : 22,
             17 : 23,
             24 : 24,
             25 : 25,
@@ -778,7 +780,7 @@ function cubeOnClick(event: MouseEvent)
             5 : 10,
             2 : 11,
             17 : 12,
-            14 : 13,
+            // 14 : 13,
             11 : 14,
             26 : 15,
             23 : 16,
@@ -790,7 +792,7 @@ function cubeOnClick(event: MouseEvent)
             1 : 1,
             2 : 2,
             3 : 3,
-            4 : 4,
+            // 4 : 4,
             5 : 5,
             6 : 6,
             7 : 7,
@@ -802,7 +804,7 @@ function cubeOnClick(event: MouseEvent)
             1 : 46,
             0 : 47,
             11 : 48,
-            10 : 49,
+            // 10 : 49,
             9 : 50,
             20 : 51,
             19 : 52,
@@ -814,7 +816,7 @@ function cubeOnClick(event: MouseEvent)
             25 : 28,
             26 : 29,
             21 : 30,
-            22 : 31,
+            // 22 : 31,
             23 : 32,
             18 : 33,
             19 : 34,
@@ -826,7 +828,7 @@ function cubeOnClick(event: MouseEvent)
             3 : 37,
             6 : 38,
             9 : 39,
-            12 : 40,
+            // 12 : 40,
             15 : 41,
             18 : 42,
             21 : 43,
@@ -834,6 +836,11 @@ function cubeOnClick(event: MouseEvent)
         },
     };
     const faceIndex = cubeToFaceMap[app.pickingFace][cubeletIndex];
+    if (!faceIndex)
+    {
+        return;
+    }
+
     app.faces[faceIndex] = app.colorName;
     updateSolveButton();
 
@@ -891,7 +898,7 @@ class App
 
     constructor()
     {
-        let faces = 'XXXXXXXXXXXXXRXXXXXXXXFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+        let faces = 'XXXXUXXXXXXXXRXXXXXXXXFXXXXXXXXDXXXXXXXXLXXXXXXXXBXXXX';
         const urlParams = new URLSearchParams(window.location.search);
         const facesParam = urlParams.get('faces');
         if (facesParam != null)
