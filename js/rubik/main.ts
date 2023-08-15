@@ -726,6 +726,20 @@ function createPage()
         'start with the facing side: red on the facing side, yellow on the right side';
     document.body.appendChild(error);
 
+    const credit = document.createElement('p');
+    credit.style.textAlign = 'center';
+    credit.appendChild(document.createTextNode('built using '));
+    const kewb = document.createElement('a');
+    kewb.href = 'https://crates.io/crates/kewb';
+    kewb.innerText = 'kewb';
+    credit.appendChild(kewb);
+    credit.appendChild(document.createTextNode(' and '));
+    const three = document.createElement('a');
+    three.href = 'https://aaron-bird.github.io/demo/rubiks-cube/';
+    three.innerText = 'three.js';
+    credit.appendChild(three);
+    document.body.appendChild(credit);
+
     animate();
 }
 
