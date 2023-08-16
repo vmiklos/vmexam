@@ -21,6 +21,8 @@ You may want to customize:
 - guest port
 """
 
+from typing import Any
+from typing import Dict
 import configparser
 import json
 import os
@@ -55,6 +57,10 @@ def main() -> None:
     config = get_config()
     guest_ip = config.get('qemu-exec-client', 'guest-ip').strip()
     argv = sys.argv[1:]
+    verbose = False
+    if argv[0] == "-v":
+        verbose = True
+        argv = argv[1:]
 
     # If my name is an alias, inject it.
     my_name = sys.argv[0]
@@ -68,6 +74,7 @@ def main() -> None:
             if "sync" in value:
                 sync = True
         else:
+            assert type(value) == str
             command = value
     if command:
         argv = [command] + argv
@@ -84,13 +91,15 @@ def main() -> None:
             abs_argv.append(arg)
     abs_argv = [i.replace(os.path.join(os.environ["HOME"], "git"), 'z:') for i in abs_argv]
 
-    payload_dict = {
+    payload_dict: Dict[str, Any] = {
         "command": abs_argv
     }
     if sync:
         payload_dict["sync"] = "true"
     payload = json.dumps(payload_dict)
     url = "http://{}:8000/exec".format(guest_ip)
+    if verbose:
+        print("Sending payload '{}' to <{}>".format(payload, url))
     with urllib.request.urlopen(url, bytes(payload, "utf-8")) as stream:
         buf = stream.read()
         print(str(buf, "utf-8"))

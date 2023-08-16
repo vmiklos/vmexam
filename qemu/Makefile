@@ -1,6 +1,6 @@
 build: Makefile
-	mypy --python-version 3.6 --strict --no-error-summary exec_client.py
-	mypy --python-version 3.6 --strict --no-error-summary exec_server.py
+	mypy --python-version 3.11 --strict --no-error-summary exec_client.py
+	mypy --python-version 3.11 --strict --no-error-summary exec_server.py
 
 check: build check-format check-lint
 
