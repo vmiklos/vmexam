@@ -850,7 +850,7 @@ function cubeOnClick(event: MouseEvent)
         },
     };
     const faceIndex = cubeToFaceMap[app.pickingFace][cubeletIndex];
-    if (!faceIndex)
+    if (faceIndex === undefined)
     {
         return;
     }
