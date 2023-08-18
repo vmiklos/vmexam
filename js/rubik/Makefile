@@ -6,7 +6,7 @@ else
 WEBPACK_OPTIONS = --mode=production
 endif
 
-bundle.js: main.ts tsconfig.json webpack.config.js package-lock.json Makefile config.mak
+bundle.js: main.ts rubik.ts tsconfig.json webpack.config.js package-lock.json Makefile config.mak
 	npx webpack ${WEBPACK_OPTIONS} --config webpack.config.js
 
 package-lock.json: package.json
@@ -16,7 +16,7 @@ package-lock.json: package.json
 check: check-lint
 
 check-lint:
-	npx eslint main.ts
+	npx eslint main.ts rubik.ts
 
 run:
 	python3 -m http.server
