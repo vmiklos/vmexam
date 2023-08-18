@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+import confetti from 'canvas-confetti';
 import * as THREE from 'three';
 
 import * as rubik from './rubik';
@@ -362,6 +363,10 @@ class App
             if (app.solutionIndex == app.solution.length)
             {
                 app.nextFaceButton.disabled = true;
+                confetti({
+                    particleCount : 150,
+                    ticks : 600,
+                });
             }
             app.updateCounterSpan();
             app.rubik.faceTurn(notation);
