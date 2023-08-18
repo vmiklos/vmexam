@@ -59,7 +59,7 @@ class App
         'B': '#f55225',  // Orange
         'L': '#b9d0d8',  // White
         'D': '#028d76',  // Green
-        'X': '#141517',  // Gray
+        'X': '#7f7f7f',  // Gray
     };
 
     constructor()
@@ -252,8 +252,10 @@ class App
             /*L=*/ 5 : 1,
         };
         const materialIndex = pickingToMaterialMap[app.pickingFace];
-        cubeletMaterials[materialIndex] = new THREE.MeshLambertMaterial(
-            {emissive : app.colorValue, transparent : true});
+        cubeletMaterials[materialIndex] = new THREE.MeshLambertMaterial({
+            emissive : app.colorValue,
+            emissiveMap : app.rubik.cubeletTexture
+        });
     }
 
     static async solveOnClick()

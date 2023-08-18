@@ -39,8 +39,6 @@ class Rubik
 
     cubeSize = 3;
 
-    spacing = 0.5;
-
     allCubes: THREE.Mesh[];
 
     moveQueue: Move[];
@@ -61,6 +59,8 @@ class Rubik
 
     SCREEN_HEIGHT: number;
     SCREEN_WIDTH: number;
+
+    cubeletTexture: THREE.CanvasTexture;
 
     init(faceletStr: string, colorValues: {[index: string]: string})
     {
@@ -103,8 +103,20 @@ class Rubik
         }
 
         /*** Build 27 cubes ***/
-        const increment = this.cubeSize + this.spacing;
+        const increment = this.cubeSize;
         this.allCubes = [];
+
+        // https://discourse.threejs.org/t/how-to-add-solid-border-into-cube-edge-in-three-js/47878/2
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const canvasContext = canvas.getContext('2d');
+        canvasContext.fillStyle = 'white';
+        canvasContext.fillRect(0, 0, 512, 512);
+        canvasContext.strokeStyle = 'black';
+        canvasContext.lineWidth = 32;
+        canvasContext.strokeRect(16, 16, 512 - 32, 512 - 32);
+        this.cubeletTexture = new THREE.CanvasTexture(canvas);
 
         const positionOffset = 1;
         let cubeIndex = 0;
@@ -300,27 +312,33 @@ class Rubik
         const cubeMaterials = [
             new THREE.MeshLambertMaterial({
                 emissive :
-                    this.getColorValue(faceletStr[faceIndexes[0]], colorValues)
+                    this.getColorValue(faceletStr[faceIndexes[0]], colorValues),
+                emissiveMap : this.cubeletTexture
             }),
             new THREE.MeshLambertMaterial({
                 emissive :
-                    this.getColorValue(faceletStr[faceIndexes[1]], colorValues)
+                    this.getColorValue(faceletStr[faceIndexes[1]], colorValues),
+                emissiveMap : this.cubeletTexture
             }),
             new THREE.MeshLambertMaterial({
                 emissive :
-                    this.getColorValue(faceletStr[faceIndexes[2]], colorValues)
+                    this.getColorValue(faceletStr[faceIndexes[2]], colorValues),
+                emissiveMap : this.cubeletTexture
             }),
             new THREE.MeshLambertMaterial({
                 emissive :
-                    this.getColorValue(faceletStr[faceIndexes[3]], colorValues)
+                    this.getColorValue(faceletStr[faceIndexes[3]], colorValues),
+                emissiveMap : this.cubeletTexture
             }),
             new THREE.MeshLambertMaterial({
                 emissive :
-                    this.getColorValue(faceletStr[faceIndexes[4]], colorValues)
+                    this.getColorValue(faceletStr[faceIndexes[4]], colorValues),
+                emissiveMap : this.cubeletTexture
             }),
             new THREE.MeshLambertMaterial({
                 emissive :
-                    this.getColorValue(faceletStr[faceIndexes[5]], colorValues)
+                    this.getColorValue(faceletStr[faceIndexes[5]], colorValues),
+                emissiveMap : this.cubeletTexture
             }),
         ];
         const cube = new THREE.Mesh(cubeGeometry, cubeMaterials) as Cubelet;
@@ -475,6 +493,7 @@ class Rubik
     /*** Util ***/
     faceTurnImpl(notation: string, all: boolean)
     {
+        // https://meep.cubing.net/wcanotation.html
         const notationBase = notation[0] as NotationBase;
         const notationExtra = notation[1];
         const faceTurnToMove: {
