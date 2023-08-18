@@ -31,6 +31,9 @@ def readMcm():
 # Filters git shortlog about, hiding already existing TDF members.
 def main(argv):
     git = True
+    company = ""
+    if len(argv) and argv[0] == "--company":
+        company = argv[1]
     if len(argv) and argv[0] == "--qa":
         git = False
     config = json.load(open("git-mcmshortlog.json"))
@@ -43,11 +46,13 @@ def main(argv):
     mcm = readMcm()
     while True:
         line = sock.readline().strip()
+        if not line:
+            break
         if git:
             if not ('\t' in line):
                 continue
             commits, nameEmail = line.split('\t')
-            if int(commits) < 10:
+            if int(commits) < 10 and not company:
                 # Less then 10 recent commits -> assume it's the not interesting
                 # long tail.
                 break
@@ -59,6 +64,8 @@ def main(argv):
             name, email = line.split(", ")
 
         if name in ignoreNames:
+            continue
+        if company and company not in email:
             continue
 
         if email in emailMap.keys():
