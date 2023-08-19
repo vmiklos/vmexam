@@ -63,6 +63,9 @@ class App
         'X': '#7f7f7f',  // Gray
     };
 
+    // Only throw confetti the first time we reach the solution.
+    hadConfetti: boolean;
+
     constructor()
     {
         this.solution = [];
@@ -71,6 +74,7 @@ class App
         this.colorValue = App.colorValues['U'];
         this.colorPickerCells = [];
         this.pickingFace = 0;
+        this.hadConfetti = false;
     }
 
     createPickerCell(row: HTMLTableRowElement, cName: string, cValue: string)
@@ -294,6 +298,37 @@ class App
 
     static prevFaceOnClick()
     {
+        if (app.solution.length)
+        {
+            app.solutionIndex--;
+            let notation = app.solution[app.solutionIndex];
+            if (notation.endsWith('2'))
+            {
+                // nothing to do
+            }
+            else if (notation.endsWith(`'`))
+            {
+                // drop tailing '
+                notation = notation.substr(0, notation.length - 1);
+            }
+            else
+            {
+                // add trailing '
+                notation += `'`;
+            }
+            if (app.solutionIndex == 0)
+            {
+                app.prevFaceButton.disabled = true;
+            }
+            if (app.solutionIndex == app.solution.length - 1)
+            {
+                app.nextFaceButton.disabled = false;
+            }
+            app.updateCounterSpan();
+            app.rubik.faceTurn(notation);
+            return;
+        }
+
         // L -> D -> B -> U -> R -> F
         const faceIndexToNotationMap: {[index: number]: string} = {
             5 : `L'`,
@@ -360,13 +395,21 @@ class App
         {
             const notation = app.solution[app.solutionIndex];
             app.solutionIndex++;
+            if (app.solutionIndex == 1)
+            {
+                app.prevFaceButton.disabled = false;
+            }
             if (app.solutionIndex == app.solution.length)
             {
                 app.nextFaceButton.disabled = true;
-                confetti({
-                    particleCount : 150,
-                    ticks : 600,
-                });
+                if (!app.hadConfetti)
+                {
+                    confetti({
+                        particleCount : 150,
+                        ticks : 600,
+                    });
+                    app.hadConfetti = true;
+                }
             }
             app.updateCounterSpan();
             app.rubik.faceTurn(notation);
