@@ -71,7 +71,6 @@ svl/source/items/grabbagitem.cxx
 svtools/qa/unit/testHtmlReader.cxx
 svx/qa/unit/core.cxx
 svx/qa/unit/sdr.cxx
-svx/qa/unit/styles.cxx
 svx/qa/unit/svdraw.cxx
 svx/qa/unit/table.cxx
 svx/qa/unit/unodraw.cxx
