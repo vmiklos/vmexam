@@ -140,8 +140,15 @@ class App
             return;
         }
 
-        const x = (event.clientX / app.rubik.SCREEN_WIDTH) * 2 - 1;
-        const y = -(event.clientY / app.rubik.SCREEN_HEIGHT) * 2 + 1;
+        // Use getBoundingClientRect() instead of just following
+        // <https://threejs.org/docs/index.html#api/en/core/Raycaster>, so this
+        // works correctly even if the page is scrolled.
+        const rect = app.rubik.renderer.domElement.getBoundingClientRect();
+        const x =
+            ((event.clientX - rect.left) / (rect.width - rect.left)) * 2 - 1;
+        const y =
+            -((event.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
+
         const raycaster = new THREE.Raycaster();
         raycaster.setFromCamera(new THREE.Vector2(x, y), app.rubik.camera);
         const intersects = raycaster.intersectObjects(app.rubik.allCubes);
