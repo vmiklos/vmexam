@@ -270,11 +270,12 @@ class App
         const request = new Request(url, {method : 'GET'});
         try
         {
+            const p = document.getElementById('p-error');
+            p.innerText = 'fetching solution from solver...';
             const response = await window.fetch(request);
             const result = await<Promise<RubikResult>>response.json();
             if (result.error.length)
             {
-                const p = document.getElementById('p-error');
                 p.innerText = 'error from solver: ' + result.error;
                 return;
             }
@@ -288,6 +289,7 @@ class App
             app.prevFaceButton.disabled = true;
             app.nextFaceButton.disabled = false;
             app.updateCounterSpan();
+            p.innerText = '';
         }
         catch (reason)
         {
