@@ -177,7 +177,7 @@ class App
                 17 : 19,
                 26 : 20,
                 5 : 21,
-                // 14 : 22,
+                14 : 22,
                 23 : 23,
                 2 : 24,
                 11 : 25,
@@ -189,7 +189,7 @@ class App
                 25 : 10,
                 24 : 11,
                 23 : 12,
-                // 22 : 13,
+                22 : 13,
                 21 : 14,
                 20 : 15,
                 19 : 16,
@@ -201,7 +201,7 @@ class App
                 15 : 1,
                 24 : 2,
                 7 : 3,
-                // 16 : 4,
+                16 : 4,
                 25 : 5,
                 8 : 6,
                 17 : 7,
@@ -213,7 +213,7 @@ class App
                 15 : 46,
                 6 : 47,
                 21 : 48,
-                // 12 : 49,
+                12 : 49,
                 3 : 50,
                 18 : 51,
                 9 : 52,
@@ -225,7 +225,7 @@ class App
                 11 : 28,
                 20 : 29,
                 1 : 30,
-                // 10 : 31,
+                10 : 31,
                 19 : 32,
                 0 : 33,
                 9 : 34,
@@ -237,7 +237,7 @@ class App
                 7 : 37,
                 8 : 38,
                 3 : 39,
-                // 4 : 40,
+                4 : 40,
                 5 : 41,
                 0 : 42,
                 1 : 43,
@@ -245,11 +245,6 @@ class App
             },
         };
         const faceIndex = cubeToFaceMap[app.pickingFace][cubeletIndex];
-        if (faceIndex === undefined)
-        {
-            return;
-        }
-
         app.faces[faceIndex] = app.colorName;
         app.updateSolveButton();
         // Update the view.
@@ -270,10 +265,36 @@ class App
         });
     }
 
+    static normalizeFaces(faces: string[]): string[]
+    {
+        // https://github.com/luckasRanarison/kewb/discussions/7 the solver
+        // wants U-R-F-D-L-B ordering, so we need to normalize, otherwise the
+        // middle of each face may not be the color that is expected by the
+        // solver. And that would lead to an impossible state -> timeout.
+        const normalized =
+            [...'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' ];
+        // See the App.faces documentation, we need a map that translates from
+        // what we thought to be the face name to what is actually the face
+        // name. The indexes are the middle of the faces from the facelet
+        // string.
+        const normalizeMap: {[index: string]: string} = {};
+        normalizeMap[faces[4]] = 'U';
+        normalizeMap[faces[13]] = 'R';
+        normalizeMap[faces[22]] = 'F';
+        normalizeMap[faces[31]] = 'D';
+        normalizeMap[faces[40]] = 'L';
+        normalizeMap[faces[49]] = 'B';
+        for (let i = 0; i < faces.length; i++)
+        {
+            normalized[i] = normalizeMap[faces[i]];
+        }
+        return normalized;
+    }
+
     static async solveOnClick()
     {
         const url = 'https://share.vmiklos.hu/apps/rubik/?facelet=' +
-                    app.faces.join('');
+                    App.normalizeFaces(app.faces).join('');
         const request = new Request(url, {method : 'GET'});
         try
         {
@@ -465,7 +486,7 @@ class App
         document.body.style.backgroundColor = '#ffffff';
         // Create our page: the cube.
         app.rubik = new rubik.Rubik();
-        let faces = 'XXXXUXXXXXXXXRXXXXXXXXFXXXXXXXXDXXXXXXXXLXXXXXXXXBXXXX';
+        let faces = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
         const urlParams = new URLSearchParams(window.location.search);
         const facesParam = urlParams.get('faces');
         if (facesParam != null)
@@ -524,8 +545,6 @@ class App
         const error = document.createElement('p');
         error.id = 'p-error';
         error.style.textAlign = 'center';
-        error.innerText =
-            'start with the facing side: red on the facing side, yellow on the right side';
         document.body.appendChild(error);
 
         const credit = document.createElement('p');
