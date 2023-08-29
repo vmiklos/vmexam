@@ -12,7 +12,6 @@ connectivity/source/inc/writer/WTable.hxx
 connectivity/source/inc/writer/WTables.hxx
 cppcanvas/qa/extras/emfplus/emfplus.cxx
 cui/qa/uitest/dialogs/pastedlg.py
-cui/source/tabpages/themepage.cxx
 desktop/source/lib/lokclipboard.cxx
 desktop/source/lib/lokclipboard.hxx
 drawinglayer/qa/unit/border.cxx
