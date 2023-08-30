@@ -215,13 +215,13 @@ dispatcher.executeDispatch(document, ".uno:GoUp", "", 0, args())
   - cursors: print print *m_aTextAppendStack.top().xCursor._pInterface->m_pImpl->GetRegisteredIn()
   - soffice.bin: /home/vmiklos/git/libreoffice/master/sw/source/core/bastyp/index.cxx:236: virtual SwIndexReg::~SwIndexReg(): Assertion !m_pFirst && !m_pLast failed.
 
-set logging on
-b /home/vmiklos/git/libreoffice/master/sw/source/core/bastyp/index.cxx:34 (3 SwIndex ctors)
-b /home/vmiklos/git/libreoffice/master/sw/source/core/bastyp/index.cxx:43
-b /home/vmiklos/git/libreoffice/master/sw/source/core/bastyp/index.cxx:53
+set logging enabled
+b /home/vmiklos/git/libreoffice/core/sw/source/core/bastyp/index.cxx:34 (3 SwIndex ctors)
+b /home/vmiklos/git/libreoffice/core/sw/source/core/bastyp/index.cxx:43
+b /home/vmiklos/git/libreoffice/core/sw/source/core/bastyp/index.cxx:53
 command 1 2 3
 print this
-bt 5
+bt 15
 c
 end
 set pagination off
