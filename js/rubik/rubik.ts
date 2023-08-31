@@ -309,38 +309,15 @@ class Rubik
             ],
         };
         const faceIndexes = cubeIndexToFaceIndexes[index];
-        const cubeMaterials = [
-            new THREE.MeshLambertMaterial({
+        const cubeMaterials = [];
+        for (let i = 0; i < 6; i++)
+        {
+            cubeMaterials.push(new THREE.MeshLambertMaterial({
                 emissive :
-                    this.getColorValue(faceletStr[faceIndexes[0]], colorValues),
+                    this.getColorValue(faceletStr[faceIndexes[i]], colorValues),
                 emissiveMap : this.cubeletTexture
-            }),
-            new THREE.MeshLambertMaterial({
-                emissive :
-                    this.getColorValue(faceletStr[faceIndexes[1]], colorValues),
-                emissiveMap : this.cubeletTexture
-            }),
-            new THREE.MeshLambertMaterial({
-                emissive :
-                    this.getColorValue(faceletStr[faceIndexes[2]], colorValues),
-                emissiveMap : this.cubeletTexture
-            }),
-            new THREE.MeshLambertMaterial({
-                emissive :
-                    this.getColorValue(faceletStr[faceIndexes[3]], colorValues),
-                emissiveMap : this.cubeletTexture
-            }),
-            new THREE.MeshLambertMaterial({
-                emissive :
-                    this.getColorValue(faceletStr[faceIndexes[4]], colorValues),
-                emissiveMap : this.cubeletTexture
-            }),
-            new THREE.MeshLambertMaterial({
-                emissive :
-                    this.getColorValue(faceletStr[faceIndexes[5]], colorValues),
-                emissiveMap : this.cubeletTexture
-            }),
-        ];
+            }));
+        }
         const cube = new THREE.Mesh(cubeGeometry, cubeMaterials) as Cubelet;
         cube.castShadow = true;
         cube.name = 'cubelet' + index;
