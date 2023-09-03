@@ -196,117 +196,50 @@ class Rubik
     newCube(x: number, y: number, z: number, index: number, faceletStr: string,
             colorValues: {[index: string]: string})
     {
+        // Face indexes. Facelet string order is U, R, F, D, L, B.
+        const NP: number = undefined; // not painted
+        const U1 = 0, U2 = 1, U3 = 2, U4 = 3, U5 = 4;
+        const U6 = 5, U7 = 6, U8 = 7, U9 = 8;
+        const R1 = 9, R2 = 10, R3 = 11, R4 = 12, R5 = 13;
+        const R6 = 14, R7 = 15, R8 = 16, R9 = 17;
+        const F1 = 18, F2 = 19, F3 = 20, F4 = 21, F5 = 22;
+        const F6 = 23, F7 = 24, F8 = 25, F9 = 26;
+        const D1 = 27, D2 = 28, D3 = 29, D4 = 30, D5 = 31;
+        const D6 = 32, D7 = 33, D8 = 34, D9 = 35;
+        const L1 = 36, L2 = 37, L3 = 38, L4 = 39, L5 = 40;
+        const L6 = 41, L7 = 42, L8 = 43, L9 = 44;
+        const B1 = 45, B2 = 46, B3 = 47, B4 = 48, B5 = 49;
+        const B6 = 50, B7 = 51, B8 = 52, B9 = 53;
         const cubeGeometry =
             new THREE.BoxGeometry(this.cubeSize, this.cubeSize, this.cubeSize);
-        // R, L, U, D, F, B are the columns.
-        // Facelet string order is U, R, F, D, L, B.
         const cubeIndexToFaceIndexes: {[index: number]: number[]} = {
-            0 : [
-                undefined, /*L7=*/ 42, undefined, /*D7=*/ 33, undefined,
-                /*B9=*/ 53
-            ],
-            1 : [
-                undefined, /*L8=*/ 43, undefined, /*D4=*/ 30, undefined,
-                undefined
-            ],
-            2 : [
-                undefined, /*L9=*/ 44, undefined, /*D1=*/ 27, /*F7=*/ 24,
-                undefined
-            ],
-            3 : [
-                undefined, /*L4=*/ 39, undefined, undefined, undefined,
-                /*B6=*/ 50
-            ],
-            4 : [
-                undefined, /*L5=*/ 40, undefined, undefined, undefined,
-                undefined
-            ],
-            5 : [
-                undefined, /*L6=*/ 41, undefined, undefined, /*F4=*/ 21,
-                undefined
-            ],
-            6 : [
-                undefined, /*L1=*/ 36, /*U1=*/ 0, undefined, undefined,
-                /*B3=*/ 47
-            ],
-            7 : [
-                undefined, /*L2=*/ 37, /*U4=*/ 3, undefined, undefined,
-                undefined
-            ],
-            8 : [
-                undefined, /*L3=*/ 38, /*U7=*/ 6, undefined, /*F1=*/ 18,
-                undefined
-            ],
-            9 : [
-                undefined, undefined, undefined, /*D8=*/ 34, undefined,
-                /*B8=*/ 52
-            ],
-            10 : [
-                undefined, undefined, undefined, /*D5=*/ 31, undefined,
-                undefined
-            ],
-            11 : [
-                undefined, undefined, undefined, /*D2=*/ 28, /*F8=*/ 25,
-                undefined
-            ],
-            12 : [
-                undefined, undefined, undefined, undefined, undefined,
-                /*B5=*/ 49
-            ],
-            13 : [
-                undefined, undefined, undefined, undefined, undefined, undefined
-            ],
-            14 : [
-                undefined, undefined, undefined, undefined, /*F5=*/ 22,
-                undefined
-            ],
-            15 : [
-                undefined, undefined, /*U2=*/ 1, undefined, undefined,
-                /*B2=*/ 46
-            ],
-            16 : [
-                undefined, undefined, /*U5=*/ 4, undefined, undefined, undefined
-            ],
-            17 : [
-                undefined, undefined, /*U8=*/ 7, undefined, /*F2=*/ 19,
-                undefined
-            ],
-            18 : [
-                /*R9=*/ 17, undefined, undefined, /*D9=*/ 35, undefined,
-                /*B7=*/ 51
-            ],
-            19 : [
-                /*R8=*/ 16, undefined, undefined, /*D6=*/ 32, undefined,
-                undefined
-            ],
-            20 : [
-                /*R7=*/ 15, undefined, undefined, /*D3=*/ 29, /*F9=*/ 26,
-                undefined
-            ],
-            21 : [
-                /*R6=*/ 14, undefined, undefined, undefined, undefined,
-                /*B4=*/ 48
-            ],
-            22 : [
-                /*R5=*/ 13, undefined, undefined, undefined, undefined,
-                undefined
-            ],
-            23 : [
-                /*R4=*/ 12, undefined, undefined, undefined, /*F6=*/ 23,
-                undefined
-            ],
-            24 : [
-                /*R3=*/ 11, undefined, /*U3=*/ 2, undefined, undefined,
-                /*B1=*/ 45
-            ],
-            25 : [
-                /*R2=*/ 10, undefined, /*U6=*/ 5, undefined, undefined,
-                undefined
-            ],
-            26 : [
-                /*R1=*/ 9, undefined, /*U9=*/ 8, undefined, /*F3=*/ 20,
-                undefined
-            ],
+            0 : [ NP, L7, NP, D7, NP, B9 ],
+            1 : [ NP, L8, NP, D4, NP, NP ],
+            2 : [ NP, L9, NP, D1, F7, NP ],
+            3 : [ NP, L4, NP, NP, NP, B6 ],
+            4 : [ NP, L5, NP, NP, NP, NP ],
+            5 : [ NP, L6, NP, NP, F4, NP ],
+            6 : [ NP, L1, U1, NP, NP, B3 ],
+            7 : [ NP, L2, U4, NP, NP, NP ],
+            8 : [ NP, L3, U7, NP, F1, NP ],
+            9 : [ NP, NP, NP, D8, NP, B8 ],
+            10 : [ NP, NP, NP, D5, NP, NP ],
+            11 : [ NP, NP, NP, D2, F8, NP ],
+            12 : [ NP, NP, NP, NP, NP, B5 ],
+            13 : [ NP, NP, NP, NP, NP, NP ],
+            14 : [ NP, NP, NP, NP, F5, NP ],
+            15 : [ NP, NP, U2, NP, NP, B2 ],
+            16 : [ NP, NP, U5, NP, NP, NP ],
+            17 : [ NP, NP, U8, NP, F2, NP ],
+            18 : [ R9, NP, NP, D9, NP, B7 ],
+            19 : [ R8, NP, NP, D6, NP, NP ],
+            20 : [ R7, NP, NP, D3, F9, NP ],
+            21 : [ R6, NP, NP, NP, NP, B4 ],
+            22 : [ R5, NP, NP, NP, NP, NP ],
+            23 : [ R4, NP, NP, NP, F6, NP ],
+            24 : [ R3, NP, U3, NP, NP, B1 ],
+            25 : [ R2, NP, U6, NP, NP, NP ],
+            26 : [ R1, NP, U9, NP, F3, NP ],
         };
         const faceIndexes = cubeIndexToFaceIndexes[index];
         const cubeMaterials = [];
