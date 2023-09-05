@@ -167,9 +167,7 @@ class App
         // Hit testing gives us a cubelet index. Depending on what face we see,
         // different cubelet indexes (0..26) refer to different face indexes
         // (0..53). We need face indexes to construct a facelet string, which
-        // will be the input for the solver. Disallow painting the central
-        // cublet, which should already have the right color if you hold the
-        // cube with the correct orientation.
+        // will be the input for the solver.
         const cubeToFaceMap: {[index: number]: {[index: number]: number}} = {
             0 : {
                 // F
