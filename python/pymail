@@ -17,6 +17,7 @@ import os
 import sys
 import getopt
 import fileinput
+from email.utils import make_msgid
 
 config = ConfigParser()
 config.read(os.path.join(os.environ['HOME'], '.pymailrc'))
@@ -35,9 +36,10 @@ for opt, arg in opts:
 	elif opt == "-s":
 		subject = arg
 to = args[0]
+msgid = make_msgid()
 
-msg = "From: %s \nTo: %s\nSubject: %s\n\n" \
-		% (fro, to, subject)
+msg = "From: %s \nTo: %s\nSubject: %s\nMessage-Id: %s\n\n" \
+		% (fro, to, subject, msgid)
 for i in fileinput.input("-"):
 	msg += i
 
