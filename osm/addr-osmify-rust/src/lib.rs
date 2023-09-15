@@ -159,7 +159,7 @@ fn spinner(
     stream: &mut dyn Write,
     urllib: &Arc<dyn Network>,
 ) -> anyhow::Result<()> {
-    let spin_characters = vec!['\\', '|', '/', '-'];
+    let spin_characters = ['\\', '|', '/', '-'];
     let mut spin_index = 0;
     loop {
         match rx.try_recv() {

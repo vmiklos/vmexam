@@ -19,7 +19,7 @@ pub struct HyphenDict {
 impl HyphenDict {
     pub fn new(path: &str) -> Result<Self, HyphenError> {
         let c_str = std::ffi::CString::new(path)?;
-        let dict = unsafe { hyphen_sys::hnj_hyphen_load(c_str.as_ptr() as *const i8) };
+        let dict = unsafe { hyphen_sys::hnj_hyphen_load(c_str.as_ptr()) };
         if dict.is_null() {
             return Err(HyphenError::FailedDictLoad);
         }
@@ -43,7 +43,7 @@ impl HyphenDict {
         let ret = unsafe {
             hyphen_sys::hnj_hyphen_hyphenate2(
                 self.dict,
-                c_str.as_ptr() as *const i8,
+                c_str.as_ptr(),
                 word.len() as i32,
                 hyphens.as_ptr() as *mut i8,
                 hword.as_ptr() as *mut i8,
