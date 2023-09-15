@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.75"
+evalexpr = "11.1.0"
 html-escape = "0.2.13"
 hyphen = { path = "../hyphen" }
 rouille = "3.6.2"
