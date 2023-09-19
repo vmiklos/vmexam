@@ -1,3 +1,5 @@
+CC=gcc-9
+CXX=g++-9
 --enable-dbgutil
 --enable-werror
 # online.git is not compatible with system nss
