@@ -1,4 +1,4 @@
-PYFILES := sleepavg rejourn2pelican cpm
+PYFILES := rejourn2pelican
 
 check:
 	pycodestyle $(PYFILES)

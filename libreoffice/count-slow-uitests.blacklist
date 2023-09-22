@@ -9,3 +9,4 @@ sw/UITest_sw_sidebar.mk # fails in test_tdf152921
 sw/UITest_sw_table.mk # fails in test_tdf99334_table_sort_umlauts
 sw/UITest_writer_macro_tests.mk # fails in test_tdf64690
 sw/UITest_writer_tests5.mk # fails in test_zoom_writer
+sw/UITest_writer_tests.mk # fails in comments.Comments.test_multi_comments

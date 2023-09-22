@@ -85,6 +85,8 @@ $(eval $(call RustPackage_RustPackage,rubik))
 
 $(eval $(call RustPackage_RustPackage,scan-document))
 
+$(eval $(call RustPackage_RustPackage,send-email))
+
 $(eval $(call RustPackage_RustPackage,share-vmiklos-hu-apps))
 
 $(eval $(call RustPackage_RustPackage,ssh-proxy))
