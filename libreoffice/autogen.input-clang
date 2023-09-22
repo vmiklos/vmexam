@@ -1,4 +1,4 @@
-# the default 9.0.1 on openSUSE Leap 15.4 is too old, use the 'clang13-devel' package instead
+# the default 9.0.1 on openSUSE Leap 15.5 is too old, use the 'clang15-devel' package instead
 CC=clang
 CXX=clang++
 --enable-dbgutil
