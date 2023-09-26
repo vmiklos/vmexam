@@ -121,7 +121,10 @@ fn get_url(account: &Account, user_path: &UserPath) -> anyhow::Result<url::Url> 
         .strip_prefix(&account.local_path)
         .context("unexpected prefix")?;
     let encoded_path = urlencoding::encode(path);
-    let mut full_url = format!("{}/apps/files/?dir=/{}/", account.url, encoded_path);
+    let mut full_url = format!(
+        "{}/index.php/apps/files/?dir=/{}/",
+        account.url, encoded_path
+    );
     if !user_path.file_name.is_empty() {
         full_url += &format!("&scrollto={}", urlencoding::encode(&user_path.file_name));
     }

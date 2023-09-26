@@ -71,7 +71,8 @@ version=4\n\
     let network = ctx.network.as_any().downcast_ref::<TestNetwork>().unwrap();
     let open_browsers = network.open_browsers.borrow_mut();
     assert_eq!(open_browsers.len(), 1);
-    let expected = "https://nextcloud.example.com/apps/files/?dir=/my%20dir/&scrollto=my%20file.md";
+    let expected =
+        "https://nextcloud.example.com/index.php/apps/files/?dir=/my%20dir/&scrollto=my%20file.md";
     assert_eq!(open_browsers[0].to_string(), expected);
 }
 
@@ -145,6 +146,6 @@ version=4\n\
     let network = ctx.network.as_any().downcast_ref::<TestNetwork>().unwrap();
     let open_browsers = network.open_browsers.borrow_mut();
     assert_eq!(open_browsers.len(), 1);
-    let expected = "https://nextcloud.example.com/apps/files/?dir=/my%20dir/";
+    let expected = "https://nextcloud.example.com/index.php/apps/files/?dir=/my%20dir/";
     assert_eq!(open_browsers[0].to_string(), expected);
 }
