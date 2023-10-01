@@ -7,6 +7,10 @@ do
      fi
 
      if grep -q $i $(dirname $0)/count-slow-uitests.blacklist; then
+         if grep -q avoid_oneprocess $i; then
+             continue
+         fi
+         echo "no explicit use or avoid: $i"
          continue
      fi
 

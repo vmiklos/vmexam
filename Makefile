@@ -18,7 +18,7 @@ check: $(1).check-clippy
 check: $(1).check-test
 
 $(1).check-doc:
-	ls $(1)/README.md >/dev/null
+	test -f $(1)/README.md
 
 $(1).run:
 	cd $(1) && cargo run
