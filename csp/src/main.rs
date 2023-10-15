@@ -1,3 +1,18 @@
+/*
+ * Copyright 2023 Miklos Vajna
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#![deny(warnings)]
+#![warn(clippy::all)]
+#![warn(missing_docs)]
+
+//! Given a 2x2 table with numbers, select cells, so that the sum of the selected cells will equal to
+//! the provided sum.
+
+//! (Real-life math exercise for 2nd grade students in primary school.)
+
 fn main() {
     let mut problem = puzzle_solver::Puzzle::new();
     let a1 = problem.new_var_with_candidates(&[0, 5]);
