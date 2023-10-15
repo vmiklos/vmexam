@@ -278,3 +278,7 @@ kstart plasmashell #to restart it
   - `zypper -p https://download.opensuse.org/repositories/devel:/languages:/python/15.5/ in git-review` (skipped on vostro, seems OK)
   - `zypper -p https://download.opensuse.org/repositories/editors/15.5/ in vim` (skipped on vostro, seems OK)
 - the usual fix with html5 video codecs in firefox/chromium: <https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support>
+
+### openSUSE Leap 15.4 -> openSUSE Leap 15.5 (aarch64)
+
+- the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (zypper --releasever=15.5 ref, zypper --releasever=15.5 dup)
