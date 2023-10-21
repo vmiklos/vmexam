@@ -7,7 +7,7 @@
 import * as L from 'leaflet';
 
 const center: L.LatLngTuple = [ 47.4744, 19.0045 ];
-const zoom = 14;
+const zoom = 12;
 
 // Generate KML with overpass, see <http://overpass-turbo.eu/s/gLa> for an
 // example, or if that gets broken:
@@ -22,28 +22,12 @@ const zoom = 14;
 // List of areas which were not 100% and at least once I pulled it up to 100%.
 // Not claiming I did all the work there. :-)
 const tracks = [
-    {url : 'sasad.json', color : 'green'},
-    {url : 'gazdagret.json', color : 'green'},
-    {url : 'sashegy.json', color : 'green'},
-    {url : 'nemetvolgy.json', color : 'green'},
-    {url : 'ormezo.json', color : 'green'},
-    {url : 'farkasvolgy.json', color : 'green'},
-    {url : 'magasut.json', color : 'green'},
-    {url : 'farkasret.json', color : 'green'},
-    {url : 'hosszuret.json', color : 'green'},
-    {url : 'madarhegy.json', color : 'green'},
-    {url : 'krisztinavaros.json', color : 'green'},
-    {url : 'kissvabhegy.json', color : 'green'},
-    {url : 'orbanhegy.json', color : 'green'},
-    {url : 'svabhegy.json', color : 'green'},
-    {url : 'martonhegy.json', color : 'green'},
-    {url : 'szechenyihegy.json', color : 'green'},
-    {url : 'istenhegy.json', color : 'green'},
-    {url : 'kutvolgy.json', color : 'green'},
-    {url : 'viranyos.json', color : 'green'},
-    {url : 'csilleberc.json', color : 'green'},
-    {url : 'zugliget.json', color : 'green'},
-    {url : 'var.json', color : 'orange'},
+    // green: done, orange: in progress, red: to do.
+    {url : 'budapest01.json', color : 'green'},
+    {url : 'budapest11.json', color : 'green'},
+    {url : 'budapest12.json', color : 'green'},
+    {url : 'budapest22.json', color : 'orange'}, // urbalazs
+    {url : 'budaors.json', color : 'green'},     // vasony
 ];
 
 // Boilerplate below.
