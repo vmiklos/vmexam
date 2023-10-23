@@ -1,3 +1,5 @@
+CC_FOR_BUILD=gcc-12
+CXX_FOR_BUILD=g++-12
 --with-distro=LibreOfficeAndroid
 --enable-android-editing
 --enable-werror
