@@ -55,6 +55,8 @@ endef
 
 $(eval $(call RustPackage_RustPackage,avg))
 
+$(eval $(call RustPackage_RustPackage,binary-dumper))
+
 $(eval $(call RustPackage_RustPackage,csp))
 
 $(eval $(call RustPackage_RustPackage,darcs-git))
