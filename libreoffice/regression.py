@@ -12,19 +12,30 @@ import sys
 import time
 
 
-def get_regression_count(name):
+# mode can be 'comment' (older) or 'field' (newer)
+def get_regression_count(name, mode):
     url = "https://bugs.documentfoundation.org/buglist.cgi?"
-    params = {
-        "f1": "longdesc",
-        "f2": "keywords",
-        "o1": "substring",
-        "o2": "anywords",
-        "query_format": "advanced",
-        "resolution": "---",
-        "v1": "Adding Cc: to " + name,
-        "v2": "regression",
-        "ctype": "atom",
-    }
+    if mode == "field":
+        params = {
+            "f1": "cf_regressionby",
+            "o1": "equals",
+            "query_format": "advanced",
+            "resolution": "---",
+            "v1": name,
+            "ctype": "atom",
+        }
+    else:
+        params = {
+            "f1": "longdesc",
+            "f2": "keywords",
+            "o1": "substring",
+            "o2": "anywords",
+            "query_format": "advanced",
+            "resolution": "---",
+            "v1": "Adding Cc: to " + name,
+            "v2": "regression",
+            "ctype": "atom",
+        }
     url += urllib.parse.urlencode(params)
     with urllib.request.urlopen(url) as stream:
         atom = stream.read()
@@ -33,10 +44,13 @@ def get_regression_count(name):
 
 
 def main(argv):
+    mode = "comment"
+    if len(argv) > 1 and argv[1] == "--field":
+        mode = "field"
     with open(argv[0], "r") as stream:
         for name in stream.readlines():
             stripped_name = name.strip()
-            regression_count = get_regression_count(stripped_name)
+            regression_count = get_regression_count(stripped_name, mode)
             time.sleep(1)
             print("{};{}".format(stripped_name, regression_count))
 
