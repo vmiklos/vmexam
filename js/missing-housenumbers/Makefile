@@ -1,17 +1,17 @@
 -include config.mak
 
 ifneq ($(DEBUG),)
-BROWSERIFY_OPTIONS = --debug
+WEBPACK_OPTIONS = --mode=development --devtool inline-source-map
 else
-BROWSERIFY_OPTIONS = --plugin tinyify
+WEBPACK_OPTIONS = --mode=production
 endif
 
 INSTDIR=$(HOME)/git/vmiklos.hu/htdocs/osm/missing-housenumbers/
 
 all: bundle.js leaflet.css
 
-bundle.js: main.ts package-lock.json Makefile config.mak
-	node_modules/.bin/browserify -o bundle.js $(BROWSERIFY_OPTIONS) --plugin tsify main.ts
+bundle.js: main.ts tsconfig.json webpack.config.js package-lock.json Makefile config.mak
+	npx webpack ${WEBPACK_OPTIONS} --config webpack.config.js
 
 leaflet.css: package-lock.json
 	cp node_modules/leaflet/dist/leaflet.css .
