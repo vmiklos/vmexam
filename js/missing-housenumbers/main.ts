@@ -28,6 +28,7 @@ const tracks = [
     {url : 'budapest12.json', color : 'green'},
     {url : 'budapest22.json', color : 'orange'}, // urbalazs
     {url : 'budaors.json', color : 'green'},     // vasony
+    {url : 'vizivaros.json', color : 'orange'},
 ];
 
 // Boilerplate below.
