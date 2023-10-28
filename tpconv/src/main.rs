@@ -15,14 +15,23 @@ use clap::Parser as _;
 
 #[derive(Clone, Eq, Hash, PartialEq, clap::ValueEnum)]
 enum Unit {
+    #[value(alias("inches"))]
     Inch,
+    #[value(alias("points"))]
     Point,
+    #[value(alias("twips"))]
     Twip,
+    #[value(alias("ms"))]
     M,
+    #[value(alias("cms"))]
     Cm,
+    #[value(alias("mms"))]
     Mm,
+    #[value(alias("mm100s"))]
     Mm100,
+    #[value(alias("emus"))]
     Emu,
+    #[value(alias("pixels"))]
     Pixel,
 }
 

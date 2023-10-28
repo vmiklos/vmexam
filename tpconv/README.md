@@ -7,3 +7,9 @@ Additional features:
 - supports the libreoffice UNO API's mm100
 - supports OOXML's EMU
 - possible to extend
+
+Example usage:
+
+```
+tpconv 2 inches in cm
+```
