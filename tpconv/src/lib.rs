@@ -80,3 +80,6 @@ pub fn main(args: Vec<String>, stream: &mut dyn std::io::Write) -> i32 {
         }
     }
 }
+
+#[cfg(test)]
+mod tests;
