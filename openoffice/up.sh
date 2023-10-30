@@ -7,7 +7,7 @@
 time (
     git pull -r
     autoconf
-    ./configure --disable-epm --without-junit --with-dmake-url=https://sourceforge.net/projects/oooextras.mirror/files/dmake-4.12.tar.bz2
+    ./configure --disable-epm --without-junit --with-dmake-url=https://sourceforge.net/projects/oooextras.mirror/files/dmake-4.12.tar.bz2 --disable-odk
     make -f Makefile clean
     rm -rf install
     make -f Makefile
