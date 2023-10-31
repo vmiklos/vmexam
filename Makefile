@@ -97,3 +97,5 @@ $(eval $(call RustPackage_RustPackage,tpconv))
 $(eval $(call RustPackage_use_test,tpconv))
 
 $(eval $(call RustPackage_RustPackage,weechat-calc))
+
+$(eval $(call RustPackage_RustPackage,weesearch))
