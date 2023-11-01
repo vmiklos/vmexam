@@ -24,7 +24,7 @@ struct Arguments {
     /// Name of the channel where the message appeared (regex).
     #[arg(short, long)]
     channel: Option<String>,
-    /// Date in a YYYY/MM form, defaults to the current month, 'all' disables the filter.
+    /// Date in a YYYY-MM form (regex), defaults to the current month, 'all' disables the filter.
     #[arg(short, long)]
     date: Option<String>,
     /// The content of the message (regex).
@@ -45,13 +45,19 @@ fn main() -> anyhow::Result<()> {
         None => None,
     };
     let date_filter = match args.date {
-        Some(value) => value.to_string(),
+        Some(date) => {
+            if date == "all" {
+                None
+            } else {
+                Some(regex::Regex::new(date.as_str())?)
+            }
+        }
         None => {
             // Default to the current month.
             let tz_offset = time::UtcOffset::current_local_offset()?;
             let now = time::OffsetDateTime::now_utc().to_offset(tz_offset);
-            let format = time::format_description::parse("[year]/[month]")?;
-            now.format(&format)?
+            let format = time::format_description::parse("[year]-[month]")?;
+            Some(regex::Regex::new(&now.format(&format)?)?)
         }
     };
     let content_filter = match args.content {
@@ -66,24 +72,24 @@ fn main() -> anyhow::Result<()> {
     let mut results = Vec::new();
     for year in std::fs::read_dir(years)? {
         let year = year?;
+        let year_file_name = year.file_name();
+        let year_string = year_file_name.to_str().context("to_str() failed")?;
         if !year.metadata()?.is_dir() {
             continue;
         }
         for month in year.path().read_dir()? {
             let month = month?;
+            let month_file_name = month.file_name();
+            let month_string = month_file_name.to_str().context("to_str() failed")?;
             if !month.metadata()?.is_dir() {
                 continue;
             }
-            let month_path = month.path();
-            if date_filter != "all"
-                && !month_path
-                    .to_str()
-                    .context("to_str() failed")?
-                    .ends_with(&date_filter)
-            {
-                continue;
+            if let Some(ref date_filter) = date_filter {
+                if !date_filter.is_match(&format!("{}-{}", year_string, month_string)) {
+                    continue;
+                }
             }
-            for log in month_path.read_dir()? {
+            for log in month.path().read_dir()? {
                 let log = log?;
                 let path = log.path();
                 let extension = path
@@ -95,11 +101,8 @@ fn main() -> anyhow::Result<()> {
                     continue;
                 }
                 let file = std::fs::File::open(&path)?;
-                let file_name = path
-                    .file_name()
-                    .context("file_name() failed")?
-                    .to_str()
-                    .context("to_str() failed")?;
+                let log_file_name = log.file_name();
+                let file_name = log_file_name.to_str().context("to_str() failed")?;
                 if let Some(ref channel_filter) = channel_filter {
                     if !channel_filter.is_match(file_name) {
                         continue;

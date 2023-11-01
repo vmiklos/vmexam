@@ -17,7 +17,7 @@ weesearch -c mychannel
 - find messages from a given month (`all` disables the filter):
 
 ```
-weesearch -d 2023/09
+weesearch -d 2023-09
 ```
 
 - find all imgur links in the content of messages:
