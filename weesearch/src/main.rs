@@ -31,13 +31,14 @@ struct Arguments {
     content: Option<String>,
     /// Case-insensitive mode, disabled by default
     #[arg(short, long)]
-    insensitive: bool,
+    ignore_case: bool,
 }
 
 fn regex_new(value: &str, args: &Arguments) -> anyhow::Result<regex::Regex> {
-    let value = match args.insensitive {
-        true => format!("(?i){value}"),
-        false => value.to_string(),
+    let value = if args.ignore_case {
+        format!("(?i){value}")
+    } else {
+        value.to_string()
     };
     Ok(regex::Regex::new(&value)?)
 }
