@@ -29,6 +29,17 @@ struct Arguments {
     date: Option<String>,
     /// The content of the message (regex).
     content: Option<String>,
+    /// Case-insensitive mode, disabled by default
+    #[arg(short, long)]
+    insensitive: bool,
+}
+
+fn regex_new(value: &str, args: &Arguments) -> anyhow::Result<regex::Regex> {
+    let value = match args.insensitive {
+        true => format!("(?i){value}"),
+        false => value.to_string(),
+    };
+    Ok(regex::Regex::new(&value)?)
 }
 
 fn main() -> anyhow::Result<()> {
@@ -37,19 +48,19 @@ fn main() -> anyhow::Result<()> {
 
     // Set up the filters.
     let from_filter = match args.from {
-        Some(value) => Some(regex::Regex::new(value.as_str())?),
+        Some(ref value) => Some(regex_new(value.as_str(), &args)?),
         None => None,
     };
     let channel_filter = match args.channel {
-        Some(value) => Some(regex::Regex::new(value.as_str())?),
+        Some(ref value) => Some(regex_new(value.as_str(), &args)?),
         None => None,
     };
     let date_filter = match args.date {
-        Some(date) => {
+        Some(ref date) => {
             if date == "all" {
                 None
             } else {
-                Some(regex::Regex::new(date.as_str())?)
+                Some(regex_new(date.as_str(), &args)?)
             }
         }
         None => {
@@ -57,11 +68,11 @@ fn main() -> anyhow::Result<()> {
             let tz_offset = time::UtcOffset::current_local_offset()?;
             let now = time::OffsetDateTime::now_utc().to_offset(tz_offset);
             let format = time::format_description::parse("[year]-[month]")?;
-            Some(regex::Regex::new(&now.format(&format)?)?)
+            Some(regex_new(&now.format(&format)?, &args)?)
         }
     };
     let content_filter = match args.content {
-        Some(value) => Some(regex::Regex::new(value.as_str())?),
+        Some(ref value) => Some(regex_new(value.as_str(), &args)?),
         None => None,
     };
 
