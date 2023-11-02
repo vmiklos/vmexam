@@ -11,3 +11,4 @@ clap = { version = "4.4.7", features = ["derive"] }
 home = "0.5.5"
 regex = "1.10.2"
 time = { version = "0.3.30", features = ["formatting", "macros", "local-offset"] }
+unidecode = "0.3.0"

@@ -78,17 +78,19 @@ impl Matcher {
         })
     }
 
-    fn new(value: &str, args: &Arguments) -> anyhow::Result<Self> {
+    fn new(needle: &str, args: &Arguments) -> anyhow::Result<Self> {
+        let needle = unidecode::unidecode(needle);
         if args.fixed_strings {
-            Self::from_fixed(value, args)
+            Self::from_fixed(&needle, args)
         } else {
-            Self::from_regex(value, args)
+            Self::from_regex(&needle, args)
         }
     }
 
     fn is_match(&self, haystack: &str) -> bool {
+        let haystack = unidecode::unidecode(haystack);
         if let Some(ref regex) = self.regex {
-            return regex.is_match(haystack);
+            return regex.is_match(&haystack);
         }
 
         if self.ignore_case {
