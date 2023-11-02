@@ -39,3 +39,28 @@ fn test_invalid_float_literal() {
 
     assert_eq!(main(args, &mut buf), 1);
 }
+
+#[test]
+fn test_units() {
+    assert_eq!(Unit::try_from("point").unwrap(), Unit::Point);
+    assert_eq!(Unit::try_from("twip").unwrap(), Unit::Twip);
+    assert_eq!(Unit::try_from("m").unwrap(), Unit::M);
+    assert_eq!(Unit::try_from("mm").unwrap(), Unit::Mm);
+    assert_eq!(Unit::try_from("mm100").unwrap(), Unit::Mm100);
+    assert_eq!(Unit::try_from("emu").unwrap(), Unit::Emu);
+    assert_eq!(Unit::try_from("pixel").unwrap(), Unit::Pixel);
+    assert!(Unit::try_from("yard").is_err());
+}
+
+#[test]
+fn test_unit_clone() {
+    let pixel = Unit::try_from("pixel").unwrap();
+    assert_eq!(pixel.clone(), Unit::Pixel);
+}
+
+#[test]
+fn test_unit_debug() {
+    let pixel = Unit::try_from("pixel").unwrap();
+    let ret = format!("{pixel:?}");
+    assert_eq!(ret, "Pixel");
+}

@@ -11,36 +11,37 @@
 #![warn(missing_docs)]
 
 use anyhow::Context as _;
-use clap::Parser as _;
 
-#[derive(Clone, Eq, Hash, PartialEq, clap::ValueEnum)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 enum Unit {
-    #[value(alias("inches"))]
     Inch,
-    #[value(alias("points"))]
     Point,
-    #[value(alias("twips"))]
     Twip,
-    #[value(alias("ms"))]
     M,
-    #[value(alias("cms"))]
     Cm,
-    #[value(alias("mms"))]
     Mm,
-    #[value(alias("mm100s"))]
     Mm100,
-    #[value(alias("emus"))]
     Emu,
-    #[value(alias("pixels"))]
     Pixel,
 }
 
-#[derive(clap::Parser)]
-struct Arguments {
-    amount: f64,
-    fro: Unit,
-    _in: String,
-    to: Unit,
+impl TryFrom<&str> for Unit {
+    type Error = anyhow::Error;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "inch" | "inches" => Ok(Unit::Inch),
+            "point" | "points" => Ok(Unit::Point),
+            "twip" | "twips" => Ok(Unit::Twip),
+            "m" | "ms" => Ok(Unit::M),
+            "cm" | "cms" => Ok(Unit::Cm),
+            "mm" | "mms" => Ok(Unit::Mm),
+            "mm100" | "mm100s" => Ok(Unit::Mm100),
+            "emu" | "emus" => Ok(Unit::Emu),
+            "pixel" | "pixels" => Ok(Unit::Pixel),
+            _ => Err(anyhow::anyhow!("invalid unit value: {value}")),
+        }
+    }
 }
 
 fn convert(amount: f64, fro: Unit, to: Unit) -> anyhow::Result<f64> {
@@ -64,9 +65,23 @@ fn convert(amount: f64, fro: Unit, to: Unit) -> anyhow::Result<f64> {
 }
 
 /// Inner main() that is allowed to fail.
-pub fn our_main(args: Vec<String>, stream: &mut dyn std::io::Write) -> anyhow::Result<()> {
-    let args = Arguments::try_parse_from(args.iter())?;
-    writeln!(stream, "{}", convert(args.amount, args.fro, args.to)?)?;
+pub fn our_main(argv: Vec<String>, stream: &mut dyn std::io::Write) -> anyhow::Result<()> {
+    let amount_arg = clap::Arg::new("amount").index(1);
+    let from_arg = clap::Arg::new("from").index(2);
+    let in_arg = clap::Arg::new("in").index(3);
+    let to_arg = clap::Arg::new("to").index(4);
+    let args = [amount_arg, from_arg, in_arg, to_arg];
+    let app = clap::Command::new("tpconv");
+    let args = app.args(&args).try_get_matches_from(argv)?;
+    let amount = args
+        .get_one::<String>("amount")
+        .context("amount is required")?;
+    let amount: f64 = amount.parse()?;
+    let from: &str = args.get_one::<String>("from").context("from is required")?;
+    let from: Unit = from.try_into()?;
+    let to: &str = args.get_one::<String>("to").context("to is required")?;
+    let to: Unit = to.try_into()?;
+    writeln!(stream, "{}", convert(amount, from, to)?)?;
     Ok(())
 }
 

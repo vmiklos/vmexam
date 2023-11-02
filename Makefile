@@ -94,7 +94,7 @@ $(eval $(call RustPackage_RustPackage,share-vmiklos-hu-apps))
 $(eval $(call RustPackage_RustPackage,ssh-proxy))
 
 $(eval $(call RustPackage_RustPackage,tpconv))
-$(eval $(call RustPackage_use_test,tpconv))
+$(eval $(call RustPackage_use_coverage,tpconv))
 
 $(eval $(call RustPackage_RustPackage,weechat-calc))
 
