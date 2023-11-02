@@ -32,12 +32,71 @@ struct Arguments {
     /// Case-insensitive mode, disabled by default
     #[arg(short, long)]
     ignore_case: bool,
+    /// Interpret filters as a fixed string (instead of a regular expression).
+    #[arg(short = 'F', long)]
+    fixed_strings: bool,
 }
 
-fn regex_new(value: &str, args: &Arguments) -> anyhow::Result<regex::Regex> {
-    Ok(regex::RegexBuilder::new(value)
-        .case_insensitive(args.ignore_case)
-        .build()?)
+/// Regex or fixed string matcher.
+struct Matcher {
+    /// If this is Some, a regex match is performed.
+    regex: Option<regex::Regex>,
+    /// For the fixed string case.
+    needle: String,
+    /// Case-insensitive mode for the fixed string.
+    ignore_case: bool,
+}
+
+impl Matcher {
+    fn from_regex(value: &str, args: &Arguments) -> anyhow::Result<Self> {
+        let regex = Some(
+            regex::RegexBuilder::new(value)
+                .case_insensitive(args.ignore_case)
+                .build()?,
+        );
+        let needle = "".to_string();
+        let ignore_case = false;
+        Ok(Matcher {
+            regex,
+            needle,
+            ignore_case,
+        })
+    }
+
+    fn from_fixed(value: &str, args: &Arguments) -> anyhow::Result<Self> {
+        let regex = None;
+        let needle = if args.ignore_case {
+            value.to_lowercase()
+        } else {
+            value.to_string()
+        };
+        let ignore_case = args.ignore_case;
+        Ok(Matcher {
+            regex,
+            needle,
+            ignore_case,
+        })
+    }
+
+    fn new(value: &str, args: &Arguments) -> anyhow::Result<Self> {
+        if args.fixed_strings {
+            Self::from_fixed(value, args)
+        } else {
+            Self::from_regex(value, args)
+        }
+    }
+
+    fn is_match(&self, haystack: &str) -> bool {
+        if let Some(ref regex) = self.regex {
+            return regex.is_match(haystack);
+        }
+
+        if self.ignore_case {
+            haystack.to_lowercase().contains(&self.needle)
+        } else {
+            haystack.contains(&self.needle)
+        }
+    }
 }
 
 fn main() -> anyhow::Result<()> {
@@ -46,11 +105,11 @@ fn main() -> anyhow::Result<()> {
 
     // Set up the filters.
     let from_filter = match args.from {
-        Some(ref value) => Some(regex_new(value.as_str(), &args)?),
+        Some(ref value) => Some(Matcher::new(value.as_str(), &args)?),
         None => None,
     };
     let channel_filter = match args.channel {
-        Some(ref value) => Some(regex_new(value.as_str(), &args)?),
+        Some(ref value) => Some(Matcher::new(value.as_str(), &args)?),
         None => None,
     };
     let date_filter = match args.date {
@@ -58,7 +117,7 @@ fn main() -> anyhow::Result<()> {
             if date == "all" {
                 None
             } else {
-                Some(regex_new(date.as_str(), &args)?)
+                Some(Matcher::new(date.as_str(), &args)?)
             }
         }
         None => {
@@ -66,11 +125,11 @@ fn main() -> anyhow::Result<()> {
             let tz_offset = time::UtcOffset::current_local_offset()?;
             let now = time::OffsetDateTime::now_utc().to_offset(tz_offset);
             let format = time::format_description::parse("[year]-[month]")?;
-            Some(regex_new(&now.format(&format)?, &args)?)
+            Some(Matcher::new(&now.format(&format)?, &args)?)
         }
     };
     let content_filter = match args.content {
-        Some(ref value) => Some(regex_new(value.as_str(), &args)?),
+        Some(ref value) => Some(Matcher::new(value.as_str(), &args)?),
         None => None,
     };
 
