@@ -35,12 +35,9 @@ struct Arguments {
 }
 
 fn regex_new(value: &str, args: &Arguments) -> anyhow::Result<regex::Regex> {
-    let value = if args.ignore_case {
-        format!("(?i){value}")
-    } else {
-        value.to_string()
-    };
-    Ok(regex::Regex::new(&value)?)
+    Ok(regex::RegexBuilder::new(value)
+        .case_insensitive(args.ignore_case)
+        .build()?)
 }
 
 fn main() -> anyhow::Result<()> {
