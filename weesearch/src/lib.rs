@@ -78,7 +78,11 @@ impl Matcher {
     }
 }
 
-fn our_main(argv: Vec<String>, stream: &mut dyn std::io::Write) -> anyhow::Result<()> {
+fn our_main(
+    argv: Vec<String>,
+    stream: &mut dyn std::io::Write,
+    fs: &vfs::VfsPath,
+) -> anyhow::Result<()> {
     // Parse the arguments.
     // Sender of the message (regex).
     let from_arg = clap::Arg::new("from")
@@ -169,18 +173,14 @@ fn our_main(argv: Vec<String>, stream: &mut dyn std::io::Write) -> anyhow::Resul
     let home_dir: String = home_dir.to_str().context("to_str() failed")?.into();
     let years = format!("{home_dir}/.local/share/weechat/logs");
     let mut results = Vec::new();
-    for year in std::fs::read_dir(years)? {
-        let year = year?;
-        let year_file_name = year.file_name();
-        let year_string = year_file_name.to_str().context("to_str() failed")?;
-        if !year.metadata()?.is_dir() {
+    for year in fs.join(years)?.read_dir()? {
+        let year_string = year.filename();
+        if year.metadata()?.file_type != vfs::VfsFileType::Directory {
             continue;
         }
-        for month in year.path().read_dir()? {
-            let month = month?;
-            let month_file_name = month.file_name();
-            let month_string = month_file_name.to_str().context("to_str() failed")?;
-            if !month.metadata()?.is_dir() {
+        for month in year.read_dir()? {
+            let month_string = month.filename();
+            if month.metadata()?.file_type != vfs::VfsFileType::Directory {
                 continue;
             }
             if let Some(ref date_filter) = date_filter {
@@ -188,22 +188,17 @@ fn our_main(argv: Vec<String>, stream: &mut dyn std::io::Write) -> anyhow::Resul
                     continue;
                 }
             }
-            for log in month.path().read_dir()? {
-                let log = log?;
-                let path = log.path();
-                let extension = path
-                    .extension()
-                    .context("extension() failed")?
-                    .to_str()
-                    .context("to_str() failed")?;
+            for log in month.read_dir()? {
+                let Some(extension) = log.extension() else {
+                    continue;
+                };
                 if extension != "weechatlog" {
                     continue;
                 }
-                let file = std::fs::File::open(&path)?;
-                let log_file_name = log.file_name();
-                let file_name = log_file_name.to_str().context("to_str() failed")?;
+                let file = log.open_file()?;
+                let log_string = log.filename();
                 if let Some(ref channel_filter) = channel_filter {
-                    if !channel_filter.is_match(file_name) {
+                    if !channel_filter.is_match(&log_string) {
                         continue;
                     }
                 }
@@ -224,7 +219,7 @@ fn our_main(argv: Vec<String>, stream: &mut dyn std::io::Write) -> anyhow::Resul
                             continue;
                         }
                     }
-                    results.push(format!("{file_name}:{date}\t{from}\t{content}"));
+                    results.push(format!("{log_string}:{date}\t{from}\t{content}"));
                 }
             }
         }
@@ -240,8 +235,8 @@ fn our_main(argv: Vec<String>, stream: &mut dyn std::io::Write) -> anyhow::Resul
 }
 
 /// Similar to plain main(), but with an interface that allows testing.
-pub fn main(args: Vec<String>, stream: &mut dyn std::io::Write) -> i32 {
-    match our_main(args, stream) {
+pub fn main(args: Vec<String>, stream: &mut dyn std::io::Write, fs: &vfs::VfsPath) -> i32 {
+    match our_main(args, stream, fs) {
         Ok(_) => 0,
         Err(err) => {
             stream.write_all(format!("{:?}\n", err).as_bytes()).unwrap();

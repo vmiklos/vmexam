@@ -12,5 +12,6 @@
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    std::process::exit(weesearch::main(args, &mut std::io::stdout()))
+    let root: vfs::VfsPath = vfs::PhysicalFS::new("/").into();
+    std::process::exit(weesearch::main(args, &mut std::io::stdout(), &root))
 }
