@@ -13,29 +13,7 @@
 #![warn(missing_docs)]
 
 use anyhow::Context as _;
-use clap::Parser as _;
 use std::io::BufRead as _;
-
-#[derive(clap::Parser)]
-struct Arguments {
-    /// Sender of the message (regex).
-    #[arg(short, long)]
-    from: Option<String>,
-    /// Name of the channel where the message appeared (regex).
-    #[arg(short, long)]
-    channel: Option<String>,
-    /// Date in a YYYY-MM form (regex), defaults to the current month, 'all' disables the filter.
-    #[arg(short, long)]
-    date: Option<String>,
-    /// The content of the message (regex).
-    content: Option<String>,
-    /// Case-insensitive mode, disabled by default
-    #[arg(short, long)]
-    ignore_case: bool,
-    /// Interpret filters as a fixed string (instead of a regular expression).
-    #[arg(short = 'F', long)]
-    fixed_strings: bool,
-}
 
 /// Regex or fixed string matcher.
 struct Matcher {
@@ -48,10 +26,10 @@ struct Matcher {
 }
 
 impl Matcher {
-    fn from_regex(value: &str, args: &Arguments) -> anyhow::Result<Self> {
+    fn from_regex(value: &str, ignore_case: bool) -> anyhow::Result<Self> {
         let regex = Some(
             regex::RegexBuilder::new(value)
-                .case_insensitive(args.ignore_case)
+                .case_insensitive(ignore_case)
                 .build()?,
         );
         let needle = "".to_string();
@@ -63,14 +41,13 @@ impl Matcher {
         })
     }
 
-    fn from_fixed(value: &str, args: &Arguments) -> anyhow::Result<Self> {
+    fn from_fixed(value: &str, ignore_case: bool) -> anyhow::Result<Self> {
         let regex = None;
-        let needle = if args.ignore_case {
+        let needle = if ignore_case {
             value.to_lowercase()
         } else {
             value.to_string()
         };
-        let ignore_case = args.ignore_case;
         Ok(Matcher {
             regex,
             needle,
@@ -78,12 +55,12 @@ impl Matcher {
         })
     }
 
-    fn new(needle: &str, args: &Arguments) -> anyhow::Result<Self> {
+    fn new(needle: &str, ignore_case: bool, fixed_strings: bool) -> anyhow::Result<Self> {
         let needle = unidecode::unidecode(needle);
-        if args.fixed_strings {
-            Self::from_fixed(&needle, args)
+        if fixed_strings {
+            Self::from_fixed(&needle, ignore_case)
         } else {
-            Self::from_regex(&needle, args)
+            Self::from_regex(&needle, ignore_case)
         }
     }
 
@@ -103,23 +80,71 @@ impl Matcher {
 
 fn main() -> anyhow::Result<()> {
     // Parse the arguments.
-    let args = Arguments::parse();
+    // Sender of the message (regex).
+    let from_arg = clap::Arg::new("from")
+        .short('f')
+        .long("from")
+        .required(false);
+    // Name of the channel where the message appeared (regex).
+    let channel_arg = clap::Arg::new("channel")
+        .short('c')
+        .long("channel")
+        .required(false);
+    // Date in a YYYY-MM form (regex), defaults to the current month, 'all' disables the filter.
+    let date_arg = clap::Arg::new("date")
+        .short('d')
+        .long("date")
+        .required(false);
+    // The content of the message (regex).
+    let content_arg = clap::Arg::new("content").index(1).required(false);
+    // Case-insensitive mode, disabled by default
+    let ignore_case_arg = clap::Arg::new("ignore-case")
+        .short('i')
+        .long("ignore-case")
+        .action(clap::ArgAction::SetTrue);
+    // Interpret filters as a fixed string (instead of a regular expression).
+    let fixed_strings_arg = clap::Arg::new("fixed-strings")
+        .short('F')
+        .long("fixed-strings")
+        .action(clap::ArgAction::SetTrue);
+    let args = [
+        from_arg,
+        channel_arg,
+        date_arg,
+        content_arg,
+        ignore_case_arg,
+        fixed_strings_arg,
+    ];
+    let app = clap::Command::new("weesearch");
+    let matches = app.args(&args).try_get_matches()?;
+    let from = matches.get_one::<String>("from");
+    let channel = matches.get_one::<String>("channel");
+    let date = matches.get_one::<String>("date");
+    let content = matches.get_one::<String>("content");
+    let ignore_case: bool = match matches.get_one::<bool>("ignore-case") {
+        Some(value) => *value,
+        None => false,
+    };
+    let fixed_strings: bool = match matches.get_one::<bool>("fixed-strings") {
+        Some(value) => *value,
+        None => false,
+    };
 
     // Set up the filters.
-    let from_filter = match args.from {
-        Some(ref value) => Some(Matcher::new(value.as_str(), &args)?),
+    let from_filter = match from {
+        Some(value) => Some(Matcher::new(value.as_str(), ignore_case, fixed_strings)?),
         None => None,
     };
-    let channel_filter = match args.channel {
-        Some(ref value) => Some(Matcher::new(value.as_str(), &args)?),
+    let channel_filter = match channel {
+        Some(value) => Some(Matcher::new(value.as_str(), ignore_case, fixed_strings)?),
         None => None,
     };
-    let date_filter = match args.date {
-        Some(ref date) => {
+    let date_filter = match date {
+        Some(date) => {
             if date == "all" {
                 None
             } else {
-                Some(Matcher::new(date.as_str(), &args)?)
+                Some(Matcher::new(date.as_str(), ignore_case, fixed_strings)?)
             }
         }
         None => {
@@ -127,11 +152,15 @@ fn main() -> anyhow::Result<()> {
             let tz_offset = time::UtcOffset::current_local_offset()?;
             let now = time::OffsetDateTime::now_utc().to_offset(tz_offset);
             let format = time::format_description::parse("[year]-[month]")?;
-            Some(Matcher::new(&now.format(&format)?, &args)?)
+            Some(Matcher::new(
+                &now.format(&format)?,
+                ignore_case,
+                fixed_strings,
+            )?)
         }
     };
-    let content_filter = match args.content {
-        Some(ref value) => Some(Matcher::new(value.as_str(), &args)?),
+    let content_filter = match content {
+        Some(value) => Some(Matcher::new(value.as_str(), ignore_case, fixed_strings)?),
         None => None,
     };
 
