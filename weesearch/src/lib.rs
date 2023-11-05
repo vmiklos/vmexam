@@ -294,3 +294,6 @@ pub fn main(args: Vec<String>, stream: &mut dyn std::io::Write, fs: &vfs::VfsPat
         }
     }
 }
+
+#[cfg(test)]
+mod tests;
