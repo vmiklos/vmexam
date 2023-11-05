@@ -23,10 +23,12 @@ struct Matcher {
     needle: String,
     /// Case-insensitive mode for the fixed string.
     ignore_case: bool,
+    /// Ignore accents.
+    transliterate: bool,
 }
 
 impl Matcher {
-    fn from_regex(value: &str, ignore_case: bool) -> anyhow::Result<Self> {
+    fn from_regex(value: &str, ignore_case: bool, transliterate: bool) -> anyhow::Result<Self> {
         let regex = Some(
             regex::RegexBuilder::new(value)
                 .case_insensitive(ignore_case)
@@ -38,10 +40,11 @@ impl Matcher {
             regex,
             needle,
             ignore_case,
+            transliterate,
         })
     }
 
-    fn from_fixed(value: &str, ignore_case: bool) -> anyhow::Result<Self> {
+    fn from_fixed(value: &str, ignore_case: bool, transliterate: bool) -> anyhow::Result<Self> {
         let regex = None;
         let needle = if ignore_case {
             value.to_lowercase()
@@ -52,20 +55,34 @@ impl Matcher {
             regex,
             needle,
             ignore_case,
+            transliterate,
         })
     }
 
-    fn new(needle: &str, ignore_case: bool, fixed_strings: bool) -> anyhow::Result<Self> {
-        let needle = unidecode::unidecode(needle);
-        if fixed_strings {
-            Self::from_fixed(&needle, ignore_case)
+    fn new(
+        needle: &str,
+        ignore_case: bool,
+        transliterate: bool,
+        fixed_strings: bool,
+    ) -> anyhow::Result<Self> {
+        let needle = if transliterate {
+            unidecode::unidecode(needle)
         } else {
-            Self::from_regex(&needle, ignore_case)
+            needle.to_string()
+        };
+        if fixed_strings {
+            Self::from_fixed(&needle, ignore_case, transliterate)
+        } else {
+            Self::from_regex(&needle, ignore_case, transliterate)
         }
     }
 
     fn is_match(&self, haystack: &str) -> bool {
-        let haystack = unidecode::unidecode(haystack);
+        let haystack = if self.transliterate {
+            unidecode::unidecode(haystack)
+        } else {
+            haystack.to_string()
+        };
         if let Some(ref regex) = self.regex {
             return regex.is_match(&haystack);
         }
@@ -84,39 +101,47 @@ fn our_main(
     fs: &vfs::VfsPath,
 ) -> anyhow::Result<()> {
     // Parse the arguments.
-    // Sender of the message (regex).
     let from_arg = clap::Arg::new("from")
         .short('f')
         .long("from")
-        .required(false);
-    // Name of the channel where the message appeared (regex).
+        .required(false)
+        .help("Sender of the message (regex)");
     let channel_arg = clap::Arg::new("channel")
         .short('c')
         .long("channel")
-        .required(false);
-    // Date in a YYYY-MM form (regex), defaults to the current month, 'all' disables the filter.
+        .required(false)
+        .help("Name of the channel where the message appeared (regex)");
     let date_arg = clap::Arg::new("date")
         .short('d')
         .long("date")
-        .required(false);
-    // The content of the message (regex).
-    let content_arg = clap::Arg::new("content").index(1).required(false);
-    // Case-insensitive mode, disabled by default
+        .required(false)
+        .help("Date in a YYYY-MM form (regex), defaults to the current month, 'all' disables the filter");
+    let content_arg = clap::Arg::new("content")
+        .index(1)
+        .required(false)
+        .help("The content of the message (regex)");
     let ignore_case_arg = clap::Arg::new("ignore-case")
         .short('i')
         .long("ignore-case")
-        .action(clap::ArgAction::SetTrue);
-    // Interpret filters as a fixed string (instead of a regular expression).
+        .action(clap::ArgAction::SetTrue)
+        .help("Case-insensitive mode, disabled by default");
+    let transliterate_arg = clap::Arg::new("transliterate")
+        .short('t')
+        .long("transliterate")
+        .action(clap::ArgAction::SetTrue)
+        .help("Ignore accents using transliteration, disabled by default");
     let fixed_strings_arg = clap::Arg::new("fixed-strings")
         .short('F')
         .long("fixed-strings")
-        .action(clap::ArgAction::SetTrue);
+        .action(clap::ArgAction::SetTrue)
+        .help("Interpret filters as a fixed string (instead of a regular expression)");
     let args = [
         from_arg,
         channel_arg,
         date_arg,
         content_arg,
         ignore_case_arg,
+        transliterate_arg,
         fixed_strings_arg,
     ];
     let app = clap::Command::new("weesearch");
@@ -129,6 +154,10 @@ fn our_main(
         Some(value) => *value,
         None => false,
     };
+    let transliterate: bool = match matches.get_one::<bool>("transliterate") {
+        Some(value) => *value,
+        None => false,
+    };
     let fixed_strings: bool = match matches.get_one::<bool>("fixed-strings") {
         Some(value) => *value,
         None => false,
@@ -136,11 +165,21 @@ fn our_main(
 
     // Set up the filters.
     let from_filter = match from {
-        Some(value) => Some(Matcher::new(value.as_str(), ignore_case, fixed_strings)?),
+        Some(value) => Some(Matcher::new(
+            value.as_str(),
+            ignore_case,
+            transliterate,
+            fixed_strings,
+        )?),
         None => None,
     };
     let channel_filter = match channel {
-        Some(value) => Some(Matcher::new(value.as_str(), ignore_case, fixed_strings)?),
+        Some(value) => Some(Matcher::new(
+            value.as_str(),
+            ignore_case,
+            transliterate,
+            fixed_strings,
+        )?),
         None => None,
     };
     let date_filter = match date {
@@ -148,7 +187,12 @@ fn our_main(
             if date == "all" {
                 None
             } else {
-                Some(Matcher::new(date.as_str(), ignore_case, fixed_strings)?)
+                Some(Matcher::new(
+                    date.as_str(),
+                    ignore_case,
+                    transliterate,
+                    fixed_strings,
+                )?)
             }
         }
         None => {
@@ -158,13 +202,19 @@ fn our_main(
             let format = time::format_description::parse("[year]-[month]")?;
             Some(Matcher::new(
                 &now.format(&format)?,
+                transliterate,
                 ignore_case,
                 fixed_strings,
             )?)
         }
     };
     let content_filter = match content {
-        Some(value) => Some(Matcher::new(value.as_str(), ignore_case, fixed_strings)?),
+        Some(value) => Some(Matcher::new(
+            value.as_str(),
+            ignore_case,
+            transliterate,
+            fixed_strings,
+        )?),
         None => None,
     };
 
