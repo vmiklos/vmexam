@@ -10,3 +10,7 @@ all apps, not just a single one. A minimal HTML output module inspired by <https
 is also included.
 
 A small webapp is just <100 lines of Rust this way.
+
+If you want to allow CORS for local testing, then something like
+`.with_additional_header("Access-Control-Allow-Origin", "*")` at the end of the app() function is
+needed on the Response.
