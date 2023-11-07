@@ -137,5 +137,5 @@ else
 			fi
 		done
 fi |
-pymail -s "$subject" -r "$from" $recipients
+send-email -s "$subject" -f "$from" $recipients
 exit 0
