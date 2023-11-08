@@ -157,18 +157,15 @@ fn our_main(
     let channel = matches.get_one::<String>("channel");
     let date = matches.get_one::<String>("date");
     let content = matches.get_one::<String>("content");
-    let ignore_case: bool = match matches.get_one::<bool>("ignore-case") {
-        Some(value) => *value,
-        None => false,
-    };
-    let transliterate: bool = match matches.get_one::<bool>("transliterate") {
-        Some(value) => *value,
-        None => false,
-    };
-    let fixed_strings: bool = match matches.get_one::<bool>("fixed-strings") {
-        Some(value) => *value,
-        None => false,
-    };
+    let ignore_case = *matches
+        .get_one::<bool>("ignore-case")
+        .context("no ignore-case arg")?;
+    let transliterate = *matches
+        .get_one::<bool>("transliterate")
+        .context("no transliterate arg")?;
+    let fixed_strings = *matches
+        .get_one::<bool>("fixed-strings")
+        .context("no fixed-strings arg")?;
 
     // Set up the filters.
     let from_filter = match from {
