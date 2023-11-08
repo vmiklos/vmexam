@@ -15,6 +15,12 @@
 use anyhow::Context as _;
 use std::io::BufRead as _;
 
+/// Time interface.
+pub trait Time {
+    /// Calculates the current time.
+    fn now(&self) -> time::OffsetDateTime;
+}
+
 /// Regex or fixed string matcher.
 struct Matcher {
     /// If this is Some, a regex match is performed.
@@ -99,6 +105,7 @@ fn our_main(
     argv: Vec<String>,
     stream: &mut dyn std::io::Write,
     fs: &vfs::VfsPath,
+    time: &dyn Time,
 ) -> anyhow::Result<()> {
     // Parse the arguments.
     let from_arg = clap::Arg::new("from")
@@ -197,8 +204,7 @@ fn our_main(
         }
         None => {
             // Default to the current month.
-            let tz_offset = time::UtcOffset::current_local_offset()?;
-            let now = time::OffsetDateTime::now_utc().to_offset(tz_offset);
+            let now = time.now();
             let format = time::format_description::parse("[year]-[month]")?;
             Some(Matcher::new(
                 &now.format(&format)?,
@@ -285,8 +291,13 @@ fn our_main(
 }
 
 /// Similar to plain main(), but with an interface that allows testing.
-pub fn main(args: Vec<String>, stream: &mut dyn std::io::Write, fs: &vfs::VfsPath) -> i32 {
-    match our_main(args, stream, fs) {
+pub fn main(
+    args: Vec<String>,
+    stream: &mut dyn std::io::Write,
+    fs: &vfs::VfsPath,
+    time: &dyn Time,
+) -> i32 {
+    match our_main(args, stream, fs, time) {
         Ok(_) => 0,
         Err(err) => {
             stream.write_all(format!("{:?}\n", err).as_bytes()).unwrap();
