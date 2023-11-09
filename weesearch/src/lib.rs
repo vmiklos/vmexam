@@ -203,8 +203,9 @@ fn our_main(
             // Default to the current month.
             let now = time.now();
             let format = time::format_description::parse("[year]-[month]")?;
+            let needle = &now.format(&format)?;
             Some(Matcher::new(
-                &now.format(&format)?,
+                needle,
                 transliterate,
                 ignore_case,
                 fixed_strings,

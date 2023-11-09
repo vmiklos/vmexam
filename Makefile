@@ -99,4 +99,4 @@ $(eval $(call RustPackage_use_coverage,tpconv))
 $(eval $(call RustPackage_RustPackage,weechat-calc))
 
 $(eval $(call RustPackage_RustPackage,weesearch))
-$(eval $(call RustPackage_use_test,weesearch))
+$(eval $(call RustPackage_use_coverage,weesearch))
