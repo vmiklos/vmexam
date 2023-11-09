@@ -9,10 +9,8 @@ import domready = require('domready');
 function getLoUrl(name: string)
 {
     const loPrefix =
-        'https://bugs.documentfoundation.org/buglist.cgi?keywords=regression%2C%20&keywords_type=allwords&longdesc=Adding%20Cc%3A%20to%20';
-    const loSuffix =
-        '&longdesc_type=substring&query_format=advanced&resolution=---';
-    return loPrefix + encodeURI(name) + loSuffix;
+        'https://bugs.documentfoundation.org/buglist.cgi?f1=cf_regressionby&o1=equals&query_format=advanced&resolution=---&v1=';
+    return loPrefix + encodeURI(name);
 }
 
 function loJump()

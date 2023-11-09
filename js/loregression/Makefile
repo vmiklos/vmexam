@@ -16,3 +16,6 @@ package-lock.json: package.json
 
 check:
 	node_modules/eslint/bin/eslint.js main.ts
+
+run:
+	python3 -m http.server
