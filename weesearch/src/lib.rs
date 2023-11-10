@@ -34,37 +34,6 @@ struct Matcher {
 }
 
 impl Matcher {
-    fn from_regex(value: &str, ignore_case: bool, transliterate: bool) -> anyhow::Result<Self> {
-        let regex = Some(
-            regex::RegexBuilder::new(value)
-                .case_insensitive(ignore_case)
-                .build()?,
-        );
-        let needle = "".to_string();
-        let ignore_case = false;
-        Ok(Matcher {
-            regex,
-            needle,
-            ignore_case,
-            transliterate,
-        })
-    }
-
-    fn from_fixed(value: &str, ignore_case: bool, transliterate: bool) -> anyhow::Result<Self> {
-        let regex = None;
-        let needle = if ignore_case {
-            value.to_lowercase()
-        } else {
-            value.to_string()
-        };
-        Ok(Matcher {
-            regex,
-            needle,
-            ignore_case,
-            transliterate,
-        })
-    }
-
     fn new(
         needle: &str,
         ignore_case: bool,
@@ -76,11 +45,26 @@ impl Matcher {
         } else {
             needle.to_string()
         };
-        if fixed_strings {
-            Self::from_fixed(&needle, ignore_case, transliterate)
+        let regex = if fixed_strings {
+            None
         } else {
-            Self::from_regex(&needle, ignore_case, transliterate)
-        }
+            Some(
+                regex::RegexBuilder::new(&needle)
+                    .case_insensitive(ignore_case)
+                    .build()?,
+            )
+        };
+        let needle = if ignore_case {
+            needle.to_lowercase()
+        } else {
+            needle.to_string()
+        };
+        Ok(Matcher {
+            regex,
+            needle,
+            ignore_case,
+            transliterate,
+        })
     }
 
     fn is_match(&self, haystack: &str) -> bool {
