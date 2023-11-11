@@ -16,10 +16,10 @@ pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
     let facelet = request
         .get_param("facelet")
         .context("missing GET param: facelet")?;
-    let face_cube = kewb::FaceCube::try_from(facelet.as_str()).unwrap();
+    let face_cube = kewb::FaceCube::try_from(facelet.as_str())?;
     // Invoke my Kociemba facelet to cubie converter.
-    let state = kewb::CubieCube::try_from(&face_cube).unwrap();
-    let table = kewb::fs::decode_table(TABLE).unwrap();
+    let state = kewb::CubieCube::try_from(&face_cube)?;
+    let table = kewb::fs::decode_table(TABLE)?;
     let max: u8 = 23;
     let timeout: Option<f32> = None;
     let mut solver = kewb::Solver::new(&table, max, timeout);
