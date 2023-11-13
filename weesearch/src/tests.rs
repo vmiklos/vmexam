@@ -72,25 +72,25 @@ impl TestContext {
     pub fn get_args(&self) -> Vec<String> {
         self.args.clone()
     }
+
+    pub fn create_dir_all(&self, path: &str) {
+        self.home.join(path).unwrap().create_dir_all().unwrap();
+    }
+
+    pub fn file_write_all(&self, path: &str, bytes: &[u8]) {
+        let file = self.home.join(path).unwrap();
+        file.create_file().unwrap().write_all(bytes).unwrap();
+    }
 }
 
 #[test]
 fn test_regex() {
     let mut ctx = TestContext::new(&["my.*ent"]);
-    ctx.home
-        .join(".local/share/weechat/logs/2020/05")
-        .unwrap()
-        .create_dir_all()
-        .unwrap();
-    let log_file = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/05/mychan1.weechatlog")
-        .unwrap();
-    log_file
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick	mycontent\n")
-        .unwrap();
+    ctx.create_dir_all(".local/share/weechat/logs/2020/05");
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog",
+        b"2020-05-10 19:34:33	mynick	mycontent\n",
+    );
 
     assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.root, &ctx.time), 0);
 
@@ -104,20 +104,11 @@ fn test_regex() {
 #[test]
 fn test_fixed() {
     let mut ctx = TestContext::new(&["-F", "+36"]);
-    ctx.home
-        .join(".local/share/weechat/logs/2020/05")
-        .unwrap()
-        .create_dir_all()
-        .unwrap();
-    let log_file = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/05/mychan1.weechatlog")
-        .unwrap();
-    log_file
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick	+36\n")
-        .unwrap();
+    ctx.create_dir_all(".local/share/weechat/logs/2020/05");
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog",
+        b"2020-05-10 19:34:33	mynick	+36\n",
+    );
 
     assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.root, &ctx.time), 0);
 
@@ -128,20 +119,11 @@ fn test_fixed() {
 #[test]
 fn test_fixed_ignore_case() {
     let mut ctx = TestContext::new(&["-F", "-i", "foo"]);
-    ctx.home
-        .join(".local/share/weechat/logs/2020/05")
-        .unwrap()
-        .create_dir_all()
-        .unwrap();
-    let log_file = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/05/mychan1.weechatlog")
-        .unwrap();
-    log_file
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick	FOO\n")
-        .unwrap();
+    ctx.create_dir_all(".local/share/weechat/logs/2020/05");
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog",
+        b"2020-05-10 19:34:33	mynick	FOO\n",
+    );
 
     assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.root, &ctx.time), 0);
 
@@ -152,23 +134,12 @@ fn test_fixed_ignore_case() {
 #[test]
 fn test_from() {
     let mut ctx = TestContext::new(&["-f", "mynick1"]);
-    ctx.home
-        .join(".local/share/weechat/logs/2020/05")
-        .unwrap()
-        .create_dir_all()
-        .unwrap();
-    let log_file = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/05/mychan1.weechatlog")
-        .unwrap();
-    log_file
-        .create_file()
-        .unwrap()
-        .write_all(
-            b"2020-05-10 19:34:33	mynick1	mycontent
+    ctx.create_dir_all(".local/share/weechat/logs/2020/05");
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog",
+        b"2020-05-10 19:34:33	mynick1	mycontent
 2020-05-10 19:34:33	mynick2	mycontent\n",
-        )
-        .unwrap();
+    );
 
     assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.root, &ctx.time), 0);
 
@@ -182,29 +153,15 @@ fn test_from() {
 #[test]
 fn test_channel() {
     let mut ctx = TestContext::new(&["-c", "mychan1"]);
-    ctx.home
-        .join(".local/share/weechat/logs/2020/05")
-        .unwrap()
-        .create_dir_all()
-        .unwrap();
-    let log_file = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/05/mychan1.weechatlog")
-        .unwrap();
-    log_file
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick1	mycontent\n")
-        .unwrap();
-    let log_file2 = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/05/mychan2.weechatlog")
-        .unwrap();
-    log_file2
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick1	mycontent\n")
-        .unwrap();
+    ctx.create_dir_all(".local/share/weechat/logs/2020/05");
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog",
+        b"2020-05-10 19:34:33	mynick1	mycontent\n",
+    );
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/mychan2.weechatlog",
+        b"2020-05-10 19:34:33	mynick1	mycontent\n",
+    );
 
     assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.root, &ctx.time), 0);
 
@@ -218,34 +175,16 @@ fn test_channel() {
 #[test]
 fn test_date() {
     let mut ctx = TestContext::new(&["-d", "2020-06"]);
-    ctx.home
-        .join(".local/share/weechat/logs/2020/05")
-        .unwrap()
-        .create_dir_all()
-        .unwrap();
-    let log_file = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/05/mychan1.weechatlog")
-        .unwrap();
-    log_file
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick1	mycontent\n")
-        .unwrap();
-    ctx.home
-        .join(".local/share/weechat/logs/2020/06")
-        .unwrap()
-        .create_dir_all()
-        .unwrap();
-    let log_file2 = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/06/mychan1.weechatlog")
-        .unwrap();
-    log_file2
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-06-10 19:34:33	mynick1	mycontent\n")
-        .unwrap();
+    ctx.create_dir_all(".local/share/weechat/logs/2020/05");
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog",
+        b"2020-05-10 19:34:33	mynick1	mycontent\n",
+    );
+    ctx.create_dir_all(".local/share/weechat/logs/2020/06");
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/06/mychan1.weechatlog",
+        b"2020-06-10 19:34:33	mynick1	mycontent\n",
+    );
 
     assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.root, &ctx.time), 0);
 
@@ -259,34 +198,16 @@ fn test_date() {
 #[test]
 fn test_date_all() {
     let mut ctx = TestContext::new(&["-d", "all"]);
-    ctx.home
-        .join(".local/share/weechat/logs/2020/05")
-        .unwrap()
-        .create_dir_all()
-        .unwrap();
-    let log_file = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/05/mychan1.weechatlog")
-        .unwrap();
-    log_file
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick1	mycontent\n")
-        .unwrap();
-    ctx.home
-        .join(".local/share/weechat/logs/2020/06")
-        .unwrap()
-        .create_dir_all()
-        .unwrap();
-    let log_file2 = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/06/mychan1.weechatlog")
-        .unwrap();
-    log_file2
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-06-10 19:34:33	mynick1	mycontent\n")
-        .unwrap();
+    ctx.create_dir_all(".local/share/weechat/logs/2020/05");
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog",
+        b"2020-05-10 19:34:33	mynick1	mycontent\n",
+    );
+    ctx.create_dir_all(".local/share/weechat/logs/2020/06");
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/06/mychan1.weechatlog",
+        b"2020-06-10 19:34:33	mynick1	mycontent\n",
+    );
 
     assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.root, &ctx.time), 0);
 
@@ -301,29 +222,15 @@ mychan1.weechatlog:2020-06-10 19:34:33	mynick1	mycontent\n"
 #[test]
 fn test_file_under_logs() {
     let mut ctx = TestContext::new(&["my.*ent"]);
-    ctx.home
-        .join(".local/share/weechat/logs/2020/05")
-        .unwrap()
-        .create_dir_all()
-        .unwrap();
-    let log_file = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/05/mychan1.weechatlog")
-        .unwrap();
-    log_file
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick	mycontent\n")
-        .unwrap();
-    let log_file2 = ctx
-        .home
-        .join(".local/share/weechat/logs/away.weechatlog")
-        .unwrap();
-    log_file2
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick	myaway\n")
-        .unwrap();
+    ctx.create_dir_all(".local/share/weechat/logs/2020/05");
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog",
+        b"2020-05-10 19:34:33	mynick	mycontent\n",
+    );
+    ctx.file_write_all(
+        ".local/share/weechat/logs/away.weechatlog",
+        b"2020-05-10 19:34:33	mynick	myaway\n",
+    );
 
     assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.root, &ctx.time), 0);
 
@@ -337,29 +244,15 @@ fn test_file_under_logs() {
 #[test]
 fn test_file_under_year() {
     let mut ctx = TestContext::new(&["my.*ent"]);
-    ctx.home
-        .join(".local/share/weechat/logs/2020/05")
-        .unwrap()
-        .create_dir_all()
-        .unwrap();
-    let log_file = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/05/mychan1.weechatlog")
-        .unwrap();
-    log_file
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick	mycontent\n")
-        .unwrap();
-    let log_file2 = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/away.weechatlog")
-        .unwrap();
-    log_file2
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick	myaway\n")
-        .unwrap();
+    ctx.create_dir_all(".local/share/weechat/logs/2020/05");
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog",
+        b"2020-05-10 19:34:33	mynick	mycontent\n",
+    );
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/away.weechatlog",
+        b"2020-05-10 19:34:33	mynick	myaway\n",
+    );
 
     assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.root, &ctx.time), 0);
 
@@ -373,30 +266,16 @@ fn test_file_under_year() {
 #[test]
 fn test_no_extension() {
     let mut ctx = TestContext::new(&["my.*ent"]);
-    ctx.home
-        .join(".local/share/weechat/logs/2020/05")
-        .unwrap()
-        .create_dir_all()
-        .unwrap();
-    let log_file = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/05/mychan1.weechatlog")
-        .unwrap();
-    log_file
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick	mycontent\n")
-        .unwrap();
+    ctx.create_dir_all(".local/share/weechat/logs/2020/05");
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog",
+        b"2020-05-10 19:34:33	mynick	mycontent\n",
+    );
     // No extension.
-    let log_file2 = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/05/away")
-        .unwrap();
-    log_file2
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick	myaway\n")
-        .unwrap();
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/away",
+        b"2020-05-10 19:34:33	mynick	myaway\n",
+    );
 
     assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.root, &ctx.time), 0);
 
@@ -410,30 +289,16 @@ fn test_no_extension() {
 #[test]
 fn test_bad_extension() {
     let mut ctx = TestContext::new(&["my.*ent"]);
-    ctx.home
-        .join(".local/share/weechat/logs/2020/05")
-        .unwrap()
-        .create_dir_all()
-        .unwrap();
-    let log_file = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/05/mychan1.weechatlog")
-        .unwrap();
-    log_file
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick	mycontent\n")
-        .unwrap();
+    ctx.create_dir_all(".local/share/weechat/logs/2020/05");
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog",
+        b"2020-05-10 19:34:33	mynick	mycontent\n",
+    );
     // Bad extension.
-    let log_file2 = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/05/away.log")
-        .unwrap();
-    log_file2
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick	myaway\n")
-        .unwrap();
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/away.log",
+        b"2020-05-10 19:34:33	mynick	myaway\n",
+    );
 
     assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.root, &ctx.time), 0);
 
@@ -447,20 +312,11 @@ fn test_bad_extension() {
 #[test]
 fn test_regex_no_match() {
     let mut ctx = TestContext::new(&["yourcontent"]);
-    ctx.home
-        .join(".local/share/weechat/logs/2020/05")
-        .unwrap()
-        .create_dir_all()
-        .unwrap();
-    let log_file = ctx
-        .home
-        .join(".local/share/weechat/logs/2020/05/mychan1.weechatlog")
-        .unwrap();
-    log_file
-        .create_file()
-        .unwrap()
-        .write_all(b"2020-05-10 19:34:33	mynick	mycontent\n")
-        .unwrap();
+    ctx.create_dir_all(".local/share/weechat/logs/2020/05");
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog",
+        b"2020-05-10 19:34:33	mynick	mycontent\n",
+    );
 
     assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.root, &ctx.time), 0);
 

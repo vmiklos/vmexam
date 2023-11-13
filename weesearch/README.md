@@ -1,5 +1,13 @@
 # weesearch
 
+## Installation
+
+```
+cargo install --git https://github.com/vmiklos/vmexam weesearch
+```
+
+## Usage
+
 Simple search tool for weechat logs. Examples:
 
 - to find all messages from a user:
