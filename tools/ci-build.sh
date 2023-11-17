@@ -10,6 +10,8 @@
 #
 
 if [ -n "${GITHUB_WORKFLOW}" ]; then
+    sudo apt install libhyphen-dev
+
     # Build from source: cargo install --version 0.4.6 cargo-llvm-cov
     # Binary install:
     wget https://github.com/cargo-bins/cargo-binstall/releases/download/v0.17.0/cargo-binstall-x86_64-unknown-linux-gnu.tgz
