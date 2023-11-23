@@ -1,0 +1,13 @@
+#!/bin/sh
+
+for i in */CppunitTest_*.mk
+do
+    name=$(basename $i|sed 's/CppunitTest_\(.*\)\.mk/\1/')
+    if grep -q gb_CppunitTest_set_non_application_font_use,$name,abort $i; then
+        continue
+    fi
+
+    echo $i
+done
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
