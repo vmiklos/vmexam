@@ -42,6 +42,7 @@ podman run --name ubuntu2204 --hostname ubuntu2204 -v $HOME:$HOME -ti ubuntu:22.
 podman run --name centos7 --hostname centos7 -v $HOME:$HOME -ti centos:centos7
 podman run --name almalinux8 --hostname almalinux8 -v $HOME:$HOME -ti almalinux:8
 podman run --cap-add=SYS_ADMIN --name fedora39 --hostname fedora39 -v $HOME:$HOME -ti --publish 8000:8000 fedora:39
+podman run --cap-add=SYS_ADMIN --name frugalware2023 --hostname frugalware2023 -v $HOME:$HOME -ti frugalware-2023
 ```
 
 then
@@ -52,6 +53,7 @@ podman start -ai ubuntu2204
 podman start -ai centos7
 podman start -ai almalinux8
 podman start -ai fedora39
+podman start -ai frugalware2023
 ```
 
 is a stateful container.

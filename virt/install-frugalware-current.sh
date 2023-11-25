@@ -3,8 +3,7 @@ virt-install \
 	--arch=x86_64 \
 	--vcpus=1 \
 	--ram=1024 \
-	--os-type=linux \
-	--os-variant=virtio26 \
+	--os-variant=linux2016 \
 	--connect=qemu:///system \
 	--network network=default \
 	--cdrom=/home/vmiklos/virt/frugalware/frugalware.iso \
