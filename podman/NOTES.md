@@ -41,7 +41,8 @@ podman run --name ubuntu1804 --hostname ubuntu1804 -v $HOME:$HOME -ti ubuntu:18.
 podman run --name ubuntu2204 --hostname ubuntu2204 -v $HOME:$HOME -ti ubuntu:22.04
 podman run --name centos7 --hostname centos7 -v $HOME:$HOME -ti centos:centos7
 podman run --name almalinux8 --hostname almalinux8 -v $HOME:$HOME -ti almalinux:8
-podman run --cap-add=SYS_ADMIN --name fedora39 --hostname fedora39 -v $HOME:$HOME -ti --publish 8000:8000 fedora:39
+podman run --cap-add=SYS_ADMIN --name fedora38 --hostname fedora38 -v $HOME:$HOME -ti fedora:38
+podman run --name fedora39 --hostname fedora39 -v $HOME:$HOME -ti --publish 8000:8000 fedora:39
 podman run --cap-add=SYS_ADMIN --name frugalware2023 --hostname frugalware2023 -v $HOME:$HOME -ti frugalware-2023
 ```
 
