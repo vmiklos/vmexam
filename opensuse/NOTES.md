@@ -274,7 +274,7 @@ kstart plasmashell #to restart it
 
 - the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (zypper --releasever=15.5 ref, zypper --releasever=15.5 dup)
   - `zypper -p https://download.opensuse.org/repositories/server:/mail/15.5/ in mutt`
-  - `zypper -p https://download.opensuse.org/repositories/X11:/common:/Factory/15.5/ in libicu-devel`
+  - `zypper -p https://download.opensuse.org/repositories/X11:/common:/Factory/15.5/ in libicu-devel` (skipped on t14, seems OK)
   - `zypper -p https://download.opensuse.org/repositories/devel:/languages:/python/15.5/ in git-review` (skipped on vostro, seems OK)
   - `zypper -p https://download.opensuse.org/repositories/editors/15.5/ in vim` (skipped on vostro, seems OK)
 - the usual fix with html5 video codecs in firefox/chromium: <https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support>
