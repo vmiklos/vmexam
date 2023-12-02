@@ -1,5 +1,13 @@
 #!/bin/bash -e
 
+# Dependencies:
+# zypper in ccache
+# zypper in libcap-devel
+# zypper in libcap-progs
+# zypper in pam-devel
+# zypper in poco-devel
+# zypper in python3-polib
+
 time (
     git pull -r
     # make distclean is broken
@@ -10,10 +18,10 @@ time (
 
     # If sanitizers already set a CC/CXX, don't overwrite it.
     if [ -z "$CC" ]; then
-        export CC="ccache $HOME/git/llvm/instdir/bin/clang"
+        export CC="ccache clang"
     fi
     if [ -z "$CXX" ]; then
-        export CXX="ccache $HOME/git/llvm/instdir/bin/clang++"
+        export CXX="ccache clang++"
     fi
     ./configure \
         --prefix=$PWD/install \
