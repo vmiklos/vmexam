@@ -5,7 +5,7 @@
 - Updating a package in OBS, examples:
 
 ```
-osc build --alternative-project openSUSE:Leap:15.4 standard
+osc build --alternative-project openSUSE:Leap:15.5 standard
 osc build --alternative-project openSUSE:Leap:42.3 --release 9999 standard (custom release)
 osc build --alternative-project openSUSE:Leap:15.1:Update ports (ARM)
 ```
