@@ -16,3 +16,29 @@ One way to solve this is:
   removed by `dnf update`
 - scp the rpms to the server, `dnf downgrade *.rpm` to install the previous version (that is new
   enough for the DB, old enough for the issue to be not present)
+
+## Fedora 38 -> Fedora 39
+
+- <https://docs.fedoraproject.org/en-US/quick-docs/upgrading-fedora-offline/> for the package upgrades
+
+- matrix bridges:
+
+```
+virtualenv -p /usr/bin/python3 .
+source ./bin/activate
+pip install --upgrade mautrix-facebook
+pip install setuptools
+pip install aiosqlite
+```
+
+and
+
+```
+virtualenv -p /usr/bin/python3 .
+source ./bin/activate
+pip install --upgrade mautrix-signal
+pip install aiosqlite
+```
+
+but then need to hack-around because mautrix-signal would want a too old asyncpg. Workaround is to
+copy&paste its requirements.txt, drop the asyncpg line, then install mautrix-signal with --no-deps.
