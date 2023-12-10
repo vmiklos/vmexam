@@ -31,6 +31,10 @@ Place images in images/ as 01.jpg, 02.jpg, ..., then run:
 
 and the result will be produced as out.pdf.
 
+## Workarounds
+
+### Bad JPEG
+
 If an image metadata causes a problem, run:
 
 ```
@@ -38,3 +42,11 @@ mogrify -strip ./01.jpg
 ```
 
 to strip the unwanted metadata.
+
+### HEIC
+
+```
+heif-convert foo.heic foo.jpg
+```
+
+can do a conversion, then pdfcal can consume the image.
