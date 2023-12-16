@@ -54,7 +54,7 @@ podman start -ai ubuntu2204
 podman start -ai centos7
 podman start -ai almalinux8
 podman start -ai fedora39
-podman start -ai frugalware2023
+podman start -ai frugalware2023root
 ```
 
 is a stateful container.
