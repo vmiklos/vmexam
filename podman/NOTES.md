@@ -44,6 +44,7 @@ podman run --name almalinux8 --hostname almalinux8 -v $HOME:$HOME -ti almalinux:
 podman run --cap-add=SYS_ADMIN --name fedora38root --hostname fedora38root -v $HOME:$HOME -ti fedora:38
 podman run --name fedora39 --hostname fedora39 -v $HOME:$HOME -ti --publish 8000:8000 fedora:39
 podman run --cap-add=SYS_ADMIN --name frugalware2023root --hostname frugalware2023root -v $HOME:$HOME -ti frugalware-2023
+podman run --name opensuse155 --hostname opensuse1555 -v $HOME:$HOME -ti opensuse/leap:15.5
 ```
 
 then
@@ -55,6 +56,7 @@ podman start -ai centos7
 podman start -ai almalinux8
 podman start -ai fedora39
 podman start -ai frugalware2023root
+podman start -ai opensuse155
 ```
 
 is a stateful container.
