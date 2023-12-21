@@ -70,6 +70,8 @@ $(eval $(call RustPackage_use_test,hyphen))
 $(eval $(call RustPackage_RustPackage,hyphen-sys))
 $(eval $(call RustPackage_use_test,hyphen-sys))
 
+$(eval $(call RustPackage_RustPackage,ics2txt))
+
 $(eval $(call RustPackage_RustPackage,mso-convert))
 
 $(eval $(call RustPackage_RustPackage,mutt-display-filter))
