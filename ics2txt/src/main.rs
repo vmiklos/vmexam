@@ -1,3 +1,4 @@
+use ical::parser::Component as _;
 use std::fs::File;
 use std::io::BufReader;
 use time_tz::PrimitiveDateTimeExt as _;
@@ -58,12 +59,26 @@ fn improve_date(input_date: &str) -> anyhow::Result<String> {
     Ok(date_time.format(&format)?)
 }
 
-fn handle_date_time(name: &str, property: &ical::property::Property) {
+fn handle_date_time_property(name: &str, property: Option<&ical::property::Property>) {
+    let Some(property) = property else {
+        return;
+    };
+
     let input_date = decode_date_time(property);
     if let Ok(improved) = improve_date(&input_date) {
         println!("{name}: {improved} ({input_date})");
     } else {
         println!("{name}: {input_date}");
+    }
+}
+
+fn handle_string_property(name: &str, property: Option<&ical::property::Property>) {
+    let Some(property) = property else {
+        return;
+    };
+
+    if let Some(ref value) = property.value {
+        println!("{name}: {}", decode_text(value));
     }
 }
 
@@ -76,29 +91,12 @@ fn main() -> anyhow::Result<()> {
         let calendar = calendar?;
 
         for event in calendar.events {
-            for property in event.properties {
-                if property.name == "SUMMARY" {
-                    if let Some(value) = property.value {
-                        println!("Summary: {}", decode_text(&value));
-                    }
-                } else if property.name == "DESCRIPTION" {
-                    if let Some(value) = property.value {
-                        println!("Description: {}", decode_text(&value));
-                    }
-                } else if property.name == "LOCATION" {
-                    if let Some(value) = property.value {
-                        println!("Location: {}", decode_text(&value));
-                    }
-                } else if property.name == "ORGANIZER" {
-                    if let Some(value) = property.value {
-                        println!("Organizer: {}", decode_text(&value));
-                    }
-                } else if property.name == "DTSTART" {
-                    handle_date_time("Dtstart", &property);
-                } else if property.name == "DTEND" {
-                    handle_date_time("Dtend", &property);
-                }
-            }
+            handle_string_property("Summary    ", event.get_property("SUMMARY"));
+            handle_string_property("Description", event.get_property("DESCRIPTION"));
+            handle_string_property("Location   ", event.get_property("LOCATION"));
+            handle_string_property("Organizer  ", event.get_property("ORGANIZER"));
+            handle_date_time_property("Dtstart    ", event.get_property("DTSTART"));
+            handle_date_time_property("Dtend      ", event.get_property("DTEND"));
         }
     }
     Ok(())
