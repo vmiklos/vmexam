@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.76"
 ical = "0.9.0"
+time = { version = "0.3.31", features = ["formatting", "local-offset", "parsing"] }
+time-tz = "2.0.0"
