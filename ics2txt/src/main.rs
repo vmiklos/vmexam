@@ -20,11 +20,11 @@ use time_tz::PrimitiveDateTimeExt as _;
 ///     \; encodes ;, \, encodes ,
 fn decode_text(encoded: &str) -> String {
     encoded
-        .replace(r#"\\"#, r#"\"#)
-        .replace(r#"\;"#, r#";"#)
-        .replace(r#"\,"#, r#","#)
-        .replace(r#"\N"#, "\n")
-        .replace(r#"\n"#, "\n")
+        .replace(r"\\", r"\")
+        .replace(r"\;", r";")
+        .replace(r"\,", r",")
+        .replace(r"\N", "\n")
+        .replace(r"\n", "\n")
 }
 
 /// See <https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.5>, this is an ISO.8601 format,
