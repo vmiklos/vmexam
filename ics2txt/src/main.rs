@@ -1,6 +1,16 @@
+/*
+ * Copyright 2023 Miklos Vajna
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#![deny(warnings)]
+#![warn(clippy::all)]
+#![warn(missing_docs)]
+
+//! An ICS printer for mutt with detailed time info.
+
 use ical::parser::Component as _;
-use std::fs::File;
-use std::io::BufReader;
 use time_tz::PrimitiveDateTimeExt as _;
 
 /// See <https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.11>:
@@ -22,9 +32,7 @@ fn decode_text(encoded: &str) -> String {
 ///
 /// Returns an Rfc2822 date time, which contains timezone info.
 fn decode_date_time(property: &ical::property::Property) -> String {
-    let Some(ref value) = property.value else {
-        return "".into();
-    };
+    let value = property.value.as_ref().unwrap();
     let ics_format = time::format_description::well_known::Iso8601::DEFAULT;
     let date_time = time::PrimitiveDateTime::parse(value, &ics_format).unwrap();
     let mut tzid = "".to_string();
@@ -37,9 +45,6 @@ fn decode_date_time(property: &ical::property::Property) -> String {
                 }
             }
         }
-    }
-    if tzid.is_empty() {
-        return "".to_string();
     }
     let tz = time_tz::timezones::get_by_name(&tzid).unwrap();
     let date_time = date_time.assume_timezone(tz).unwrap();
@@ -85,7 +90,7 @@ fn handle_string_property(name: &str, property: Option<&ical::property::Property
 fn main() -> anyhow::Result<()> {
     let mut args = std::env::args();
     args.next();
-    let buf = BufReader::new(File::open(args.next().unwrap()).unwrap());
+    let buf = std::io::BufReader::new(std::fs::File::open(args.next().unwrap()).unwrap());
     let reader = ical::IcalParser::new(buf);
     for calendar in reader {
         let calendar = calendar?;
