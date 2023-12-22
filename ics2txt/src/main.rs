@@ -10,6 +10,7 @@
 
 //! An ICS printer for mutt with detailed time info.
 
+use anyhow::Context as _;
 use ical::parser::Component as _;
 use time_tz::PrimitiveDateTimeExt as _;
 
@@ -31,10 +32,10 @@ fn decode_text(encoded: &str) -> String {
 /// and the timezone is specified externally.
 ///
 /// Returns an Rfc2822 date time, which contains timezone info.
-fn decode_date_time(property: &ical::property::Property) -> String {
-    let value = property.value.as_ref().unwrap();
+fn decode_date_time(property: &ical::property::Property) -> anyhow::Result<String> {
+    let value = property.value.as_ref().context("no value")?;
     let ics_format = time::format_description::well_known::Iso8601::DEFAULT;
-    let date_time = time::PrimitiveDateTime::parse(value, &ics_format).unwrap();
+    let date_time = time::PrimitiveDateTime::parse(value, &ics_format)?;
     let mut tzid = "".to_string();
     if let Some(ref params) = property.params {
         for (key, value) in params {
@@ -46,10 +47,12 @@ fn decode_date_time(property: &ical::property::Property) -> String {
             }
         }
     }
-    let tz = time_tz::timezones::get_by_name(&tzid).unwrap();
-    let date_time = date_time.assume_timezone(tz).unwrap();
+    let tz = time_tz::timezones::get_by_name(&tzid).context("can't find timezone")?;
+    let time_tz::OffsetResult::Some(date_time) = date_time.assume_timezone(tz) else {
+        return Err(anyhow::anyhow!("assume_timezone() failed"));
+    };
     let format = time::format_description::well_known::Rfc2822;
-    date_time.format(&format).unwrap()
+    Ok(date_time.format(&format)?)
 }
 
 /// Try to improve input_date by wrapping a non-local date in a local one.
@@ -64,17 +67,22 @@ fn improve_date(input_date: &str) -> anyhow::Result<String> {
     Ok(date_time.format(&format)?)
 }
 
-fn handle_date_time_property(name: &str, property: Option<&ical::property::Property>) {
+fn handle_date_time_property(
+    name: &str,
+    property: Option<&ical::property::Property>,
+) -> anyhow::Result<()> {
     let Some(property) = property else {
-        return;
+        return Ok(());
     };
 
-    let input_date = decode_date_time(property);
+    let input_date = decode_date_time(property)?;
     if let Ok(improved) = improve_date(&input_date) {
         println!("{name}: {improved} ({input_date})");
     } else {
         println!("{name}: {input_date}");
     }
+
+    Ok(())
 }
 
 fn handle_string_property(name: &str, property: Option<&ical::property::Property>) {
@@ -90,7 +98,8 @@ fn handle_string_property(name: &str, property: Option<&ical::property::Property
 fn main() -> anyhow::Result<()> {
     let mut args = std::env::args();
     args.next();
-    let buf = std::io::BufReader::new(std::fs::File::open(args.next().unwrap()).unwrap());
+    let path = args.next().context("missing argument")?;
+    let buf = std::io::BufReader::new(std::fs::File::open(path)?);
     let reader = ical::IcalParser::new(buf);
     for calendar in reader {
         let calendar = calendar?;
@@ -100,8 +109,8 @@ fn main() -> anyhow::Result<()> {
             handle_string_property("Description", event.get_property("DESCRIPTION"));
             handle_string_property("Location   ", event.get_property("LOCATION"));
             handle_string_property("Organizer  ", event.get_property("ORGANIZER"));
-            handle_date_time_property("Dtstart    ", event.get_property("DTSTART"));
-            handle_date_time_property("Dtend      ", event.get_property("DTEND"));
+            handle_date_time_property("Dtstart    ", event.get_property("DTSTART"))?;
+            handle_date_time_property("Dtend      ", event.get_property("DTEND"))?;
         }
     }
     Ok(())
