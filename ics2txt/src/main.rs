@@ -58,6 +58,15 @@ fn improve_date(input_date: &str) -> anyhow::Result<String> {
     Ok(date_time.format(&format)?)
 }
 
+fn handle_date_time(name: &str, property: &ical::property::Property) {
+    let input_date = decode_date_time(property);
+    if let Ok(improved) = improve_date(&input_date) {
+        println!("{name}: {improved} ({input_date})");
+    } else {
+        println!("{name}: {input_date}");
+    }
+}
+
 fn main() -> anyhow::Result<()> {
     let mut args = std::env::args();
     args.next();
@@ -85,13 +94,9 @@ fn main() -> anyhow::Result<()> {
                         println!("Organizer: {}", decode_text(&value));
                     }
                 } else if property.name == "DTSTART" {
-                    let input_date = decode_date_time(&property);
-                    let improved = improve_date(&input_date).unwrap();
-                    println!("Dtstart: {improved} ({input_date})");
+                    handle_date_time("Dtstart", &property);
                 } else if property.name == "DTEND" {
-                    let input_date = decode_date_time(&property);
-                    let improved = improve_date(&input_date).unwrap();
-                    println!("Dtend: {improved} ({input_date})");
+                    handle_date_time("Dtend", &property);
                 }
             }
         }
