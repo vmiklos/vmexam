@@ -65,8 +65,10 @@ impl TestContext {
     }
 
     pub fn into_buf_string(&self) -> String {
+        let home_dir = home::home_dir().unwrap();
+        let home_path = home_dir.to_string_lossy().to_string() + "/";
         let buf_vec = self.buf.clone().into_inner();
-        String::from_utf8(buf_vec).unwrap()
+        String::from_utf8(buf_vec).unwrap().replace(&home_path, "")
     }
 
     pub fn get_args(&self) -> Vec<String> {
@@ -97,7 +99,7 @@ fn test_regex() {
     let buf = ctx.into_buf_string();
     assert_eq!(
         buf,
-        "mychan1.weechatlog:2020-05-10 19:34:33	mynick	mycontent\n"
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog:2020-05-10 19:34:33	mynick	mycontent\n"
     );
 }
 
@@ -113,7 +115,10 @@ fn test_fixed() {
     assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.root, &ctx.time), 0);
 
     let buf = ctx.into_buf_string();
-    assert_eq!(buf, "mychan1.weechatlog:2020-05-10 19:34:33	mynick	+36\n");
+    assert_eq!(
+        buf,
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog:2020-05-10 19:34:33	mynick	+36\n"
+    );
 }
 
 #[test]
@@ -128,7 +133,10 @@ fn test_fixed_ignore_case() {
     assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.root, &ctx.time), 0);
 
     let buf = ctx.into_buf_string();
-    assert_eq!(buf, "mychan1.weechatlog:2020-05-10 19:34:33	mynick	FOO\n");
+    assert_eq!(
+        buf,
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog:2020-05-10 19:34:33	mynick	FOO\n"
+    );
 }
 
 #[test]
@@ -146,7 +154,7 @@ fn test_from() {
     let buf = ctx.into_buf_string();
     assert_eq!(
         buf,
-        "mychan1.weechatlog:2020-05-10 19:34:33	mynick1	mycontent\n"
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog:2020-05-10 19:34:33	mynick1	mycontent\n"
     );
 }
 
@@ -168,7 +176,7 @@ fn test_channel() {
     let buf = ctx.into_buf_string();
     assert_eq!(
         buf,
-        "mychan1.weechatlog:2020-05-10 19:34:33	mynick1	mycontent\n"
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog:2020-05-10 19:34:33	mynick1	mycontent\n"
     );
 }
 
@@ -191,7 +199,7 @@ fn test_date() {
     let buf = ctx.into_buf_string();
     assert_eq!(
         buf,
-        "mychan1.weechatlog:2020-06-10 19:34:33	mynick1	mycontent\n"
+        ".local/share/weechat/logs/2020/06/mychan1.weechatlog:2020-06-10 19:34:33	mynick1	mycontent\n"
     );
 }
 
@@ -214,8 +222,8 @@ fn test_date_all() {
     let buf = ctx.into_buf_string();
     assert_eq!(
         buf,
-        "mychan1.weechatlog:2020-05-10 19:34:33	mynick1	mycontent
-mychan1.weechatlog:2020-06-10 19:34:33	mynick1	mycontent\n"
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog:2020-05-10 19:34:33	mynick1	mycontent
+.local/share/weechat/logs/2020/06/mychan1.weechatlog:2020-06-10 19:34:33	mynick1	mycontent\n"
     );
 }
 
@@ -237,7 +245,7 @@ fn test_file_under_logs() {
     let buf = ctx.into_buf_string();
     assert_eq!(
         buf,
-        "mychan1.weechatlog:2020-05-10 19:34:33	mynick	mycontent\n"
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog:2020-05-10 19:34:33	mynick	mycontent\n"
     );
 }
 
@@ -259,7 +267,7 @@ fn test_file_under_year() {
     let buf = ctx.into_buf_string();
     assert_eq!(
         buf,
-        "mychan1.weechatlog:2020-05-10 19:34:33	mynick	mycontent\n"
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog:2020-05-10 19:34:33	mynick	mycontent\n"
     );
 }
 
@@ -282,7 +290,7 @@ fn test_no_extension() {
     let buf = ctx.into_buf_string();
     assert_eq!(
         buf,
-        "mychan1.weechatlog:2020-05-10 19:34:33	mynick	mycontent\n"
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog:2020-05-10 19:34:33	mynick	mycontent\n"
     );
 }
 
@@ -305,7 +313,7 @@ fn test_bad_extension() {
     let buf = ctx.into_buf_string();
     assert_eq!(
         buf,
-        "mychan1.weechatlog:2020-05-10 19:34:33	mynick	mycontent\n"
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog:2020-05-10 19:34:33	mynick	mycontent\n"
     );
 }
 

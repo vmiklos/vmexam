@@ -272,7 +272,11 @@ fn handle_channel(log: &vfs::VfsPath, filters: &Filters) -> anyhow::Result<Vec<S
         return Ok(results);
     }
     let file = log.open_file()?;
-    let log_string = log.filename();
+    let mut log_string = log.as_str().to_string();
+    let current_dir = std::env::current_dir()?;
+    let mut working_directory: String = current_dir.to_str().context("to_str() failed")?.into();
+    working_directory += "/";
+    log_string = log_string.replace(&working_directory, "");
     if let Some(ref channel_filter) = filters.channel {
         if !channel_filter.is_match(&log_string) {
             return Ok(results);

@@ -2,7 +2,7 @@ true := T
 false :=
 
 check:
-	@echo "make check: ok"
+	@echo "make check: ok for $(shell grep -c '^$$(eval $$(call RustPackage_RustPackage.*))' Makefile) projects"
 
 install-git-hooks:
 	cd .git/hooks && ln -sf ../../bash/clang-format-check commit-msg

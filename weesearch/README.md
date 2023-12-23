@@ -22,7 +22,7 @@ weesearch -f Alice
 weesearch -c mychannel
 ```
 
-- find messages from a given month (`all` disables the filter):
+- find messages from a given month (`all` disables the filter, defaults to the current month):
 
 ```
 weesearch -d 2023-09
