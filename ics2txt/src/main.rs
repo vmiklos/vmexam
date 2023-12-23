@@ -36,18 +36,10 @@ fn decode_date_time(property: &ical::property::Property) -> anyhow::Result<Strin
     let value = property.value.as_ref().context("no value")?;
     let ics_format = time::format_description::well_known::Iso8601::DEFAULT;
     let date_time = time::PrimitiveDateTime::parse(value, &ics_format)?;
-    let mut tzid = "".to_string();
-    if let Some(ref params) = property.params {
-        for (key, value) in params {
-            if key == "TZID" {
-                let time_zone = value.first();
-                if let Some(value) = time_zone {
-                    tzid = value.to_string();
-                }
-            }
-        }
-    }
-    let tz = time_tz::timezones::get_by_name(&tzid).context("can't find timezone")?;
+    let params = property.params.as_ref().context("no params")?;
+    let params_map: std::collections::HashMap<_, _> = params.iter().cloned().collect();
+    let time_zone = params_map["TZID"].first().context("no TZID")?;
+    let tz = time_tz::timezones::get_by_name(time_zone).context("can't find timezone")?;
     let time_tz::OffsetResult::Some(date_time) = date_time.assume_timezone(tz) else {
         return Err(anyhow::anyhow!("assume_timezone() failed"));
     };
