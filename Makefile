@@ -71,6 +71,7 @@ $(eval $(call RustPackage_RustPackage,hyphen-sys))
 $(eval $(call RustPackage_use_test,hyphen-sys))
 
 $(eval $(call RustPackage_RustPackage,ics2txt))
+$(eval $(call RustPackage_use_test,ics2txt))
 
 $(eval $(call RustPackage_RustPackage,mso-convert))
 
