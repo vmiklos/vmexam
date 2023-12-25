@@ -4,32 +4,16 @@
  * SPDX-License-Identifier: MIT
  */
 
-function shuffle(array: string[])
+import arrayShuffle from 'array-shuffle';
+
+function refreshTopics()
 {
-    let currentIndex = array.length, randomIndex;
-
-    // While there remain elements to shuffle.
-    while (currentIndex > 0)
-    {
-
-        // Pick a remaining element.
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-
-        // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] =
-            [ array[randomIndex], array[currentIndex] ];
-    }
-}
-
-async function refreshTopics()
-{
-    const topicList = [
+    let topicList = [
         "élővilág", "zene", "földrajz", "sport", "nyelv és irodalom",
         "film és tv", "történelem és közélet", "életmód",
         "tudomány és technika", "bulvár"
     ];
-    shuffle(topicList);
+    topicList = arrayShuffle(topicList);
     const topics = <HTMLElement>document.querySelector('#topics');
     topics.innerText = topicList.join(", ");
 }
@@ -37,12 +21,10 @@ async function refreshTopics()
 // Both min and max are inclusive.
 function getRandomInt(min: number, max: number): number
 {
-    min = Math.ceil(min);
-    max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-async function refreshSeries()
+function refreshSeries()
 {
     const first = getRandomInt(1, 27);
     const second = getRandomInt(1, 10);
@@ -50,7 +32,7 @@ async function refreshSeries()
     series.innerText = String(first) + ", " + String(second);
 }
 
-async function refreshGeneric()
+function refreshGeneric()
 {
     const first = getRandomInt(1, 130);
     const second = getRandomInt(1, 10);
@@ -58,7 +40,7 @@ async function refreshGeneric()
     generic.innerText = String(first) + ", " + String(second);
 }
 
-document.addEventListener("DOMContentLoaded", async function() {
+document.addEventListener("DOMContentLoaded", function() {
     // Topics.
     const body = document.getElementsByTagName('body')[0];
     const topics = document.createElement('p');
