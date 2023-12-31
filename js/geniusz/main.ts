@@ -15,7 +15,13 @@ function refreshTopics()
     ];
     topicList = arrayShuffle(topicList);
     const topics = <HTMLElement>document.querySelector('#topics');
-    topics.innerText = topicList.join(", ");
+    let buf =
+        "párbaj témakörei: első játszma: " + topicList.slice(0, 3).join(", ") +
+        "; ";
+    buf += "második játszma: " + topicList.slice(3, 6).join(", ") + "; ";
+    buf += "harmadik játszma: " + topicList.slice(6, 9).join(", ") + "; ";
+    buf += "kimarad: " + topicList[9];
+    topics.innerText = buf;
 }
 
 // Both min and max are inclusive.
@@ -29,7 +35,8 @@ function refreshSeries()
     const first = getRandomInt(1, 27);
     const second = getRandomInt(1, 10);
     const series = <HTMLElement>document.querySelector('#series');
-    series.innerText = String(first) + ", " + String(second);
+    series.innerText =
+        "kérdéssor: " + String(first) + ", kérdés: " + String(second);
 }
 
 function refreshGeneric()
@@ -37,7 +44,8 @@ function refreshGeneric()
     const first = getRandomInt(1, 130);
     const second = getRandomInt(1, 10);
     const generic = <HTMLElement>document.querySelector('#generic');
-    generic.innerText = String(first) + ", " + String(second);
+    generic.innerText =
+        "kérdéssor: " + String(first) + ", kérdés: " + String(second);
 }
 
 document.addEventListener("DOMContentLoaded", function() {
