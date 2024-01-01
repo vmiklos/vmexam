@@ -14,14 +14,11 @@ function refreshTopics()
         "tudomány és technika", "bulvár"
     ];
     topicList = arrayShuffle(topicList);
-    const topics = <HTMLElement>document.querySelector('#topics');
-    let buf =
-        "párbaj témakörei: első játszma: " + topicList.slice(0, 3).join(", ") +
-        "; ";
-    buf += "második játszma: " + topicList.slice(3, 6).join(", ") + "; ";
-    buf += "harmadik játszma: " + topicList.slice(6, 9).join(", ") + "; ";
-    buf += "kimarad: " + topicList[9];
-    topics.innerText = buf;
+    for (let i = 0; i < topicList.length; i++)
+    {
+        const topic = <HTMLElement>document.querySelector('#topic' + i);
+        topic.innerText = topicList[i];
+    }
 }
 
 // Both min and max are inclusive.
@@ -34,53 +31,38 @@ function refreshSeries()
 {
     const first = getRandomInt(1, 27);
     const second = getRandomInt(1, 10);
-    const series = <HTMLElement>document.querySelector('#series');
-    series.innerText =
-        "kérdéssor: " + String(first) + ", kérdés: " + String(second);
+    const series = <HTMLElement>document.querySelector('#seriesId');
+    const seriesQuestion =
+        <HTMLElement>document.querySelector('#seriesQuestionId');
+    series.innerText = String(first);
+    seriesQuestion.innerText = String(second);
 }
 
 function refreshGeneric()
 {
     const first = getRandomInt(1, 130);
     const second = getRandomInt(1, 10);
-    const generic = <HTMLElement>document.querySelector('#generic');
-    generic.innerText =
-        "kérdéssor: " + String(first) + ", kérdés: " + String(second);
+    const generic = <HTMLElement>document.querySelector('#genericId');
+    const genericQuestion =
+        <HTMLElement>document.querySelector('#genericQuestionId');
+    generic.innerText = String(first);
+    genericQuestion.innerText = String(second);
 }
 
 document.addEventListener("DOMContentLoaded", function() {
     // Topics.
-    const body = document.getElementsByTagName('body')[0];
-    const topics = document.createElement('p');
-    topics.id = 'topics';
-    body.appendChild(topics);
-    const topicsButton = document.createElement('input');
-    topicsButton.type = 'button';
-    topicsButton.value = 'új téma sorrend';
+    const topicsButton = <HTMLElement>document.querySelector('#topicsButton');
     topicsButton.onclick = refreshTopics;
-    body.appendChild(topicsButton);
     refreshTopics();
 
     // Random topic question: 1..27 for the series, 1..10 for the question.
-    const series = document.createElement('p');
-    series.id = 'series';
-    body.appendChild(series);
-    const seriesButton = document.createElement('input');
-    seriesButton.type = 'button';
-    seriesButton.value = 'új téma kérdés';
+    const seriesButton = <HTMLElement>document.querySelector('#seriesButton');
     seriesButton.onclick = refreshSeries;
-    body.appendChild(seriesButton);
     refreshSeries();
 
     // Random generic question: 1..130 for the series, 1..10 for the question.
-    const generic = document.createElement('p');
-    generic.id = 'generic';
-    body.appendChild(generic);
-    const genericButton = document.createElement('input');
-    genericButton.type = 'button';
-    genericButton.value = 'új vegyes kérdés';
+    const genericButton = <HTMLElement>document.querySelector('#genericButton');
     genericButton.onclick = refreshGeneric;
-    body.appendChild(genericButton);
     refreshGeneric();
 });
 
