@@ -50,9 +50,12 @@ def main(argv):
     with open(argv[0], "r") as stream:
         for name in stream.readlines():
             stripped_name = name.strip()
-            regression_count = get_regression_count(stripped_name, mode)
-            time.sleep(1)
-            print("{};{}".format(stripped_name, regression_count))
+            if stripped_name:
+                regression_count = get_regression_count(stripped_name, mode)
+                time.sleep(1)
+                print("{};{}".format(stripped_name, regression_count))
+            else:
+                print("{};0")
 
 
 if __name__ == '__main__':
