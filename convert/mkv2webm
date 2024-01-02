@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#
+# Copyright 2023 Miklos Vajna
+#
+# SPDX-License-Identifier: MIT
+#
+
+#
+# Use case is that e.g. simplescreenrecorder create mkv videos that aren't too
+# compressed, so recording is still possible realtime, but storing them in
+# some more compressed format makes a lot of sense.
+#
+
+if [ -z "$1" ]; then
+    echo "usage: mkv2webm <input>"
+    exit 1
+fi
+
+ffmpeg -i "$1" -vcodec libvpx -qmin 0 -qmax 50 -crf 10 -b:v 1M -acodec libvorbis "$(basename $1 .mkv).webm"
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:

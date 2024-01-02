@@ -14,7 +14,6 @@ time (
     if [ -e Makefile ]; then
         make clean
     fi
-    ./autogen.sh
 
     # If sanitizers already set a CC/CXX, don't overwrite it.
     if [ -z "$CC" ]; then
@@ -23,7 +22,7 @@ time (
     if [ -z "$CXX" ]; then
         export CXX="ccache clang++"
     fi
-    ./configure \
+    ./autogen.sh \
         --prefix=$PWD/install \
         --enable-debug \
         --with-lo-path=$HOME/git/libreoffice/core/instdir \
