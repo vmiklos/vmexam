@@ -13,9 +13,9 @@ verbose=f
 timeout 1m ssh dev-downloads "sh -c 'cd /srv/git/lo-linux-dbgutil-daily.git; git log -1 --pretty=format:%s%n'" &> $tmp
 
 if ! cat $tmp |grep -q "$(date +%Y-%m-%d)"; then
-    cat $tmp |~/bin/pymail -r "$(git config user.email|sed "s/.*@/$(hostname)@/")" -s "lo-daily.git: outdated for $(date +%Y-%m-%d)" $(git config user.email)
+    cat $tmp |send-email -f "$(git config user.email|sed "s/.*@/$(hostname)@/")" -s "lo-daily.git: outdated for $(date +%Y-%m-%d)" $(git config user.email)
 elif [ "$verbose" == "t" ]; then
-    cat $tmp |~/bin/pymail -r "$(git config user.email|sed "s/.*@/$(hostname)@/")" -s "lo-daily.git: up to date for $(date +%Y-%m-%d)" $(git config user.email)
+    cat $tmp |send-email -f "$(git config user.email|sed "s/.*@/$(hostname)@/")" -s "lo-daily.git: up to date for $(date +%Y-%m-%d)" $(git config user.email)
 fi
 
 rm -f $tmp

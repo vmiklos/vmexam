@@ -10,7 +10,7 @@
 
 cd $(dirname $0)
 if ! ~/git/vmexam/google/calendar/backup -n; then
-    echo "backup failed, please run manually." |~/bin/pymail -r $(git config user.email|sed "s/.*@/$(hostname)@/") -s "google calendar backup error" $(git config user.email)
+    echo "backup failed, please run manually." |send-email -f $(git config user.email|sed "s/.*@/$(hostname)@/") -s "google calendar backup error" $(git config user.email)
     exit
 fi
 
