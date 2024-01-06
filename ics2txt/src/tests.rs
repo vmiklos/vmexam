@@ -75,3 +75,22 @@ Dtend      : Tue, 19 Dec 2023 12:00:00 +0100 (Tue, 19 Dec 2023 15:00:00 +0400)
 "#
     );
 }
+
+#[test]
+fn test_same_tz() {
+    let mut ctx = TestContext::new(&["src/fixtures/same-tz.ics"]);
+
+    assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.time), 0);
+
+    let buf = ctx.into_buf_string();
+    assert_eq!(
+        buf,
+        r#"Summary    : My summary
+Description: My, description
+Location   : https://www.example.com/
+Organizer  : mailto:first.last@example.com
+Dtstart    : Tue, 19 Dec 2023 14:00:00 +0100
+Dtend      : Tue, 19 Dec 2023 15:00:00 +0100
+"#
+    );
+}
