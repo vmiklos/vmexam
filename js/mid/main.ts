@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import domready = require('domready');
-
 function mailArchiveJump()
 {
     const msgid = (<HTMLInputElement>document.getElementById('msgid')).value;
@@ -33,7 +31,8 @@ function debianShow()
     msgidElement.value = 'https://lists.debian.org/msgid-search/' + msgid;
 }
 
-domready(function() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+document.addEventListener("DOMContentLoaded", async function(event) {
     // Create our page.
     const body = document.getElementsByTagName('body')[0];
     const desc = document.createElement('p');
