@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import domready = require('domready');
-
 function getLoUrl(name: string)
 {
     const loPrefix =
@@ -27,7 +25,8 @@ function loShow()
     nameElement.value = getLoUrl(name);
 }
 
-domready(function() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+document.addEventListener("DOMContentLoaded", function(event) {
     // Create our page.
     const body = document.getElementsByTagName('body')[0];
     const desc = document.createElement('p');
