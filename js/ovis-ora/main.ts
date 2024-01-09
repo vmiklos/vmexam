@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import confetti = require('canvas-confetti');
-import domready = require('domready');
+import confetti from 'canvas-confetti';
 
 async function drawClock(ratio: number)
 {
@@ -52,7 +51,8 @@ async function submitClick()
     });
 }
 
-domready(function() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+document.addEventListener("DOMContentLoaded", function(event) {
     // Create our page.
     const body = document.getElementsByTagName('body')[0];
     const canvas = document.createElement('canvas');
