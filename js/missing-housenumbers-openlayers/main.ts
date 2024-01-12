@@ -4,15 +4,14 @@
  * SPDX-License-Identifier: MIT
  */
 
-import domready = require('domready');
+import {Map, View} from 'ol';
 import KML from 'ol/format/KML';
+import {Tile} from 'ol/layer';
 import VectorLayer from 'ol/layer/Vector';
+import {fromLonLat} from 'ol/proj';
+import {OSM} from 'ol/source';
 import VectorSource from 'ol/source/Vector';
 import {Fill, Stroke, Style} from 'ol/style';
-import {Map, View} from 'ol';
-import {OSM} from 'ol/source';
-import {Tile} from 'ol/layer';
-import {fromLonLat} from 'ol/proj';
 
 const center = [ 19.0045, 47.4744 ];
 const zoom = 14;
@@ -52,7 +51,8 @@ const tracks = [
 
 // Boilerplate below.
 
-domready(function() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+document.addEventListener("DOMContentLoaded", function(event) {
     // Project from EPSG:4326 / WGS 1984 to Spherical Mercator.
     const projectedCenter = fromLonLat(center);
     const map = new Map({
