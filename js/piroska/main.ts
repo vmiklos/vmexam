@@ -4,9 +4,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import 'ts-replace-all';
-import domready = require('domready');
-
 // Randomly reorder elements of `array`.
 function shuffleArray(array: number[])
 {
@@ -17,7 +14,8 @@ function shuffleArray(array: number[])
     }
 }
 
-domready(function() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+document.addEventListener("DOMContentLoaded", function(event) {
     let text = `
 {Actor04} bort és kalácsot visz a beteg {Actor11}. Útközben összetalálkozik {Actor22}, és az
 rábeszéli, hogy virágot is vigyen. Míg {Actor00} virágot szed, {Actor20} elnyargal {Actor13},
@@ -59,15 +57,20 @@ kisétál belőle. A hasat megtöltik kaviccsal. {Actor24} elpusztul.
     while (true)
     {
         shuffleArray(currentActors);
+        let unchanged = false;
         // Make sure that no elements stay at their original position.
         for (let i = 0; i < actors.length; i += 1)
         {
             if (currentActors[i] == i)
             {
-                continue;
+                unchanged = true;
+                break;
             }
         }
-        break;
+        if (!unchanged)
+        {
+            break;
+        }
     }
 
     for (let actor = 0; actor < actors.length; actor += 1)
