@@ -1,21 +1,19 @@
 {
   "license": "MIT",
   "dependencies": {
-    "@types/domready": "1.0.0",
-    "@types/node": "14.14.7",
-    "@types/node-calendar": "0.1.29",
-    "@types/seed-random": "2.2.0",
-    "@typescript-eslint/eslint-plugin": "4.7.0",
-    "@typescript-eslint/parser": "4.7.0",
-    "browserify": "17.0.0",
-    "cldr": "5.7.0",
-    "domready": "1.0.8",
-    "eslint": "7.13.0",
-    "node-calendar": "0.1.5",
+    "@types/node": "20.11.0",
+    "@types/calendar": "0.1.4",
+    "@types/seed-random": "2.2.4",
+    "@typescript-eslint/eslint-plugin": "6.18.1",
+    "@typescript-eslint/parser": "6.18.1",
+    "cldr": "7.5.0",
+    "eslint": "8.56.0",
+    "calendar": "0.1.1",
     "seed-random": "2.2.0",
-    "tinyify": "3.0.0",
-    "tsify": "5.0.2",
-    "typescript": "4.0.5"
+    "ts-loader": "9.5.1",
+    "typescript": "5.3.3",
+    "webpack": "5.89.0",
+    "webpack-cli": "5.1.4"
   },
   "repository": {
     "type": "git",

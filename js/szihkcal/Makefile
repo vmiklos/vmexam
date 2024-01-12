@@ -1,15 +1,13 @@
 -include config.mak
 
 ifneq ($(DEBUG),)
-# the source map here survives both tsc and the bundling
-BROWSERIFY_OPTIONS = --debug
+WEBPACK_OPTIONS = --mode=development --devtool inline-source-map
 else
-# tinyify works fine on the tsc output
-BROWSERIFY_OPTIONS = --plugin tinyify
+WEBPACK_OPTIONS = --mode=production
 endif
 
-bundle.js: main.ts package-lock.json Makefile config.mak
-	node_modules/.bin/browserify -o bundle.js $(BROWSERIFY_OPTIONS) --plugin tsify main.ts
+bundle.js: main.ts tsconfig.json webpack.config.js package-lock.json Makefile config.mak
+	npx webpack ${WEBPACK_OPTIONS} --config webpack.config.js
 
 package-lock.json: package.json
 	npm install
@@ -18,7 +16,7 @@ package-lock.json: package.json
 check: check-lint
 
 check-lint:
-	node_modules/.bin/eslint main.ts
+	npx eslint main.ts
 
 run:
 	python3 -m http.server

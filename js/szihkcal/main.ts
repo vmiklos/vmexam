@@ -4,15 +4,14 @@
  * SPDX-License-Identifier: MIT
  */
 
-import calendar = require('node-calendar');
-import domready = require('domready');
-import seedRandom = require('seed-random');
-// cldr doesn't seem to work with browserify, so do this manually for now.
-calendar.month_name = [
-    '', 'január', 'február', 'március', 'április', 'május', 'június', 'július',
+import * as calendar from 'calendar';
+import * as seedRandom from 'seed-random';
+// do this manually for now.
+const month_name = [
+    'január', 'február', 'március', 'április', 'május', 'június', 'július',
     'augusztus', 'szeptember', 'október', 'november', 'december'
 ];
-calendar.day_name =
+const day_name =
     [ 'hétfő', 'kedd', 'szerda', 'csütörtök', 'péntek', 'szombat', 'vasárnap' ];
 
 const tasks = [
@@ -47,21 +46,20 @@ function formatcal()
     th.colSpan = 7;
     const date = new Date();
     const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    th.appendChild(
-        document.createTextNode(year + ' ' + calendar.month_name[month]));
+    const month = date.getMonth();
+    th.appendChild(document.createTextNode(year + ' ' + month_name[month]));
 
     // The days of the week row.
     tr = table.insertRow(table.rows.length);
-    calendar.day_name.forEach(function(day: string) {
+    day_name.forEach(function(day: string) {
         const th = document.createElement('th');
         tr.appendChild(th);
         th.appendChild(document.createTextNode(day));
     });
 
     // The actual days.
-    const cal = new calendar.Calendar();
-    const matrix = cal.monthdayscalendar(year, month);
+    const cal = new calendar.Calendar(1); // weeks starting on Monday
+    const matrix = cal.monthDays(year, month);
     matrix.forEach(function(week: number[]) {
         const tr = table.insertRow(table.rows.length);
         week.forEach(function(day: number) {
@@ -83,7 +81,8 @@ function formatcal()
     });
 }
 
-domready(function() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+document.addEventListener("DOMContentLoaded", function(event) {
     const seed = getParameterByName('seed');
     if (seed)
     {
