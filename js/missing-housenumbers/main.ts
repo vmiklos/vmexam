@@ -23,12 +23,10 @@ const zoom = 12;
 // Not claiming I did all the work there. :-)
 const tracks = [
     // green: done, orange: in progress, red: to do.
-    {url : 'budapest01.json', color : 'green'},
     {url : 'budapest11.json', color : 'green'},
     {url : 'budapest12.json', color : 'green'},
-    {url : 'budapest22.json', color : 'orange'}, // urbalazs
-    {url : 'budaors.json', color : 'green'},     // vasony
-    {url : 'vizivaros.json', color : 'orange'},
+    {url : 'budapest01.json', color : 'green'},
+    {url : 'budapest02.json', color : 'orange'},
 ];
 
 // Boilerplate below.
