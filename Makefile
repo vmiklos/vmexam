@@ -1,8 +1,12 @@
 true := T
 false :=
+RUST_PACKAGE_COUNT :=
+
+build:
+	$(info make: ok for $(words $(RUST_PACKAGE_COUNT)) Rust packages)
 
 check:
-	@echo "make check: ok for $(shell grep -c '^$$(eval $$(call RustPackage_RustPackage.*))' Makefile) projects"
+	$(info make check: ok for $(words $(RUST_PACKAGE_COUNT)) Rust packages)
 
 install-git-hooks:
 	cd .git/hooks && ln -sf ../../bash/clang-format-check commit-msg
@@ -14,7 +18,9 @@ install-git-hooks:
 
 # $(call RustPackage_RustPackage,path)
 define RustPackage_RustPackage
+$(eval RUST_PACKAGE_COUNT+= x)
 build: $(1)
+check: $(1)
 check: $(1).check-doc
 check: $(1).check-rustfmt
 check: $(1).check-clippy
