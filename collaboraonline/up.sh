@@ -25,6 +25,7 @@ time (
     ./autogen.sh \
         --prefix=$PWD/install \
         --enable-debug \
+        --enable-experimental \
         --with-lo-path=$HOME/git/libreoffice/core/instdir \
         --with-lokit-path=$HOME/git/libreoffice/core/include \
         CFLAGS="-g -O0 $CFLAGS" \
