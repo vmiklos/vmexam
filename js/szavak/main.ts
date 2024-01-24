@@ -61,7 +61,7 @@ async function refreshClick()
 
     let valid = true;
     const valid_letters = [
-        'a', 'á', 'e', 'é', 'i', 'í', 'l', 'm', 'o', 'ó',
+        'a', 'á', 'e', 'é', 'i', 'í', 'l', 'm', 'n', 'o', 'ó',
         'ö', 'ő', 'r', 't', 'u', 'ú', 'ü', 'ű', 'v', '='
     ];
     const y_prefixes: string[] = []; // could be e.g. 'g'.
