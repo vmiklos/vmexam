@@ -17,10 +17,10 @@ time (
 
     # If sanitizers already set a CC/CXX, don't overwrite it.
     if [ -z "$CC" ]; then
-        export CC="ccache clang"
+        export CC="ccache gcc-12"
     fi
     if [ -z "$CXX" ]; then
-        export CXX="ccache clang++"
+        export CXX="ccache g++-12"
     fi
     ./autogen.sh \
         --prefix=$PWD/install \
