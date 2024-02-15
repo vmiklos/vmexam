@@ -34,7 +34,7 @@ docker image rm <hash> (for each)
 systemctl stop docker.service
 rm -rf /var/lib/docker
 
-# create containers
+## create containers
 
 ```
 podman run --name ubuntu1804 --hostname ubuntu1804 -v $HOME:$HOME -ti ubuntu:18.04
@@ -43,7 +43,6 @@ podman run --name centos7 --hostname centos7 -v $HOME:$HOME -ti centos:centos7
 podman run --name almalinux8 --hostname almalinux8 -v $HOME:$HOME -ti almalinux:8
 podman run --cap-add=SYS_ADMIN --name fedora38root --hostname fedora38root -v $HOME:$HOME -ti fedora:38
 podman run --name fedora39 --hostname fedora39 -v $HOME:$HOME -ti --publish 8000:8000 fedora:39
-podman run --cap-add=SYS_ADMIN --name frugalware2023root --hostname frugalware2023root -v $HOME:$HOME -ti frugalware-2023
 podman run --name opensuse155 --hostname opensuse1555 -v $HOME:$HOME -ti opensuse/leap:15.5
 ```
 
@@ -55,13 +54,12 @@ podman start -ai ubuntu2204
 podman start -ai centos7
 podman start -ai almalinux8
 podman start -ai fedora39
-podman start -ai frugalware2023root
 podman start -ai opensuse155
 ```
 
 is a stateful container.
 
-# list all containers
+## list all containers
 
 ```
 podman container ls --all
