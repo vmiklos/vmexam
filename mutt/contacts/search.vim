@@ -14,7 +14,7 @@
 "     autocmd Filetype mail set omnifunc=MuttContactsCompletion
 " augroup END
 
-" Completion wrapper around mutt/contacts/search.
+" Completion wrapper around mutt/contacts/search, invoked by Ctrl-X Ctrl-O.
 function! MuttContactsCompletion(findstart, base)
     if a:findstart == 1
         " In findstart mode, look for the beginning of the current identifier
