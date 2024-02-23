@@ -90,6 +90,7 @@ def main() -> None:
         else:
             abs_argv.append(arg)
     abs_argv = [i.replace(os.path.join(os.environ["HOME"], "git"), 'z:') for i in abs_argv]
+    abs_argv = [i.replace("/", "\\") for i in abs_argv]
 
     payload_dict: Dict[str, Any] = {
         "command": abs_argv
