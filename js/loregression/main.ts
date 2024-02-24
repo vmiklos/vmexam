@@ -25,8 +25,7 @@ function loShow()
     nameElement.value = getLoUrl(name);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-document.addEventListener("DOMContentLoaded", function(event) {
+document.addEventListener("DOMContentLoaded", function() {
     // Create our page.
     const body = document.getElementsByTagName('body')[0];
     const desc = document.createElement('p');
