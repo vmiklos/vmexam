@@ -1,0 +1,33 @@
+#!/bin/bash -ex
+#
+# Copyright 2024 Miklos Vajna
+#
+# SPDX-License-Identifier: MIT
+#
+
+#
+# Creates a new TS project from skel/.
+#
+# Usage:
+#
+# ./init hello
+# cd hello
+# make
+# make run
+#
+
+NAME=$1
+
+cd skel
+FILES=$(git ls-files)
+cd ..
+
+mkdir $NAME
+cd $NAME
+for FILE in $FILES
+do
+    cp ../skel/$FILE .
+    sed -i "s/\bskel\b/$NAME/g" $FILE
+done
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
