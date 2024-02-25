@@ -1,0 +1,17 @@
+{
+  "name": "rubikscramble",
+  "version": "1.0.0",
+  "description": "rubikscramble",
+  "author": "Miklos Vajna",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "20.11.20",
+    "@typescript-eslint/eslint-plugin": "7.0.2",
+    "@typescript-eslint/parser": "7.0.2",
+    "eslint": "8.57.0",
+    "ts-loader": "9.5.1",
+    "typescript": "5.3.3",
+    "webpack": "5.90.3",
+    "webpack-cli": "5.1.4"
+  }
+}
