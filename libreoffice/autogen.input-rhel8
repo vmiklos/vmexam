@@ -1,0 +1,3 @@
+CC=/opt/rh/gcc-toolset-12/root/usr/bin/gcc
+CXX=/opt/rh/gcc-toolset-12/root/usr/bin/g++
+--with-jdk-home=/etc/alternatives/java_sdk_17
