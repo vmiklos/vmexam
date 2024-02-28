@@ -24,11 +24,63 @@ function linkButtonOnClick()
     suffixElement.value = url;
 }
 
+function createOption(id: string): HTMLElement
+{
+    const element = document.createElement('option');
+    element.value = id;
+    element.innerText = id;
+    return element;
+}
+
+interface Option
+{
+    id: string;
+    prefix: string;
+    placeholder: string;
+}
+;
+
+const options: Option[] = [
+    {
+        id : 'lo-core-commit',
+        prefix : 'https://git.libreoffice.org/core/commit/',
+        placeholder : 'Git commit hash'
+    },
+    {
+        id : 'lo-regression',
+        prefix :
+            'https://bugs.documentfoundation.org/buglist.cgi?f1=cf_regressionby&o1=equals&query_format=advanced&resolution=---&v1=',
+        placeholder : 'Git author name'
+    },
+];
+
+function selectOnChange()
+{
+    const selectElement = <HTMLSelectElement>document.querySelector('select');
+    const selectedIndex = selectElement.selectedIndex;
+    const option = options[selectedIndex];
+
+    const prefixElement = <HTMLInputElement>document.getElementById('prefix');
+    prefixElement.value = option.prefix;
+    const suffixElement = <HTMLInputElement>document.getElementById('suffix');
+    suffixElement.placeholder = option.placeholder;
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     // Create our page.
     const body = document.getElementsByTagName('body')[0];
 
     const input = document.createElement('p');
+
+    const selectElement = document.createElement('select');
+    for (const option of options)
+    {
+        selectElement.appendChild(createOption(option.id));
+    }
+    selectElement.addEventListener("change", selectOnChange);
+    input.appendChild(selectElement);
+    input.appendChild(document.createElement('br'));
+
     const prefixInput = document.createElement('input');
     prefixInput.id = 'prefix';
     prefixInput.type = 'text';
