@@ -14,6 +14,16 @@ function jumpButtonOnClick()
     document.location.href = url;
 }
 
+function linkButtonOnClick()
+{
+    const prefixElement = <HTMLInputElement>document.getElementById('prefix');
+    const prefix = prefixElement.value;
+    const suffixElement = <HTMLInputElement>document.getElementById('suffix');
+    const suffix = suffixElement.value;
+    const url = prefix + encodeURI(suffix);
+    suffixElement.value = url;
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     // Create our page.
     const body = document.getElementsByTagName('body')[0];
@@ -40,6 +50,11 @@ document.addEventListener("DOMContentLoaded", function() {
     jumpButton.value = 'Jump';
     jumpButton.onclick = jumpButtonOnClick;
     input.appendChild(jumpButton);
+    const linkButton = document.createElement('input');
+    linkButton.type = 'button';
+    linkButton.value = 'Link';
+    linkButton.onclick = linkButtonOnClick;
+    input.appendChild(linkButton);
 
     body.appendChild(input);
 });
