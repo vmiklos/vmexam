@@ -1,7 +1,7 @@
 {
-  "name": "rubikscramble",
+  "name": "rubik-scramble",
   "version": "1.0.0",
-  "description": "rubikscramble",
+  "description": "rubik-scramble",
   "author": "Miklos Vajna",
   "license": "MIT",
   "dependencies": {
