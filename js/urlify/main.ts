@@ -57,6 +57,14 @@ const options: Option[] = [
         note :
             'The purpose of this page is to allow contributors to find badness before others do, not to put blame on them.',
     },
+    {
+        // test data: cfb1d155-499d-3205-8283-ce84c39dbb14@redhat.com
+        id : 'mail-archive',
+        prefix : 'https://www.mail-archive.com/search?l=mid&q=',
+        placeholder : 'Message-Id',
+        note :
+            'Turns an email Message-Id header into a URL for many public mailing lists.',
+    },
 ];
 
 function selectOnChange()
