@@ -11,12 +11,10 @@ function getRandomInt(min: number, max: number): number
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    const body = document.querySelector('body');
     const cells = [];
-    const table = document.createElement('table');
+    const table = <HTMLElement>document.querySelector('#scramble');
     table.style.border = '1px solid';
     table.style.borderCollapse = 'collapse';
-    body.appendChild(table);
     for (let row = 0; row < 2; row++)
     {
         const tr = document.createElement('tr');
