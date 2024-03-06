@@ -39,7 +39,6 @@ interface Option
     placeholder: string;
     note: string;
 }
-;
 
 const options: Option[] = [
     {
@@ -48,6 +47,14 @@ const options: Option[] = [
         placeholder : 'Git commit hash',
         note :
             'This can be useful when viewing commit messages on mobile where running git-show from the cmdline is not easy.',
+    },
+    {
+        // test data: I5e494a0714e398221bee00744d7e25c419a41df7
+        id : 'lo-core-change',
+        prefix : 'https://gerrit.libreoffice.org/q/',
+        placeholder : 'Gerrit change ID',
+        note :
+            'This can be useful when viewing commit messages on mobile where running git-log from the cmdline is not easy.',
     },
     {
         id : 'lo-regression',
