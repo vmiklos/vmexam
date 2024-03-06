@@ -44,6 +44,7 @@ podman run --name almalinux8 --hostname almalinux8 -v $HOME:$HOME -ti almalinux:
 podman run --name fedora39 --hostname fedora39 -v $HOME:$HOME -ti --publish 8000:8000 fedora:39
 podman run --cap-add=SYS_ADMIN --name fedora39root --hostname fedora39root -v $HOME:$HOME --publish 12345:12345 -ti fedora:39
 podman run --name opensuse155 --hostname opensuse1555 -v $HOME:$HOME -ti opensuse/leap:15.5
+podman run --name sphinx --hostname sphinx -v $HOME:$HOME -ti python:3.9.12-slim-bullseye bash
 ```
 
 then
@@ -56,6 +57,7 @@ podman start -ai almalinux8
 podman start -ai fedora39
 podman start -ai fedora39root
 podman start -ai opensuse155
+podman start -ai sphinx
 ```
 
 is a stateful container.
