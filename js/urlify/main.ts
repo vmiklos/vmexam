@@ -65,6 +65,13 @@ const options: Option[] = [
             'The purpose of this page is to allow contributors to find badness before others do, not to put blame on them.',
     },
     {
+        id : 'cool-commit',
+        prefix : 'https://github.com/CollaboraOnline/online/commit/',
+        placeholder : 'Git commit hash',
+        note :
+            'This can be useful when viewing commit messages on mobile where running git-show from the cmdline is not easy.',
+    },
+    {
         // test data: cfb1d155-499d-3205-8283-ce84c39dbb14@redhat.com
         id : 'mail-archive',
         prefix : 'https://www.mail-archive.com/search?l=mid&q=',
