@@ -7,6 +7,7 @@
 mod calc;
 mod hyphen;
 mod rubik;
+mod rubik_scramble;
 pub mod yattag;
 
 fn main() {
@@ -19,6 +20,9 @@ fn main() {
         }
         if request.url().starts_with("/apps/hyphen") {
             return hyphen::app(request);
+        }
+        if request.url().starts_with("/apps/rubik-scramble") {
+            return rubik_scramble::app();
         }
         if request.url().starts_with("/apps/rubik") {
             return rubik::app(request);
