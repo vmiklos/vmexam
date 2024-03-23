@@ -12,7 +12,6 @@
 
 use anyhow::Context as _;
 use clap::Parser as _;
-use rand::Rng as _;
 use std::io::BufRead as _;
 use std::io::Write as _;
 
@@ -38,50 +37,6 @@ enum Commands {
 struct Cli {
     #[command(subcommand)]
     command: Commands,
-}
-
-fn shuffle() -> anyhow::Result<()> {
-    let mut prev_side = "".to_string();
-    for step in 1..25 {
-        let mut side;
-        loop {
-            // Randomly pick one side of the cube.
-            side = match rand::thread_rng().gen_range(1..7) {
-                1 => "F",
-                2 => "B",
-                3 => "R",
-                4 => "L",
-                5 => "U",
-                6 => "D",
-                _ => {
-                    unreachable!();
-                }
-            }
-            .to_string();
-            if side != prev_side {
-                break;
-            }
-            // Side would be the same as the previous, try again.
-        }
-        prev_side = side.to_string();
-        // Randomly pick a direction.
-        let direction = match rand::thread_rng().gen_range(1..4) {
-            1 => " ",
-            2 => "'",
-            3 => "2",
-            _ => {
-                unreachable!();
-            }
-        };
-        print!("{side}{direction} ");
-        if step % 4 == 0 {
-            print!(" ");
-        }
-        if step % 12 == 0 {
-            println!();
-        }
-    }
-    Ok(())
 }
 
 fn flushed_print(question: &str) -> anyhow::Result<()> {
@@ -146,7 +101,7 @@ fn solve(args: &Solve) -> anyhow::Result<()> {
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
     match &cli.command {
-        Commands::Shuffle(_) => shuffle(),
+        Commands::Shuffle(_) => Ok(print!("{}", rubik::shuffle()?)),
         Commands::Solve(args) => solve(args),
     }
 }
