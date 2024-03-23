@@ -3,10 +3,11 @@ Description=Serves share.vmiklos.hu/apps
 After=network.target
 
 [Service]
-ExecStart=/home/vmiklos/git/vmexam/share-vmiklos-hu-apps/target/release/share-vmiklos-hu-apps
+ExecStart=/home/share-vmiklos-hu-apps/git/vmexam/share-vmiklos-hu-apps/target/release/share-vmiklos-hu-apps
 Restart=on-failure
 RestartSec=1s
-WorkingDirectory=/home/vmiklos/git/vmexam/share-vmiklos-hu-apps
+User=share-vmiklos-hu-apps
+WorkingDirectory=/home/share-vmiklos-hu-apps/git/vmexam/share-vmiklos-hu-apps
 
 [Install]
 WantedBy=multi-user.target
