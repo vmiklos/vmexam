@@ -4,89 +4,37 @@
  * SPDX-License-Identifier: MIT
  */
 
-// Both min and max are inclusive.
-function getRandomInt(min: number, max: number): number
+interface RubikResult
 {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    ok: string;
+    error: string;
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    const cells = [];
-    const table = <HTMLElement>document.querySelector('#scramble');
-    table.style.border = '1px solid';
-    table.style.borderCollapse = 'collapse';
-    for (let row = 0; row < 2; row++)
+document.addEventListener("DOMContentLoaded", async function() {
+    const body = document.querySelector('body');
+    const request =
+        new Request('https://share.vmiklos.hu/apps/rubik-scramble/');
+    const response = await window.fetch(request);
+    const result = await<Promise<RubikResult>>response.json();
+    const pre = document.createElement('pre');
+    if (result.error === '')
     {
-        const tr = document.createElement('tr');
-        table.appendChild(tr);
-        for (let col = 0; col < 3; col++)
-        {
-            const td = document.createElement('td');
-            td.style.border = '1px solid';
-            tr.appendChild(td);
-            cells.push(td);
-        }
+        pre.innerText = result.ok;
     }
+    else
+    {
+        pre.innerText = 'Error: ' + result.error;
+    }
+    body.appendChild(pre);
 
-    let text = "";
-    let prev_side = "";
-    for (let step = 0; step < 24; step++)
-    {
-        let side;
-        for (;;)
-        {
-            // Randomly pick one side of the cube.
-            const sideNumber = getRandomInt(1, 6);
-            switch (sideNumber)
-            {
-            case 1:
-                side = "F";
-                break;
-            case 2:
-                side = "B";
-                break;
-            case 3:
-                side = "R";
-                break;
-            case 4:
-                side = "L";
-                break;
-            case 5:
-                side = "U";
-                break;
-            case 6:
-                side = "D";
-                break;
-            }
-            if (side != prev_side)
-            {
-                break;
-            }
-            // Side would be the same as the previous, try again.
-        }
-        prev_side = side;
-        // Randomly pick a direction.
-        const directionNumber = getRandomInt(1, 3);
-        let direction;
-        switch (directionNumber)
-        {
-        case 1:
-            direction = " ";
-            break;
-        case 2:
-            direction = "'";
-            break;
-        case 3:
-            direction = "2";
-            break;
-        }
-        text += String(side) + String(direction) + ' ';
-        if (step % 4 == 3)
-        {
-            cells[Math.floor(step / 4)].innerText = text;
-            text = '';
-        }
-    }
+    const help = document.createElement('p');
+    help.appendChild(document.createTextNode('See '));
+    const a = document.createElement('a');
+    a.href = 'https://meep.cubing.net/wcanotation.html';
+    a.innerText = 'WCA Notation';
+    help.appendChild(a);
+    help.appendChild(document.createTextNode(' for help on face turns.'));
+    body.appendChild(help);
 });
 
 // vim: shiftwidth=4 softtabstop=4 expandtab:
