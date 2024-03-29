@@ -72,6 +72,14 @@ const options: Option[] = [
             'This can be useful when viewing commit messages on mobile where running git-show from the cmdline is not easy.',
     },
     {
+        // test data: I16172a4d3148390896e3d475b7810598d94ceb27
+        id : 'cool-change',
+        prefix : 'https://github.com/search?type=commits&q=repo%3Acollaboraonline%2Fonline+',
+        placeholder : 'Gerrit change ID',
+        note :
+            'This can be useful when viewing commit messages on mobile where running git-log from the cmdline is not easy.',
+    },
+    {
         // test data: cfb1d155-499d-3205-8283-ce84c39dbb14@redhat.com
         id : 'mail-archive',
         prefix : 'https://www.mail-archive.com/search?l=mid&q=',
