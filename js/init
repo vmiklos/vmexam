@@ -22,7 +22,9 @@ cd skel
 FILES=$(git ls-files)
 cd ..
 
-mkdir $NAME
+if [ ! -d $NAME ]; then
+    mkdir $NAME
+fi
 cd $NAME
 for FILE in $FILES
 do

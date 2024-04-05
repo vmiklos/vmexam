@@ -11,12 +11,15 @@ bundle.js: main.ts tsconfig.json webpack.config.js package-lock.json Makefile co
 
 package-lock.json: package.json
 	npm install
-	touch $@
 
-check: check-lint
+config.mak:
+	touch config.mak
 
-check-lint:
+check:
 	npx eslint main.ts
 
 run:
 	python3 -m http.server
+
+install:
+	scp index.html bundle.js wilson:share/pages/szihkcal/
