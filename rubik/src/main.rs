@@ -55,7 +55,7 @@ fn colors_to_faces(colors: &Option<String>) -> anyhow::Result<String> {
     let colors = match colors {
         Some(value) => value.to_string(),
         None => {
-            let lines = vec![
+            let lines = [
                 ask_string("blue  :")?,
                 ask_string("yellow:")?,
                 ask_string("red   :")?,
