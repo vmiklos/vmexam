@@ -32,3 +32,6 @@ check-lint:
 
 run:
 	python3 -m http.server
+
+install:
+	scp index.html bundle.js wilson:share/pages/addr-osmify/
