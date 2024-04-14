@@ -56,6 +56,8 @@ async function addRelations(map: L.Map)
 
 document.addEventListener('DOMContentLoaded', function() {
     const map = L.map('map').setView(center, zoom);
+    map.attributionControl.setPrefix(
+        '<a href="https://leafletjs.com" title="A JavaScript library for interactive maps">Leaflet</a>')
 
     L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
          attribution :

@@ -6,27 +6,20 @@ else
 WEBPACK_OPTIONS = --mode=production
 endif
 
-INSTDIR=$(HOME)/git/vmiklos.hu/htdocs/osm/missing-housenumbers/
-
-all: bundle.js leaflet.css
-
 bundle.js: main.ts tsconfig.json webpack.config.js package-lock.json Makefile config.mak
 	npx webpack ${WEBPACK_OPTIONS} --config webpack.config.js
 
-leaflet.css: package-lock.json
-	cp node_modules/leaflet/dist/leaflet.css .
-
 package-lock.json: package.json
 	npm install
-	touch package-lock.json
 
-check: check-lint
+config.mak:
+	touch config.mak
 
-check-lint:
-	node_modules/eslint/bin/eslint.js main.ts
+check:
+	npx eslint main.ts
 
 run:
 	python3 -m http.server
 
 install:
-	cp index.html leaflet.css bundle.js $(INSTDIR)
+	scp index.html node_modules/leaflet/dist/leaflet.css bundle.js bundle.js.LICENSE.txt budapest*.json wilson:share/pages/missing-housenumbers/
