@@ -113,3 +113,21 @@ assume_timezone() failed
 "#
     );
 }
+
+#[test]
+fn test_missing_dtstart() {
+    let mut ctx = TestContext::new(&["src/fixtures/missing-dtstart.ics"]);
+
+    assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.time), 0);
+
+    let buf = ctx.into_buf_string();
+    assert_eq!(
+        buf,
+        r#"Summary    : My summary
+Description: My, description
+Location   : https://www.example.com/
+Organizer  : mailto:first.last@example.com
+Dtend      : Tue, 19 Dec 2023 15:00:00 +0100
+"#
+    );
+}
