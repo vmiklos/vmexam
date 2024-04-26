@@ -1,12 +1,13 @@
 true := T
 false :=
 RUST_PACKAGE_COUNT :=
+RUST_COVERED_PACKAGE_COUNT :=
 
 build:
 	$(info make: ok for $(words $(RUST_PACKAGE_COUNT)) Rust packages)
 
 check:
-	$(info make check: ok for $(words $(RUST_PACKAGE_COUNT)) Rust packages)
+	$(info make check: ok for $(words $(RUST_PACKAGE_COUNT)) Rust packages, $(words $(RUST_COVERED_PACKAGE_COUNT)) covered with 100% line coverage)
 
 install-git-hooks:
 	cd .git/hooks && ln -sf ../../bash/clang-format-check commit-msg
@@ -52,6 +53,7 @@ endef
 
 # $(call RustPackage_use_coverage,path)
 define RustPackage_use_coverage
+$(eval RUST_COVERED_PACKAGE_COUNT+= x)
 $(1).check-test : COVERAGE := $(true)
 
 endef
@@ -77,7 +79,7 @@ $(eval $(call RustPackage_RustPackage,hyphen-sys))
 $(eval $(call RustPackage_use_test,hyphen-sys))
 
 $(eval $(call RustPackage_RustPackage,ics2txt))
-$(eval $(call RustPackage_use_test,ics2txt))
+$(eval $(call RustPackage_use_coverage,ics2txt))
 
 $(eval $(call RustPackage_RustPackage,mso-convert))
 
