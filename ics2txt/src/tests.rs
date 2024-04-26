@@ -149,3 +149,21 @@ Dtend      : Tue, 19 Dec 2023 15:00:00 +0100
 "#
     );
 }
+
+#[test]
+fn test_empty_summary() {
+    let mut ctx = TestContext::new(&["src/fixtures/empty-summary.ics"]);
+
+    assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.time), 0);
+
+    let buf = ctx.into_buf_string();
+    assert_eq!(
+        buf,
+        r#"Description: My, description
+Location   : https://www.example.com/
+Organizer  : mailto:first.last@example.com
+Dtstart    : Tue, 19 Dec 2023 14:00:00 +0100
+Dtend      : Tue, 19 Dec 2023 15:00:00 +0100
+"#
+    );
+}
