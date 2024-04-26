@@ -42,3 +42,9 @@ pip install aiosqlite
 
 but then need to hack-around because mautrix-signal would want a too old asyncpg. Workaround is to
 copy&paste its requirements.txt, drop the asyncpg line, then install mautrix-signal with --no-deps.
+
+- package build:
+
+```
+fedpkg --release f39 mockbuild
+```
