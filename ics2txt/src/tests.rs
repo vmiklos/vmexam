@@ -94,3 +94,22 @@ Dtend      : Tue, 19 Dec 2023 15:00:00 +0100
 "#
     );
 }
+
+/// The specified time is not valid with the given timezone (OffsetResult::None).
+#[test]
+fn test_none_tz() {
+    let mut ctx = TestContext::new(&["src/fixtures/none-tz.ics"]);
+
+    assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.time), 1);
+
+    let buf = ctx.into_buf_string();
+    assert_eq!(
+        buf,
+        r#"Summary    : My summary
+Description: My, description
+Location   : https://www.example.com/
+Organizer  : mailto:first.last@example.com
+assume_timezone() failed
+"#
+    );
+}

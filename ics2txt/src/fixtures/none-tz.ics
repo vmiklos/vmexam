@@ -1,0 +1,12 @@
+BEGIN:VCALENDAR
+PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.1//EN
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:My summary
+DTSTART;TZID=Europe/Budapest:20240331T022900
+DTEND;TZID=Europe/Budapest:20240331T023000
+LOCATION:https://www.example.com/
+DESCRIPTION:My\, description
+ORGANIZER:mailto:first.last@example.com
+END:VEVENT
+END:VCALENDAR
