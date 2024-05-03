@@ -19,7 +19,7 @@ install-git-hooks:
 
 # $(call RustPackage_RustPackage,path)
 define RustPackage_RustPackage
-$(eval RUST_PACKAGE_COUNT+= x)
+RUST_PACKAGE_COUNT+= x
 build: $(1)
 check: $(1)
 check: $(1).check-doc
@@ -53,7 +53,7 @@ endef
 
 # $(call RustPackage_use_coverage,path)
 define RustPackage_use_coverage
-$(eval RUST_COVERED_PACKAGE_COUNT+= x)
+RUST_COVERED_PACKAGE_COUNT+= x
 $(1).check-test : COVERAGE := $(true)
 
 endef

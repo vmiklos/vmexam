@@ -2,14 +2,23 @@
 #![warn(clippy::all)]
 #![warn(missing_docs)]
 
+use anyhow::Context as _;
+
 #[derive(serde::Serialize)]
 struct RubikResult {
     ok: String,
     error: String,
 }
 
-pub fn app() -> rouille::Response {
-    let result = match rubik::shuffle() {
+pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
+    let lang = request
+        .get_param("lang")
+        .context("missing GET param: lang")?;
+    rubik::shuffle(&lang)
+}
+
+pub fn app(request: &rouille::Request) -> rouille::Response {
+    let result = match our_app(request) {
         Ok(ok) => RubikResult {
             ok,
             error: "".to_string(),

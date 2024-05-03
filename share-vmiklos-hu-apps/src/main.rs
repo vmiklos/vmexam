@@ -22,7 +22,7 @@ fn main() {
             return hyphen::app(request);
         }
         if request.url().starts_with("/apps/rubik-scramble") {
-            return rubik_scramble::app();
+            return rubik_scramble::app(request);
         }
         if request.url().starts_with("/apps/rubik") {
             return rubik::app(request);

@@ -18,7 +18,10 @@ use std::io::Write as _;
 /// Shuffles a solved cube, to help excecising. Picks 24 random steps to randomize the starting
 /// state.
 #[derive(clap::Args)]
-struct Shuffle {}
+struct Shuffle {
+    #[arg(short, long)]
+    lang: Option<String>,
+}
 
 /// Solves a state of the cube.
 #[derive(clap::Args)]
@@ -98,10 +101,18 @@ fn solve(args: &Solve) -> anyhow::Result<()> {
     Ok(())
 }
 
+fn shuffle(args: &Shuffle) -> anyhow::Result<()> {
+    let lang = match &args.lang {
+        Some(value) => value.as_str(),
+        None => "en",
+    };
+    Ok(print!("{}", rubik::shuffle(lang)?))
+}
+
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
     match &cli.command {
-        Commands::Shuffle(_) => Ok(print!("{}", rubik::shuffle()?)),
+        Commands::Shuffle(args) => shuffle(args),
         Commands::Solve(args) => solve(args),
     }
 }
