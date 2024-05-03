@@ -12,8 +12,14 @@ interface RubikResult
 
 document.addEventListener("DOMContentLoaded", async function() {
     const body = document.querySelector('body');
-    const request =
-        new Request('https://share.vmiklos.hu/apps/rubik-scramble/');
+    const urlParams = new URLSearchParams(window.location.search);
+    let lang = urlParams.get('lang');
+    if (lang == null)
+    {
+        lang = 'en';
+    }
+    const request = new Request(
+        'https://share.vmiklos.hu/apps/rubik-scramble/?lang=' + lang);
     const response = await window.fetch(request);
     const result = await<Promise<RubikResult>>response.json();
     const pre = document.createElement('pre');
