@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+# Copyright 2024 Miklos Vajna
+#
+# SPDX-License-Identifier: MIT
+#
+# Calculates the total used time for an HDD.
+
+DEVICE=$1
+
+if [ -z $DEVICE ]; then
+    echo "usage: power-on-hours <device>"
+    echo
+    echo "example: power-on-hours /dev/sda"
+    exit 1
+fi
+
+if ! stat $DEVICE >/dev/null; then
+    exit 1
+fi
+
+# Example output:
+#   9 Power_On_Hours          0x0032   088   088   000    Old_age   Always       -       10956 (130 159 0)
+# We want the 10956 here.
+HOURS=$(sudo smartctl -a /dev/sda |grep Power_On_Hours |sed 's/ (.*)//;s/.* \([0-9]\+\)/\1/')
+YEARS=$(echo "scale=2;$HOURS/8760" |bc)
+
+echo "$DEVICE has been on for $HOURS hours, i.e. $YEARS years."
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
