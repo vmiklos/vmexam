@@ -11,6 +11,8 @@
 //! Opens a local directory or file in nextcloud, assuming the directory is inside a sync folder.
 
 use anyhow::Context as _;
+use isahc::config::Configurable as _;
+use isahc::ReadResponseExt as _;
 use std::collections::HashMap;
 use std::rc::Rc;
 
@@ -34,6 +36,19 @@ impl Context {
     pub fn new(fs: vfs::VfsPath, network: Rc<dyn Network>) -> Self {
         Context { fs, network }
     }
+}
+
+/// Credentials for one specific nextcloud server.
+#[derive(Clone, serde::Deserialize)]
+struct Credential {
+    user: String,
+    password: String,
+}
+
+/// Config of nextcloud-open for multiple servers.
+#[derive(serde::Deserialize)]
+struct Config {
+    credentials: HashMap<String, Credential>,
 }
 
 #[derive(Default)]
@@ -60,6 +75,46 @@ fn get_nextcloud_config(
         Ok(value) => Ok(value),
         Err(value) => Err(anyhow::anyhow!(value)),
     }
+}
+
+/// Gets user / pass for one server from own config.
+fn get_credential(ctx: &Context, server: &str) -> anyhow::Result<Credential> {
+    let home_dir = home::home_dir().context("home_dir() failed")?;
+    let home_path = home_dir.to_string_lossy();
+    let mut config_file = ctx
+        .fs
+        .join(home_path)?
+        .join(".config/nextcloud-openrc")?
+        .open_file()?;
+    let mut content = String::new();
+    config_file.read_to_string(&mut content)?;
+
+    let config: Config = toml::from_str(&content)?;
+    let credential = config
+        .credentials
+        .get(server)
+        .context("no such server in config")?;
+    Ok(credential.clone())
+}
+
+/// Gets the fileid from a webdav response.
+fn get_fileid(xml: &str) -> anyhow::Result<u64> {
+    let package = sxd_document::parser::parse(xml)?;
+    let document = package.as_document();
+    let factory = sxd_xpath::Factory::new();
+    let xpath = factory
+        .build("/d:multistatus/d:response/d:propstat/d:prop")
+        .context("could not compile XPath")?;
+    let xpath = xpath.context("No XPath was compiled")?;
+    let mut context = sxd_xpath::Context::new();
+    context.set_namespace("d", "DAV:");
+    let value = xpath.evaluate(&context, document.root()).unwrap();
+    let sxd_xpath::Value::Nodeset(nodeset) = value else {
+        return Err(anyhow::anyhow!("get_fileid: value is not a nodeset"));
+    };
+    let node = nodeset.iter().next().context("nodeset is empty")?;
+    let fileid: u64 = node.string_value().parse()?;
+    Ok(fileid)
 }
 
 fn get_accounts(
@@ -115,18 +170,45 @@ fn get_account<'a>(accounts: &'a [Account], absolute: &str) -> anyhow::Result<&'
         .context("local path not in a sync directory")
 }
 
-fn get_url(account: &Account, user_path: &UserPath) -> anyhow::Result<url::Url> {
+fn get_url(ctx: &Context, account: &Account, user_path: &UserPath) -> anyhow::Result<url::Url> {
     let path = user_path
         .parent
         .strip_prefix(&account.local_path)
         .context("unexpected prefix")?;
     let encoded_path = urlencoding::encode(path);
-    let mut full_url = format!(
-        "{}/index.php/apps/files/?dir=/{}/",
-        account.url, encoded_path
-    );
-    if !user_path.file_name.is_empty() {
-        full_url += &format!("&scrollto={}", urlencoding::encode(&user_path.file_name));
+    let mut full_url = format!("{}/index.php/apps/files/", account.url);
+    if user_path.file_name.is_empty() {
+        full_url += &format!("?dir=/{}/", encoded_path);
+    } else {
+        let credential = get_credential(ctx, &account.url)?;
+        let url = format!(
+            "{}/remote.php/dav/files/{}/{}/{}",
+            account.url,
+            credential.user,
+            encoded_path,
+            urlencoding::encode(&user_path.file_name)
+        );
+        let xml = r#"<?xml version="1.0"?>
+<d:propfind xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns" xmlns:nc="http://nextcloud.org/ns">
+  <d:prop>
+    <oc:fileid/>
+  </d:prop>
+</d:propfind>"#;
+        let client = isahc::HttpClient::builder()
+            .authentication(isahc::auth::Authentication::basic())
+            .credentials(isahc::auth::Credentials::new(
+                credential.user,
+                credential.password,
+            ))
+            .build()?;
+        let request = isahc::Request::builder()
+            .method("PROPFIND")
+            .uri(url)
+            .body(xml)?;
+        let mut buf = client.send(request)?;
+        let xml_response = buf.text()?;
+        let fileid = get_fileid(&xml_response)?;
+        full_url += &format!("files/{}?dir=/{}&openfile=true", fileid, encoded_path);
     }
     println!("Opening <{}>.", full_url);
     Ok(url::Url::parse(&full_url)?)
@@ -138,7 +220,7 @@ pub fn nextcloud_open(ctx: &Context, input: &vfs::VfsPath) -> anyhow::Result<()>
     let accounts = get_accounts(&nextcloud_config)?;
     let user_path = get_first_user_path(input)?;
     let account = get_account(&accounts, &user_path.parent)?;
-    let url = get_url(account, &user_path)?;
+    let url = get_url(ctx, account, &user_path)?;
     ctx.network.open_browser(&url);
     Ok(())
 }

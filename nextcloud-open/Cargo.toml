@@ -10,6 +10,11 @@ anyhow = "1.0.68"
 clap = { version = "4.3.0", features = ["derive"] }
 configparser = "3.0.2"
 home = "0.5.4"
+isahc = "1.7.2"
+serde = { version = "1.0.201", features = ["derive"] }
+sxd-document = "0.3.2"
+sxd-xpath = "0.4.2"
+toml = "0.8.12"
 url = "2.3.1"
 url_open = "0.0.1"
 urlencoding = "2.1.2"

@@ -13,3 +13,12 @@ This tool reads your Nextcloud configuration and allows you to give it a folder,
 
 will open the current local directory in the browser. Then you can e.g. start collaborative editing
 for a file in that directory inside the browser.
+
+If the argument is a file, then webdav is used to figure what file ID to mention in the URL. For
+that, a `~/.config/nextcloud-openrc` is expected with the following content:
+
+```
+[credentials."https://nextcloud.example.com"]
+user = "myuser"
+password = "mypassword"
+```
