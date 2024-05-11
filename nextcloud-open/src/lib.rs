@@ -42,6 +42,7 @@ impl Context {
 #[derive(Clone, serde::Deserialize)]
 struct Credential {
     user: String,
+    principal: String,
     password: String,
 }
 
@@ -184,8 +185,8 @@ fn get_url(ctx: &Context, account: &Account, user_path: &UserPath) -> anyhow::Re
         let url = format!(
             "{}/remote.php/dav/files/{}/{}/{}",
             account.url,
-            credential.user,
-            encoded_path,
+            credential.principal,
+            encoded_path.replace("%2F", "/"),
             urlencoding::encode(&user_path.file_name)
         );
         let xml = r#"<?xml version="1.0"?>
@@ -204,7 +205,8 @@ fn get_url(ctx: &Context, account: &Account, user_path: &UserPath) -> anyhow::Re
         let request = isahc::Request::builder()
             .method("PROPFIND")
             .uri(url)
-            .body(xml)?;
+            .body(xml)
+            .context("propfind failed")?;
         let mut buf = client.send(request)?;
         let xml_response = buf.text()?;
         let fileid = get_fileid(&xml_response)?;

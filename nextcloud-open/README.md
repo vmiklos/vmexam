@@ -20,5 +20,10 @@ that, a `~/.config/nextcloud-openrc` is expected with the following content:
 ```
 [credentials."https://nextcloud.example.com"]
 user = "myuser"
+principal = "myuser"
 password = "mypassword"
 ```
+
+Note that `principal` may be the same as `user` or it may be a UUID. Go to
+`https://nextcloud.example.com/apps/files/`, Files settings, WebDAV to learn your WebDAV URL, which
+ends with your principal.
