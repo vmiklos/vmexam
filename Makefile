@@ -88,8 +88,7 @@ $(eval $(call RustPackage_RustPackage,mutt-display-filter))
 $(eval $(call RustPackage_RustPackage,mutt-imap-lister))
 
 $(eval $(call RustPackage_RustPackage,nextcloud-open))
-# TODO
-# $(eval $(call RustPackage_use_coverage,nextcloud-open))
+$(eval $(call RustPackage_use_coverage,nextcloud-open))
 
 $(eval $(call RustPackage_RustPackage,notmuch-showref))
 

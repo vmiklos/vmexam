@@ -12,6 +12,8 @@
 
 use anyhow::Context as _;
 use clap::Parser as _;
+use isahc::config::Configurable as _;
+use isahc::ReadResponseExt as _;
 use std::rc::Rc;
 
 struct StdNetwork {}
@@ -19,6 +21,27 @@ struct StdNetwork {}
 impl nextcloud_open::Network for StdNetwork {
     fn open_browser(&self, url: &url::Url) {
         url_open::open(url);
+    }
+
+    fn send_request(
+        &self,
+        user: &str,
+        password: &str,
+        method: &str,
+        url: &str,
+        data: &str,
+    ) -> anyhow::Result<String> {
+        let client = isahc::HttpClient::builder()
+            .authentication(isahc::auth::Authentication::basic())
+            .credentials(isahc::auth::Credentials::new(user, password))
+            .build()?;
+        let request = isahc::Request::builder()
+            .method(method)
+            .uri(url)
+            .body(data)
+            .context("HTTP method failed")?;
+        let mut buf = client.send(request)?;
+        Ok(buf.text()?)
     }
 
     fn as_any(&self) -> &dyn std::any::Any {

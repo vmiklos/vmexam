@@ -11,8 +11,6 @@
 //! Opens a local directory or file in nextcloud, assuming the directory is inside a sync folder.
 
 use anyhow::Context as _;
-use isahc::config::Configurable as _;
-use isahc::ReadResponseExt as _;
 use std::collections::HashMap;
 use std::rc::Rc;
 
@@ -20,6 +18,16 @@ use std::rc::Rc;
 pub trait Network {
     /// Opens an URL in a browser.
     fn open_browser(&self, url: &url::Url);
+
+    /// Opens an URL.
+    fn send_request(
+        &self,
+        user: &str,
+        password: &str,
+        method: &str,
+        url: &str,
+        data: &str,
+    ) -> anyhow::Result<String>;
 
     /// Allows accessing the implementing struct.
     fn as_any(&self) -> &dyn std::any::Any;
@@ -104,17 +112,15 @@ fn get_fileid(xml: &str) -> anyhow::Result<u64> {
     let document = package.as_document();
     let factory = sxd_xpath::Factory::new();
     let xpath = factory
-        .build("/d:multistatus/d:response/d:propstat/d:prop")
+        .build("/d:multistatus/d:response/d:propstat/d:prop/oc:fileid/text()")
         .context("could not compile XPath")?;
     let xpath = xpath.context("No XPath was compiled")?;
     let mut context = sxd_xpath::Context::new();
     context.set_namespace("d", "DAV:");
+    context.set_namespace("oc", "http://owncloud.org/ns");
     let value = xpath.evaluate(&context, document.root()).unwrap();
-    let sxd_xpath::Value::Nodeset(nodeset) = value else {
-        return Err(anyhow::anyhow!("get_fileid: value is not a nodeset"));
-    };
-    let node = nodeset.iter().next().context("nodeset is empty")?;
-    let fileid: u64 = node.string_value().parse()?;
+    let string = value.into_string();
+    let fileid: u64 = string.parse().context("parse into u64 failed")?;
     Ok(fileid)
 }
 
@@ -194,22 +200,16 @@ fn get_url(ctx: &Context, account: &Account, user_path: &UserPath) -> anyhow::Re
   <d:prop>
     <oc:fileid/>
   </d:prop>
-</d:propfind>"#;
-        let client = isahc::HttpClient::builder()
-            .authentication(isahc::auth::Authentication::basic())
-            .credentials(isahc::auth::Credentials::new(
-                credential.user,
-                credential.password,
-            ))
-            .build()?;
-        let request = isahc::Request::builder()
-            .method("PROPFIND")
-            .uri(url)
-            .body(xml)
-            .context("propfind failed")?;
-        let mut buf = client.send(request)?;
-        let xml_response = buf.text()?;
-        let fileid = get_fileid(&xml_response)?;
+</d:propfind>
+"#;
+        let xml_response = ctx.network.send_request(
+            &credential.user,
+            &credential.password,
+            "PROPFIND",
+            &url,
+            xml,
+        )?;
+        let fileid = get_fileid(&xml_response).context("get_fileid() failed")?;
         full_url += &format!("files/{}?dir=/{}&openfile=true", fileid, encoded_path);
     }
     println!("Opening <{}>.", full_url);
