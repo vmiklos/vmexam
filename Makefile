@@ -72,6 +72,8 @@ $(eval $(call RustPackage_RustPackage,csp))
 
 $(eval $(call RustPackage_RustPackage,darcs-git))
 
+$(eval $(call RustPackage_RustPackage,git-ls-projects))
+
 $(eval $(call RustPackage_RustPackage,hyphen))
 $(eval $(call RustPackage_use_test,hyphen))
 
