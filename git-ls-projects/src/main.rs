@@ -1,3 +1,15 @@
+/*
+ * Copyright 2024 Miklos Vajna
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#![deny(warnings)]
+#![warn(clippy::all)]
+#![warn(missing_docs)]
+
+//! Tool to list projects (Rust packages as a start) in a Git repo.
+
 use anyhow::Context as _;
 
 #[derive(serde::Deserialize)]
@@ -8,6 +20,13 @@ struct Config {
 struct Project {
     dir: std::path::PathBuf,
     config: std::path::PathBuf,
+}
+
+#[derive(serde::Deserialize)]
+struct GitDate {
+    #[serde(with = "time::serde::iso8601")]
+    ci: time::OffsetDateTime,
+    cr: String,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -28,6 +47,7 @@ fn main() -> anyhow::Result<()> {
         }
     }
 
+    let now = time::OffsetDateTime::now_utc().to_offset(time::UtcOffset::current_local_offset()?);
     for project in projects {
         let dir = project.dir.to_str().context("no str")?;
         let config = project
@@ -36,20 +56,23 @@ fn main() -> anyhow::Result<()> {
             .context("no file name")?
             .to_str()
             .context("no str")?;
-        // git log --pretty=format:%cd --date=relative -- ../darcs-git/Cargo.toml
         let args = [
             "-C",
             dir,
             "log",
             "--date=relative",
-            "--pretty=format:%cd",
+            r#"--pretty=format:{"ci": "%cI", "cr": "%cr"}"#,
             "-1",
             "--",
             config,
         ];
         let output = std::process::Command::new("git").args(args).output()?;
-        let date = String::from_utf8(output.stdout)?;
-        println!("{}: {}", dir, date);
+        let date: GitDate =
+            serde_json::from_slice(output.stdout.as_slice()).context("failed to parse json")?;
+        let duration = now - date.ci;
+        if duration.whole_seconds() > 365 * 24 * 60 * 60 {
+            println!("{}: {}", dir, date.cr);
+        }
     }
 
     Ok(())
