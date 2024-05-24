@@ -30,6 +30,15 @@ struct GitDate {
 }
 
 fn main() -> anyhow::Result<()> {
+    let outdated = clap::Arg::new("outdated")
+        .long("outdated")
+        .help("limit output to outdated projects (not touched for a year)")
+        .action(clap::ArgAction::SetTrue);
+    let args = [outdated];
+    let app = clap::Command::new("git-ls-projects");
+    let args = app.args(&args).try_get_matches()?;
+    let outdated = args.get_one::<bool>("outdated").unwrap();
+
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let config_path = home_dir.join(".config").join("git-ls-projects.toml");
     let config_string = std::fs::read_to_string(&config_path)
@@ -70,7 +79,7 @@ fn main() -> anyhow::Result<()> {
         let date: GitDate =
             serde_json::from_slice(output.stdout.as_slice()).context("failed to parse json")?;
         let duration = now - date.ci;
-        if duration.whole_seconds() > 365 * 24 * 60 * 60 {
+        if !outdated || duration.whole_seconds() > 365 * 24 * 60 * 60 {
             println!("{}: {}", dir, date.cr);
         }
     }
