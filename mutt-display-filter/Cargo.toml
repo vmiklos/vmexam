@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.68"
-bytelines = "2.4.0"
-time = { version = "0.3.17", features = ["formatting", "local-offset", "parsing"] }
+anyhow = "1.0.86"
+bytelines = "2.5.0"
+time = { version = "0.3.36", features = ["formatting", "local-offset", "parsing"] }
