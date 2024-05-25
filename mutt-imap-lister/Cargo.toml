@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.68"
-clap = { version = "4.1.4", features = ["derive"] }
-home = "0.5.4"
+anyhow = "1.0.86"
+clap = { version = "4.5.4", features = ["derive"] }
+home = "0.5.9"
 imap = "2.4.1"
 native-tls = "0.2.11"
-serde = { version = "1.0.152", features = ["derive"] }
-serde_yaml = "0.9.17"
+serde = { version = "1.0.202", features = ["derive"] }
+serde_yaml = "0.9.34"
