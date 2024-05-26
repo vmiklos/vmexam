@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.66"
-home = "0.5.4"
-serde = { version = "1.0.126", features = ["derive"] }
-toml = "0.5.9"
+anyhow = "1.0.86"
+home = "0.5.9"
+serde = { version = "1.0.203", features = ["derive"] }
+toml = "0.8.13"
