@@ -10,14 +10,6 @@
 
 //! Extracts a subject and a date for a message-id, similar to e.g. `git show -s --pretty=ref
 //! <commit>`.
-//!
-//! Usage:
-//!
-//! notmuch showref <message-id>
-//!
-//! Sample output:
-//!
-//! Y0VoTZCMwdHdDyiq@collabora.com (test @ 14:57, 2022-11-05)
 
 use anyhow::Context;
 
