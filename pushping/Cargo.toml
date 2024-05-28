@@ -4,11 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.58"
-chrono = "0.4.22"
-gethostname = "0.2.3"
-home = "0.5.3"
+anyhow = "1.0.86"
+chrono = "0.4.38"
+gethostname = "0.4.3"
+home = "0.5.9"
 isahc = "1.7.2"
-serde = { version = "1.0.126", features = ["derive"] }
-serde_json = "1.0.64"
-toml = "0.5.9"
+serde = { version = "1.0.203", features = ["derive"] }
+serde_json = "1.0.117"
+toml = "0.8.13"

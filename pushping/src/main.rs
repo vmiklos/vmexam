@@ -9,16 +9,6 @@
 #![warn(missing_docs)]
 
 //! Trivial wrapper around a cmdline, sends a note about its exit code.
-//! Config file:
-//!
-//! access_token='...'
-//! room_url='https://server.example.com:8448/_matrix/client/r0/rooms/!roomhash:example.com'
-//!
-//! Create the access token using:
-//! curl -X POST -d '{"type":"m.login.password", "user":"...", "password":"..."}' "https://server.example.com:8448/_matrix/client/r0/login"
-//!
-//! The 'pushping' name refers to <https://www.pushbullet.com/>, which provides something similar, but
-//! not with your self-hosted matrix instance.
 
 use anyhow::Context as _;
 use isahc::RequestExt as _;
