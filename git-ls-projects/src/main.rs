@@ -45,20 +45,28 @@ fn main() -> anyhow::Result<()> {
         .context(format!("failed to read config from '{config_path:?}'"))?;
     let config: Config = toml::from_str(&config_string)?;
     let mut projects = Vec::new();
-    for project in config.projects {
-        let project_config = project + "/Cargo.toml";
-        for result in glob::glob(&project_config)? {
-            let entry = result?;
-            let dir = entry.parent().context("no parent")?.to_path_buf();
-            let config = entry.clone();
-            let project = Project { dir, config };
-            projects.push(project);
+    for project in config.projects.iter() {
+        let args = ["-C", project, "ls-files"];
+        let output = std::process::Command::new("git").args(args).output()?;
+        let lines = String::from_utf8(output.stdout)?;
+        for line in lines.lines() {
+            for manifest in ["Cargo.toml", "package.json"] {
+                if !line.ends_with(&manifest) {
+                    continue;
+                }
+                let entry = std::path::PathBuf::from(format!("{project}/{line}"));
+                let dir = entry.parent().context("no parent")?.to_path_buf();
+                let config = entry.clone();
+                let project = Project { dir, config };
+                projects.push(project);
+            }
         }
     }
 
     let now = time::OffsetDateTime::now_utc().to_offset(time::UtcOffset::current_local_offset()?);
     for project in projects {
         let dir = project.dir.to_str().context("no str")?;
+        let project_config = project.config.to_str().context("no str")?;
         let config = project
             .config
             .file_name()
@@ -80,7 +88,7 @@ fn main() -> anyhow::Result<()> {
             serde_json::from_slice(output.stdout.as_slice()).context("failed to parse json")?;
         let duration = now - date.ci;
         if !outdated || duration.whole_seconds() > 365 * 24 * 60 * 60 {
-            println!("{}: {}", dir, date.cr);
+            println!("{}: {}", project_config, date.cr);
         }
     }
 
