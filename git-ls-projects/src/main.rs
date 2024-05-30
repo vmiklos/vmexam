@@ -26,7 +26,7 @@ struct Project {
 struct GitDate {
     #[serde(with = "time::serde::iso8601")]
     ci: time::OffsetDateTime,
-    cr: String,
+    cs: String,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -78,7 +78,7 @@ fn main() -> anyhow::Result<()> {
             dir,
             "log",
             "--date=relative",
-            r#"--pretty=format:{"ci": "%cI", "cr": "%cr"}"#,
+            r#"--pretty=format:{"ci": "%cI", "cs": "%cs"}"#,
             "-1",
             "--",
             config,
@@ -88,7 +88,7 @@ fn main() -> anyhow::Result<()> {
             serde_json::from_slice(output.stdout.as_slice()).context("failed to parse json")?;
         let duration = now - date.ci;
         if !outdated || duration.whole_seconds() > 365 * 24 * 60 * 60 {
-            println!("{}: {}", project_config, date.cr);
+            println!("{}: {}", project_config, date.cs);
         }
     }
 
