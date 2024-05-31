@@ -11,13 +11,15 @@ bundle.js: main.ts tsconfig.json webpack.config.js package-lock.json Makefile co
 
 package-lock.json: package.json
 	npm install
-	touch package-lock.json
+
+config.mak:
+	touch config.mak
 
 check:
 	npx eslint main.ts
 
-install:
-	scp index.html bundle.js refresh.svg *.json wilson:share/szavak/
-
 run:
 	python3 -m http.server
+
+install:
+	scp index.html bundle.js szavak.json refresh.svg wilson:share/pages/szavak/

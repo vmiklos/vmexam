@@ -48,3 +48,7 @@ copy&paste its requirements.txt, drop the asyncpg line, then install mautrix-sig
 ```
 fedpkg --release f39 mockbuild
 ```
+
+## Fedora 39 -> Fedora 40
+
+- <https://docs.fedoraproject.org/en-US/quick-docs/upgrading-fedora-offline/> for the package upgrades

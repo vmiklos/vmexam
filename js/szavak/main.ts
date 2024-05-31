@@ -108,8 +108,7 @@ async function refreshClick()
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-document.addEventListener("DOMContentLoaded", async function(event) {
+document.addEventListener("DOMContentLoaded", function() {
     // Create our page.
     const body = document.getElementsByTagName('body')[0];
     const word = document.createElement('p');
