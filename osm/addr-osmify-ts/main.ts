@@ -146,8 +146,7 @@ async function osmify()
     queryTurbo(protocol, nominatimResult);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-document.addEventListener("DOMContentLoaded", async function(event) {
+document.addEventListener("DOMContentLoaded", async function() {
     // Create our page.
     const body = document.getElementsByTagName('body')[0];
 

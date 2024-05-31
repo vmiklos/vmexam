@@ -1,23 +1,25 @@
 {
   "license": "MIT",
   "dependencies": {
-    "@cypress/code-coverage": "3.10.4",
+    "@cypress/code-coverage": "3.12.39",
     "@jsdevtools/coverage-istanbul-loader": "3.0.5",
-    "@types/node": "18.16.1",
-    "@typescript-eslint/eslint-plugin": "5.59.1",
-    "@typescript-eslint/parser": "5.59.1",
-    "cypress": "12.11.0",
-    "eslint": "8.39.0",
-    "eslint-plugin-cypress": "2.13.2",
+    "@types/node": "20.13.0",
+    "cypress": "13.10.0",
     "nyc": "15.1.0",
-    "ts-loader": "9.4.2",
-    "typescript": "5.0.4",
-    "wait-on": "7.0.1",
-    "webpack": "5.81.0",
-    "webpack-cli": "5.0.2"
+    "ts-loader": "9.5.1",
+    "typescript": "5.4.5",
+    "wait-on": "7.2.0",
+    "webpack": "5.91.0",
+    "webpack-cli": "5.1.4"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/vmiklos/vmexam"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.4.0",
+    "eslint": "^9.4.0",
+    "globals": "^15.3.0",
+    "typescript-eslint": "^7.11.0"
   }
 }
