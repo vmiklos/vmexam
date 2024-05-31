@@ -9,7 +9,7 @@ import confetti from 'canvas-confetti';
 function isMedior()
 {
     const urlParams = new URLSearchParams(window.location.search);
-    let value = urlParams.get('medior');
+    const value = urlParams.get('medior');
     return value != null;
 }
 
@@ -19,8 +19,8 @@ function isMedior()
 function isSenior()
 {
     const urlParams = new URLSearchParams(window.location.search);
-    let value = urlParams.get('senior');
-    let date = urlParams.get('20230429');
+    const value = urlParams.get('senior');
+    const date = urlParams.get('20230429');
     return value != null || date != null;
 }
 
@@ -180,11 +180,13 @@ function createPage()
 }
 
 // A random int between min and max, inclusive on both ends.
-function randomIntFromInterval(min: number, max: number):
-    number{return Math.floor(Math.random() * (max - min + 1) + min)}
+function randomIntFromInterval(min: number, max: number): number
+{
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
 
-function
-challenge() {
+function challenge()
+{
     const limit = isMedior() ? 20 : 999;
     let a: number;
     let bMin = 1;
@@ -239,8 +241,7 @@ challenge() {
     retSpan.innerText = ret.toString();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-document.addEventListener("DOMContentLoaded", function(event) {
+document.addEventListener("DOMContentLoaded", function() {
     createPage();
     challenge();
 });
