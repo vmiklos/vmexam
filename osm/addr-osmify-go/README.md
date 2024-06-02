@@ -1,4 +1,4 @@
-= addr-osmify-cpp
+# addr-osmify-cpp
 
 Takes an nominatim query (e.g. 'Mészáros utca 58/a, Budapest') and turns it
 into a string that is readable (so that you can save it to your contacts) and
@@ -16,9 +16,9 @@ This implementation is written in go:
 
 - [x] static code analysis (golint)
 
-== Install
+## Install
 
-----
+```
 go build
 go test
-----
+```
