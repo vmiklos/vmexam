@@ -22,9 +22,8 @@ def query_turbo(query: str) -> str:
     """Send query to overpass turbo."""
     url = "http://overpass-api.de/api/interpreter"
 
-    sock = urllib.request.urlopen(url, bytes(query, "utf-8"))
-    buf = sock.read()
-    sock.close()
+    with urllib.request.urlopen(url, bytes(query, "utf-8")) as sock:
+        buf = sock.read()
 
     return cast(str, buf.decode("utf-8"))
 
@@ -38,9 +37,8 @@ def query_nominatim(query: str) -> str:
     }
     url += urllib.parse.urlencode(params)
 
-    sock = urllib.request.urlopen(url)
-    buf = sock.read()
-    sock.close()
+    with urllib.request.urlopen(url) as sock:
+        buf = sock.read()
 
     return cast(str, buf.decode("utf-8"))
 
@@ -66,11 +64,11 @@ def osmify(query: str) -> str:
     object_id = element["osm_id"]
 
     # Use overpass to get the properties of the object.
-    overpass_query = """[out:json];
+    overpass_query = f"""[out:json];
 (
-    %s(%s);
+    {object_type}({object_id});
 );
-out body;""" % (object_type, object_id)
+out body;"""
     j = json.loads(query_turbo(overpass_query))
     elements = j["elements"]
     if not elements:
@@ -81,10 +79,10 @@ out body;""" % (object_type, object_id)
     housenumber = element['tags']['addr:housenumber']
     postcode = element['tags']['addr:postcode']
     street = element['tags']['addr:street']
-    addr = "%s %s, %s %s" % (postcode, city, street, housenumber)
+    addr = f"{postcode} {city}, {street} {housenumber}"
 
     # Print the result.
-    return "%s,%s (%s)" % (lat, lon, addr)
+    return f"{lat},{lon} ({addr})"
 
 
 def worker(context: Dict[str, str]) -> None:
@@ -99,7 +97,7 @@ def spinner(context: Dict[str, str], thread: threading.Thread) -> None:
     while True:
         thread.join(timeout=0.1)
         if thread.is_alive():
-            sys.stderr.write("\r [%s] " % spin_characters[spin_index])
+            sys.stderr.write(f"\r [{spin_characters[spin_index]}] ")
             sys.stderr.flush()
             spin_index = (spin_index + 1) % len(spin_characters)
             continue

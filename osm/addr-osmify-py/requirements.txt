@@ -1,4 +1,4 @@
-coverage==5.3
-flake8==3.8.4
-mypy==0.790
-pylint==2.6.0
+coverage==7.5.3
+flake8==7.0.0
+mypy==1.10.0
+pylint==3.2.2

@@ -1,4 +1,4 @@
-= addr-osmify-py
+# addr-osmify-py
 
 Takes an nominatim query (e.g. 'Mészáros utca 58/a, Budapest') and turns it
 into a string that is readable (so that you can save it to your contacts) and
@@ -16,10 +16,10 @@ This implementation is written in Python:
 
 - [x] static code analysis (pylint)
 
-== Install
+## Install
 
-----
-python3 -m venv addr-osmify-py-env
+```
+python3.11 -m venv addr-osmify-py-env
 . addr-osmify-py-env/bin/activate
 pip install -r requirements.txt
-----
+```
