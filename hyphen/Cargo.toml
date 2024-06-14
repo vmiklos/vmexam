@@ -7,5 +7,5 @@ edition = "2021"
 
 [dependencies]
 hyphen-sys = { path = "../hyphen-sys" }
-libc = "0.2.112"
-thiserror = "1.0.30"
+libc = "0.2.155"
+thiserror = "1.0.61"
