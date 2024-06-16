@@ -39,9 +39,8 @@ fn main() -> anyhow::Result<()> {
     let args = app.args(&args).try_get_matches()?;
     let outdated = args.get_one::<bool>("outdated").unwrap();
 
-    let home_dir = home::home_dir().context("home_dir() failed")?;
-    let config_path = home_dir.join(".config").join("git-ls-projects.toml");
-    let config_string = std::fs::read_to_string(&config_path)
+    let config_path = "git-ls-projects.toml";
+    let config_string = std::fs::read_to_string(config_path)
         .context(format!("failed to read config from '{config_path:?}'"))?;
     let config: Config = toml::from_str(&config_string)?;
     let mut projects = Vec::new();

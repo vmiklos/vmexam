@@ -1,0 +1,9 @@
+# Config file for git-ls-projects, stating where to serach for Rust, TypeScript, etc. packages.
+projects = [
+	".",
+	"../ged2dot",
+	"../odfsig",
+	"../osm-gimmisn",
+	"../plees-tracker",
+	"../turtle-cpm",
+]
