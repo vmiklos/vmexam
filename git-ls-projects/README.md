@@ -3,7 +3,7 @@
 Tool to list projects (Rust packages as a start) in a Git repo or in other repos next to the current
 one.
 
-Sample `~/.config/git-ls-projects.toml`:
+Sample `git-ls-projects.toml`:
 
 ```
 projects = ["**", "../extern1"]
