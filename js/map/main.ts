@@ -4,7 +4,16 @@
  * SPDX-License-Identifier: MIT
  */
 
+import * as geojson from "geojson";
 import * as L from "leaflet";
+
+function onEachFeature(feature: geojson.Feature<geojson.GeometryObject, any>, layer: L.Layer) {
+    if (feature.properties == null || feature.properties.description == null) {
+        return;
+    }
+
+    layer.bindPopup(feature.properties.description);
+}
 
 document.addEventListener("DOMContentLoaded", async function () {
     const map = L.map("map");
@@ -21,7 +30,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     const activityURL = urlParams.get("activity");
     const response = await window.fetch(activityURL);
     const activity = await response.json();
-    const geoJSON = L.geoJSON(activity).addTo(map);
+    const geoJSON = L.geoJSON(activity, {
+        onEachFeature: onEachFeature,
+    }).addTo(map);
     map.fitBounds(geoJSON.getBounds());
 });
 
