@@ -49,7 +49,19 @@ fn main() -> anyhow::Result<()> {
         let output = std::process::Command::new("git").args(args).output()?;
         let lines = String::from_utf8(output.stdout)?;
         for line in lines.lines() {
-            for manifest in ["Cargo.toml", "package.json", "requirements.txt", "go.mod"] {
+            let manifests = [
+                // Rust
+                "Cargo.toml",
+                // JavaScript/npm
+                "package.json",
+                // Python
+                "requirements.txt",
+                // Go
+                "go.mod",
+                // Kotlin
+                "app/build.gradle",
+            ];
+            for manifest in manifests {
                 if !line.ends_with(&manifest) {
                     continue;
                 }
