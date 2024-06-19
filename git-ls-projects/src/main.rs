@@ -60,6 +60,8 @@ fn main() -> anyhow::Result<()> {
                 "go.mod",
                 // Kotlin
                 "app/build.gradle",
+                // C++
+                "include/CMakeLists.txt",
             ];
             for manifest in manifests {
                 if !line.ends_with(&manifest) {
