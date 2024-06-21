@@ -282,3 +282,8 @@ kstart plasmashell #to restart it
 ### openSUSE Leap 15.4 -> openSUSE Leap 15.5 (aarch64)
 
 - the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (zypper --releasever=15.5 ref, zypper --releasever=15.5 dup)
+
+### openSUSE Leap 15.5 -> openSUSE Leap 15.6 (x86-64)
+
+- the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (zypper --releasever=15.6 ref, zypper --releasever=15.6 dup)
+- the usual fix with html5 video codecs in firefox/chromium: <https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support>
