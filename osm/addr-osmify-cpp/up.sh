@@ -31,6 +31,8 @@ rm -rf workdir
 rm -f compile_commands.json
 mkdir workdir
 cd workdir
+export CC=gcc-12
+export CXX=g++-12
 cmake \
     $cmake_args \
     -DCMAKE_BUILD_TYPE=Debug \

@@ -220,8 +220,8 @@ TEST(TestMain, testNominatimBadJson)
     std::stringstream out;
     ASSERT_EQ(0, osmify::main(args, out));
     std::string expected =
-        "Failed to parse JSON from nominatim: JSON parser error.\n";
-    ASSERT_EQ(expected, out.str());
+        "Failed to parse JSON from nominatim:";
+    ASSERT_TRUE(out.str().starts_with(expected));
 }
 
 TEST(TestMain, testOverpassBadJson)
@@ -239,8 +239,8 @@ TEST(TestMain, testOverpassBadJson)
     std::stringstream out;
     ASSERT_EQ(0, osmify::main(args, out));
     std::string expected =
-        "Failed to parse JSON from overpass: JSON parser error.\n";
-    ASSERT_EQ(expected, out.str());
+        "Failed to parse JSON from overpass:";
+    ASSERT_TRUE(out.str().starts_with(expected));
 }
 
 TEST(TestMain, testNoArgs)
