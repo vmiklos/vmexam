@@ -71,18 +71,7 @@ fn main() -> anyhow::Result<()> {
     // Convert to JSON.
     create_json(&args)?;
 
-    // Try to exract activity name.
-    let activity_name = match extract_activity_name(&args) {
-        Ok(value) => value,
-        Err(_) => "".to_string(),
-    };
-
-    if activity_name.is_empty() {
-        return Ok(());
-    }
-
-    // Mutate the JSON to show the activity name.
-    println!("Injecting description into the JSON");
+    // Read the JSON to potentially mutate it.
     let mut json = read_json(&args)?;
     let features = json.as_object_mut().unwrap().get_mut("features").unwrap();
     let feature = &mut features.as_array_mut().unwrap()[0];
@@ -91,7 +80,21 @@ fn main() -> anyhow::Result<()> {
         .unwrap()
         .get_mut("properties")
         .unwrap();
-    let description = serde_json::Value::from(format!("<b>Name</b> {activity_name}"));
+    let mut table: Vec<(String, String)> = Vec::new();
+
+    // Try to inject the activity name.
+    if let Ok(activity_name) = extract_activity_name(&args) {
+        table.push(("Name".into(), activity_name));
+    }
+
+    // Write the potentially mutated JSON.
+    let mut description: Vec<String> = Vec::new();
+    description.push("<table>".into());
+    for row in table {
+        description.push(format!("<tr><td><b>{}</b> {}</td></tr>", row.0, row.1));
+    }
+    description.push("</table>".into());
+    let description = serde_json::Value::from(description.join(""));
     properties
         .as_object_mut()
         .unwrap()
