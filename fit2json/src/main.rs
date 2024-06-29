@@ -60,6 +60,57 @@ fn extract_activity_name(args: &Arguments) -> anyhow::Result<String> {
     Ok(activity.name)
 }
 
+fn extract_key_values_from_html(html: &str) -> anyhow::Result<Vec<String>> {
+    let mut lines = html.split('\n');
+    lines.next();
+    lines.next_back();
+    Ok(lines.map(|i| i.to_string()).collect())
+}
+
+fn extract_stats_html(args: &Arguments) -> anyhow::Result<String> {
+    let tempfile = tempfile::Builder::new().suffix(".kml").tempfile()?;
+    let kml_path = tempfile
+        .path()
+        .to_str()
+        .context("to_str() failed")?
+        .to_string();
+    let gpsbabel_args = [
+        "-i",
+        "garmin_fit",
+        "-f",
+        &args.fit,
+        "-o",
+        // Metric units.
+        "kml,units=m",
+        "-F",
+        &kml_path,
+    ];
+    checked_run("gpsbabel", &gpsbabel_args)?;
+    let xml = std::fs::read_to_string(tempfile.path())?;
+    let package = sxd_document::parser::parse(&xml)?;
+    let document = package.as_document();
+    let factory = sxd_xpath::Factory::new();
+    let xpath = factory
+        .build("/k:kml/k:Document/k:Folder/k:Folder/k:description/text()")
+        .context("could not compile XPath")?;
+    let xpath = xpath.context("No XPath was compiled")?;
+    let mut context = sxd_xpath::Context::new();
+    context.set_namespace("k", "http://www.opengis.net/kml/2.2");
+    let value = xpath.evaluate(&context, document.root())?;
+    let sxd_xpath::Value::Nodeset(nodeset) = value else {
+        return Err(anyhow::anyhow!("XPath result is not a nodeset"));
+    };
+    let mut html: String = "".into();
+    for node in nodeset.document_order() {
+        let value = node.string_value();
+        if value.starts_with('<') {
+            html = value;
+            break;
+        }
+    }
+    Ok(html)
+}
+
 fn read_json(args: &Arguments) -> anyhow::Result<serde_json::Value> {
     let file = std::fs::File::open(&args.json)?;
     Ok(serde_json::from_reader(file)?)
@@ -80,18 +131,23 @@ fn main() -> anyhow::Result<()> {
         .unwrap()
         .get_mut("properties")
         .unwrap();
-    let mut table: Vec<(String, String)> = Vec::new();
+    let mut table: Vec<String> = Vec::new();
 
     // Try to inject the activity name.
     if let Ok(activity_name) = extract_activity_name(&args) {
-        table.push(("Name".into(), activity_name));
+        table.push(format!("<tr><td><b>Name</b> {activity_name}</td></tr>"));
     }
+
+    // Try to inject other stats, provided by gpsbabel.
+    let html = extract_stats_html(&args)?;
+    let mut stats = extract_key_values_from_html(&html)?;
+    table.append(&mut stats);
 
     // Write the potentially mutated JSON.
     let mut description: Vec<String> = Vec::new();
     description.push("<table>".into());
     for row in table {
-        description.push(format!("<tr><td><b>{}</b> {}</td></tr>", row.0, row.1));
+        description.push(row);
     }
     description.push("</table>".into());
     let description = serde_json::Value::from(description.join(""));

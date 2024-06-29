@@ -6,4 +6,4 @@ Wrapper around [gpsbabel](https://www.gpsbabel.org/):
 
 - take the activity name from a matching .meta.json file, if it's there
 
-- TODO include stats in the geojson, based on what gpsbabel provides in KML files
+- include stats in the geojson, based on what gpsbabel provides in KML files
