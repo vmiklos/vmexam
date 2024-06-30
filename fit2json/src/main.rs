@@ -11,15 +11,17 @@
 //! Wrapper around gpsbabel to produce geojson from Strava fit files.
 
 use anyhow::Context as _;
+use base64::Engine as _;
 use clap::Parser as _;
+use rand::RngCore as _;
 
 #[derive(clap::Parser)]
 struct Arguments {
     /// The input FIT file.
     fit: String,
 
-    /// The output JSON file.
-    json: String,
+    /// The output JSON file, a random urlsafe name is generated if omitted.
+    json: Option<String>,
 }
 
 #[derive(serde::Deserialize)]
@@ -37,7 +39,7 @@ fn checked_run(first: &str, rest: &[&str]) -> anyhow::Result<()> {
     }
 }
 
-fn create_json(args: &Arguments) -> anyhow::Result<()> {
+fn create_json(args: &Arguments, json_path: &str) -> anyhow::Result<()> {
     let gpsbabel_args = [
         "-i",
         "garmin_fit",
@@ -46,7 +48,7 @@ fn create_json(args: &Arguments) -> anyhow::Result<()> {
         "-o",
         "geojson",
         "-F",
-        &args.json,
+        json_path,
     ];
     println!("Running: gpsbabel {}", gpsbabel_args.join(" "));
     checked_run("gpsbabel", &gpsbabel_args)
@@ -111,19 +113,39 @@ fn extract_stats_html(args: &Arguments) -> anyhow::Result<String> {
     Ok(html)
 }
 
-fn read_json(args: &Arguments) -> anyhow::Result<serde_json::Value> {
-    let file = std::fs::File::open(&args.json)?;
+fn read_json(json_path: &str) -> anyhow::Result<serde_json::Value> {
+    let file = std::fs::File::open(json_path)?;
     Ok(serde_json::from_reader(file)?)
 }
 
 fn main() -> anyhow::Result<()> {
     let args = Arguments::parse();
+    let json_path = match args.json {
+        Some(ref value) => value.to_string(),
+        None => {
+            let mut bytes = [0; 17];
+            rand::thread_rng().fill_bytes(&mut bytes);
+            let b64 = base64::prelude::BASE64_STANDARD.encode(bytes);
+            let mut urlsafe: String = b64
+                .chars()
+                .map(|i| match i {
+                    '+' => '-',
+                    '/' => '_',
+                    _ => i,
+                })
+                .collect();
+            if let Some(value) = urlsafe.strip_suffix('=') {
+                urlsafe = value.to_string();
+            }
+            format!("{urlsafe}.json")
+        }
+    };
 
     // Convert to JSON.
-    create_json(&args)?;
+    create_json(&args, &json_path)?;
 
     // Read the JSON to potentially mutate it.
-    let mut json = read_json(&args)?;
+    let mut json = read_json(&json_path)?;
     let features = json.as_object_mut().unwrap().get_mut("features").unwrap();
     let feature = &mut features.as_array_mut().unwrap()[0];
     let properties = feature
@@ -155,6 +177,6 @@ fn main() -> anyhow::Result<()> {
         .as_object_mut()
         .unwrap()
         .insert("description".into(), description);
-    serde_json::to_writer(std::fs::File::create(&args.json)?, &json)?;
+    serde_json::to_writer(std::fs::File::create(&json_path)?, &json)?;
     Ok(())
 }
