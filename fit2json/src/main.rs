@@ -27,6 +27,12 @@ struct Arguments {
 #[derive(serde::Deserialize)]
 struct Activity {
     name: String,
+    distance: f64,
+    total_elevation_gain: f64,
+    moving_time: f64,
+    average_speed: f64,
+    max_speed: f64,
+    elapsed_time: f64,
 }
 
 fn checked_run(first: &str, rest: &[&str]) -> anyhow::Result<()> {
@@ -50,67 +56,49 @@ fn create_json(args: &Arguments, json_path: &str) -> anyhow::Result<()> {
         "-F",
         json_path,
     ];
-    println!("Running: gpsbabel {}", gpsbabel_args.join(" "));
     checked_run("gpsbabel", &gpsbabel_args)
 }
 
-fn extract_activity_name(args: &Arguments) -> anyhow::Result<String> {
+fn format_duration(num_seconds: i64) -> String {
+    let seconds = num_seconds % 60;
+    let num_minutes = num_seconds / 60;
+    let minutes = num_minutes % 60;
+    let hours = num_minutes / 60;
+    format!("{hours}:{minutes:0>2}:{seconds:0>2}")
+}
+
+fn extract_stats(args: &Arguments) -> anyhow::Result<Vec<(String, String)>> {
+    let mut stats: Vec<(String, String)> = Vec::new();
     let mut meta_json = std::path::PathBuf::from(&args.fit);
     meta_json.set_extension("meta.json");
     let file = std::fs::File::open(meta_json)?;
     let activity: Activity = serde_json::from_reader(&file)?;
-    Ok(activity.name)
-}
-
-fn extract_key_values_from_html(html: &str) -> anyhow::Result<Vec<String>> {
-    let mut lines = html.split('\n');
-    lines.next();
-    lines.next_back();
-    Ok(lines.map(|i| i.to_string()).collect())
-}
-
-fn extract_stats_html(args: &Arguments) -> anyhow::Result<String> {
-    let tempfile = tempfile::Builder::new().suffix(".kml").tempfile()?;
-    let kml_path = tempfile
-        .path()
-        .to_str()
-        .context("to_str() failed")?
-        .to_string();
-    let gpsbabel_args = [
-        "-i",
-        "garmin_fit",
-        "-f",
-        &args.fit,
-        "-o",
-        // Metric units.
-        "kml,units=m",
-        "-F",
-        &kml_path,
-    ];
-    checked_run("gpsbabel", &gpsbabel_args)?;
-    let xml = std::fs::read_to_string(tempfile.path())?;
-    let package = sxd_document::parser::parse(&xml)?;
-    let document = package.as_document();
-    let factory = sxd_xpath::Factory::new();
-    let xpath = factory
-        .build("/k:kml/k:Document/k:Folder/k:Folder/k:description/text()")
-        .context("could not compile XPath")?;
-    let xpath = xpath.context("No XPath was compiled")?;
-    let mut context = sxd_xpath::Context::new();
-    context.set_namespace("k", "http://www.opengis.net/kml/2.2");
-    let value = xpath.evaluate(&context, document.root())?;
-    let sxd_xpath::Value::Nodeset(nodeset) = value else {
-        return Err(anyhow::anyhow!("XPath result is not a nodeset"));
-    };
-    let mut html: String = "".into();
-    for node in nodeset.document_order() {
-        let value = node.string_value();
-        if value.starts_with('<') {
-            html = value;
-            break;
-        }
-    }
-    Ok(html)
+    stats.push(("Name".into(), activity.name));
+    stats.push((
+        "Distance".into(),
+        format!("{:.2} km", activity.distance / 1000_f64),
+    ));
+    stats.push((
+        "Elevation gain".into(),
+        format!("{} m", activity.total_elevation_gain),
+    ));
+    stats.push((
+        "Average speed".into(),
+        format!("{:.2} km/h", activity.average_speed * 3.6_f64),
+    ));
+    stats.push((
+        "Moving time".into(),
+        format_duration(activity.moving_time as i64),
+    ));
+    stats.push((
+        "Max speed".into(),
+        format!("{:.2} km/h", activity.max_speed * 3.6_f64),
+    ));
+    stats.push((
+        "Elapsed time".into(),
+        format_duration(activity.elapsed_time as i64),
+    ));
+    Ok(stats)
 }
 
 fn read_json(json_path: &str) -> anyhow::Result<serde_json::Value> {
@@ -153,23 +141,18 @@ fn main() -> anyhow::Result<()> {
         .unwrap()
         .get_mut("properties")
         .unwrap();
-    let mut table: Vec<String> = Vec::new();
+    let mut table: Vec<(String, String)> = Vec::new();
 
-    // Try to inject the activity name.
-    if let Ok(activity_name) = extract_activity_name(&args) {
-        table.push(format!("<tr><td><b>Name</b> {activity_name}</td></tr>"));
+    // Try to inject the activity name & stats.
+    if let Ok(mut stats) = extract_stats(&args) {
+        table.append(&mut stats);
     }
-
-    // Try to inject other stats, provided by gpsbabel.
-    let html = extract_stats_html(&args)?;
-    let mut stats = extract_key_values_from_html(&html)?;
-    table.append(&mut stats);
 
     // Write the potentially mutated JSON.
     let mut description: Vec<String> = Vec::new();
     description.push("<table>".into());
     for row in table {
-        description.push(row);
+        description.push(format!("<tr><td><b>{}</b> {}</td></tr>", row.0, row.1));
     }
     description.push("</table>".into());
     let description = serde_json::Value::from(description.join(""));
@@ -178,5 +161,8 @@ fn main() -> anyhow::Result<()> {
         .unwrap()
         .insert("description".into(), description);
     serde_json::to_writer(std::fs::File::create(&json_path)?, &json)?;
+    if args.json.is_none() {
+        println!("{}", json_path);
+    }
     Ok(())
 }
