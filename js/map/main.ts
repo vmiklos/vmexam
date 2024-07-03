@@ -7,7 +7,14 @@
 import * as geojson from "geojson";
 import * as L from "leaflet";
 
-function onEachFeature(feature: geojson.Feature<geojson.GeometryObject, any>, layer: L.Layer) {
+interface DescriptionSupplier {
+    description: string | null;
+}
+
+function onEachFeature(
+    feature: geojson.Feature<geojson.GeometryObject, DescriptionSupplier>,
+    layer: L.Layer
+) {
     if (feature.properties == null || feature.properties.description == null) {
         return;
     }
@@ -27,7 +34,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     }).addTo(map);
 
     const urlParams = new URLSearchParams(window.location.search);
-    const activityURL = urlParams.get("activity");
+    let activityURL = urlParams.get("activity");
+    if (activityURL == null) {
+        activityURL = urlParams.get("a") + ".json";
+    }
     const response = await window.fetch(activityURL);
     const activity = await response.json();
     const geoJSON = L.geoJSON(activity, {
