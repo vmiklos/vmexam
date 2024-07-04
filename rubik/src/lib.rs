@@ -43,7 +43,9 @@ fn pick_side(index: u8, lang: &str) -> String {
 }
 
 /// Produces a scramble, i.e. rotate the cube in 24 random steps.
-pub fn shuffle(lang: &str) -> anyhow::Result<String> {
+///
+/// * `wide` - allow wide turns, useful for 4x4, not relevant for 3x3.
+pub fn shuffle(lang: &str, wide: bool) -> anyhow::Result<String> {
     let mut ret: Vec<String> = Vec::new();
     let mut prev_side = "".to_string();
     for step in 1..25 {
@@ -57,16 +59,34 @@ pub fn shuffle(lang: &str) -> anyhow::Result<String> {
             // Side would be the same as the previous, try again.
         }
         prev_side = side.to_string();
+        // Wide turn?
+        let wide = if wide {
+            match rand::thread_rng().gen_range(1..4) {
+                1 => "",
+                2 => "w",
+                3 => {
+                    side = side.to_lowercase();
+                    ""
+                }
+                _ => {
+                    unreachable!();
+                }
+            }
+        } else {
+            ""
+        };
         // Randomly pick a direction.
         let direction = match rand::thread_rng().gen_range(1..4) {
-            1 => " ",
+            1 => "",
             2 => "'",
             3 => "2",
             _ => {
                 unreachable!();
             }
         };
-        ret.push(format!("{side}{direction} "));
+        let turn = format!("{side}{wide}{direction}");
+        // format!("{:0>8}", "110"));
+        ret.push(format!("{turn: <4}"));
         if step % 4 == 0 {
             ret.push(" ".to_string());
         }

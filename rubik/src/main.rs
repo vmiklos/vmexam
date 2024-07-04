@@ -21,6 +21,8 @@ use std::io::Write as _;
 struct Shuffle {
     #[arg(short, long)]
     lang: Option<String>,
+    #[arg(short, long)]
+    wide: bool,
 }
 
 /// Solves a state of the cube.
@@ -106,7 +108,7 @@ fn shuffle(args: &Shuffle) -> anyhow::Result<()> {
         Some(value) => value.as_str(),
         None => "en",
     };
-    Ok(print!("{}", rubik::shuffle(lang)?))
+    Ok(print!("{}", rubik::shuffle(lang, args.wide)?))
 }
 
 fn main() -> anyhow::Result<()> {

@@ -14,7 +14,8 @@ pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
     let lang = request
         .get_param("lang")
         .context("missing GET param: lang")?;
-    rubik::shuffle(&lang)
+    let wide = request.get_param("wide").is_some();
+    rubik::shuffle(&lang, wide)
 }
 
 pub fn app(request: &rouille::Request) -> rouille::Response {
