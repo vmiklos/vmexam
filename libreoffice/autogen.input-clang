@@ -3,4 +3,3 @@ CC=clang
 CXX=clang++
 --enable-dbgutil
 --enable-werror
---enable-gtk4
