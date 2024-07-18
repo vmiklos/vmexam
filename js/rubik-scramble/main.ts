@@ -23,8 +23,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     } else {
         wide = "";
     }
+    const stateParam = urlParams.get("state");
+    let state;
+    if (stateParam != null) {
+        state = "&state=" + stateParam;
+    } else {
+        state = "";
+    }
     const request = new Request(
-        "https://share.vmiklos.hu/apps/rubik-scramble/?lang=" + lang + wide
+        "https://share.vmiklos.hu/apps/rubik-scramble/?lang=" + lang + wide + state
     );
     const response = await window.fetch(request);
     const result = await (<Promise<RubikResult>>response.json());
