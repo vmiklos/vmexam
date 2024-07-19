@@ -66,9 +66,9 @@ fn ask_char(question: &str) -> anyhow::Result<String> {
     Ok(ret)
 }
 
-fn checked_run(first: &str, rest: &[&str]) -> anyhow::Result<()> {
-    let exit_status = std::process::Command::new(first).args(rest).status()?;
-    match exit_status.code().context("code() failed")? {
+fn checked_run(ctx: &dyn Context, first: &str, rest: &[&str]) -> anyhow::Result<()> {
+    let code = ctx.command_status(first, rest)?;
+    match code {
         0 => Ok(()),
         code => Err(anyhow::anyhow!(
             "failed to execute {first} {rest:?}: exit status is {code}"
@@ -128,7 +128,7 @@ fn record(ctx: &dyn Context, args: &Rec) -> anyhow::Result<()> {
     for file in &args.files {
         add.push(file);
     }
-    checked_run("git", &add)?;
+    checked_run(ctx, "git", &add)?;
     let message = ask_string("What is the commit message?")?;
     let edit: bool;
     loop {
@@ -145,7 +145,7 @@ fn record(ctx: &dyn Context, args: &Rec) -> anyhow::Result<()> {
     if edit {
         commit.push("-e");
     }
-    checked_run("git", &commit)
+    checked_run(ctx, "git", &commit)
 }
 
 fn revert(ctx: &dyn Context, args: &Rev) -> anyhow::Result<()> {
@@ -158,7 +158,7 @@ fn revert(ctx: &dyn Context, args: &Rev) -> anyhow::Result<()> {
     for file in &args.files {
         checkout.push(file);
     }
-    checked_run("git", &checkout)
+    checked_run(ctx, "git", &checkout)
 }
 
 fn whatsnew(args: &What) -> anyhow::Result<()> {
@@ -176,7 +176,7 @@ fn whatsnew(args: &What) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn push() -> anyhow::Result<()> {
+fn push(ctx: &dyn Context) -> anyhow::Result<()> {
     let output = std::process::Command::new("git")
         .args(["log", "HEAD@{upstream}.."])
         .output()?;
@@ -196,14 +196,14 @@ fn push() -> anyhow::Result<()> {
     }
     let exit_status = std::process::Command::new("git").args(["push"]).status()?;
     if exit_status.code().context("code() failed")? != 0 {
-        checked_run("git", &["pull", "-r"])?;
-        checked_run("git", &["push"])?;
+        checked_run(ctx, "git", &["pull", "-r"])?;
+        checked_run(ctx, "git", &["push"])?;
     }
     Ok(())
 }
 
-fn unrec() -> anyhow::Result<()> {
-    checked_run("git", &["log", "-1"])?;
+fn unrec(ctx: &dyn Context) -> anyhow::Result<()> {
+    checked_run(ctx, "git", &["log", "-1"])?;
     loop {
         let ret = ask_char("Do you want to unrecord this patch? [ynq]")?;
         if ret == "n" || ret == "q" {
@@ -213,13 +213,13 @@ fn unrec() -> anyhow::Result<()> {
         }
         println!("Invalid response, try again!");
     }
-    checked_run("git", &["reset", "--quiet", "HEAD^"])?;
+    checked_run(ctx, "git", &["reset", "--quiet", "HEAD^"])?;
     println!("Finished unrecording.");
     Ok(())
 }
 
-fn unpull() -> anyhow::Result<()> {
-    checked_run("git", &["log", "-1"])?;
+fn unpull(ctx: &dyn Context) -> anyhow::Result<()> {
+    checked_run(ctx, "git", &["log", "-1"])?;
     loop {
         let ret = ask_char("Do you want to unpull this patch? [ynq]")?;
         if ret == "n" || ret == "q" {
@@ -229,7 +229,7 @@ fn unpull() -> anyhow::Result<()> {
         }
         println!("Invalid response, try again!");
     }
-    checked_run("git", &["reset", "--hard", "HEAD^"])?;
+    checked_run(ctx, "git", &["reset", "--hard", "HEAD^"])?;
     println!("Finished unpulling.");
     Ok(())
 }
@@ -241,8 +241,8 @@ fn main() -> anyhow::Result<()> {
         Commands::Rec(args) => record(&ctx, args),
         Commands::Rev(args) => revert(&ctx, args),
         Commands::What(args) => whatsnew(args),
-        Commands::Push(_) => push(),
-        Commands::Unrec(_) => unrec(),
-        Commands::Unpull(_) => unpull(),
+        Commands::Push(_) => push(&ctx),
+        Commands::Unrec(_) => unrec(&ctx),
+        Commands::Unpull(_) => unpull(&ctx),
     }
 }
