@@ -148,11 +148,9 @@ fn record(ctx: &dyn Context, args: &Rec) -> anyhow::Result<()> {
     checked_run("git", &commit)
 }
 
-fn revert(args: &Rev) -> anyhow::Result<()> {
-    let exit_status = std::process::Command::new("git")
-        .args(["diff", "--quiet", "HEAD"])
-        .status()?;
-    if exit_status.code().context("code() failed")? == 0 {
+fn revert(ctx: &dyn Context, args: &Rev) -> anyhow::Result<()> {
+    let code = ctx.command_status("git", &["diff", "--quiet", "HEAD"])?;
+    if code == 0 {
         println!("Ok, if you don't want to revert anything, that's fine!");
         return Ok(());
     }
@@ -241,7 +239,7 @@ fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
     match &cli.command {
         Commands::Rec(args) => record(&ctx, args),
-        Commands::Rev(args) => revert(args),
+        Commands::Rev(args) => revert(&ctx, args),
         Commands::What(args) => whatsnew(args),
         Commands::Push(_) => push(),
         Commands::Unrec(_) => unrec(),
