@@ -17,18 +17,28 @@ use std::io::Read as _;
 use std::io::Write as _;
 
 /// Context interface.
-pub trait Context {
-    /// Runs a commmand, capturing its output.
+trait Context {
+    /// Executes a command as a child process, waiting for it to finish and
+    /// collecting its status.
     fn command_status(&self, command: &str, args: &[&str]) -> anyhow::Result<i32>;
+
+    /// Executes the command as a child process, waiting for it to finish and
+    /// collecting all of its output.
+    fn command_output(&self, command: &str, args: &[&str]) -> anyhow::Result<String>;
 }
 
 /// Context implementation, backed by library calls.
-pub struct StdContext {}
+struct StdContext {}
 
 impl Context for StdContext {
     fn command_status(&self, command: &str, args: &[&str]) -> anyhow::Result<i32> {
         let exit_status = std::process::Command::new(command).args(args).status()?;
         exit_status.code().context("code() failed")
+    }
+
+    fn command_output(&self, command: &str, args: &[&str]) -> anyhow::Result<String> {
+        let output = std::process::Command::new(command).args(args).output()?;
+        String::from_utf8(output.stdout).context("from_utf8() failed")
     }
 }
 
@@ -177,14 +187,12 @@ fn whatsnew(ctx: &dyn Context, args: &What) -> anyhow::Result<()> {
 }
 
 fn push(ctx: &dyn Context) -> anyhow::Result<()> {
-    let output = std::process::Command::new("git")
-        .args(["log", "HEAD@{upstream}.."])
-        .output()?;
-    if output.stdout.is_empty() {
+    let output = ctx.command_output("git", &["log", "HEAD@{upstream}.."])?;
+    if output.is_empty() {
         println!("No recorded local changes to push!");
         return Ok(());
     }
-    println!("{}", String::from_utf8(output.stdout)?);
+    println!("{output}");
     loop {
         let ret = ask_char("Do you want to push these patches? [ynq]")?;
         if ret == "n" || ret == "q" {
