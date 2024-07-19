@@ -16,6 +16,22 @@ use std::io::BufRead as _;
 use std::io::Read as _;
 use std::io::Write as _;
 
+/// Context interface.
+pub trait Context {
+    /// Runs a commmand, capturing its output.
+    fn command_status(&self, command: &str, args: &[&str]) -> anyhow::Result<i32>;
+}
+
+/// Context implementation, backed by library calls.
+pub struct StdContext {}
+
+impl Context for StdContext {
+    fn command_status(&self, command: &str, args: &[&str]) -> anyhow::Result<i32> {
+        let exit_status = std::process::Command::new(command).args(args).status()?;
+        exit_status.code().context("code() failed")
+    }
+}
+
 fn flushed_print(question: &str) -> anyhow::Result<()> {
     print!("{question} ");
     Ok(std::io::stdout().flush()?)
@@ -102,11 +118,9 @@ struct Cli {
     command: Commands,
 }
 
-fn record(args: &Rec) -> anyhow::Result<()> {
-    let exit_status = std::process::Command::new("git")
-        .args(["diff", "--quiet", "HEAD"])
-        .status()?;
-    if exit_status.code().context("code() failed")? == 0 {
+fn record(ctx: &dyn Context, args: &Rec) -> anyhow::Result<()> {
+    let code = ctx.command_status("git", &["diff", "--quiet", "HEAD"])?;
+    if code == 0 {
         println!("Ok, if you don't want to record anything, that's fine!");
         return Ok(());
     }
@@ -223,9 +237,10 @@ fn unpull() -> anyhow::Result<()> {
 }
 
 fn main() -> anyhow::Result<()> {
+    let ctx = StdContext {};
     let cli = Cli::parse();
     match &cli.command {
-        Commands::Rec(args) => record(args),
+        Commands::Rec(args) => record(&ctx, args),
         Commands::Rev(args) => revert(args),
         Commands::What(args) => whatsnew(args),
         Commands::Push(_) => push(),
