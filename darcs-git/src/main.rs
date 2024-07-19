@@ -11,7 +11,6 @@
 //! A darcs-like porcelain on top of git plumbing.
 
 use anyhow::Context as _;
-use clap::Parser as _;
 use std::io::BufRead as _;
 use std::io::Read as _;
 use std::io::Write as _;
@@ -86,49 +85,27 @@ fn checked_run(ctx: &dyn Context, first: &str, rest: &[&str]) -> anyhow::Result<
     }
 }
 
-#[derive(clap::Args)]
 struct Rec {
     files: Vec<String>,
 }
 
-#[derive(clap::Args)]
 struct Rev {
     files: Vec<String>,
 }
 
-#[derive(clap::Args)]
 struct What {
-    #[arg(short, long)]
     summary: bool,
     files: Vec<String>,
 }
 
-#[derive(clap::Args)]
-struct Push {}
-
-#[derive(clap::Args)]
-struct Unrec {}
-
-#[derive(clap::Args)]
-struct Unpull {}
-
-#[derive(clap::Subcommand)]
-enum Commands {
-    Rec(Rec),
-    Rev(Rev),
-    What(What),
-    Push(Push),
-    Unrec(Unrec),
-    Unpull(Unpull),
-}
-
-#[derive(clap::Parser)]
-struct Cli {
-    #[command(subcommand)]
-    command: Commands,
-}
-
-fn record(ctx: &dyn Context, args: &Rec) -> anyhow::Result<()> {
+fn record(ctx: &dyn Context, args: &clap::ArgMatches) -> anyhow::Result<()> {
+    let args = Rec {
+        files: args
+            .get_many::<String>("files")
+            .unwrap_or_default()
+            .cloned()
+            .collect(),
+    };
     let code = ctx.command_status("git", &["diff", "--quiet", "HEAD"])?;
     if code == 0 {
         println!("Ok, if you don't want to record anything, that's fine!");
@@ -158,7 +135,14 @@ fn record(ctx: &dyn Context, args: &Rec) -> anyhow::Result<()> {
     checked_run(ctx, "git", &commit)
 }
 
-fn revert(ctx: &dyn Context, args: &Rev) -> anyhow::Result<()> {
+fn revert(ctx: &dyn Context, args: &clap::ArgMatches) -> anyhow::Result<()> {
+    let args = Rev {
+        files: args
+            .get_many::<String>("files")
+            .unwrap_or_default()
+            .cloned()
+            .collect(),
+    };
     let code = ctx.command_status("git", &["diff", "--quiet", "HEAD"])?;
     if code == 0 {
         println!("Ok, if you don't want to revert anything, that's fine!");
@@ -171,7 +155,15 @@ fn revert(ctx: &dyn Context, args: &Rev) -> anyhow::Result<()> {
     checked_run(ctx, "git", &checkout)
 }
 
-fn whatsnew(ctx: &dyn Context, args: &What) -> anyhow::Result<()> {
+fn whatsnew(ctx: &dyn Context, args: &clap::ArgMatches) -> anyhow::Result<()> {
+    let args = What {
+        summary: args.get_flag("summary"),
+        files: args
+            .get_many::<String>("files")
+            .unwrap_or_default()
+            .cloned()
+            .collect(),
+    };
     let mut diff = vec!["diff", "HEAD", "-M", "-C", "--exit-code"];
     if args.summary {
         diff.push("--name-status");
@@ -244,13 +236,40 @@ fn unpull(ctx: &dyn Context) -> anyhow::Result<()> {
 
 fn main() -> anyhow::Result<()> {
     let ctx = StdContext {};
-    let cli = Cli::parse();
-    match &cli.command {
-        Commands::Rec(args) => record(&ctx, args),
-        Commands::Rev(args) => revert(&ctx, args),
-        Commands::What(args) => whatsnew(&ctx, args),
-        Commands::Push(_) => push(&ctx),
-        Commands::Unrec(_) => unrec(&ctx),
-        Commands::Unpull(_) => unpull(&ctx),
+    let args: Vec<String> = std::env::args().collect();
+    let app = clap::Command::new("darcs-git").subcommand_required(true);
+
+    let rec_args = [clap::Arg::new("files").trailing_var_arg(true).num_args(1..)];
+    let rec = clap::Command::new("rec").args(rec_args);
+
+    let rev_args = [clap::Arg::new("files").trailing_var_arg(true).num_args(1..)];
+    let rev = clap::Command::new("rev").args(rev_args);
+
+    let what_args = [
+        clap::Arg::new("summary")
+            .short('s')
+            .long("summary")
+            .action(clap::ArgAction::SetTrue),
+        clap::Arg::new("files").trailing_var_arg(true).num_args(1..),
+    ];
+    let what = clap::Command::new("what").args(what_args);
+
+    let p = clap::Command::new("push");
+
+    let unr = clap::Command::new("unrec");
+
+    let unp = clap::Command::new("unpull");
+
+    let subcommands = vec![rec, rev, what, p, unr, unp];
+    let matches = app.subcommands(subcommands).try_get_matches_from(args)?;
+    let subcommand = matches.subcommand().context("subcommand failed")?;
+    match subcommand {
+        ("rec", args) => record(&ctx, args),
+        ("rev", args) => revert(&ctx, args),
+        ("what", args) => whatsnew(&ctx, args),
+        ("push", _args) => push(&ctx),
+        ("unrec", _args) => unrec(&ctx),
+        ("unpull", _args) => unpull(&ctx),
+        _ => Err(anyhow::anyhow!("unrecognized subcommand")),
     }
 }
