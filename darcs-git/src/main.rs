@@ -161,7 +161,7 @@ fn revert(ctx: &dyn Context, args: &Rev) -> anyhow::Result<()> {
     checked_run(ctx, "git", &checkout)
 }
 
-fn whatsnew(args: &What) -> anyhow::Result<()> {
+fn whatsnew(ctx: &dyn Context, args: &What) -> anyhow::Result<()> {
     let mut diff = vec!["diff", "HEAD", "-M", "-C", "--exit-code"];
     if args.summary {
         diff.push("--name-status");
@@ -169,8 +169,8 @@ fn whatsnew(args: &What) -> anyhow::Result<()> {
     for file in &args.files {
         diff.push(file);
     }
-    let exit_status = std::process::Command::new("git").args(diff).status()?;
-    if exit_status.code().context("code() failed")? == 0 {
+    let code = ctx.command_status("git", &diff)?;
+    if code == 0 {
         println!("No changes!");
     }
     Ok(())
@@ -240,7 +240,7 @@ fn main() -> anyhow::Result<()> {
     match &cli.command {
         Commands::Rec(args) => record(&ctx, args),
         Commands::Rev(args) => revert(&ctx, args),
-        Commands::What(args) => whatsnew(args),
+        Commands::What(args) => whatsnew(&ctx, args),
         Commands::Push(_) => push(&ctx),
         Commands::Unrec(_) => unrec(&ctx),
         Commands::Unpull(_) => unpull(&ctx),
