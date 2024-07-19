@@ -202,8 +202,8 @@ fn push(ctx: &dyn Context) -> anyhow::Result<()> {
         }
         println!("Invalid response, try again!");
     }
-    let exit_status = std::process::Command::new("git").args(["push"]).status()?;
-    if exit_status.code().context("code() failed")? != 0 {
+    let code = ctx.command_status("git", &["push"])?;
+    if code != 0 {
         checked_run(ctx, "git", &["pull", "-r"])?;
         checked_run(ctx, "git", &["push"])?;
     }
