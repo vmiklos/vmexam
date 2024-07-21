@@ -24,6 +24,10 @@ pub trait Context {
     /// Executes the command as a child process, waiting for it to finish and
     /// collecting all of its output.
     fn command_output(&self, command: &str, args: &[&str]) -> anyhow::Result<String>;
+
+    /// Returns the arguments that this program was started with (normally passed
+    /// via the command line).
+    fn env_args(&self) -> Vec<String>;
 }
 
 fn flushed_print(question: &str) -> anyhow::Result<()> {
@@ -246,12 +250,11 @@ fn get_subcommands() -> Vec<clap::Command> {
 
 /// Similar to plain main(), but with an interface that allows testing.
 pub fn main(ctx: &dyn Context) -> anyhow::Result<()> {
-    let args: Vec<String> = std::env::args().collect();
     let app = clap::Command::new("darcs-git").subcommand_required(true);
 
     let matches = app
         .subcommands(get_subcommands())
-        .try_get_matches_from(args)?;
+        .try_get_matches_from(ctx.env_args())?;
     let subcommand = matches.subcommand().context("subcommand failed")?;
     match subcommand {
         ("rec", args) => record(ctx, args),
@@ -263,3 +266,6 @@ pub fn main(ctx: &dyn Context) -> anyhow::Result<()> {
         _ => Err(anyhow::anyhow!("unrecognized subcommand")),
     }
 }
+
+#[cfg(test)]
+mod tests;

@@ -25,6 +25,10 @@ impl darcs_git::Context for StdContext {
         let output = std::process::Command::new(command).args(args).output()?;
         String::from_utf8(output.stdout).context("from_utf8() failed")
     }
+
+    fn env_args(&self) -> Vec<String> {
+        std::env::args().collect()
+    }
 }
 
 fn main() -> anyhow::Result<()> {
