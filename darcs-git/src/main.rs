@@ -234,11 +234,7 @@ fn unpull(ctx: &dyn Context) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn main() -> anyhow::Result<()> {
-    let ctx = StdContext {};
-    let args: Vec<String> = std::env::args().collect();
-    let app = clap::Command::new("darcs-git").subcommand_required(true);
-
+fn get_subcommands() -> Vec<clap::Command> {
     let rec_args = [clap::Arg::new("files").trailing_var_arg(true).num_args(1..)];
     let rec = clap::Command::new("rec").args(rec_args);
 
@@ -254,14 +250,23 @@ fn main() -> anyhow::Result<()> {
     ];
     let what = clap::Command::new("what").args(what_args);
 
-    let p = clap::Command::new("push");
+    let push = clap::Command::new("push");
 
-    let unr = clap::Command::new("unrec");
+    let unrec = clap::Command::new("unrec");
 
-    let unp = clap::Command::new("unpull");
+    let unpull = clap::Command::new("unpull");
 
-    let subcommands = vec![rec, rev, what, p, unr, unp];
-    let matches = app.subcommands(subcommands).try_get_matches_from(args)?;
+    vec![rec, rev, what, push, unrec, unpull]
+}
+
+fn main() -> anyhow::Result<()> {
+    let ctx = StdContext {};
+    let args: Vec<String> = std::env::args().collect();
+    let app = clap::Command::new("darcs-git").subcommand_required(true);
+
+    let matches = app
+        .subcommands(get_subcommands())
+        .try_get_matches_from(args)?;
     let subcommand = matches.subcommand().context("subcommand failed")?;
     match subcommand {
         ("rec", args) => record(&ctx, args),
