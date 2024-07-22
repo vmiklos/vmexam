@@ -29,6 +29,10 @@ impl darcs_git::Context for StdContext {
     fn env_args(&self) -> Vec<String> {
         std::env::args().collect()
     }
+
+    fn println(&self, string: &str) {
+        println!("{string}");
+    }
 }
 
 fn main() -> anyhow::Result<()> {

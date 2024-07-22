@@ -28,6 +28,9 @@ pub trait Context {
     /// Returns the arguments that this program was started with (normally passed
     /// via the command line).
     fn env_args(&self) -> Vec<String>;
+
+    /// Prints to the standard output, with a newline.
+    fn println(&self, string: &str);
 }
 
 fn flushed_print(question: &str) -> anyhow::Result<()> {
@@ -97,7 +100,7 @@ fn record(ctx: &dyn Context, args: &clap::ArgMatches) -> anyhow::Result<()> {
     };
     let code = ctx.command_status("git", &["diff", "--quiet", "HEAD"])?;
     if code == 0 {
-        println!("Ok, if you don't want to record anything, that's fine!");
+        ctx.println("Ok, if you don't want to record anything, that's fine!");
         return Ok(());
     }
     let mut add = vec!["add", "--patch"];
@@ -115,7 +118,7 @@ fn record(ctx: &dyn Context, args: &clap::ArgMatches) -> anyhow::Result<()> {
             edit = ret == "y";
             break;
         }
-        println!("Invalid response, try again!");
+        ctx.println("Invalid response, try again!");
     }
     let mut commit = vec!["commit", "-m", &message];
     if edit {
