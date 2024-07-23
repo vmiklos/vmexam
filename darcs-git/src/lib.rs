@@ -124,7 +124,7 @@ fn revert(ctx: &dyn Context, args: &clap::ArgMatches) -> anyhow::Result<()> {
     };
     let code = ctx.command_status("git", &["diff", "--quiet", "HEAD"])?;
     if code == 0 {
-        println!("Ok, if you don't want to revert anything, that's fine!");
+        ctx.print("Ok, if you don't want to revert anything, that's fine!\n");
         return Ok(());
     }
     let mut checkout = vec!["checkout", "--patch"];

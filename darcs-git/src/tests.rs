@@ -100,3 +100,35 @@ fn test_record() {
     assert!(printed_lines.contains("commit message?"));
     assert!(printed_lines.contains("long comment?"));
 }
+
+#[test]
+fn test_revert_no_changes() {
+    let mut ctx = TestContext::new();
+    ctx.command_statuses = [("diff --quiet HEAD".to_string(), 0)].into_iter().collect();
+    ctx.env_args = vec!["darcs-git".into(), "rev".into()];
+    ctx.printed_lines = Rc::new(RefCell::new(String::new()));
+    ctx.read_line = "commitmsg".to_string();
+    ctx.read_char = "y".to_string();
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.contains("don't want to revert anything"));
+}
+
+#[test]
+fn test_revert() {
+    let mut ctx = TestContext::new();
+    ctx.command_statuses = [
+        ("diff --quiet HEAD".to_string(), 1),
+        ("checkout --patch".to_string(), 0),
+    ]
+    .into_iter()
+    .collect();
+    ctx.env_args = vec!["darcs-git".into(), "rev".into()];
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.is_empty());
+}
