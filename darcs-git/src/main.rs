@@ -11,6 +11,8 @@
 //! Commandline interface to darcs-git.
 
 use anyhow::Context as _;
+use std::io::BufRead as _;
+use std::io::Read as _;
 
 /// Context implementation, backed by library calls.
 struct StdContext {}
@@ -30,8 +32,34 @@ impl darcs_git::Context for StdContext {
         std::env::args().collect()
     }
 
-    fn println(&self, string: &str) {
-        println!("{string}");
+    fn print(&self, string: &str) {
+        print!("{string}");
+    }
+
+    fn readln(&self) -> anyhow::Result<String> {
+        let stdin = std::io::stdin();
+        let line = stdin.lock().lines().next().context("no first line")?;
+        Ok(line?)
+    }
+
+    fn readch(&self) -> anyhow::Result<String> {
+        let mut stdin = std::io::stdin();
+        let fd = libc::STDIN_FILENO;
+        let mut settings = termios::Termios::from_fd(fd)?;
+
+        // Set raw mode.
+        let old_settings = settings;
+        settings.c_lflag &= !(termios::ICANON | libc::ECHO);
+        termios::tcsetattr(fd, termios::TCSANOW, &settings)?;
+
+        // Read a character.
+        let mut buffer = [0; 1];
+        stdin.read_exact(&mut buffer)?;
+
+        // Restore old mode.
+        termios::tcsetattr(fd, termios::TCSANOW, &old_settings)?;
+
+        Ok(String::from_utf8(buffer.to_vec())?)
     }
 }
 

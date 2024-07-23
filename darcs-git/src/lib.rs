@@ -11,8 +11,6 @@
 //! A darcs-like porcelain on top of git plumbing.
 
 use anyhow::Context as _;
-use std::io::BufRead as _;
-use std::io::Read as _;
 use std::io::Write as _;
 
 /// Context interface.
@@ -29,40 +27,29 @@ pub trait Context {
     /// via the command line).
     fn env_args(&self) -> Vec<String>;
 
-    /// Prints to the standard output, with a newline.
-    fn println(&self, string: &str);
+    /// Prints to the standard output.
+    fn print(&self, string: &str);
+
+    /// Reads a line from the standard input.
+    fn readln(&self) -> anyhow::Result<String>;
+
+    /// Reads a single character from the standard input.
+    fn readch(&self) -> anyhow::Result<String>;
 }
 
-fn flushed_print(question: &str) -> anyhow::Result<()> {
-    print!("{question} ");
+fn flushed_print(ctx: &dyn Context, question: &str) -> anyhow::Result<()> {
+    ctx.print(&format!("{question} "));
     Ok(std::io::stdout().flush()?)
 }
 
-fn ask_string(question: &str) -> anyhow::Result<String> {
-    flushed_print(question)?;
-    let stdin = std::io::stdin();
-    let line = stdin.lock().lines().next().context("no first line")?;
-    Ok(line?)
+fn ask_string(ctx: &dyn Context, question: &str) -> anyhow::Result<String> {
+    flushed_print(ctx, question)?;
+    ctx.readln()
 }
 
-fn ask_char(question: &str) -> anyhow::Result<String> {
-    flushed_print(question)?;
-    let mut stdin = std::io::stdin();
-    let fd = libc::STDIN_FILENO;
-    let mut settings = termios::Termios::from_fd(fd)?;
-
-    // Set raw mode.
-    let old_settings = settings;
-    settings.c_lflag &= !(termios::ICANON | libc::ECHO);
-    termios::tcsetattr(fd, termios::TCSANOW, &settings)?;
-
-    // Read a character.
-    let mut buffer = [0; 1];
-    stdin.read_exact(&mut buffer)?;
-
-    // Restore old mode.
-    termios::tcsetattr(fd, termios::TCSANOW, &old_settings)?;
-    let ret = String::from_utf8(buffer.to_vec())?;
+fn ask_char(ctx: &dyn Context, question: &str) -> anyhow::Result<String> {
+    flushed_print(ctx, question)?;
+    let ret = ctx.readch()?;
     println!("{}", ret);
     Ok(ret)
 }
@@ -100,7 +87,7 @@ fn record(ctx: &dyn Context, args: &clap::ArgMatches) -> anyhow::Result<()> {
     };
     let code = ctx.command_status("git", &["diff", "--quiet", "HEAD"])?;
     if code == 0 {
-        ctx.println("Ok, if you don't want to record anything, that's fine!");
+        ctx.print("Ok, if you don't want to record anything, that's fine!\n");
         return Ok(());
     }
     let mut add = vec!["add", "--patch"];
@@ -108,17 +95,17 @@ fn record(ctx: &dyn Context, args: &clap::ArgMatches) -> anyhow::Result<()> {
         add.push(file);
     }
     checked_run(ctx, "git", &add)?;
-    let message = ask_string("What is the commit message?")?;
+    let message = ask_string(ctx, "What is the commit message?")?;
     let edit: bool;
     loop {
-        let ret = ask_char("Do you want to add a long comment? [ynq]")?;
+        let ret = ask_char(ctx, "Do you want to add a long comment? [ynq]")?;
         if ret == "q" {
             return Ok(());
         } else if ret == "y" || ret == "n" {
             edit = ret == "y";
             break;
         }
-        ctx.println("Invalid response, try again!");
+        ctx.print("Invalid response, try again!\n");
     }
     let mut commit = vec!["commit", "-m", &message];
     if edit {
@@ -178,7 +165,7 @@ fn push(ctx: &dyn Context) -> anyhow::Result<()> {
     }
     println!("{output}");
     loop {
-        let ret = ask_char("Do you want to push these patches? [ynq]")?;
+        let ret = ask_char(ctx, "Do you want to push these patches? [ynq]")?;
         if ret == "n" || ret == "q" {
             return Ok(());
         } else if ret == "y" {
@@ -197,7 +184,7 @@ fn push(ctx: &dyn Context) -> anyhow::Result<()> {
 fn unrec(ctx: &dyn Context) -> anyhow::Result<()> {
     checked_run(ctx, "git", &["log", "-1"])?;
     loop {
-        let ret = ask_char("Do you want to unrecord this patch? [ynq]")?;
+        let ret = ask_char(ctx, "Do you want to unrecord this patch? [ynq]")?;
         if ret == "n" || ret == "q" {
             return Ok(());
         } else if ret == "y" {
@@ -213,7 +200,7 @@ fn unrec(ctx: &dyn Context) -> anyhow::Result<()> {
 fn unpull(ctx: &dyn Context) -> anyhow::Result<()> {
     checked_run(ctx, "git", &["log", "-1"])?;
     loop {
-        let ret = ask_char("Do you want to unpull this patch? [ynq]")?;
+        let ret = ask_char(ctx, "Do you want to unpull this patch? [ynq]")?;
         if ret == "n" || ret == "q" {
             return Ok(());
         } else if ret == "y" {
