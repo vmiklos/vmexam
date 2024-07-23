@@ -152,7 +152,7 @@ fn whatsnew(ctx: &dyn Context, args: &clap::ArgMatches) -> anyhow::Result<()> {
     }
     let code = ctx.command_status("git", &diff)?;
     if code == 0 {
-        println!("No changes!");
+        ctx.print("No changes!\n");
     }
     Ok(())
 }
