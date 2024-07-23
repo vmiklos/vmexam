@@ -19,6 +19,23 @@ struct TestContext {
     read_char: String,
 }
 
+impl TestContext {
+    fn new() -> Self {
+        let command_statuses = HashMap::new();
+        let env_args = Vec::new();
+        let printed_lines = Rc::new(RefCell::new(String::new()));
+        let read_line = String::new();
+        let read_char = String::new();
+        TestContext {
+            command_statuses,
+            env_args,
+            printed_lines,
+            read_line,
+            read_char,
+        }
+    }
+}
+
 impl Context for TestContext {
     fn command_status(&self, command: &str, args: &[&str]) -> anyhow::Result<i32> {
         assert_eq!(command, "git");
@@ -51,19 +68,10 @@ impl Context for TestContext {
 
 #[test]
 fn test_record_no_changes() {
-    let mut command_statuses = HashMap::new();
-    command_statuses.insert("diff --quiet HEAD".to_string(), 0);
+    let mut ctx = TestContext::new();
+    ctx.command_statuses = [("diff --quiet HEAD".to_string(), 0)].into_iter().collect();
     let args: Vec<String> = vec!["darcs-git".into(), "rec".into()];
-    let printed_lines = Rc::new(RefCell::new(String::new()));
-    let read_line = String::new();
-    let read_char = String::new();
-    let ctx = TestContext {
-        command_statuses,
-        env_args: args,
-        printed_lines,
-        read_line,
-        read_char,
-    };
+    ctx.env_args = args;
 
     main(&ctx).unwrap();
 
@@ -73,21 +81,18 @@ fn test_record_no_changes() {
 
 #[test]
 fn test_record() {
-    let mut command_statuses = HashMap::new();
-    command_statuses.insert("diff --quiet HEAD".to_string(), 1);
-    command_statuses.insert("add --patch".to_string(), 0);
-    command_statuses.insert("commit -m commitmsg -e".to_string(), 0);
-    let args: Vec<String> = vec!["darcs-git".into(), "rec".into()];
-    let printed_lines = Rc::new(RefCell::new(String::new()));
-    let read_line = "commitmsg".to_string();
-    let read_char = "y".to_string();
-    let ctx = TestContext {
-        command_statuses,
-        env_args: args,
-        printed_lines,
-        read_line,
-        read_char,
-    };
+    let mut ctx = TestContext::new();
+    ctx.command_statuses = [
+        ("diff --quiet HEAD".to_string(), 1),
+        ("add --patch".to_string(), 0),
+        ("commit -m commitmsg -e".to_string(), 0),
+    ]
+    .into_iter()
+    .collect();
+    ctx.env_args = vec!["darcs-git".into(), "rec".into()];
+    ctx.printed_lines = Rc::new(RefCell::new(String::new()));
+    ctx.read_line = "commitmsg".to_string();
+    ctx.read_char = "y".to_string();
 
     main(&ctx).unwrap();
 
