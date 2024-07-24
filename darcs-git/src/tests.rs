@@ -143,3 +143,17 @@ fn test_what_no_changes() {
     let printed_lines = ctx.printed_lines.borrow();
     assert!(printed_lines.contains("No changes"));
 }
+
+#[test]
+fn test_what() {
+    let mut ctx = TestContext::new();
+    ctx.command_statuses = [("diff HEAD -M -C --exit-code".to_string(), 1)]
+        .into_iter()
+        .collect();
+    ctx.env_args = vec!["darcs-git".into(), "what".into()];
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.is_empty());
+}
