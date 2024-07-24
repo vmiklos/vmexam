@@ -8,10 +8,11 @@
 
 use super::*;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::VecDeque;
 
 struct TestContext {
-    command_statuses: HashMap<String, i32>,
+    /// Joined cmdline, exit status.
+    command_statuses: RefCell<VecDeque<(String, i32)>>,
     env_args: Vec<String>,
     printed_lines: RefCell<String>,
     read_line: String,
@@ -20,7 +21,7 @@ struct TestContext {
 
 impl TestContext {
     fn new() -> Self {
-        let command_statuses = HashMap::new();
+        let command_statuses = RefCell::new(VecDeque::new());
         let env_args = Vec::new();
         let printed_lines = RefCell::new(String::new());
         let read_line = String::new();
@@ -39,8 +40,11 @@ impl Context for TestContext {
     fn command_status(&self, command: &str, args: &[&str]) -> anyhow::Result<i32> {
         assert_eq!(command, "git");
         println!("TestContext::command_status: args is {:?}", args);
-        let key = args.join(" ");
-        Ok(self.command_statuses[&key])
+        let cmdline = args.join(" ");
+        let mut command_statuses = self.command_statuses.borrow_mut();
+        let command_status = command_statuses.pop_front().unwrap();
+        assert_eq!(command_status.0, cmdline);
+        Ok(command_status.1)
     }
 
     fn command_output(&self, _command: &str, _args: &[&str]) -> anyhow::Result<String> {
@@ -68,7 +72,7 @@ impl Context for TestContext {
 #[test]
 fn test_record_no_changes() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = [("diff --quiet HEAD".to_string(), 0)].into_iter().collect();
+    ctx.command_statuses = RefCell::new(VecDeque::from([("diff --quiet HEAD".to_string(), 0)]));
     let args: Vec<String> = vec!["darcs-git".into(), "rec".into()];
     ctx.env_args = args;
 
@@ -81,13 +85,11 @@ fn test_record_no_changes() {
 #[test]
 fn test_record() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = [
+    ctx.command_statuses = RefCell::new(VecDeque::from([
         ("diff --quiet HEAD".to_string(), 1),
         ("add --patch".to_string(), 0),
         ("commit -m commitmsg -e".to_string(), 0),
-    ]
-    .into_iter()
-    .collect();
+    ]));
     ctx.env_args = vec!["darcs-git".into(), "rec".into()];
     ctx.read_line = "commitmsg".to_string();
     ctx.read_char = "y".to_string();
@@ -102,7 +104,7 @@ fn test_record() {
 #[test]
 fn test_revert_no_changes() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = [("diff --quiet HEAD".to_string(), 0)].into_iter().collect();
+    ctx.command_statuses = RefCell::new(VecDeque::from([("diff --quiet HEAD".to_string(), 0)]));
     ctx.env_args = vec!["darcs-git".into(), "rev".into()];
     ctx.read_line = "commitmsg".to_string();
     ctx.read_char = "y".to_string();
@@ -116,12 +118,10 @@ fn test_revert_no_changes() {
 #[test]
 fn test_revert() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = [
+    ctx.command_statuses = RefCell::new(VecDeque::from([
         ("diff --quiet HEAD".to_string(), 1),
         ("checkout --patch".to_string(), 0),
-    ]
-    .into_iter()
-    .collect();
+    ]));
     ctx.env_args = vec!["darcs-git".into(), "rev".into()];
 
     main(&ctx).unwrap();
@@ -133,9 +133,10 @@ fn test_revert() {
 #[test]
 fn test_what_no_changes() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = [("diff HEAD -M -C --exit-code".to_string(), 0)]
-        .into_iter()
-        .collect();
+    ctx.command_statuses = RefCell::new(VecDeque::from([(
+        "diff HEAD -M -C --exit-code".to_string(),
+        0,
+    )]));
     ctx.env_args = vec!["darcs-git".into(), "what".into()];
 
     main(&ctx).unwrap();
@@ -147,9 +148,10 @@ fn test_what_no_changes() {
 #[test]
 fn test_what() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = [("diff HEAD -M -C --exit-code".to_string(), 1)]
-        .into_iter()
-        .collect();
+    ctx.command_statuses = RefCell::new(VecDeque::from([(
+        "diff HEAD -M -C --exit-code".to_string(),
+        1,
+    )]));
     ctx.env_args = vec!["darcs-git".into(), "what".into()];
 
     main(&ctx).unwrap();
