@@ -9,12 +9,11 @@
 use super::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::rc::Rc;
 
 struct TestContext {
     command_statuses: HashMap<String, i32>,
     env_args: Vec<String>,
-    printed_lines: Rc<RefCell<String>>,
+    printed_lines: RefCell<String>,
     read_line: String,
     read_char: String,
 }
@@ -23,7 +22,7 @@ impl TestContext {
     fn new() -> Self {
         let command_statuses = HashMap::new();
         let env_args = Vec::new();
-        let printed_lines = Rc::new(RefCell::new(String::new()));
+        let printed_lines = RefCell::new(String::new());
         let read_line = String::new();
         let read_char = String::new();
         TestContext {
@@ -90,7 +89,6 @@ fn test_record() {
     .into_iter()
     .collect();
     ctx.env_args = vec!["darcs-git".into(), "rec".into()];
-    ctx.printed_lines = Rc::new(RefCell::new(String::new()));
     ctx.read_line = "commitmsg".to_string();
     ctx.read_char = "y".to_string();
 
@@ -106,7 +104,6 @@ fn test_revert_no_changes() {
     let mut ctx = TestContext::new();
     ctx.command_statuses = [("diff --quiet HEAD".to_string(), 0)].into_iter().collect();
     ctx.env_args = vec!["darcs-git".into(), "rev".into()];
-    ctx.printed_lines = Rc::new(RefCell::new(String::new()));
     ctx.read_line = "commitmsg".to_string();
     ctx.read_char = "y".to_string();
 
