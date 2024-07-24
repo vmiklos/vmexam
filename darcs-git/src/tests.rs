@@ -69,6 +69,13 @@ impl Context for TestContext {
     }
 }
 
+impl Drop for TestContext {
+    fn drop(&mut self) {
+        let command_statuses = self.command_statuses.borrow();
+        assert!(command_statuses.is_empty());
+    }
+}
+
 #[test]
 fn test_record_no_changes() {
     let mut ctx = TestContext::new();
