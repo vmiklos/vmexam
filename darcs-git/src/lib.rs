@@ -160,7 +160,7 @@ fn whatsnew(ctx: &dyn Context, args: &clap::ArgMatches) -> anyhow::Result<()> {
 fn push(ctx: &dyn Context) -> anyhow::Result<()> {
     let output = ctx.command_output("git", &["log", "HEAD@{upstream}.."])?;
     if output.is_empty() {
-        println!("No recorded local changes to push!");
+        ctx.print("No recorded local changes to push!\n");
         return Ok(());
     }
     println!("{output}");
@@ -171,7 +171,7 @@ fn push(ctx: &dyn Context) -> anyhow::Result<()> {
         } else if ret == "y" {
             break;
         }
-        println!("Invalid response, try again!");
+        ctx.print("Invalid response, try again!\n");
     }
     let code = ctx.command_status("git", &["push"])?;
     if code != 0 {

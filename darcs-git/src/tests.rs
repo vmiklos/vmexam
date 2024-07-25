@@ -13,6 +13,8 @@ use std::collections::VecDeque;
 struct TestContext {
     /// Joined cmdline, exit status.
     command_statuses: RefCell<VecDeque<(String, i32)>>,
+    /// Joined cmdline, output.
+    command_outputs: RefCell<VecDeque<(String, String)>>,
     env_args: Vec<String>,
     printed_lines: RefCell<String>,
     read_line: String,
@@ -22,12 +24,14 @@ struct TestContext {
 impl TestContext {
     fn new() -> Self {
         let command_statuses = RefCell::new(VecDeque::new());
+        let command_outputs = RefCell::new(VecDeque::new());
         let env_args = Vec::new();
         let printed_lines = RefCell::new(String::new());
         let read_line = String::new();
         let read_char = String::new();
         TestContext {
             command_statuses,
+            command_outputs,
             env_args,
             printed_lines,
             read_line,
@@ -47,8 +51,14 @@ impl Context for TestContext {
         Ok(command_status.1)
     }
 
-    fn command_output(&self, _command: &str, _args: &[&str]) -> anyhow::Result<String> {
-        todo!()
+    fn command_output(&self, command: &str, args: &[&str]) -> anyhow::Result<String> {
+        assert_eq!(command, "git");
+        println!("TestContext::command_output: args is {:?}", args);
+        let cmdline = args.join(" ");
+        let mut command_outputs = self.command_outputs.borrow_mut();
+        let command_output = command_outputs.pop_front().unwrap();
+        assert_eq!(command_output.0, cmdline);
+        Ok(command_output.1)
     }
 
     fn env_args(&self) -> Vec<String> {
@@ -73,6 +83,8 @@ impl Drop for TestContext {
     fn drop(&mut self) {
         let command_statuses = self.command_statuses.borrow();
         assert!(command_statuses.is_empty());
+        let command_outputs = self.command_outputs.borrow();
+        assert!(command_outputs.is_empty());
     }
 }
 
@@ -165,4 +177,19 @@ fn test_what() {
 
     let printed_lines = ctx.printed_lines.borrow();
     assert!(printed_lines.is_empty());
+}
+
+#[test]
+fn test_push_nothing_to_push() {
+    let mut ctx = TestContext::new();
+    ctx.command_outputs = RefCell::new(VecDeque::from([(
+        "log HEAD@{upstream}..".to_string(),
+        "".to_string(),
+    )]));
+    ctx.env_args = vec!["darcs-git".into(), "push".into()];
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.contains("No recorded local changes to push"));
 }
