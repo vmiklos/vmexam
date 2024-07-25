@@ -210,3 +210,19 @@ fn test_push() {
     let printed_lines = ctx.printed_lines.borrow();
     assert!(printed_lines.contains("push these patches?"));
 }
+
+#[test]
+fn test_unrec() {
+    let mut ctx = TestContext::new();
+    ctx.command_statuses = RefCell::new(VecDeque::from([
+            ("log -1".to_string(), 0),
+            ("reset --quiet HEAD^".to_string(), 0),
+    ]));
+    ctx.read_char = "y".to_string();
+    ctx.env_args = vec!["darcs-git".into(), "unrec".into()];
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.contains("unrecording"));
+}

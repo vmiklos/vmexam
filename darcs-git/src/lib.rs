@@ -190,10 +190,10 @@ fn unrec(ctx: &dyn Context) -> anyhow::Result<()> {
         } else if ret == "y" {
             break;
         }
-        println!("Invalid response, try again!");
+        ctx.print("Invalid response, try again!\n");
     }
     checked_run(ctx, "git", &["reset", "--quiet", "HEAD^"])?;
-    println!("Finished unrecording.");
+    ctx.print("Finished unrecording.\n");
     Ok(())
 }
 
