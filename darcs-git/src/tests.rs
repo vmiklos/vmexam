@@ -193,3 +193,20 @@ fn test_push_nothing_to_push() {
     let printed_lines = ctx.printed_lines.borrow();
     assert!(printed_lines.contains("No recorded local changes to push"));
 }
+
+#[test]
+fn test_push() {
+    let mut ctx = TestContext::new();
+    ctx.command_outputs = RefCell::new(VecDeque::from([(
+        "log HEAD@{upstream}..".to_string(),
+        "log-output".to_string(),
+    )]));
+    ctx.command_statuses = RefCell::new(VecDeque::from([("push".to_string(), 0)]));
+    ctx.env_args = vec!["darcs-git".into(), "push".into()];
+    ctx.read_char = "y".to_string();
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.contains("push these patches?"));
+}
