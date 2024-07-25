@@ -206,10 +206,10 @@ fn unpull(ctx: &dyn Context) -> anyhow::Result<()> {
         } else if ret == "y" {
             break;
         }
-        println!("Invalid response, try again!");
+        ctx.print("Invalid response, try again!\n");
     }
     checked_run(ctx, "git", &["reset", "--hard", "HEAD^"])?;
-    println!("Finished unpulling.");
+    ctx.print("Finished unpulling.\n");
     Ok(())
 }
 
