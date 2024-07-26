@@ -139,6 +139,27 @@ fn test_record_files() {
     assert!(printed_lines.contains("long comment?"));
 }
 
+/// Tests the case when record() quits because the answer to "do you want a long comment" is not y
+/// or n.
+#[test]
+fn test_record_quit() {
+    let mut ctx = TestContext::new();
+    // Note the lack of 'commit' here.
+    ctx.command_statuses = RefCell::new(VecDeque::from([
+        ("diff --quiet HEAD".to_string(), 1),
+        ("add --patch".to_string(), 0),
+    ]));
+    ctx.env_args = vec!["darcs-git".into(), "rec".into()];
+    ctx.read_line = "commitmsg".to_string();
+    ctx.read_char = "q".to_string();
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.contains("commit message?"));
+    assert!(printed_lines.contains("long comment?"));
+}
+
 #[test]
 fn test_revert_no_changes() {
     let mut ctx = TestContext::new();
