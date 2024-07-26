@@ -18,7 +18,7 @@ struct TestContext {
     env_args: Vec<String>,
     printed_lines: RefCell<String>,
     read_line: String,
-    read_char: String,
+    read_chars: RefCell<VecDeque<String>>,
 }
 
 impl TestContext {
@@ -28,14 +28,14 @@ impl TestContext {
         let env_args = Vec::new();
         let printed_lines = RefCell::new(String::new());
         let read_line = String::new();
-        let read_char = String::new();
+        let read_chars = RefCell::new(VecDeque::new());
         TestContext {
             command_statuses,
             command_outputs,
             env_args,
             printed_lines,
             read_line,
-            read_char,
+            read_chars,
         }
     }
 }
@@ -75,7 +75,9 @@ impl Context for TestContext {
     }
 
     fn readch(&self) -> anyhow::Result<String> {
-        Ok(self.read_char.clone())
+        let mut read_chars = self.read_chars.borrow_mut();
+        let read_char = read_chars.pop_front().unwrap();
+        Ok(read_char.clone())
     }
 }
 
@@ -85,6 +87,8 @@ impl Drop for TestContext {
         assert!(command_statuses.is_empty());
         let command_outputs = self.command_outputs.borrow();
         assert!(command_outputs.is_empty());
+        let read_chars = self.read_chars.borrow_mut();
+        assert!(read_chars.is_empty());
     }
 }
 
@@ -111,7 +115,7 @@ fn test_record() {
     ]));
     ctx.env_args = vec!["darcs-git".into(), "rec".into()];
     ctx.read_line = "commitmsg".to_string();
-    ctx.read_char = "y".to_string();
+    ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
 
     main(&ctx).unwrap();
 
@@ -130,7 +134,7 @@ fn test_record_files() {
     ]));
     ctx.env_args = vec!["darcs-git".into(), "rec".into(), "file1".into()];
     ctx.read_line = "commitmsg".to_string();
-    ctx.read_char = "y".to_string();
+    ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
 
     main(&ctx).unwrap();
 
@@ -151,7 +155,28 @@ fn test_record_quit() {
     ]));
     ctx.env_args = vec!["darcs-git".into(), "rec".into()];
     ctx.read_line = "commitmsg".to_string();
-    ctx.read_char = "q".to_string();
+    ctx.read_chars = RefCell::new(VecDeque::from(["q".to_string()]));
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.contains("commit message?"));
+    assert!(printed_lines.contains("long comment?"));
+}
+
+/// Tests the case when we try again because the answer to "do you want a long comment" is not y, n
+/// or q.
+#[test]
+fn test_record_try_again() {
+    let mut ctx = TestContext::new();
+    ctx.command_statuses = RefCell::new(VecDeque::from([
+        ("diff --quiet HEAD".to_string(), 1),
+        ("add --patch".to_string(), 0),
+        ("commit -m commitmsg -e".to_string(), 0),
+    ]));
+    ctx.env_args = vec!["darcs-git".into(), "rec".into()];
+    ctx.read_line = "commitmsg".to_string();
+    ctx.read_chars = RefCell::new(VecDeque::from(["x".to_string(), "y".to_string()]));
 
     main(&ctx).unwrap();
 
@@ -166,7 +191,6 @@ fn test_revert_no_changes() {
     ctx.command_statuses = RefCell::new(VecDeque::from([("diff --quiet HEAD".to_string(), 0)]));
     ctx.env_args = vec!["darcs-git".into(), "rev".into()];
     ctx.read_line = "commitmsg".to_string();
-    ctx.read_char = "y".to_string();
 
     main(&ctx).unwrap();
 
@@ -243,7 +267,7 @@ fn test_push() {
     )]));
     ctx.command_statuses = RefCell::new(VecDeque::from([("push".to_string(), 0)]));
     ctx.env_args = vec!["darcs-git".into(), "push".into()];
-    ctx.read_char = "y".to_string();
+    ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
 
     main(&ctx).unwrap();
 
@@ -258,7 +282,7 @@ fn test_unrec() {
         ("log -1".to_string(), 0),
         ("reset --quiet HEAD^".to_string(), 0),
     ]));
-    ctx.read_char = "y".to_string();
+    ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
     ctx.env_args = vec!["darcs-git".into(), "unrec".into()];
 
     main(&ctx).unwrap();
@@ -274,7 +298,7 @@ fn test_unpull() {
         ("log -1".to_string(), 0),
         ("reset --hard HEAD^".to_string(), 0),
     ]));
-    ctx.read_char = "y".to_string();
+    ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
     ctx.env_args = vec!["darcs-git".into(), "unpull".into()];
 
     main(&ctx).unwrap();
