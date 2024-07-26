@@ -242,3 +242,13 @@ fn test_unpull() {
     let printed_lines = ctx.printed_lines.borrow();
     assert!(printed_lines.contains("unpulling"));
 }
+
+#[test]
+fn test_checked_run_fails() {
+    let mut ctx = TestContext::new();
+    ctx.command_statuses = RefCell::new(VecDeque::from([("false".to_string(), 1)]));
+
+    let ret = checked_run(&ctx, "git", &["false"]);
+
+    assert!(ret.is_err());
+}
