@@ -121,6 +121,25 @@ fn test_record() {
 }
 
 #[test]
+fn test_record_files() {
+    let mut ctx = TestContext::new();
+    ctx.command_statuses = RefCell::new(VecDeque::from([
+        ("diff --quiet HEAD".to_string(), 1),
+        ("add --patch file1".to_string(), 0),
+        ("commit -m commitmsg -e".to_string(), 0),
+    ]));
+    ctx.env_args = vec!["darcs-git".into(), "rec".into(), "file1".into()];
+    ctx.read_line = "commitmsg".to_string();
+    ctx.read_char = "y".to_string();
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.contains("commit message?"));
+    assert!(printed_lines.contains("long comment?"));
+}
+
+#[test]
 fn test_revert_no_changes() {
     let mut ctx = TestContext::new();
     ctx.command_statuses = RefCell::new(VecDeque::from([("diff --quiet HEAD".to_string(), 0)]));
