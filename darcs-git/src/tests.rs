@@ -214,6 +214,21 @@ fn test_revert() {
 }
 
 #[test]
+fn test_revert_files() {
+    let mut ctx = TestContext::new();
+    ctx.command_statuses = RefCell::new(VecDeque::from([
+        ("diff --quiet HEAD".to_string(), 1),
+        ("checkout --patch file1".to_string(), 0),
+    ]));
+    ctx.env_args = vec!["darcs-git".into(), "rev".into(), "file1".into()];
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.is_empty());
+}
+
+#[test]
 fn test_what_no_changes() {
     let mut ctx = TestContext::new();
     ctx.command_statuses = RefCell::new(VecDeque::from([(
