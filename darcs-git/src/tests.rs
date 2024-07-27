@@ -279,6 +279,21 @@ fn test_what_files() {
 }
 
 #[test]
+fn test_what_summary() {
+    let mut ctx = TestContext::new();
+    ctx.command_statuses = RefCell::new(VecDeque::from([(
+        "diff HEAD -M -C --exit-code --name-status".to_string(),
+        1,
+    )]));
+    ctx.set_env_args(&["what", "-s"]);
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.is_empty());
+}
+
+#[test]
 fn test_push_nothing_to_push() {
     let mut ctx = TestContext::new();
     ctx.command_outputs = RefCell::new(VecDeque::from([(
