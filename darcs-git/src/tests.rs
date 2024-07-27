@@ -38,6 +38,12 @@ impl TestContext {
             read_chars,
         }
     }
+
+    fn set_env_args(&mut self, env_args: &[&str]) {
+        let mut v: Vec<String> = vec!["darcs-git".into()];
+        v.append(&mut env_args.into_iter().map(|i| i.to_string()).collect());
+        self.env_args = v;
+    }
 }
 
 impl Context for TestContext {
@@ -96,8 +102,7 @@ impl Drop for TestContext {
 fn test_record_no_changes() {
     let mut ctx = TestContext::new();
     ctx.command_statuses = RefCell::new(VecDeque::from([("diff --quiet HEAD".to_string(), 0)]));
-    let args: Vec<String> = vec!["darcs-git".into(), "rec".into()];
-    ctx.env_args = args;
+    ctx.set_env_args(&["rec"]);
 
     main(&ctx).unwrap();
 
@@ -113,7 +118,7 @@ fn test_record() {
         ("add --patch".to_string(), 0),
         ("commit -m commitmsg -e".to_string(), 0),
     ]));
-    ctx.env_args = vec!["darcs-git".into(), "rec".into()];
+    ctx.set_env_args(&["rec"]);
     ctx.read_line = "commitmsg".to_string();
     ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
 
@@ -132,7 +137,7 @@ fn test_record_files() {
         ("add --patch file1".to_string(), 0),
         ("commit -m commitmsg -e".to_string(), 0),
     ]));
-    ctx.env_args = vec!["darcs-git".into(), "rec".into(), "file1".into()];
+    ctx.set_env_args(&["rec", "file1"]);
     ctx.read_line = "commitmsg".to_string();
     ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
 
@@ -153,7 +158,7 @@ fn test_record_quit() {
         ("diff --quiet HEAD".to_string(), 1),
         ("add --patch".to_string(), 0),
     ]));
-    ctx.env_args = vec!["darcs-git".into(), "rec".into()];
+    ctx.set_env_args(&["rec"]);
     ctx.read_line = "commitmsg".to_string();
     ctx.read_chars = RefCell::new(VecDeque::from(["q".to_string()]));
 
@@ -174,7 +179,7 @@ fn test_record_try_again() {
         ("add --patch".to_string(), 0),
         ("commit -m commitmsg -e".to_string(), 0),
     ]));
-    ctx.env_args = vec!["darcs-git".into(), "rec".into()];
+    ctx.set_env_args(&["rec"]);
     ctx.read_line = "commitmsg".to_string();
     ctx.read_chars = RefCell::new(VecDeque::from(["x".to_string(), "y".to_string()]));
 
@@ -189,7 +194,7 @@ fn test_record_try_again() {
 fn test_revert_no_changes() {
     let mut ctx = TestContext::new();
     ctx.command_statuses = RefCell::new(VecDeque::from([("diff --quiet HEAD".to_string(), 0)]));
-    ctx.env_args = vec!["darcs-git".into(), "rev".into()];
+    ctx.set_env_args(&["rev"]);
     ctx.read_line = "commitmsg".to_string();
 
     main(&ctx).unwrap();
@@ -205,7 +210,7 @@ fn test_revert() {
         ("diff --quiet HEAD".to_string(), 1),
         ("checkout --patch".to_string(), 0),
     ]));
-    ctx.env_args = vec!["darcs-git".into(), "rev".into()];
+    ctx.set_env_args(&["rev"]);
 
     main(&ctx).unwrap();
 
@@ -220,7 +225,7 @@ fn test_revert_files() {
         ("diff --quiet HEAD".to_string(), 1),
         ("checkout --patch file1".to_string(), 0),
     ]));
-    ctx.env_args = vec!["darcs-git".into(), "rev".into(), "file1".into()];
+    ctx.set_env_args(&["rev", "file1"]);
 
     main(&ctx).unwrap();
 
@@ -235,7 +240,7 @@ fn test_what_no_changes() {
         "diff HEAD -M -C --exit-code".to_string(),
         0,
     )]));
-    ctx.env_args = vec!["darcs-git".into(), "what".into()];
+    ctx.set_env_args(&["what"]);
 
     main(&ctx).unwrap();
 
@@ -250,7 +255,22 @@ fn test_what() {
         "diff HEAD -M -C --exit-code".to_string(),
         1,
     )]));
-    ctx.env_args = vec!["darcs-git".into(), "what".into()];
+    ctx.set_env_args(&["what"]);
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.is_empty());
+}
+
+#[test]
+fn test_what_files() {
+    let mut ctx = TestContext::new();
+    ctx.command_statuses = RefCell::new(VecDeque::from([(
+        "diff HEAD -M -C --exit-code file1".to_string(),
+        1,
+    )]));
+    ctx.set_env_args(&["what", "file1"]);
 
     main(&ctx).unwrap();
 
@@ -265,7 +285,7 @@ fn test_push_nothing_to_push() {
         "log HEAD@{upstream}..".to_string(),
         "".to_string(),
     )]));
-    ctx.env_args = vec!["darcs-git".into(), "push".into()];
+    ctx.set_env_args(&["push"]);
 
     main(&ctx).unwrap();
 
@@ -281,7 +301,7 @@ fn test_push() {
         "log-output".to_string(),
     )]));
     ctx.command_statuses = RefCell::new(VecDeque::from([("push".to_string(), 0)]));
-    ctx.env_args = vec!["darcs-git".into(), "push".into()];
+    ctx.set_env_args(&["push"]);
     ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
 
     main(&ctx).unwrap();
@@ -298,7 +318,7 @@ fn test_unrec() {
         ("reset --quiet HEAD^".to_string(), 0),
     ]));
     ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
-    ctx.env_args = vec!["darcs-git".into(), "unrec".into()];
+    ctx.set_env_args(&["unrec"]);
 
     main(&ctx).unwrap();
 
@@ -314,7 +334,7 @@ fn test_unpull() {
         ("reset --hard HEAD^".to_string(), 0),
     ]));
     ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
-    ctx.env_args = vec!["darcs-git".into(), "unpull".into()];
+    ctx.set_env_args(&["unpull"]);
 
     main(&ctx).unwrap();
 
