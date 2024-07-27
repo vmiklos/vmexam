@@ -326,6 +326,23 @@ fn test_push() {
 }
 
 #[test]
+fn test_push_cancel() {
+    let mut ctx = TestContext::new();
+    ctx.command_outputs = RefCell::new(VecDeque::from([(
+        "log HEAD@{upstream}..".to_string(),
+        "log-output".to_string(),
+    )]));
+    // ctx.command_statuses is empty, no 'push' is expected.
+    ctx.set_env_args(&["push"]);
+    ctx.read_chars = RefCell::new(VecDeque::from(["n".to_string()]));
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.contains("push these patches?"));
+}
+
+#[test]
 fn test_unrec() {
     let mut ctx = TestContext::new();
     ctx.command_statuses = RefCell::new(VecDeque::from([
