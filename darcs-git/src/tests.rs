@@ -396,6 +396,19 @@ fn test_unrec_cancel() {
 }
 
 #[test]
+fn test_unrec_try_again() {
+    let mut ctx = TestContext::new();
+    ctx.set_command_statuses(&[("log -1", 0), ("reset --quiet HEAD^", 0)]);
+    ctx.set_read_chars(&['x', 'y']);
+    ctx.set_env_args(&["unrec"]);
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.contains("unrecording"));
+}
+
+#[test]
 fn test_unpull() {
     let mut ctx = TestContext::new();
     ctx.set_command_statuses(&[("log -1", 0), ("reset --hard HEAD^", 0)]);
