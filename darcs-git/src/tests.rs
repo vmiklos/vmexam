@@ -52,6 +52,11 @@ impl TestContext {
             .collect();
         self.command_statuses = RefCell::new(VecDeque::from(v));
     }
+
+    fn set_read_chars(&mut self, read_chars: &[char]) {
+        let v: Vec<String> = read_chars.into_iter().map(|i| i.to_string()).collect();
+        self.read_chars = RefCell::new(VecDeque::from(v));
+    }
 }
 
 impl Context for TestContext {
@@ -128,7 +133,7 @@ fn test_record() {
     ]);
     ctx.set_env_args(&["rec"]);
     ctx.read_line = "commitmsg".to_string();
-    ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
+    ctx.set_read_chars(&['y']);
 
     main(&ctx).unwrap();
 
@@ -147,7 +152,7 @@ fn test_record_files() {
     ]);
     ctx.set_env_args(&["rec", "file1"]);
     ctx.read_line = "commitmsg".to_string();
-    ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
+    ctx.set_read_chars(&['y']);
 
     main(&ctx).unwrap();
 
@@ -165,7 +170,7 @@ fn test_record_quit() {
     ctx.set_command_statuses(&[("diff --quiet HEAD", 1), ("add --patch", 0)]);
     ctx.set_env_args(&["rec"]);
     ctx.read_line = "commitmsg".to_string();
-    ctx.read_chars = RefCell::new(VecDeque::from(["q".to_string()]));
+    ctx.set_read_chars(&['q']);
 
     main(&ctx).unwrap();
 
@@ -186,7 +191,7 @@ fn test_record_try_again() {
     ]);
     ctx.set_env_args(&["rec"]);
     ctx.read_line = "commitmsg".to_string();
-    ctx.read_chars = RefCell::new(VecDeque::from(["x".to_string(), "y".to_string()]));
+    ctx.set_read_chars(&['x', 'y']);
 
     main(&ctx).unwrap();
 
@@ -304,7 +309,7 @@ fn test_push() {
     )]));
     ctx.set_command_statuses(&[("push", 0)]);
     ctx.set_env_args(&["push"]);
-    ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
+    ctx.set_read_chars(&['y']);
 
     main(&ctx).unwrap();
 
@@ -321,7 +326,7 @@ fn test_push_auto_pullr() {
     )]));
     ctx.set_command_statuses(&[("push", 1), ("pull -r", 0), ("push", 0)]);
     ctx.set_env_args(&["push"]);
-    ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
+    ctx.set_read_chars(&['y']);
 
     main(&ctx).unwrap();
 
@@ -338,7 +343,7 @@ fn test_push_cancel() {
     )]));
     // ctx.command_statuses is empty, no 'push' is expected.
     ctx.set_env_args(&["push"]);
-    ctx.read_chars = RefCell::new(VecDeque::from(["n".to_string()]));
+    ctx.set_read_chars(&['n']);
 
     main(&ctx).unwrap();
 
@@ -355,7 +360,7 @@ fn test_push_try_again() {
     )]));
     ctx.set_command_statuses(&[("push", 0)]);
     ctx.set_env_args(&["push"]);
-    ctx.read_chars = RefCell::new(VecDeque::from(["x".to_string(), "y".to_string()]));
+    ctx.set_read_chars(&['x', 'y']);
 
     main(&ctx).unwrap();
 
@@ -367,7 +372,7 @@ fn test_push_try_again() {
 fn test_unrec() {
     let mut ctx = TestContext::new();
     ctx.set_command_statuses(&[("log -1", 0), ("reset --quiet HEAD^", 0)]);
-    ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
+    ctx.set_read_chars(&['y']);
     ctx.set_env_args(&["unrec"]);
 
     main(&ctx).unwrap();
@@ -377,10 +382,24 @@ fn test_unrec() {
 }
 
 #[test]
+fn test_unrec_cancel() {
+    let mut ctx = TestContext::new();
+    // Cancel, so no 'reset'.
+    ctx.set_command_statuses(&[("log -1", 0)]);
+    ctx.set_read_chars(&['n']);
+    ctx.set_env_args(&["unrec"]);
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.contains("want to unrecord"));
+}
+
+#[test]
 fn test_unpull() {
     let mut ctx = TestContext::new();
     ctx.set_command_statuses(&[("log -1", 0), ("reset --hard HEAD^", 0)]);
-    ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
+    ctx.set_read_chars(&['y']);
     ctx.set_env_args(&["unpull"]);
 
     main(&ctx).unwrap();
