@@ -44,6 +44,14 @@ impl TestContext {
         v.append(&mut env_args.into_iter().map(|i| i.to_string()).collect());
         self.env_args = v;
     }
+
+    fn set_command_statuses(&mut self, command_statuses: &[(&str, i32)]) {
+        let v: Vec<(String, i32)> = command_statuses
+            .into_iter()
+            .map(|(k, v)| (k.to_string(), *v))
+            .collect();
+        self.command_statuses = RefCell::new(VecDeque::from(v));
+    }
 }
 
 impl Context for TestContext {
@@ -101,7 +109,7 @@ impl Drop for TestContext {
 #[test]
 fn test_record_no_changes() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = RefCell::new(VecDeque::from([("diff --quiet HEAD".to_string(), 0)]));
+    ctx.set_command_statuses(&[("diff --quiet HEAD", 0)]);
     ctx.set_env_args(&["rec"]);
 
     main(&ctx).unwrap();
@@ -113,11 +121,11 @@ fn test_record_no_changes() {
 #[test]
 fn test_record() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = RefCell::new(VecDeque::from([
-        ("diff --quiet HEAD".to_string(), 1),
-        ("add --patch".to_string(), 0),
-        ("commit -m commitmsg -e".to_string(), 0),
-    ]));
+    ctx.set_command_statuses(&[
+        ("diff --quiet HEAD", 1),
+        ("add --patch", 0),
+        ("commit -m commitmsg -e", 0),
+    ]);
     ctx.set_env_args(&["rec"]);
     ctx.read_line = "commitmsg".to_string();
     ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
@@ -132,11 +140,11 @@ fn test_record() {
 #[test]
 fn test_record_files() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = RefCell::new(VecDeque::from([
-        ("diff --quiet HEAD".to_string(), 1),
-        ("add --patch file1".to_string(), 0),
-        ("commit -m commitmsg -e".to_string(), 0),
-    ]));
+    ctx.set_command_statuses(&[
+        ("diff --quiet HEAD", 1),
+        ("add --patch file1", 0),
+        ("commit -m commitmsg -e", 0),
+    ]);
     ctx.set_env_args(&["rec", "file1"]);
     ctx.read_line = "commitmsg".to_string();
     ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
@@ -154,10 +162,7 @@ fn test_record_files() {
 fn test_record_quit() {
     let mut ctx = TestContext::new();
     // Note the lack of 'commit' here.
-    ctx.command_statuses = RefCell::new(VecDeque::from([
-        ("diff --quiet HEAD".to_string(), 1),
-        ("add --patch".to_string(), 0),
-    ]));
+    ctx.set_command_statuses(&[("diff --quiet HEAD", 1), ("add --patch", 0)]);
     ctx.set_env_args(&["rec"]);
     ctx.read_line = "commitmsg".to_string();
     ctx.read_chars = RefCell::new(VecDeque::from(["q".to_string()]));
@@ -174,11 +179,11 @@ fn test_record_quit() {
 #[test]
 fn test_record_try_again() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = RefCell::new(VecDeque::from([
-        ("diff --quiet HEAD".to_string(), 1),
-        ("add --patch".to_string(), 0),
-        ("commit -m commitmsg -e".to_string(), 0),
-    ]));
+    ctx.set_command_statuses(&[
+        ("diff --quiet HEAD", 1),
+        ("add --patch", 0),
+        ("commit -m commitmsg -e", 0),
+    ]);
     ctx.set_env_args(&["rec"]);
     ctx.read_line = "commitmsg".to_string();
     ctx.read_chars = RefCell::new(VecDeque::from(["x".to_string(), "y".to_string()]));
@@ -193,7 +198,7 @@ fn test_record_try_again() {
 #[test]
 fn test_revert_no_changes() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = RefCell::new(VecDeque::from([("diff --quiet HEAD".to_string(), 0)]));
+    ctx.set_command_statuses(&[("diff --quiet HEAD", 0)]);
     ctx.set_env_args(&["rev"]);
     ctx.read_line = "commitmsg".to_string();
 
@@ -206,10 +211,7 @@ fn test_revert_no_changes() {
 #[test]
 fn test_revert() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = RefCell::new(VecDeque::from([
-        ("diff --quiet HEAD".to_string(), 1),
-        ("checkout --patch".to_string(), 0),
-    ]));
+    ctx.set_command_statuses(&[("diff --quiet HEAD", 1), ("checkout --patch", 0)]);
     ctx.set_env_args(&["rev"]);
 
     main(&ctx).unwrap();
@@ -221,10 +223,7 @@ fn test_revert() {
 #[test]
 fn test_revert_files() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = RefCell::new(VecDeque::from([
-        ("diff --quiet HEAD".to_string(), 1),
-        ("checkout --patch file1".to_string(), 0),
-    ]));
+    ctx.set_command_statuses(&[("diff --quiet HEAD", 1), ("checkout --patch file1", 0)]);
     ctx.set_env_args(&["rev", "file1"]);
 
     main(&ctx).unwrap();
@@ -236,10 +235,7 @@ fn test_revert_files() {
 #[test]
 fn test_what_no_changes() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = RefCell::new(VecDeque::from([(
-        "diff HEAD -M -C --exit-code".to_string(),
-        0,
-    )]));
+    ctx.set_command_statuses(&[("diff HEAD -M -C --exit-code", 0)]);
     ctx.set_env_args(&["what"]);
 
     main(&ctx).unwrap();
@@ -251,10 +247,7 @@ fn test_what_no_changes() {
 #[test]
 fn test_what() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = RefCell::new(VecDeque::from([(
-        "diff HEAD -M -C --exit-code".to_string(),
-        1,
-    )]));
+    ctx.set_command_statuses(&[("diff HEAD -M -C --exit-code", 1)]);
     ctx.set_env_args(&["what"]);
 
     main(&ctx).unwrap();
@@ -266,10 +259,7 @@ fn test_what() {
 #[test]
 fn test_what_files() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = RefCell::new(VecDeque::from([(
-        "diff HEAD -M -C --exit-code file1".to_string(),
-        1,
-    )]));
+    ctx.set_command_statuses(&[("diff HEAD -M -C --exit-code file1", 1)]);
     ctx.set_env_args(&["what", "file1"]);
 
     main(&ctx).unwrap();
@@ -281,10 +271,7 @@ fn test_what_files() {
 #[test]
 fn test_what_summary() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = RefCell::new(VecDeque::from([(
-        "diff HEAD -M -C --exit-code --name-status".to_string(),
-        1,
-    )]));
+    ctx.set_command_statuses(&[("diff HEAD -M -C --exit-code --name-status", 1)]);
     ctx.set_env_args(&["what", "-s"]);
 
     main(&ctx).unwrap();
@@ -315,7 +302,24 @@ fn test_push() {
         "log HEAD@{upstream}..".to_string(),
         "log-output".to_string(),
     )]));
-    ctx.command_statuses = RefCell::new(VecDeque::from([("push".to_string(), 0)]));
+    ctx.set_command_statuses(&[("push", 0)]);
+    ctx.set_env_args(&["push"]);
+    ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.contains("push these patches?"));
+}
+
+#[test]
+fn test_push_auto_pullr() {
+    let mut ctx = TestContext::new();
+    ctx.command_outputs = RefCell::new(VecDeque::from([(
+        "log HEAD@{upstream}..".to_string(),
+        "log-output".to_string(),
+    )]));
+    ctx.set_command_statuses(&[("push", 1), ("pull -r", 0), ("push", 0)]);
     ctx.set_env_args(&["push"]);
     ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
 
@@ -349,7 +353,7 @@ fn test_push_try_again() {
         "log HEAD@{upstream}..".to_string(),
         "log-output".to_string(),
     )]));
-    ctx.command_statuses = RefCell::new(VecDeque::from([("push".to_string(), 0)]));
+    ctx.set_command_statuses(&[("push", 0)]);
     ctx.set_env_args(&["push"]);
     ctx.read_chars = RefCell::new(VecDeque::from(["x".to_string(), "y".to_string()]));
 
@@ -362,10 +366,7 @@ fn test_push_try_again() {
 #[test]
 fn test_unrec() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = RefCell::new(VecDeque::from([
-        ("log -1".to_string(), 0),
-        ("reset --quiet HEAD^".to_string(), 0),
-    ]));
+    ctx.set_command_statuses(&[("log -1", 0), ("reset --quiet HEAD^", 0)]);
     ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
     ctx.set_env_args(&["unrec"]);
 
@@ -378,10 +379,7 @@ fn test_unrec() {
 #[test]
 fn test_unpull() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = RefCell::new(VecDeque::from([
-        ("log -1".to_string(), 0),
-        ("reset --hard HEAD^".to_string(), 0),
-    ]));
+    ctx.set_command_statuses(&[("log -1", 0), ("reset --hard HEAD^", 0)]);
     ctx.read_chars = RefCell::new(VecDeque::from(["y".to_string()]));
     ctx.set_env_args(&["unpull"]);
 
@@ -394,7 +392,7 @@ fn test_unpull() {
 #[test]
 fn test_checked_run_fails() {
     let mut ctx = TestContext::new();
-    ctx.command_statuses = RefCell::new(VecDeque::from([("false".to_string(), 1)]));
+    ctx.set_command_statuses(&[("false", 1)]);
 
     let ret = checked_run(&ctx, "git", &["false"]);
 
