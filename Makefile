@@ -1,13 +1,17 @@
 true := T
 false :=
-RUST_PACKAGE_COUNT :=
-RUST_COVERED_PACKAGE_COUNT :=
+RUST_PACKAGES :=
+RUST_COVERED_PACKAGES :=
 
 build:
-	$(info make: ok for $(words $(RUST_PACKAGE_COUNT)) Rust packages)
+	$(info make: ok for $(words $(RUST_PACKAGES)) Rust packages)
 
 check:
-	$(info make check: ok for $(words $(RUST_PACKAGE_COUNT)) Rust packages, $(words $(RUST_COVERED_PACKAGE_COUNT)) covered with 100% line coverage)
+	$(info make check: ok)
+
+coverage-info:
+	$(info $(words $(RUST_COVERED_PACKAGES)) covered packages:$(RUST_COVERED_PACKAGES))
+	$(info $(words $(filter-out $(RUST_COVERED_PACKAGES),$(RUST_PACKAGES))) not covered packages: $(filter-out $(RUST_COVERED_PACKAGES),$(RUST_PACKAGES)))
 
 install-git-hooks:
 	cd .git/hooks && ln -sf ../../bash/clang-format-check commit-msg
@@ -19,7 +23,7 @@ install-git-hooks:
 
 # $(call RustPackage_RustPackage,path)
 define RustPackage_RustPackage
-RUST_PACKAGE_COUNT+= x
+RUST_PACKAGES+= $(1)
 build: $(1)
 check: $(1)
 check: $(1).check-doc
@@ -53,7 +57,7 @@ endef
 
 # $(call RustPackage_use_coverage,path)
 define RustPackage_use_coverage
-RUST_COVERED_PACKAGE_COUNT+= x
+RUST_COVERED_PACKAGES+= $(1)
 $(1).check-test : COVERAGE := $(true)
 
 endef
