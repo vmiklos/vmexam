@@ -57,6 +57,10 @@ impl TestContext {
         let v: Vec<String> = read_chars.into_iter().map(|i| i.to_string()).collect();
         self.read_chars = RefCell::new(VecDeque::from(v));
     }
+
+    fn set_read_line(&mut self, read_line: &str) {
+        self.read_line = read_line.to_string();
+    }
 }
 
 impl Context for TestContext {
@@ -132,7 +136,7 @@ fn test_record() {
         ("commit -m commitmsg -e", 0),
     ]);
     ctx.set_env_args(&["rec"]);
-    ctx.read_line = "commitmsg".to_string();
+    ctx.set_read_line("commitmsg");
     ctx.set_read_chars(&['y']);
 
     main(&ctx).unwrap();
@@ -151,7 +155,7 @@ fn test_record_files() {
         ("commit -m commitmsg -e", 0),
     ]);
     ctx.set_env_args(&["rec", "file1"]);
-    ctx.read_line = "commitmsg".to_string();
+    ctx.set_read_line("commitmsg");
     ctx.set_read_chars(&['y']);
 
     main(&ctx).unwrap();
@@ -169,7 +173,7 @@ fn test_record_quit() {
     // Note the lack of 'commit' here.
     ctx.set_command_statuses(&[("diff --quiet HEAD", 1), ("add --patch", 0)]);
     ctx.set_env_args(&["rec"]);
-    ctx.read_line = "commitmsg".to_string();
+    ctx.set_read_line("commitmsg");
     ctx.set_read_chars(&['q']);
 
     main(&ctx).unwrap();
@@ -190,7 +194,7 @@ fn test_record_try_again() {
         ("commit -m commitmsg -e", 0),
     ]);
     ctx.set_env_args(&["rec"]);
-    ctx.read_line = "commitmsg".to_string();
+    ctx.set_read_line("commitmsg");
     ctx.set_read_chars(&['x', 'y']);
 
     main(&ctx).unwrap();
@@ -205,7 +209,7 @@ fn test_revert_no_changes() {
     let mut ctx = TestContext::new();
     ctx.set_command_statuses(&[("diff --quiet HEAD", 0)]);
     ctx.set_env_args(&["rev"]);
-    ctx.read_line = "commitmsg".to_string();
+    ctx.set_read_line("commitmsg");
 
     main(&ctx).unwrap();
 
@@ -429,4 +433,18 @@ fn test_checked_run_fails() {
     let ret = checked_run(&ctx, "git", &["false"]);
 
     assert!(ret.is_err());
+}
+
+#[test]
+fn test_unpull_cancel() {
+    let mut ctx = TestContext::new();
+    // Cancel, so no 'reset'.
+    ctx.set_command_statuses(&[("log -1", 0)]);
+    ctx.set_read_chars(&['n']);
+    ctx.set_env_args(&["unpull"]);
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.contains("want to unpull"));
 }
