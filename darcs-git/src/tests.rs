@@ -426,6 +426,19 @@ fn test_unpull() {
 }
 
 #[test]
+fn test_unpull_try_again() {
+    let mut ctx = TestContext::new();
+    ctx.set_command_statuses(&[("log -1", 0), ("reset --hard HEAD^", 0)]);
+    ctx.set_read_chars(&['x', 'y']);
+    ctx.set_env_args(&["unpull"]);
+
+    main(&ctx).unwrap();
+
+    let printed_lines = ctx.printed_lines.borrow();
+    assert!(printed_lines.contains("unpulling"));
+}
+
+#[test]
 fn test_checked_run_fails() {
     let mut ctx = TestContext::new();
     ctx.set_command_statuses(&[("false", 1)]);
