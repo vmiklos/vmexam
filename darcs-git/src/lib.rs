@@ -242,10 +242,19 @@ fn get_subcommands() -> Vec<clap::Command> {
 pub fn main(ctx: &dyn Context) -> anyhow::Result<()> {
     let app = clap::Command::new("darcs-git").subcommand_required(true);
 
+    // This will fail when the subcommand is unrecognized.
     let matches = app
         .subcommands(get_subcommands())
         .try_get_matches_from(ctx.env_args())?;
+
     let subcommand = matches.subcommand().context("subcommand failed")?;
+    handle_subcommand(ctx, subcommand)
+}
+
+fn handle_subcommand(
+    ctx: &dyn Context,
+    subcommand: (&str, &clap::ArgMatches),
+) -> anyhow::Result<()> {
     match subcommand {
         ("rec", args) => record(ctx, args),
         ("rev", args) => revert(ctx, args),

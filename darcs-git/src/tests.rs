@@ -449,6 +449,16 @@ fn test_checked_run_fails() {
 }
 
 #[test]
+fn test_handle_subcommand() {
+    let ctx = TestContext::new();
+    let subcommand = ("unpush", &clap::ArgMatches::default());
+
+    let ret = handle_subcommand(&ctx, subcommand);
+
+    assert!(ret.is_err());
+}
+
+#[test]
 fn test_unpull_cancel() {
     let mut ctx = TestContext::new();
     // Cancel, so no 'reset'.

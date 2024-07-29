@@ -72,7 +72,7 @@ $(eval $(call RustPackage_RustPackage,csp))
 
 $(eval $(call RustPackage_RustPackage,darcs-git))
 $(eval $(call RustPackage_use_test,darcs-git))
-#$(eval $(call RustPackage_use_coverage,darcs-git))
+$(eval $(call RustPackage_use_coverage,darcs-git))
 
 $(eval $(call RustPackage_RustPackage,fit2json))
 
