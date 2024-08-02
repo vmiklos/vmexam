@@ -6,10 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0.75"
-clap = "4.4.7"
-home = "0.5.5"
-regex = "1.10.2"
-time = { version = "0.3.30", features = ["formatting", "macros", "local-offset"] }
+anyhow = "1.0.86"
+clap = "4.5.13"
+home = "0.5.9"
+regex = "1.10.6"
+time = { version = "0.3.36", features = ["formatting", "macros", "local-offset"] }
 unidecode = "0.3.0"
-vfs = "0.10.0"
+vfs = "0.12.0"
