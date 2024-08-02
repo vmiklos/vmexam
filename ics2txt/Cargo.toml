@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0.76"
-ical = "0.9.0"
-time = { version = "0.3.31", features = ["formatting", "local-offset", "parsing"] }
+anyhow = "1.0.86"
+ical = "0.11.0"
+time = { version = "0.3.36", features = ["formatting", "local-offset", "parsing"] }
 time-tz = "2.0.0"
