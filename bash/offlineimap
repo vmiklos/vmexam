@@ -6,7 +6,10 @@
 #
 # offlineimap was python2-only, so use mbsync and notmuch instead.
 
-mbsync collabora
+while true
+do
+    mbsync collabora && break
+done
 notmuch new
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
