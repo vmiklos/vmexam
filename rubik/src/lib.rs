@@ -85,7 +85,6 @@ pub fn shuffle(lang: &str, wide: bool) -> anyhow::Result<String> {
             }
         };
         let turn = format!("{side}{wide}{direction}");
-        // format!("{:0>8}", "110"));
         ret.push(format!("{turn: <4}"));
         if step % 4 == 0 {
             ret.push(" ".to_string());

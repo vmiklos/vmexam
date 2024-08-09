@@ -90,14 +90,16 @@ fn colors_to_faces(colors: &Option<String>) -> anyhow::Result<String> {
     Ok(String::from_utf8(faces)?)
 }
 
+const TABLE: &[u8] = include_bytes!("../bin/table.bin");
+
 fn solve(args: &Solve) -> anyhow::Result<()> {
     let faces = colors_to_faces(&args.colors)?;
-    let face_cube = kewb::FaceCube::try_from(faces.as_str()).unwrap();
-    let state = kewb::State::try_from(&face_cube).unwrap();
-    let (move_table, pruning_table) = kewb::fs::read_table()?;
+    let face_cube = kewb::FaceCube::try_from(faces.as_str())?;
+    let state = kewb::CubieCube::try_from(&face_cube)?;
+    let table = kewb::fs::decode_table(TABLE)?;
     let max: u8 = 23;
     let timeout: Option<f32> = None;
-    let mut solver = kewb::Solver::new(&move_table, &pruning_table, max, timeout);
+    let mut solver = kewb::Solver::new(&table, max, timeout);
     let solution = solver.solve(state).context("no solution")?;
     println!("{solution}");
     Ok(())
