@@ -196,7 +196,6 @@ sw/source/writerfilter/ooxml/qnametostr.py
 sw/source/writerfilter/ooxml/resourceids.py
 sw/source/writerfilter/rtftok/rtfcharsets.cxx
 sw/source/writerfilter/rtftok/rtfcharsets.hxx
-sw/source/writerfilter/rtftok/rtfcontrolwords.cxx
 sw/source/writerfilter/rtftok/rtfcontrolwords.hxx
 sw/source/writerfilter/rtftok/rtfdispatchdestination.cxx
 sw/source/writerfilter/rtftok/rtfdispatchflag.cxx
