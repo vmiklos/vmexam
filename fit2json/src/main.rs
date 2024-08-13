@@ -67,13 +67,14 @@ fn format_duration(num_seconds: i64) -> String {
     format!("{hours}:{minutes:0>2}:{seconds:0>2}")
 }
 
-fn extract_stats(args: &Arguments) -> anyhow::Result<Vec<(String, String)>> {
+/// Returns stats in general and name in particular.
+fn extract_stats(args: &Arguments) -> anyhow::Result<(Vec<(String, String)>, String)> {
     let mut stats: Vec<(String, String)> = Vec::new();
     let mut meta_json = std::path::PathBuf::from(&args.fit);
     meta_json.set_extension("meta.json");
     let file = std::fs::File::open(meta_json)?;
     let activity: Activity = serde_json::from_reader(&file)?;
-    stats.push(("Name".into(), activity.name));
+    stats.push(("Name".into(), activity.name.to_string()));
     stats.push((
         "Distance".into(),
         format!("{:.2} km", activity.distance / 1000_f64),
@@ -98,7 +99,7 @@ fn extract_stats(args: &Arguments) -> anyhow::Result<Vec<(String, String)>> {
         "Elapsed time".into(),
         format_duration(activity.elapsed_time as i64),
     ));
-    Ok(stats)
+    Ok((stats, activity.name.to_string()))
 }
 
 fn read_json(json_path: &str) -> anyhow::Result<serde_json::Value> {
@@ -144,8 +145,14 @@ fn main() -> anyhow::Result<()> {
     let mut table: Vec<(String, String)> = Vec::new();
 
     // Try to inject the activity name & stats.
-    if let Ok(mut stats) = extract_stats(&args) {
+    if let Ok((mut stats, name)) = extract_stats(&args) {
         table.append(&mut stats);
+
+        let name = serde_json::Value::from(name);
+        properties
+            .as_object_mut()
+            .unwrap()
+            .insert("name".into(), name);
     }
 
     // Write the potentially mutated JSON.
