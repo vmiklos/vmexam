@@ -40,6 +40,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
     const response = await window.fetch(activityURL);
     const activity = await response.json();
+    if (activity.features[0].properties) {
+        let properties = activity.features[0].properties;
+        if (properties.name != null) {
+            document.title = properties.name;
+        }
+    }
     const geoJSON = L.geoJSON(activity, {
         onEachFeature: onEachFeature,
     }).addTo(map);
