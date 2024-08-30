@@ -122,6 +122,8 @@ $(eval $(call RustPackage_RustPackage,ssh-proxy))
 $(eval $(call RustPackage_RustPackage,tpconv))
 $(eval $(call RustPackage_use_coverage,tpconv))
 
+$(eval $(call RustPackage_RustPackage,uchroot))
+
 $(eval $(call RustPackage_RustPackage,weechat-calc))
 
 $(eval $(call RustPackage_RustPackage,weesearch))
