@@ -56,19 +56,6 @@ fn mount(source: &str, target: &str, flags: libc::c_ulong) -> anyhow::Result<()>
     }
 }
 
-/// Changes the root directory to `path`.
-fn chroot(path: &str) -> anyhow::Result<()> {
-    let c_path = std::ffi::CString::new(path)?;
-    match unsafe { libc::chroot(c_path.as_ptr()) } {
-        0 => Ok(()),
-        _ => Err(anyhow::anyhow!(
-            "failed to chroot {}: {}",
-            path,
-            std::io::Error::last_os_error()
-        )),
-    }
-}
-
 fn main() -> anyhow::Result<()> {
     // It's important to save these before we call unshare().
     let euid = geteuid();
@@ -91,7 +78,7 @@ fn main() -> anyhow::Result<()> {
     mount("/sys", "sys", libc::MS_BIND | libc::MS_REC)?;
 
     // Change the root dir.
-    chroot(".")?;
+    std::os::unix::fs::chroot(".")?;
     std::env::set_current_dir(std::path::Path::new("/"))?;
 
     // Start bash.
