@@ -12,35 +12,70 @@
 
 use anyhow::Context as _;
 
-fn mount_rbind(from: &str, to: &str) -> anyhow::Result<()> {
-    let from = std::ffi::CString::new(from)?;
-    let to = std::ffi::CString::new(to)?;
-    if unsafe {
+/// Control the shared execution context without creating a new process.
+fn unshare(flags: libc::c_int) -> anyhow::Result<()> {
+    match unsafe { libc::unshare(flags) } {
+        0 => Ok(()),
+        _ => Err(anyhow::anyhow!(
+            "failed to unshare: {}",
+            std::io::Error::last_os_error()
+        )),
+    }
+}
+
+/// Returns the effective user ID of the process.
+fn geteuid() -> u32 {
+    unsafe { libc::geteuid() }
+}
+
+/// Returns the effective group ID of the process.
+fn getegid() -> u32 {
+    unsafe { libc::getegid() }
+}
+
+/// Attaches the filesystem specified by `source` to the location specified by `target`.
+fn mount(source: &str, target: &str, flags: libc::c_ulong) -> anyhow::Result<()> {
+    let c_source = std::ffi::CString::new(source)?;
+    let c_target = std::ffi::CString::new(target)?;
+    match unsafe {
         libc::mount(
-            from.as_ptr(),
-            to.as_ptr(),
+            c_source.as_ptr(),
+            c_target.as_ptr(),
             std::ptr::null(),
-            libc::MS_BIND | libc::MS_REC,
+            flags,
             std::ptr::null(),
         )
-    } < 0
-    {
-        return Err(anyhow::anyhow!("mount() failed"));
+    } {
+        0 => Ok(()),
+        _ => Err(anyhow::anyhow!(
+            "failed to mount {} to {}: {}",
+            source,
+            target,
+            std::io::Error::last_os_error()
+        )),
     }
+}
 
-    Ok(())
+/// Changes the root directory to `path`.
+fn chroot(path: &str) -> anyhow::Result<()> {
+    let c_path = std::ffi::CString::new(path)?;
+    match unsafe { libc::chroot(c_path.as_ptr()) } {
+        0 => Ok(()),
+        _ => Err(anyhow::anyhow!(
+            "failed to chroot {}: {}",
+            path,
+            std::io::Error::last_os_error()
+        )),
+    }
 }
 
 fn main() -> anyhow::Result<()> {
     // It's important to save these before we call unshare().
-    let euid = unsafe { libc::geteuid() };
-    let egid = unsafe { libc::getegid() };
+    let euid = geteuid();
+    let egid = getegid();
 
     // Create new user and mount namespaces.
-    let unshare_flags: libc::c_int = libc::CLONE_NEWUSER | libc::CLONE_NEWNS;
-    if unsafe { libc::unshare(unshare_flags) } < 0 {
-        return Err(anyhow::anyhow!("unshare() failed"));
-    }
+    unshare(libc::CLONE_NEWUSER | libc::CLONE_NEWNS)?;
 
     // Map the current effective user and group IDs to root in the user
     // namespace.
@@ -51,15 +86,12 @@ fn main() -> anyhow::Result<()> {
         .context("failed to write gid_map")?;
 
     // Create bind mounts.
-    mount_rbind("/dev", "dev")?;
-    mount_rbind("/proc", "proc")?;
-    mount_rbind("/sys", "sys")?;
+    mount("/dev", "dev", libc::MS_BIND | libc::MS_REC)?;
+    mount("/proc", "proc", libc::MS_BIND | libc::MS_REC)?;
+    mount("/sys", "sys", libc::MS_BIND | libc::MS_REC)?;
 
     // Change the root dir.
-    let current_dir = std::ffi::CString::new(".")?;
-    if unsafe { libc::chroot(current_dir.as_ptr()) } < 0 {
-        return Err(anyhow::anyhow!("chroot() failed"));
-    }
+    chroot(".")?;
     std::env::set_current_dir(std::path::Path::new("/"))?;
 
     // Start bash.
