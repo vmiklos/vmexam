@@ -57,6 +57,15 @@ fn mount(source: &str, target: &str, flags: libc::c_ulong) -> anyhow::Result<()>
 }
 
 fn main() -> anyhow::Result<()> {
+    let argv: Vec<String> = std::env::args().collect();
+    let newroot_arg = clap::Arg::new("newroot");
+    let args = [newroot_arg];
+    let app = clap::Command::new("uchroot");
+    let args = app.args(&args).try_get_matches_from(argv)?;
+    let newroot: &str = args
+        .get_one::<String>("newroot")
+        .context("newroot is required")?;
+
     // It's important to save these before we call unshare().
     let euid = geteuid();
     let egid = getegid();
@@ -78,7 +87,7 @@ fn main() -> anyhow::Result<()> {
     mount("/sys", "sys", libc::MS_BIND | libc::MS_REC)?;
 
     // Change the root dir.
-    std::os::unix::fs::chroot(".")?;
+    std::os::unix::fs::chroot(newroot)?;
     std::env::set_current_dir(std::path::Path::new("/"))?;
 
     // Start bash.
