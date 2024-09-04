@@ -23,16 +23,6 @@ fn unshare(flags: libc::c_int) -> anyhow::Result<()> {
     }
 }
 
-/// Returns the effective user ID of the process.
-fn geteuid() -> u32 {
-    unsafe { libc::geteuid() }
-}
-
-/// Returns the effective group ID of the process.
-fn getegid() -> u32 {
-    unsafe { libc::getegid() }
-}
-
 /// Attaches the filesystem specified by `source` to the location specified by `target`.
 fn mount(source: &str, target: &str, flags: libc::c_ulong) -> anyhow::Result<()> {
     let c_source = std::ffi::CString::new(source)?;
@@ -59,16 +49,23 @@ fn mount(source: &str, target: &str, flags: libc::c_ulong) -> anyhow::Result<()>
 fn main() -> anyhow::Result<()> {
     let argv: Vec<String> = std::env::args().collect();
     let newroot_arg = clap::Arg::new("newroot");
-    let args = [newroot_arg];
+    let command_arg = clap::Arg::new("command")
+        .trailing_var_arg(true)
+        .num_args(0..);
+    let args = [newroot_arg, command_arg];
     let app = clap::Command::new("uchroot");
     let args = app.args(&args).try_get_matches_from(argv)?;
     let newroot: &str = args
         .get_one::<String>("newroot")
         .context("newroot is required")?;
+    let command: Vec<String> = match args.get_many("command") {
+        Some(value) => value.cloned().collect(),
+        None => vec!["bash".to_string()],
+    };
 
     // It's important to save these before we call unshare().
-    let euid = geteuid();
-    let egid = getegid();
+    let euid = nix::unistd::geteuid();
+    let egid = nix::unistd::getegid();
 
     // Create new user and mount namespaces.
     unshare(libc::CLONE_NEWUSER | libc::CLONE_NEWNS)?;
@@ -90,8 +87,9 @@ fn main() -> anyhow::Result<()> {
     std::os::unix::fs::chroot(newroot)?;
     std::env::set_current_dir(std::path::Path::new("/"))?;
 
-    // Start bash.
-    std::process::Command::new("bash").status()?;
+    // Start the command.
+    let (first, rest) = command.split_first().context("missing command")?;
+    std::process::Command::new(first).args(rest).status()?;
 
     Ok(())
 }
