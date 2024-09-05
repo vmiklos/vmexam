@@ -7,4 +7,4 @@ edition = "2021"
 anyhow = "1.0.86"
 clap = "4.5.16"
 libc = "0.2.158"
-nix = { version = "0.29.0", features = ["user"] }
+nix = { version = "0.29.0", features = ["mount", "sched", "user"] }

@@ -12,40 +12,6 @@
 
 use anyhow::Context as _;
 
-/// Control the shared execution context without creating a new process.
-fn unshare(flags: libc::c_int) -> anyhow::Result<()> {
-    match unsafe { libc::unshare(flags) } {
-        0 => Ok(()),
-        _ => Err(anyhow::anyhow!(
-            "failed to unshare: {}",
-            std::io::Error::last_os_error()
-        )),
-    }
-}
-
-/// Attaches the filesystem specified by `source` to the location specified by `target`.
-fn mount(source: &str, target: &str, flags: libc::c_ulong) -> anyhow::Result<()> {
-    let c_source = std::ffi::CString::new(source)?;
-    let c_target = std::ffi::CString::new(target)?;
-    match unsafe {
-        libc::mount(
-            c_source.as_ptr(),
-            c_target.as_ptr(),
-            std::ptr::null(),
-            flags,
-            std::ptr::null(),
-        )
-    } {
-        0 => Ok(()),
-        _ => Err(anyhow::anyhow!(
-            "failed to mount {} to {}: {}",
-            source,
-            target,
-            std::io::Error::last_os_error()
-        )),
-    }
-}
-
 fn main() -> anyhow::Result<()> {
     let argv: Vec<String> = std::env::args().collect();
     let newroot_arg = clap::Arg::new("newroot");
@@ -68,7 +34,9 @@ fn main() -> anyhow::Result<()> {
     let egid = nix::unistd::getegid();
 
     // Create new user and mount namespaces.
-    unshare(libc::CLONE_NEWUSER | libc::CLONE_NEWNS)?;
+    nix::sched::unshare(
+        nix::sched::CloneFlags::CLONE_NEWUSER | nix::sched::CloneFlags::CLONE_NEWNS,
+    )?;
 
     // Map the current effective user and group IDs to root in the user
     // namespace.
@@ -79,9 +47,28 @@ fn main() -> anyhow::Result<()> {
         .context("failed to write gid_map")?;
 
     // Create bind mounts.
-    mount("/dev", "dev", libc::MS_BIND | libc::MS_REC)?;
-    mount("/proc", "proc", libc::MS_BIND | libc::MS_REC)?;
-    mount("/sys", "sys", libc::MS_BIND | libc::MS_REC)?;
+    let none: Option<&'static [u8]> = None;
+    nix::mount::mount(
+        Some("/dev"),
+        "dev",
+        none,
+        nix::mount::MsFlags::MS_BIND | nix::mount::MsFlags::MS_REC,
+        none,
+    )?;
+    nix::mount::mount(
+        Some("/proc"),
+        "proc",
+        none,
+        nix::mount::MsFlags::MS_BIND | nix::mount::MsFlags::MS_REC,
+        none,
+    )?;
+    nix::mount::mount(
+        Some("/sys"),
+        "sys",
+        none,
+        nix::mount::MsFlags::MS_BIND | nix::mount::MsFlags::MS_REC,
+        none,
+    )?;
 
     // Change the root dir.
     std::os::unix::fs::chroot(newroot)?;
