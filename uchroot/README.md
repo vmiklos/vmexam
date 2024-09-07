@@ -16,7 +16,9 @@ cargo install --git https://github.com/vmiklos/vmexam uchroot
 ## Configuration mechanism
 
 Mounts are only performed in case a `mounts.conf` is provided in the current directory. Format is
-the same as containers-mounts.conf(5), typical contents is:
+the same as
+[containers-mounts.conf(5)](https://github.com/containers/common/blob/main/docs/containers-mounts.conf.5.md),
+typical contents is:
 
 ```
 /dev:/dev
