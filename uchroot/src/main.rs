@@ -54,7 +54,7 @@ fn main() -> anyhow::Result<()> {
             let source = it.next().context("no source in mount line")?;
             let mut target = it.next().context("no target in mount line")?;
             target = target
-                .strip_prefix("/")
+                .strip_prefix('/')
                 .context("target is not an absolute path inside the container")?;
 
             nix::mount::mount(
