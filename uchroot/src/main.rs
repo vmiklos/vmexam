@@ -46,29 +46,26 @@ fn main() -> anyhow::Result<()> {
     std::fs::write("/proc/self/gid_map", format!("0 {} 1", egid))
         .context("failed to write gid_map")?;
 
-    // Create bind mounts.
+    // Create bind mounts if we find a mounts.conf.
     let none: Option<&'static [u8]> = None;
-    nix::mount::mount(
-        Some("/dev"),
-        "dev",
-        none,
-        nix::mount::MsFlags::MS_BIND | nix::mount::MsFlags::MS_REC,
-        none,
-    )?;
-    nix::mount::mount(
-        Some("/proc"),
-        "proc",
-        none,
-        nix::mount::MsFlags::MS_BIND | nix::mount::MsFlags::MS_REC,
-        none,
-    )?;
-    nix::mount::mount(
-        Some("/sys"),
-        "sys",
-        none,
-        nix::mount::MsFlags::MS_BIND | nix::mount::MsFlags::MS_REC,
-        none,
-    )?;
+    if let Ok(mount_lines) = std::fs::read_to_string("mounts.conf") {
+        for line in mount_lines.lines() {
+            let mut it = line.split(':');
+            let source = it.next().context("no source in mount line")?;
+            let mut target = it.next().context("no target in mount line")?;
+            target = target
+                .strip_prefix("/")
+                .context("target is not an absolute path inside the container")?;
+
+            nix::mount::mount(
+                Some(source),
+                target,
+                none,
+                nix::mount::MsFlags::MS_BIND | nix::mount::MsFlags::MS_REC,
+                none,
+            )?;
+        }
+    }
 
     // Change the root dir.
     std::os::unix::fs::chroot(newroot)?;
