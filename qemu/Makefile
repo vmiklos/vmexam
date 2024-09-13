@@ -1,4 +1,4 @@
-build: Makefile
+build: Makefile requirements.txt
 	mypy --python-version 3.11 --strict --no-error-summary exec_client.py
 	mypy --python-version 3.11 --strict --no-error-summary exec_server.py
 

@@ -52,13 +52,13 @@ def application(
             flags |= 0x00000008  # DETACHED_PROCESS
             flags |= 0x00000200  # CREATE_NEW_PROCESS_GROUP
             flags |= 0x08000000  # CREATE_NO_WINDOW
+            # pylint: disable=consider-using-with
             subprocess.Popen(command,
                              close_fds=True,  # close stdin/stdout/stderr on child
                              creationflags=flags)
         else:
-            process = subprocess.run(command, stdout=subprocess.PIPE)
-            out = process.stdout.decode("utf-8")
-            process.check_returncode()
+            sync_process = subprocess.run(command, stdout=subprocess.PIPE, check=True)
+            out = sync_process.stdout.decode("utf-8")
     # pylint: disable=broad-except
     except Exception:
         body = "KO"

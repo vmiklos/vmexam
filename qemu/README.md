@@ -1,4 +1,4 @@
-= qemu exec client/server
+# qemu exec client/server
 
 Problem: a (Windows) VM runs some software (Adobe Acrobat, Microsoft Word, etc), but the files are
 on the host. Given that the files are shared between the guest and the host, it would be nice to
@@ -10,14 +10,14 @@ apps as well.
 
 Start the server like this:
 
-----
+````
 python exec_server.py
-----
+```
 
 Start the client like this:
 
-----
+```
 ./exec_client.py calc.exe
-----
+```
 
 A winword wrapper script is included to give an idea about an app-specific wrapper.

@@ -23,6 +23,7 @@ You may want to customize:
 
 from typing import Any
 from typing import Dict
+from typing import List
 import configparser
 import json
 import os
@@ -52,6 +53,22 @@ def get_config() -> configparser.ConfigParser:
     return config
 
 
+def host_to_guest(argv: List[str]) -> List[str]:
+    """Map from host path to guest path."""
+    abs_argv = []
+    for arg in argv:
+        if os.path.exists(arg):
+            if os.path.isabs(arg):
+                abs_argv.append(arg)
+            else:
+                abs_argv.append(os.path.abspath(arg))
+        else:
+            abs_argv.append(arg)
+    abs_argv = [i.replace(os.path.join(os.environ["HOME"], "git"), 'z:') for i in abs_argv]
+    abs_argv = [i.replace("/", "\\") for i in abs_argv]
+    return abs_argv
+
+
 def main() -> None:
     """Commandline interface to this module."""
     config = get_config()
@@ -69,38 +86,27 @@ def main() -> None:
     for key, value in ALIASES.items():
         if not my_name.endswith(key):
             continue
-        if type(value) is dict:
+        if isinstance(value, dict):
             command = value["command"]
             if "sync" in value:
                 sync = True
         else:
-            assert type(value) == str
+            assert isinstance(value, str)
             command = value
     if command:
         argv = [command] + argv
 
-    # Map from host path to guest path.
-    abs_argv = []
-    for arg in argv:
-        if os.path.exists(arg):
-            if os.path.isabs(arg):
-                abs_argv.append(arg)
-            else:
-                abs_argv.append(os.path.abspath(arg))
-        else:
-            abs_argv.append(arg)
-    abs_argv = [i.replace(os.path.join(os.environ["HOME"], "git"), 'z:') for i in abs_argv]
-    abs_argv = [i.replace("/", "\\") for i in abs_argv]
+    argv = host_to_guest(argv)
 
     payload_dict: Dict[str, Any] = {
-        "command": abs_argv
+        "command": argv
     }
     if sync:
         payload_dict["sync"] = "true"
     payload = json.dumps(payload_dict)
-    url = "http://{}:8000/exec".format(guest_ip)
+    url = f"http://{guest_ip}:8000/exec"
     if verbose:
-        print("Sending payload '{}' to <{}>".format(payload, url))
+        print(f"Sending payload '{payload}' to <{url}>")
     with urllib.request.urlopen(url, bytes(payload, "utf-8")) as stream:
         buf = stream.read()
         print(str(buf, "utf-8"))
