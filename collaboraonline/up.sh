@@ -26,8 +26,9 @@ time (
         --prefix=$PWD/install \
         --enable-debug \
         --enable-experimental \
-        --with-lo-path=$HOME/git/libreoffice/core/instdir \
-        --with-lokit-path=$HOME/git/libreoffice/core/include \
+        --enable-cypress \
+        --with-lo-path=$HOME/git/libreoffice/co-24.04/instdir \
+        --with-lokit-path=$HOME/git/libreoffice/co-24.04/include \
         CFLAGS="-g -O0 $CFLAGS" \
         CXXFLAGS="-g -O0 $CXXFLAGS" \
 
@@ -39,7 +40,7 @@ time (
 
     make -j$(getconf _NPROCESSORS_ONLN)
     make ctags
-    make check
+    make -C test check
 ) 2>&1 |tee log
 
 exit ${PIPESTATUS[0]}
