@@ -12,12 +12,19 @@ interface DescriptionSupplier {
 }
 
 function onEachFeature(
+    map: L.Map,
     feature: geojson.Feature<geojson.GeometryObject, DescriptionSupplier>,
     layer: L.Layer
 ) {
     if (feature.properties == null || feature.properties.description == null) {
         return;
     }
+
+    const geometry = <geojson.MultiPoint>feature.geometry;
+    L.popup()
+        .setLatLng([geometry.coordinates[0][1], geometry.coordinates[0][0]])
+        .setContent(feature.properties.description)
+        .openOn(map);
 
     layer.bindPopup(feature.properties.description);
 }
@@ -41,13 +48,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     const response = await window.fetch(activityURL);
     const activity = await response.json();
     if (activity.features[0].properties) {
-        let properties = activity.features[0].properties;
+        const properties = activity.features[0].properties;
         if (properties.name != null) {
             document.title = properties.name;
         }
     }
     const geoJSON = L.geoJSON(activity, {
-        onEachFeature: onEachFeature,
+        onEachFeature: (feature, layer) => onEachFeature(map, feature, layer),
     }).addTo(map);
     map.fitBounds(geoJSON.getBounds());
 });
