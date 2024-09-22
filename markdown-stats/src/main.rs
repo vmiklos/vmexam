@@ -23,12 +23,15 @@ fn main() -> anyhow::Result<()> {
     let markdown_reader = std::io::BufReader::new(markdown_file);
     let mut checkmark_todo = 0;
     let mut checkmark_done = 0;
+    let mut bullet_count = 0;
     for line in markdown_reader.lines() {
         let line = line?;
         if line.starts_with("- [ ] ") {
             checkmark_todo += 1;
         } else if line.starts_with("- [x] ") {
             checkmark_done += 1;
+        } else if line.starts_with("- ") {
+            bullet_count += 1;
         }
     }
 
@@ -41,6 +44,7 @@ fn main() -> anyhow::Result<()> {
         "CHECKMARK_PROGRESS = {0:.2}",
         checkmark_done as f64 / checkmark_total as f64 * 100.0
     )?;
+    writeln!(make_file, "BULLET_COUNT = {}", bullet_count)?;
 
     Ok(())
 }
