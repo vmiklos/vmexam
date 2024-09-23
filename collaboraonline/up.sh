@@ -15,29 +15,7 @@ time (
         make clean
     fi
 
-    # If sanitizers already set a CC/CXX, don't overwrite it.
-    if [ -z "$CC" ]; then
-        export CC="ccache gcc-12"
-    fi
-    if [ -z "$CXX" ]; then
-        export CXX="ccache g++-12"
-    fi
-    ./autogen.sh \
-        --prefix=$PWD/install \
-        --enable-debug \
-        --enable-experimental \
-        --enable-cypress \
-        --with-lo-path=$HOME/git/libreoffice/co-24.04/instdir \
-        --with-lokit-path=$HOME/git/libreoffice/co-24.04/include \
-        CFLAGS="-g -O0 $CFLAGS" \
-        CXXFLAGS="-g -O0 $CXXFLAGS" \
-
-    # Self-built poco:
-    #    --with-poco-includes=$HOME/git/poco/install/include \
-    #    --with-poco-libs=$HOME/git/poco/lib/Linux/x86_64 \
-    # #if ENABLE_SUPPORT_KEY:
-    #    --with-support-public-key=$HOME/downloads/vmiklos.pem \
-
+    ./autogen.py
     make -j$(getconf _NPROCESSORS_ONLN)
     make ctags
     make -C test check
