@@ -7,6 +7,7 @@
 from z3 import Int
 from z3 import Or
 from z3 import Solver
+from z3 import sat
 
 """
 https://www.oktatas.hu/pub_bin/dload/kozoktatas/beiskolazas/feladatsorok/2022/M4_2022_1_fl.pdf 7)
@@ -32,8 +33,7 @@ s.add(Or(b == 3, b == 5))
 s.add((100 * z + 10 * z + r) + (100 * r + 10 * r + z) == (100 * b + 10 * b + b))
 solutions = []
 while True:
-    ret = s.check()
-    if str(ret) != "sat":
+    if s.check() != sat:
         break
     model = s.model()
     solution = f" {model[z]}{model[z]}{model[r]}\n"
