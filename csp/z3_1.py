@@ -9,6 +9,8 @@ from z3 import Or
 from z3 import Solver
 
 """
+https://www.oktatas.hu/pub_bin/dload/kozoktatas/beiskolazas/feladatsorok/2022/M4_2022_1_fl.pdf 7)
+
 In an addition specified by letters, the same letters represent the same digits.
 The following letters can only be the following numbers:
 Z = 1, 2, 3, 4; R = 1, 2, 3; B = 3, 5
