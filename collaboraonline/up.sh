@@ -19,6 +19,9 @@ time (
     make -j$(getconf _NPROCESSORS_ONLN)
     make ctags
     make -C test check
+    # make -C cypress_test check-desktop
+    # make -C cypress_test check-mobile
+    # make -C cypress_test check-multi
 ) 2>&1 |tee log
 
 exit ${PIPESTATUS[0]}
