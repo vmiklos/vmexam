@@ -23,6 +23,14 @@ struct Arguments {
 
 type ByteCursor = std::io::Cursor<Vec<u8>>;
 
+fn read_u16(cursor: &mut ByteCursor) -> anyhow::Result<u16> {
+    Ok(cursor.read_u16::<byteorder::LittleEndian>()?)
+}
+
+fn read_u32(cursor: &mut ByteCursor) -> anyhow::Result<u32> {
+    Ok(cursor.read_u32::<byteorder::LittleEndian>()?)
+}
+
 /// The MBR Bootstrap (flat binary executable code).
 struct BootstrapRecord<'a> {
     cursor: &'a mut ByteCursor,
@@ -40,7 +48,7 @@ impl<'a> BootstrapRecord<'a> {
         let mut byte_array = Vec::new();
         let mut array_start_pos = pos;
         while self.cursor.position() < pos + 440 {
-            byte_array.push(self.cursor.read_u16::<byteorder::LittleEndian>()?);
+            byte_array.push(read_u16(self.cursor)?);
             word_count += 1;
             if word_count == 8 {
                 let offset = format!("{:04X}", array_start_pos);
@@ -94,14 +102,8 @@ impl<'a> PartitionRecord<'a> {
         println!(r#"<ending_chs_2 value="{:#x}"/>"#, self.cursor.read_u8()?);
         println!(r#"<ending_chs_3 value="{:#x}"/>"#, self.cursor.read_u8()?);
         // start sector, 1 sector = 512 bytes
-        println!(
-            r#"<lba value="{:#x}"/>"#,
-            self.cursor.read_u32::<byteorder::LittleEndian>()?
-        );
-        println!(
-            r#"<sector_count value="{:#x}"/>"#,
-            self.cursor.read_u32::<byteorder::LittleEndian>()?
-        );
+        println!(r#"<lba value="{:#x}"/>"#, read_u32(self.cursor)?);
+        println!(r#"<sector_count value="{:#x}"/>"#, read_u32(self.cursor)?);
         println!("</partition-record>");
         Ok(())
     }
@@ -124,21 +126,12 @@ impl<'a> MbrStream<'a> {
             self.cursor.get_ref().len()
         );
         BootstrapRecord::new(self.cursor).dump()?;
-        println!(
-            r#"<disk_id value="{:#x}"/>"#,
-            self.cursor.read_u32::<byteorder::LittleEndian>()?
-        );
-        println!(
-            r#"<reserved value="{:#x}"/>"#,
-            self.cursor.read_u16::<byteorder::LittleEndian>()?
-        );
+        println!(r#"<disk_id value="{:#x}"/>"#, read_u32(self.cursor)?);
+        println!(r#"<reserved value="{:#x}"/>"#, read_u16(self.cursor)?);
         for _ in 0..4 {
             PartitionRecord::new(self.cursor).dump()?;
         }
-        println!(
-            r#"<signature value="{:#x}"/>"#,
-            self.cursor.read_u16::<byteorder::LittleEndian>()?
-        );
+        println!(r#"<signature value="{:#x}"/>"#, read_u16(self.cursor)?);
         println!("</stream>");
         assert_eq!(self.cursor.position(), pos + 512);
         Ok(())
