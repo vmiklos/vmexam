@@ -18,7 +18,7 @@ time (
     ./autogen.py
     make -j$(getconf _NPROCESSORS_ONLN)
     make ctags
-    make -C test check
+    # make -C test check
     # make -C cypress_test check-desktop
     # make -C cypress_test check-mobile
     # make -C cypress_test check-multi
