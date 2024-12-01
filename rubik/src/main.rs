@@ -110,7 +110,8 @@ fn shuffle(args: &Shuffle) -> anyhow::Result<()> {
         Some(value) => value.as_str(),
         None => "en",
     };
-    Ok(print!("{}", rubik::shuffle(lang, args.wide)?))
+    print!("{}", rubik::shuffle(lang, args.wide)?);
+    Ok(())
 }
 
 fn main() -> anyhow::Result<()> {
