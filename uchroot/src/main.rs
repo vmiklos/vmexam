@@ -33,9 +33,11 @@ fn main() -> anyhow::Result<()> {
     let euid = nix::unistd::geteuid();
     let egid = nix::unistd::getegid();
 
-    // Create new user and mount namespaces.
+    // Create new user, mount and pid namespaces.
     nix::sched::unshare(
-        nix::sched::CloneFlags::CLONE_NEWUSER | nix::sched::CloneFlags::CLONE_NEWNS,
+        nix::sched::CloneFlags::CLONE_NEWUSER
+            | nix::sched::CloneFlags::CLONE_NEWNS
+            | nix::sched::CloneFlags::CLONE_NEWPID,
     )?;
 
     // Map the current effective user and group IDs to root in the user
