@@ -6,7 +6,7 @@
 BRANCH=$(git symbolic-ref HEAD|sed 's|refs/heads/||')
 time (
     git pull -r
-    if [ -e Makefile ]; then
+    if [ $BRANCH == master -a -e Makefile ]; then
         make distclean
     fi
     ./autogen.sh
