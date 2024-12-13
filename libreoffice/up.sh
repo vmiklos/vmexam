@@ -12,10 +12,13 @@ time (
     ./autogen.sh
     make check gb_SUPPRESS_TESTS=y || make check gb_SUPPRESS_TESTS=y
     make tags
-    (cd instdir && rm -rf user && ln -s $HOME/.config/libreofficedev/$BRANCH/user)
+    # distro/foo/bar -> bar
+    (cd instdir && rm -rf user && ln -s $HOME/.config/libreofficedev/${BRANCH##*/}/user)
     make check
     make vim-ide-integration
-    style-check-files
+    if [ $BRANCH == master ]; then
+        style-check-files
+    fi
 ) 2>&1 |tee log
 
 exit ${PIPESTATUS[0]}
