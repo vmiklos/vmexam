@@ -104,6 +104,8 @@ $(eval $(call RustPackage_use_coverage,nextcloud-open))
 
 $(eval $(call RustPackage_RustPackage,notmuch-showref))
 
+$(eval $(call RustPackage_RustPackage,ocr-document))
+
 $(eval $(call RustPackage_RustPackage,osm/addr-osmify-rust))
 $(eval $(call RustPackage_use_coverage,osm/addr-osmify-rust))
 
