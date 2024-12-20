@@ -61,8 +61,8 @@ for month in range(1, 13):
     imageJpg = open("images/" + monthString + ".jpg", "rb")
     # Landscape A4 for the image.
     pageSize = (a4Height, a4Width)
-    # TOP_OF_CAL_BOXES_PTS in pcal's pcaldefs.h.
-    margin = 85
+    # TOP_OF_CAL_BOXES_PTS in pcal's pcaldefs.h; 50% more so to have enough space for the spiraling.
+    margin = 85 * 1.5
     imageSize = ((img2pdf.ImgSize.abs, a4Height - margin), (img2pdf.ImgSize.abs, a4Width - margin))
     layoutFun = img2pdf.get_layout_fun(pageSize, imageSize, border=None, fit=None, auto_orient=False)
     imageBytes = img2pdf.convert(imageJpg, layout_fun=layoutFun)
