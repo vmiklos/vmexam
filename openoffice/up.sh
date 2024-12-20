@@ -2,7 +2,7 @@
 
 # git clone https://gitbox.apache.org/repos/asf/openoffice.git
 # tested in a centos:centos7 rootless container, build breaks with a non-ancient toolchain
-# last successfull commit: ce48dd1f26396c7ab9fed48d2df6a6b2bfcf6e06 (Maintenance cleanup, 2023-09-18)
+# last successful commit: 64d8ff4dd8a1bddaf9f319bbeb82e1132f0035ee (Cleanup AutoText (SK), 2024-12-19)
 
 time (
     git pull -r
