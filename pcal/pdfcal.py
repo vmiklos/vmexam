@@ -83,11 +83,15 @@ for month in range(1, 13):
     scale = 1. / 2
     if month % 2 == 1:
         page = PyPDF2._page.PageObject.createBlankPage(outputPdf, width=a4Width, height=a4Height)
-        page.mergeRotatedScaledTranslatedPage(imagePage, rotation=-90, scale=scale, tx=a4Width / 2, ty=a4Height)
-        page.mergeRotatedScaledTranslatedPage(calPage, rotation=180, scale=scale, tx=a4Width / 2, ty=a4Height)
+        trans = PyPDF2.Transformation().rotate(-90).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height)
+        page.mergeTransformedPage(imagePage, trans)
+        trans = PyPDF2.Transformation().rotate(180).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height)
+        page.mergeTransformedPage(calPage, trans)
     else:
-        page.mergeRotatedScaledTranslatedPage(imagePage, rotation=-90, scale=scale, tx=a4Width / 2, ty=a4Height / 2)
-        page.mergeRotatedScaledTranslatedPage(calPage, rotation=180, scale=scale, tx=a4Width / 2, ty=a4Height / 2)
+        trans = PyPDF2.Transformation().rotate(-90).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height / 2)
+        page.mergeTransformedPage(imagePage, trans)
+        trans = PyPDF2.Transformation().rotate(180).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height / 2)
+        page.mergeTransformedPage(calPage, trans)
         outputPdf.addPage(page)
 
 outputPdf.write(open("out.pdf", "wb"))
