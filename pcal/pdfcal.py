@@ -82,7 +82,7 @@ for month in range(1, 13):
     # lower half contains the second calendar and the second image.
     scale = 1. / 2
     if month % 2 == 1:
-        page = PyPDF2.pdf.PageObject.createBlankPage(outputPdf, width=a4Width, height=a4Height)
+        page = PyPDF2._page.PageObject.createBlankPage(outputPdf, width=a4Width, height=a4Height)
         page.mergeRotatedScaledTranslatedPage(imagePage, rotation=-90, scale=scale, tx=a4Width / 2, ty=a4Height)
         page.mergeRotatedScaledTranslatedPage(calPage, rotation=180, scale=scale, tx=a4Width / 2, ty=a4Height)
     else:
