@@ -84,14 +84,38 @@ for month in range(1, 13):
     if month % 2 == 1:
         page = PyPDF2._page.PageObject.createBlankPage(outputPdf, width=a4Width, height=a4Height)
         trans = PyPDF2.Transformation().rotate(-90).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height)
-        page.mergeTransformedPage(imagePage, trans)
+        page._merge_page(
+            imagePage,
+            lambda imagePageContent: PyPDF2._page.PageObject._add_transformation_matrix(
+                imagePageContent, imagePage.pdf, trans.ctm
+            ),
+            trans.ctm,
+        )
         trans = PyPDF2.Transformation().rotate(180).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height)
-        page.mergeTransformedPage(calPage, trans)
+        page._merge_page(
+            calPage,
+            lambda calPageContent: PyPDF2._page.PageObject._add_transformation_matrix(
+                calPageContent, calPage.pdf, trans.ctm
+            ),
+            trans.ctm,
+        )
     else:
         trans = PyPDF2.Transformation().rotate(-90).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height / 2)
-        page.mergeTransformedPage(imagePage, trans)
+        page._merge_page(
+            imagePage,
+            lambda imagePageContent: PyPDF2._page.PageObject._add_transformation_matrix(
+                imagePageContent, imagePage.pdf, trans.ctm
+            ),
+            trans.ctm,
+        )
         trans = PyPDF2.Transformation().rotate(180).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height / 2)
-        page.mergeTransformedPage(calPage, trans)
+        page._merge_page(
+            calPage,
+            lambda calPageContent: PyPDF2._page.PageObject._add_transformation_matrix(
+                calPageContent, calPage.pdf, trans.ctm
+            ),
+            trans.ctm,
+        )
         outputPdf.addPage(page)
 
 outputPdf.write(open("out.pdf", "wb"))
