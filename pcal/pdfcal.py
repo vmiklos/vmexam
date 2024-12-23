@@ -82,40 +82,16 @@ for month in range(1, 13):
     # lower half contains the second calendar and the second image.
     scale = 1. / 2
     if month % 2 == 1:
-        page = pypdf._page.PageObject.create_blank_page(outputPdf, width=a4Width, height=a4Height)
+        page = pypdf.PageObject.create_blank_page(outputPdf, width=a4Width, height=a4Height)
         trans = pypdf.Transformation().rotate(-90).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height)
-        page._merge_page(
-            imagePage,
-            lambda imagePageContent: pypdf._page.PageObject._add_transformation_matrix(
-                imagePageContent, imagePage.pdf, trans.ctm
-            ),
-            trans.ctm,
-        )
+        page.merge_transformed_page(imagePage, trans)
         trans = pypdf.Transformation().rotate(180).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height)
-        page._merge_page(
-            calPage,
-            lambda calPageContent: pypdf._page.PageObject._add_transformation_matrix(
-                calPageContent, calPage.pdf, trans.ctm
-            ),
-            trans.ctm,
-        )
+        page.merge_transformed_page(calPage, trans)
     else:
         trans = pypdf.Transformation().rotate(-90).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height / 2)
-        page._merge_page(
-            imagePage,
-            lambda imagePageContent: pypdf._page.PageObject._add_transformation_matrix(
-                imagePageContent, imagePage.pdf, trans.ctm
-            ),
-            trans.ctm,
-        )
+        page.merge_transformed_page(imagePage, trans)
         trans = pypdf.Transformation().rotate(180).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height / 2)
-        page._merge_page(
-            calPage,
-            lambda calPageContent: pypdf._page.PageObject._add_transformation_matrix(
-                calPageContent, calPage.pdf, trans.ctm
-            ),
-            trans.ctm,
-        )
+        page.merge_transformed_page(calPage, trans)
         outputPdf.add_page(page)
 
 outputPdf.write(open("out.pdf", "wb"))

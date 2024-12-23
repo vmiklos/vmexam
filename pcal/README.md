@@ -16,10 +16,10 @@ cp exec/pcal ~/bin/
 Install Python dependencies:
 
 ```
-zypper in python3-Pillow python3-PyPDF2 python3-img2pdf
+python3.11 -m venv pcal-env
+. pcal-env/bin/activate
+pip install -r requirements.txt
 ```
-
-(Or the equivalent of your linux package manager.)
 
 ## Usage
 
