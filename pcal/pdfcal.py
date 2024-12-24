@@ -12,20 +12,23 @@ import io
 import locale
 import subprocess
 import time
+from typing import List
 
 import PIL.ImageFile
-import img2pdf
+import img2pdf  # type: ignore
 import pypdf
 
 
-def ps2pdf(ps):
+def ps2pdf(ps: io.BytesIO) -> io.BytesIO:
     """Converts ps as a buffer-like object containing PS, and converts it to PDF."""
     pdf = io.BytesIO()
 
     args = ["ps2pdf", "-", "-"]
     with subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE) as sock:
+        assert sock.stdin
         sock.stdin.write(ps.read())
         sock.stdin.close()
+        assert sock.stdout
         pdf.write(sock.stdout.read())
         sock.stdout.close()
     pdf.seek(0)
@@ -33,11 +36,12 @@ def ps2pdf(ps):
     return pdf
 
 
-def pcal(args):
+def pcal(args: List[str]) -> io.BytesIO:
     """Invokes 'pcal' with given arguments and returns its output as a buffer-like object."""
     ps = io.BytesIO()
 
     with subprocess.Popen(["pcal"] + args, stdout=subprocess.PIPE) as sock:
+        assert sock.stdout
         ps.write(sock.stdout.read())
         sock.stdout.close()
     ps.seek(0)
@@ -45,19 +49,19 @@ def pcal(args):
     return ps
 
 
-def make_transform(rotate, scale, tx, ty):
+def make_transform(rotate: float, scale: float, tx: float, ty: float) -> pypdf.Transformation:
     """Creates a transform with a specified rotation, scaling and offsets."""
     t = pypdf.Transformation()
     return t.rotate(rotate).scale(scale, scale).translate(tx, ty)
 
 
-def make_pdf_page(image_buf):
+def make_pdf_page(image_buf: io.BytesIO) -> pypdf.PageObject:
     """Creates a PDF page from a byte array."""
     image_pdf = pypdf.PdfReader(image_buf)
     return image_pdf.pages[0]
 
 
-def make_image_page(a4_height, a4_width, month):
+def make_image_page(a4_height: float, a4_width: float, month: str) -> pypdf.PageObject:
     """Creates the image part of a month page."""
     # Landscape A4 for the image.
     page_size = (a4_height, a4_width)
@@ -75,7 +79,7 @@ def make_image_page(a4_height, a4_width, month):
     return make_pdf_page(image_buf)
 
 
-def main():
+def main() -> None:
     """Commandline interface."""
     # Don't refuse loading certain JPEG files if imagemagick is doing so.
     PIL.ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -96,7 +100,9 @@ def main():
 
         # Handle the calendar part.
         next_year = str(time.localtime().tm_year + 1)
-        lang = locale.getlocale()[0].split("_")[0]
+        loc = locale.getlocale()[0]
+        assert loc
+        lang = loc.split("_")[0]
         ps = pcal(["-f", "calendar_" + lang + ".txt", month_string, next_year])
         cal_page = make_pdf_page(ps2pdf(ps))
 
@@ -105,12 +111,14 @@ def main():
         scale = 1. / 2
         if month % 2 == 1:
             page = pypdf.PageObject.create_blank_page(output_pdf, width=a4_width, height=a4_height)
+            assert page
             trans = make_transform(-90, scale, a4_width / 2, a4_height)
             page.merge_transformed_page(image_page, trans)
             trans = make_transform(180, scale, a4_width / 2, a4_height)
             page.merge_transformed_page(cal_page, trans)
         else:
             trans = make_transform(-90, scale, a4_width / 2, a4_height / 2)
+            assert page
             page.merge_transformed_page(image_page, trans)
             trans = make_transform(180, scale, a4_width / 2, a4_height / 2)
             page.merge_transformed_page(cal_page, trans)
