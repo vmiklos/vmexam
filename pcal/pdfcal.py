@@ -6,96 +6,121 @@
 # SPDX-License-Identifier: MIT
 #
 
-# pdfcal: builds on top of pcal, adding image support.
+"""pdfcal: builds on top of pcal, adding image support."""
 
-import PIL.ImageFile
-import pypdf
-import img2pdf
 import io
 import locale
 import subprocess
 import time
 
-
-# Converts inPs as a buffer-like object containing PS, and converts it to PDF.
-def ps2Pdf(inPs):
-    bufPdf = io.BytesIO()
-
-    sock = subprocess.Popen(["ps2pdf", "-", "-"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    sock.stdin.write(inPs.read())
-    sock.stdin.close()
-    bufPdf.write(sock.stdout.read())
-    sock.stdout.close()
-    bufPdf.seek(0)
-
-    return bufPdf
+import PIL.ImageFile
+import img2pdf
+import pypdf
 
 
-# Invokes 'pcal' with given arguments and returns its output as a buffer-like object.
+def ps2pdf(ps):
+    """Converts ps as a buffer-like object containing PS, and converts it to PDF."""
+    pdf = io.BytesIO()
+
+    args = ["ps2pdf", "-", "-"]
+    with subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE) as sock:
+        sock.stdin.write(ps.read())
+        sock.stdin.close()
+        pdf.write(sock.stdout.read())
+        sock.stdout.close()
+    pdf.seek(0)
+
+    return pdf
+
+
 def pcal(args):
-    bufPs = io.BytesIO()
+    """Invokes 'pcal' with given arguments and returns its output as a buffer-like object."""
+    ps = io.BytesIO()
 
-    sock = subprocess.Popen(["pcal"] + args, stdout=subprocess.PIPE)
-    bufPs.write(sock.stdout.read())
-    sock.stdout.close()
-    bufPs.seek(0)
+    with subprocess.Popen(["pcal"] + args, stdout=subprocess.PIPE) as sock:
+        ps.write(sock.stdout.read())
+        sock.stdout.close()
+    ps.seek(0)
 
-    return bufPs
+    return ps
 
 
-# Don't refuse loading certain JPEG files if imagemagick is doing so.
-PIL.ImageFile.LOAD_TRUNCATED_IMAGES = True
+def make_transform(rotate, scale, tx, ty):
+    """Creates a transform with a specified rotation, scaling and offsets."""
+    t = pypdf.Transformation()
+    return t.rotate(rotate).scale(scale, scale).translate(tx, ty)
 
-# A4: 210 x 297 mm.
-a4Width = 595.275590551
-a4Height = 841.88976378
 
-outputPdf = pypdf.PdfWriter()
+def make_pdf_page(image_buf):
+    """Creates a PDF page from a byte array."""
+    image_pdf = pypdf.PdfReader(image_buf)
+    return image_pdf.pages[0]
 
-page = None
-for month in range(1, 13):
-    print("{}...".format(month))
-    monthString = "%02d" % month
 
-    # Handle the image part.
-    imageJpg = open("images/" + monthString + ".jpg", "rb")
+def make_image_page(a4_height, a4_width, month):
+    """Creates the image part of a month page."""
     # Landscape A4 for the image.
-    pageSize = (a4Height, a4Width)
-    # TOP_OF_CAL_BOXES_PTS in pcal's pcaldefs.h; 50% more so to have enough space for the spiraling.
+    page_size = (a4_height, a4_width)
+    # TOP_OF_CAL_BOXES_PTS in pcal's pcaldefs.h; 50% more so to have enough space for the
+    # spiraling.
     margin = 85 * 1.5
-    imageSize = ((img2pdf.ImgSize.abs, a4Height - margin), (img2pdf.ImgSize.abs, a4Width - margin))
-    layoutFun = img2pdf.get_layout_fun(pageSize, imageSize, border=None, fit=None, auto_orient=False)
-    imageBytes = img2pdf.convert(imageJpg, layout_fun=layoutFun)
-    imageBuf = io.BytesIO()
-    imageBuf.write(imageBytes)
-    imageBuf.seek(0)
+    image_height = (img2pdf.ImgSize.abs, a4_height - margin)
+    image_width = (img2pdf.ImgSize.abs, a4_width - margin)
+    image_size = (image_height, image_width)
+    layout_fun = img2pdf.get_layout_fun(page_size, image_size)
+    image_buf = io.BytesIO()
+    with open("images/" + month + ".jpg", "rb") as image_jpg:
+        img2pdf.convert(image_jpg, layout_fun=layout_fun, outputstream=image_buf)
+    image_buf.seek(0)
+    return make_pdf_page(image_buf)
 
-    # Handle the calendar part.
-    imagePdf = pypdf.PdfReader(imageBuf)
-    imagePage = imagePdf.pages[0]
-    nextYear = str(time.localtime().tm_year + 1)
-    lang = locale.getlocale()[0].split("_")[0]
-    calPdf = pypdf.PdfReader(ps2Pdf(pcal(["-f", "calendar_" + lang + ".txt", monthString, nextYear])))
-    calPage = calPdf.pages[0]
 
-    # Portrait A4 page: upper half contains first calendar and the first image,
-    # lower half contains the second calendar and the second image.
-    scale = 1. / 2
-    if month % 2 == 1:
-        page = pypdf.PageObject.create_blank_page(outputPdf, width=a4Width, height=a4Height)
-        trans = pypdf.Transformation().rotate(-90).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height)
-        page.merge_transformed_page(imagePage, trans)
-        trans = pypdf.Transformation().rotate(180).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height)
-        page.merge_transformed_page(calPage, trans)
-    else:
-        trans = pypdf.Transformation().rotate(-90).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height / 2)
-        page.merge_transformed_page(imagePage, trans)
-        trans = pypdf.Transformation().rotate(180).scale(scale, scale).translate(tx=a4Width / 2, ty=a4Height / 2)
-        page.merge_transformed_page(calPage, trans)
-        outputPdf.add_page(page)
+def main():
+    """Commandline interface."""
+    # Don't refuse loading certain JPEG files if imagemagick is doing so.
+    PIL.ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-outputPdf.write(open("out.pdf", "wb"))
-# This can be optimized further by running e.g. 'gs -dNOPAUSE -dBATCH -dSAFER
-# -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -sOutputFile=smaller.pdf out.pdf'.
+    # A4: 210 x 297 mm.
+    a4_width = 595.275590551
+    a4_height = 841.88976378
+
+    output_pdf = pypdf.PdfWriter()
+
+    page = None
+    for month in range(1, 13):
+        print(f"{month}...")
+        month_string = f"{month:02}"
+
+        # Handle the image part.
+        image_page = make_image_page(a4_height, a4_width, month_string)
+
+        # Handle the calendar part.
+        next_year = str(time.localtime().tm_year + 1)
+        lang = locale.getlocale()[0].split("_")[0]
+        ps = pcal(["-f", "calendar_" + lang + ".txt", month_string, next_year])
+        cal_page = make_pdf_page(ps2pdf(ps))
+
+        # Portrait A4 page: upper half contains first calendar and the first image,
+        # lower half contains the second calendar and the second image.
+        scale = 1. / 2
+        if month % 2 == 1:
+            page = pypdf.PageObject.create_blank_page(output_pdf, width=a4_width, height=a4_height)
+            trans = make_transform(-90, scale, a4_width / 2, a4_height)
+            page.merge_transformed_page(image_page, trans)
+            trans = make_transform(180, scale, a4_width / 2, a4_height)
+            page.merge_transformed_page(cal_page, trans)
+        else:
+            trans = make_transform(-90, scale, a4_width / 2, a4_height / 2)
+            page.merge_transformed_page(image_page, trans)
+            trans = make_transform(180, scale, a4_width / 2, a4_height / 2)
+            page.merge_transformed_page(cal_page, trans)
+            output_pdf.add_page(page)
+
+    with open("out.pdf", "wb") as stream:
+        output_pdf.write(stream)
+
+
+if __name__ == '__main__':
+    main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
