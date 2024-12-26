@@ -31,24 +31,21 @@ fn main() -> anyhow::Result<()> {
         let month_string = format!("{month:02}");
 
         // Handle the image part.
-        // TOP_OF_CAL_BOXES_PTS in pcal's pcaldefs.h; 50% more so to have enough space for the
-        // spiraling.
-        let margin = 85_f32 * 1.5;
-        let image_height = PdfPoints::new(a4_height - margin);
-        let image_width = PdfPoints::new(a4_width - margin);
+        let image_height = a4_height / 2_f32;
+        let image_width = a4_width / 2_f32;
         let image = image::ImageReader::open(format!("images/{month_string}.jpg"))?.decode()?;
-        let image_object =
-            PdfPageImageObject::new_with_size(&output_pdf, &image, image_width, image_height)?;
-        // TODO
-        // .translate()
-        // .rotate_clockwise_degrees()
+        let mut image_object = PdfPageImageObject::new(&output_pdf, &image)?;
+        image_object.rotate_clockwise_degrees(90_f32)?;
+        // TODO preserve aspect ratio
+        image_object.scale(image_width, image_height)?;
+        // TODO margin
+        image_object.translate(PdfPoints::new(a4_width / 2_f32), PdfPoints::new(a4_height))?;
 
         // Handle the calendar part.
         // TODO
 
         // Portrait A4 page: upper half contains first calendar and the first image,
         // lower half contains the second calendar and the second image.
-        //let scale = 1_f32 / 2_f32;
         if month % 2 == 1 {
             page = output_pdf
                 .pages_mut()
