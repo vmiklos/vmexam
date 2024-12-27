@@ -10,6 +10,7 @@
 
 //! Commandline interface to pdfcal.
 
+use pdfium_render::prelude::PdfColor;
 use pdfium_render::prelude::PdfPageImageObject;
 use pdfium_render::prelude::PdfPageObjectsCommon as _;
 use pdfium_render::prelude::PdfPagePaperSize;
@@ -27,6 +28,23 @@ fn main() -> anyhow::Result<()> {
     let mut page = output_pdf
         .pages_mut()
         .create_page_at_end(PdfPagePaperSize::a4())?;
+    // TODO make this debug-only
+    page.objects_mut().create_path_object_line(
+        PdfPoints::new(a4_width / 2_f32),
+        PdfPoints::new(0_f32),
+        PdfPoints::new(a4_width / 2_f32),
+        PdfPoints::new(a4_height),
+        PdfColor::new(255, 0, 0, 255),
+        PdfPoints::new(3_f32),
+    )?;
+    page.objects_mut().create_path_object_line(
+        PdfPoints::new(0.0),
+        PdfPoints::new(a4_height / 2.0),
+        PdfPoints::new(a4_width),
+        PdfPoints::new(a4_height / 2.0),
+        PdfColor::new(255, 0, 0, 255),
+        PdfPoints::new(3.0),
+    )?;
 
     for month in 1..13 {
         println!("{month}...");
