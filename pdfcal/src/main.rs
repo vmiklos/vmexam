@@ -10,12 +10,49 @@
 
 //! Commandline interface to pdfcal.
 
+use anyhow::Context as _;
 use pdfium_render::prelude::PdfColor;
 use pdfium_render::prelude::PdfPageImageObject;
 use pdfium_render::prelude::PdfPageObjectsCommon as _;
 use pdfium_render::prelude::PdfPagePaperSize;
 use pdfium_render::prelude::PdfPoints;
 use pdfium_render::prelude::Pdfium;
+
+/// Converts a tempfile to a path that external commands can access.
+fn tempfile_to_path(tempfile: &tempfile::NamedTempFile) -> anyhow::Result<String> {
+    Ok(tempfile
+        .path()
+        .to_str()
+        .context("to_str() failed")?
+        .to_string())
+}
+
+/// Invokes 'pcal' with given arguments.
+fn pcal(args: &[String]) -> anyhow::Result<()> {
+    println!("pcal {}", args.join(" "));
+    let exit_status = std::process::Command::new("pcal")
+        .args(args)
+        .status()?;
+    let exit_code = exit_status.code().context("code() failed")?;
+    if exit_code != 0 {
+        return Err(anyhow::anyhow!("pcal failed"));
+    }
+
+    Ok(())
+}
+
+/// Invokes 'ps2pdf' with given arguments.
+fn ps2pdf(ps: &str, pdf: &str) -> anyhow::Result<()> {
+    let exit_status = std::process::Command::new("ps2pdf")
+        .args(&[ps, pdf])
+        .status()?;
+    let exit_code = exit_status.code().context("code() failed")?;
+    if exit_code != 0 {
+        return Err(anyhow::anyhow!("ps2pdf failed"));
+    }
+
+    Ok(())
+}
 
 fn main() -> anyhow::Result<()> {
     let pdfium = Pdfium::default();
@@ -76,7 +113,27 @@ fn main() -> anyhow::Result<()> {
         let mut image_object = PdfPageImageObject::new(&output_pdf, &image)?;
 
         // Handle the calendar part.
-        // TODO
+        let now = time::OffsetDateTime::now_utc();
+        let next_year = (now.year() + 1).to_string();
+        let locale = sys_locale::get_locales()
+            .filter(|i| i != "C")
+            .next()
+            .context("no locale")?;
+        let lang = locale.split('-').next().context("split() failed")?;
+        println!("debug, next_year is '{next_year}', lang is '{lang}'");
+        let cal_ps = tempfile::Builder::new().suffix(".ps").tempfile()?;
+        let cal_ps_path = tempfile_to_path(&cal_ps)?;
+        pcal(&[
+            "-o".to_string(),
+            cal_ps_path.to_string(),
+            "-f".to_string(),
+            format!("calendar_{lang}.txt"),
+            month_string,
+            next_year,
+        ])?;
+        let cal_pdf = tempfile::Builder::new().suffix(".pdf").tempfile()?;
+        let cal_pdf_path = tempfile_to_path(&cal_pdf)?;
+        ps2pdf(&cal_ps_path, &cal_pdf_path)?;
 
         // Portrait A4 page: upper half contains first calendar and the first image,
         // lower half contains the second calendar and the second image.
