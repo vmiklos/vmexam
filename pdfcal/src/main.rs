@@ -30,9 +30,7 @@ fn tempfile_to_path(tempfile: &tempfile::NamedTempFile) -> anyhow::Result<String
 /// Invokes 'pcal' with given arguments.
 fn pcal(args: &[String]) -> anyhow::Result<()> {
     println!("pcal {}", args.join(" "));
-    let exit_status = std::process::Command::new("pcal")
-        .args(args)
-        .status()?;
+    let exit_status = std::process::Command::new("pcal").args(args).status()?;
     let exit_code = exit_status.code().context("code() failed")?;
     if exit_code != 0 {
         return Err(anyhow::anyhow!("pcal failed"));
@@ -120,7 +118,6 @@ fn main() -> anyhow::Result<()> {
             .next()
             .context("no locale")?;
         let lang = locale.split('-').next().context("split() failed")?;
-        println!("debug, next_year is '{next_year}', lang is '{lang}'");
         let cal_ps = tempfile::Builder::new().suffix(".ps").tempfile()?;
         let cal_ps_path = tempfile_to_path(&cal_ps)?;
         pcal(&[
@@ -134,6 +131,8 @@ fn main() -> anyhow::Result<()> {
         let cal_pdf = tempfile::Builder::new().suffix(".pdf").tempfile()?;
         let cal_pdf_path = tempfile_to_path(&cal_pdf)?;
         ps2pdf(&cal_ps_path, &cal_pdf_path)?;
+        let cal_doc = pdfium.load_pdf_from_file(&cal_pdf_path, None)?;
+        let cal_page = cal_doc.pages().first()?;
 
         // Portrait A4 page: upper half contains first calendar and the first image,
         // lower half contains the second calendar and the second image.
@@ -158,6 +157,12 @@ fn main() -> anyhow::Result<()> {
             )?;
         }
         page.objects_mut().add_image_object(image_object)?;
+
+        let mut source_objects = cal_page.objects().create_group(|_object| true)?;
+        source_objects.retain_if_copyable();
+        let _destination_objects = source_objects.try_copy_onto_existing_page(&mut page)?;
+        source_objects.remove_objects_from_page()?;
+
         if month == 2 {
             break;
         }
