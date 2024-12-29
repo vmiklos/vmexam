@@ -54,6 +54,7 @@ fn ps2pdf(ps: &str, pdf: &str) -> anyhow::Result<()> {
 
 struct Arguments {
     debug: bool,
+    limit: Option<u16>,
 }
 
 impl Arguments {
@@ -63,11 +64,18 @@ impl Arguments {
             .long("debug")
             .action(clap::ArgAction::SetTrue)
             .help("Add debug output to the PDF, disabled by default");
-        let args = [debug_arg];
-        let app = clap::Command::new("weesearch");
+        let limit_arg = clap::Arg::new("limit")
+            .short('l')
+            .long("limit")
+            .value_parser(clap::value_parser!(u16))
+            .required(false)
+            .help("Limit the output to the first <limit> months, disabled by default");
+        let args = [debug_arg, limit_arg];
+        let app = clap::Command::new("pdfcal");
         let matches = app.args(&args).try_get_matches_from(argv)?;
         let debug = *matches.get_one::<bool>("debug").context("no debug arg")?;
-        Ok(Arguments { debug })
+        let limit = matches.get_one::<u16>("limit").cloned();
+        Ok(Arguments { debug, limit })
     }
 }
 
@@ -189,8 +197,10 @@ fn main() -> anyhow::Result<()> {
             page.regenerate_content()?;
         }
 
-        if month == 2 {
-            break;
+        if let Some(limit) = args.limit {
+            if month == limit {
+                break;
+            }
         }
     }
 
