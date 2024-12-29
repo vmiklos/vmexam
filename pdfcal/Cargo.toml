@@ -5,8 +5,13 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.95"
+clap = "4.5.23"
 image = "0.25.5"
 pdfium-render = "0.8.27"
 sys-locale = "0.3.2"
 tempfile = "3.14.0"
 time = "0.3.37"
+
+# Till <https://github.com/ajrcarey/pdfium-render/pull/182> is merged and hits a release.
+[patch.crates-io]
+pdfium-render = { git = "https://github.com/vmiklos/pdfium-render", rev = "1af90808ab83f7eb464e257376e34c48d5de2ab1" }

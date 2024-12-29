@@ -52,7 +52,28 @@ fn ps2pdf(ps: &str, pdf: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
+struct Arguments {
+    debug: bool,
+}
+
+impl Arguments {
+    fn parse(argv: &[String]) -> anyhow::Result<Self> {
+        let debug_arg = clap::Arg::new("debug")
+            .short('d')
+            .long("debug")
+            .action(clap::ArgAction::SetTrue)
+            .help("Add debug output to the PDF, disabled by default");
+        let args = [debug_arg];
+        let app = clap::Command::new("weesearch");
+        let matches = app.args(&args).try_get_matches_from(argv)?;
+        let debug = *matches.get_one::<bool>("debug").context("no debug arg")?;
+        Ok(Arguments { debug })
+    }
+}
+
 fn main() -> anyhow::Result<()> {
+    let argv: Vec<String> = std::env::args().collect();
+    let args = Arguments::parse(&argv)?;
     let pdfium = Pdfium::default();
 
     // A4: 210 x 297 mm.
@@ -63,23 +84,24 @@ fn main() -> anyhow::Result<()> {
     let mut page = output_pdf
         .pages_mut()
         .create_page_at_end(PdfPagePaperSize::a4())?;
-    // TODO make this debug-only
-    page.objects_mut().create_path_object_line(
-        PdfPoints::new(a4_width / 2_f32),
-        PdfPoints::new(0_f32),
-        PdfPoints::new(a4_width / 2_f32),
-        PdfPoints::new(a4_height),
-        PdfColor::new(255, 0, 0, 255),
-        PdfPoints::new(3_f32),
-    )?;
-    page.objects_mut().create_path_object_line(
-        PdfPoints::new(0.0),
-        PdfPoints::new(a4_height / 2.0),
-        PdfPoints::new(a4_width),
-        PdfPoints::new(a4_height / 2.0),
-        PdfColor::new(255, 0, 0, 255),
-        PdfPoints::new(3.0),
-    )?;
+    if args.debug {
+        page.objects_mut().create_path_object_line(
+            PdfPoints::new(a4_width / 2_f32),
+            PdfPoints::new(0_f32),
+            PdfPoints::new(a4_width / 2_f32),
+            PdfPoints::new(a4_height),
+            PdfColor::new(255, 0, 0, 255),
+            PdfPoints::new(3_f32),
+        )?;
+        page.objects_mut().create_path_object_line(
+            PdfPoints::new(0.0),
+            PdfPoints::new(a4_height / 2.0),
+            PdfPoints::new(a4_width),
+            PdfPoints::new(a4_height / 2.0),
+            PdfColor::new(255, 0, 0, 255),
+            PdfPoints::new(3.0),
+        )?;
+    }
 
     for month in 1..13 {
         println!("{month}...");
@@ -108,7 +130,8 @@ fn main() -> anyhow::Result<()> {
             image_offset_x = margin;
             image_offset_y = -(image_bb_height - image_height) / 2_f32 - margin;
         }
-        let mut image_object = PdfPageImageObject::new(&output_pdf, &image)?;
+        let page_image_object = PdfPageImageObject::new(&output_pdf, &image)?;
+        let mut image_object = page.objects_mut().add_image_object(page_image_object)?;
 
         // Handle the calendar part.
         let now = time::OffsetDateTime::now_utc();
@@ -132,7 +155,9 @@ fn main() -> anyhow::Result<()> {
         let cal_pdf_path = tempfile_to_path(&cal_pdf)?;
         ps2pdf(&cal_ps_path, &cal_pdf_path)?;
         let cal_doc = pdfium.load_pdf_from_file(&cal_pdf_path, None)?;
-        let cal_page = cal_doc.pages().first()?;
+        let mut cal_object = page
+            .objects_mut()
+            .create_x_object_form_object(&cal_doc, 0)?;
 
         // Portrait A4 page: upper half contains first calendar and the first image,
         // lower half contains the second calendar and the second image.
@@ -148,6 +173,9 @@ fn main() -> anyhow::Result<()> {
                 PdfPoints::new(a4_width / 2_f32 + image_offset_x),
                 PdfPoints::new(a4_height + image_offset_y),
             )?;
+            cal_object.rotate_clockwise_degrees(90_f32)?;
+            cal_object.scale(0.5, 0.5)?;
+            cal_object.translate(PdfPoints::new(0.0), PdfPoints::new(a4_height))?;
         } else {
             image_object.rotate_clockwise_degrees(90_f32)?;
             image_object.scale(image_width, image_height)?;
@@ -155,13 +183,11 @@ fn main() -> anyhow::Result<()> {
                 PdfPoints::new(a4_width / 2_f32 + image_offset_x),
                 PdfPoints::new(a4_height / 2_f32 + image_offset_y),
             )?;
+            cal_object.rotate_clockwise_degrees(90_f32)?;
+            cal_object.scale(0.5, 0.5)?;
+            cal_object.translate(PdfPoints::new(0.0), PdfPoints::new(a4_height / 2.0))?;
+            page.regenerate_content()?;
         }
-        page.objects_mut().add_image_object(image_object)?;
-
-        let mut source_objects = cal_page.objects().create_group(|_object| true)?;
-        source_objects.retain_if_copyable();
-        let _destination_objects = source_objects.try_copy_onto_existing_page(&mut page)?;
-        source_objects.remove_objects_from_page()?;
 
         if month == 2 {
             break;
