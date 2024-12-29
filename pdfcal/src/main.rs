@@ -12,6 +12,7 @@
 
 use anyhow::Context as _;
 use pdfium_render::prelude::PdfColor;
+use pdfium_render::prelude::PdfPage;
 use pdfium_render::prelude::PdfPageImageObject;
 use pdfium_render::prelude::PdfPageObjectsCommon as _;
 use pdfium_render::prelude::PdfPagePaperSize;
@@ -79,19 +80,12 @@ impl Arguments {
     }
 }
 
-fn main() -> anyhow::Result<()> {
-    let argv: Vec<String> = std::env::args().collect();
-    let args = Arguments::parse(&argv)?;
-    let pdfium = Pdfium::default();
-
-    // A4: 210 x 297 mm.
-    let a4_width = 595.275590551;
-    let a4_height = 841.88976378;
-    let a4_ratio = a4_height / a4_width;
-    let mut output_pdf = pdfium.create_new_pdf()?;
-    let mut page = output_pdf
-        .pages_mut()
-        .create_page_at_end(PdfPagePaperSize::a4())?;
+fn create_grid(
+    args: &Arguments,
+    page: &mut PdfPage,
+    a4_width: f32,
+    a4_height: f32,
+) -> anyhow::Result<()> {
     if args.debug {
         page.objects_mut().create_path_object_line(
             PdfPoints::new(a4_width / 2_f32),
@@ -110,6 +104,24 @@ fn main() -> anyhow::Result<()> {
             PdfPoints::new(3.0),
         )?;
     }
+
+    Ok(())
+}
+
+fn main() -> anyhow::Result<()> {
+    let argv: Vec<String> = std::env::args().collect();
+    let args = Arguments::parse(&argv)?;
+    let pdfium = Pdfium::default();
+
+    // A4: 210 x 297 mm.
+    let a4_width = 595.275590551;
+    let a4_height = 841.88976378;
+    let a4_ratio = a4_height / a4_width;
+    let mut output_pdf = pdfium.create_new_pdf()?;
+    let mut page = output_pdf
+        .pages_mut()
+        .create_page_at_end(PdfPagePaperSize::a4())?;
+    create_grid(&args, &mut page, a4_width, a4_height)?;
 
     for month in 1..13 {
         println!("{month}...");
