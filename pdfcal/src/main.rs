@@ -115,6 +115,41 @@ fn main() -> anyhow::Result<()> {
         println!("{month}...");
         let month_string = format!("{month:02}");
 
+        // Portrait A4 page: upper half contains first calendar and the first image,
+        // lower half contains the second calendar and the second image.
+        let odd = month % 2 == 1;
+        if odd && month > 1 {
+            page = output_pdf
+                .pages_mut()
+                .create_page_at_end(PdfPagePaperSize::a4())?;
+        }
+
+        // Handle the calendar part.
+        let now = time::OffsetDateTime::now_utc();
+        let next_year = (now.year() + 1).to_string();
+        let locale = sys_locale::get_locales()
+            .filter(|i| i != "C")
+            .next()
+            .context("no locale")?;
+        let lang = locale.split('-').next().context("split() failed")?;
+        let cal_ps = tempfile::Builder::new().suffix(".ps").tempfile()?;
+        let cal_ps_path = tempfile_to_path(&cal_ps)?;
+        pcal(&[
+            "-o".to_string(),
+            cal_ps_path.to_string(),
+            "-f".to_string(),
+            format!("calendar_{lang}.txt"),
+            month_string.to_string(),
+            next_year,
+        ])?;
+        let cal_pdf = tempfile::Builder::new().suffix(".pdf").tempfile()?;
+        let cal_pdf_path = tempfile_to_path(&cal_pdf)?;
+        ps2pdf(&cal_ps_path, &cal_pdf_path)?;
+        let cal_doc = pdfium.load_pdf_from_file(&cal_pdf_path, None)?;
+        let mut cal_object = page
+            .objects_mut()
+            .create_x_object_form_object(&cal_doc, 0)?;
+
         // Handle the image part.
         let image = image::ImageReader::open(format!("images/{month_string}.jpg"))?.decode()?;
         // About 15 mm.
@@ -141,40 +176,7 @@ fn main() -> anyhow::Result<()> {
         let page_image_object = PdfPageImageObject::new(&output_pdf, &image)?;
         let mut image_object = page.objects_mut().add_image_object(page_image_object)?;
 
-        // Handle the calendar part.
-        let now = time::OffsetDateTime::now_utc();
-        let next_year = (now.year() + 1).to_string();
-        let locale = sys_locale::get_locales()
-            .filter(|i| i != "C")
-            .next()
-            .context("no locale")?;
-        let lang = locale.split('-').next().context("split() failed")?;
-        let cal_ps = tempfile::Builder::new().suffix(".ps").tempfile()?;
-        let cal_ps_path = tempfile_to_path(&cal_ps)?;
-        pcal(&[
-            "-o".to_string(),
-            cal_ps_path.to_string(),
-            "-f".to_string(),
-            format!("calendar_{lang}.txt"),
-            month_string,
-            next_year,
-        ])?;
-        let cal_pdf = tempfile::Builder::new().suffix(".pdf").tempfile()?;
-        let cal_pdf_path = tempfile_to_path(&cal_pdf)?;
-        ps2pdf(&cal_ps_path, &cal_pdf_path)?;
-        let cal_doc = pdfium.load_pdf_from_file(&cal_pdf_path, None)?;
-        let mut cal_object = page
-            .objects_mut()
-            .create_x_object_form_object(&cal_doc, 0)?;
-
-        // Portrait A4 page: upper half contains first calendar and the first image,
-        // lower half contains the second calendar and the second image.
-        if month % 2 == 1 {
-            if month > 1 {
-                page = output_pdf
-                    .pages_mut()
-                    .create_page_at_end(PdfPagePaperSize::a4())?;
-            }
+        if odd {
             image_object.rotate_clockwise_degrees(90_f32)?;
             image_object.scale(image_width, image_height)?;
             image_object.translate(
