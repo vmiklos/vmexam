@@ -107,6 +107,55 @@ fn create_grid(
     Ok(())
 }
 
+fn make_month_image(page: &mut PdfPage, odd: bool, month: &str) -> anyhow::Result<()> {
+    let image = image::ImageReader::open(format!("images/{month}.jpg"))?.decode()?;
+    // About 15 mm.
+    let margin = 42.52;
+    let a4_size = PdfPagePaperSize::a4();
+    let a4_ratio = a4_size.height().value / a4_size.width().value;
+    let image_bb_width = a4_size.width().value / 2.0 - 2.0 * margin;
+    let image_bb_height = a4_size.height().value / 2.0 - 2.0 * margin;
+    let pixel_ratio = image.width() as f32 / image.height() as f32;
+    let image_width;
+    let image_height;
+    // Relative offset, inside the image bounding box.
+    let image_offset_x;
+    let image_offset_y;
+    if a4_ratio < pixel_ratio {
+        image_width = image_bb_height / pixel_ratio;
+        image_height = image_bb_height;
+        image_offset_x = (image_bb_width - image_width) / 2.0 + margin;
+        image_offset_y = -margin;
+    } else {
+        image_width = image_bb_width;
+        image_height = image_bb_width * pixel_ratio;
+        image_offset_x = margin;
+        image_offset_y = -(image_bb_height - image_height) / 2.0 - margin;
+    }
+    let mut image_object = page.objects_mut().create_image_object(
+        PdfPoints::new(0.0),
+        PdfPoints::new(0.0),
+        &image,
+        None,
+        None,
+    )?;
+    image_object.rotate_clockwise_degrees(90.0)?;
+    image_object.scale(image_width, image_height)?;
+    if odd {
+        image_object.translate(
+            PdfPoints::new(a4_size.width().value / 2.0 + image_offset_x),
+            PdfPoints::new(a4_size.height().value + image_offset_y),
+        )?;
+    } else {
+        image_object.translate(
+            PdfPoints::new(a4_size.width().value / 2.0 + image_offset_x),
+            PdfPoints::new(a4_size.height().value / 2.0 + image_offset_y),
+        )?;
+    }
+
+    Ok(())
+}
+
 fn main() -> anyhow::Result<()> {
     let argv: Vec<String> = std::env::args().collect();
     let args = Arguments::parse(&argv)?;
@@ -115,7 +164,6 @@ fn main() -> anyhow::Result<()> {
     // A4: 210 x 297 mm.
     let a4_width = 595.275590551;
     let a4_height = 841.88976378;
-    let a4_ratio = a4_height / a4_width;
     let mut output_pdf = pdfium.create_new_pdf()?;
     let mut page = output_pdf
         .pages_mut()
@@ -162,53 +210,13 @@ fn main() -> anyhow::Result<()> {
             .create_x_object_form_object(&cal_doc, 0)?;
 
         // Handle the image part.
-        let image = image::ImageReader::open(format!("images/{month_string}.jpg"))?.decode()?;
-        // About 15 mm.
-        let margin = 42.52;
-        let image_bb_width = a4_width / 2_f32 - 2_f32 * margin;
-        let image_bb_height = a4_height / 2_f32 - 2_f32 * margin;
-        let pixel_ratio = image.width() as f32 / image.height() as f32;
-        let image_width;
-        let image_height;
-        // Relative offset, inside the image bounding box.
-        let image_offset_x;
-        let image_offset_y;
-        if a4_ratio < pixel_ratio {
-            image_width = image_bb_height / pixel_ratio;
-            image_height = image_bb_height;
-            image_offset_x = (image_bb_width - image_width) / 2_f32 + margin;
-            image_offset_y = -margin;
-        } else {
-            image_width = image_bb_width;
-            image_height = image_bb_width * pixel_ratio;
-            image_offset_x = margin;
-            image_offset_y = -(image_bb_height - image_height) / 2_f32 - margin;
-        }
-        let mut image_object = page.objects_mut().create_image_object(
-            PdfPoints::new(0.0),
-            PdfPoints::new(0.0),
-            &image,
-            None,
-            None,
-        )?;
+        make_month_image(&mut page, odd, &month_string)?;
 
         if odd {
-            image_object.rotate_clockwise_degrees(90_f32)?;
-            image_object.scale(image_width, image_height)?;
-            image_object.translate(
-                PdfPoints::new(a4_width / 2_f32 + image_offset_x),
-                PdfPoints::new(a4_height + image_offset_y),
-            )?;
             cal_object.rotate_clockwise_degrees(90_f32)?;
             cal_object.scale(0.5, 0.5)?;
             cal_object.translate(PdfPoints::new(0.0), PdfPoints::new(a4_height))?;
         } else {
-            image_object.rotate_clockwise_degrees(90_f32)?;
-            image_object.scale(image_width, image_height)?;
-            image_object.translate(
-                PdfPoints::new(a4_width / 2_f32 + image_offset_x),
-                PdfPoints::new(a4_height / 2_f32 + image_offset_y),
-            )?;
             cal_object.rotate_clockwise_degrees(90_f32)?;
             cal_object.scale(0.5, 0.5)?;
             cal_object.translate(PdfPoints::new(0.0), PdfPoints::new(a4_height / 2.0))?;
