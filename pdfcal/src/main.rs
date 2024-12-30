@@ -42,7 +42,7 @@ fn pcal(args: &[String]) -> anyhow::Result<()> {
 /// Invokes 'ps2pdf' with given arguments.
 fn ps2pdf(ps: &str, pdf: &str) -> anyhow::Result<()> {
     let exit_status = std::process::Command::new("ps2pdf")
-        .args(&[ps, pdf])
+        .args([ps, pdf])
         .status()?;
     let exit_code = exit_status.code().context("code() failed")?;
     if exit_code != 0 {
@@ -112,8 +112,7 @@ fn make_month_calendar(
     let now = time::OffsetDateTime::now_utc();
     let next_year = (now.year() + 1).to_string();
     let locale = sys_locale::get_locales()
-        .filter(|i| i != "C")
-        .next()
+        .find(|i| i != "C")
         .context("no locale")?;
     let lang = locale.split('-').next().context("split() failed")?;
     let cal_ps = tempfile::Builder::new().suffix(".ps").tempfile()?;
@@ -149,11 +148,11 @@ fn make_month_calendar(
 fn make_month_image(page: &mut PdfPage, odd: bool, month: &str) -> anyhow::Result<()> {
     let image = image::ImageReader::open(format!("images/{month}.jpg"))?.decode()?;
     // About 15 mm.
-    let margin = 42.52;
+    let margin = PdfPoints::new(42.52);
     let a4_size = PdfPagePaperSize::a4();
     let a4_ratio = a4_size.height().value / a4_size.width().value;
-    let image_bb_width = a4_size.width().value / 2.0 - 2.0 * margin;
-    let image_bb_height = a4_size.height().value / 2.0 - 2.0 * margin;
+    let image_bb_width = a4_size.width() / 2.0 - margin * 2.0;
+    let image_bb_height = a4_size.height() / 2.0 - margin * 2.0;
     let pixel_ratio = image.width() as f32 / image.height() as f32;
     let image_width;
     let image_height;
@@ -179,16 +178,16 @@ fn make_month_image(page: &mut PdfPage, odd: bool, month: &str) -> anyhow::Resul
         None,
     )?;
     image_object.rotate_clockwise_degrees(90.0)?;
-    image_object.scale(image_width, image_height)?;
+    image_object.scale(image_width.value, image_height.value)?;
     if odd {
         image_object.translate(
-            PdfPoints::new(a4_size.width().value / 2.0 + image_offset_x),
-            PdfPoints::new(a4_size.height().value + image_offset_y),
+            a4_size.width() / 2.0 + image_offset_x,
+            a4_size.height() + image_offset_y,
         )?;
     } else {
         image_object.translate(
-            PdfPoints::new(a4_size.width().value / 2.0 + image_offset_x),
-            PdfPoints::new(a4_size.height().value / 2.0 + image_offset_y),
+            a4_size.width() / 2.0 + image_offset_x,
+            a4_size.height() / 2.0 + image_offset_y,
         )?;
     }
 

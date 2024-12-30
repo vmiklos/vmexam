@@ -109,6 +109,8 @@ $(eval $(call RustPackage_RustPackage,ocr-document))
 $(eval $(call RustPackage_RustPackage,osm/addr-osmify-rust))
 $(eval $(call RustPackage_use_coverage,osm/addr-osmify-rust))
 
+$(eval $(call RustPackage_RustPackage,pdfcal))
+
 $(eval $(call RustPackage_RustPackage,pushping))
 
 $(eval $(call RustPackage_RustPackage,rubik))
