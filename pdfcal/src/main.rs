@@ -79,29 +79,68 @@ impl Arguments {
     }
 }
 
-fn create_grid(
-    args: &Arguments,
-    page: &mut PdfPage,
-    a4_width: f32,
-    a4_height: f32,
-) -> anyhow::Result<()> {
+fn create_grid(args: &Arguments, page: &mut PdfPage) -> anyhow::Result<()> {
     if args.debug {
+        let a4_size = PdfPagePaperSize::a4();
         page.objects_mut().create_path_object_line(
-            PdfPoints::new(a4_width / 2_f32),
-            PdfPoints::new(0_f32),
-            PdfPoints::new(a4_width / 2_f32),
-            PdfPoints::new(a4_height),
-            PdfColor::new(255, 0, 0, 255),
-            PdfPoints::new(3_f32),
-        )?;
-        page.objects_mut().create_path_object_line(
+            a4_size.width() / 2.0,
             PdfPoints::new(0.0),
-            PdfPoints::new(a4_height / 2.0),
-            PdfPoints::new(a4_width),
-            PdfPoints::new(a4_height / 2.0),
+            a4_size.width() / 2.0,
+            a4_size.height(),
             PdfColor::new(255, 0, 0, 255),
             PdfPoints::new(3.0),
         )?;
+        page.objects_mut().create_path_object_line(
+            PdfPoints::new(0.0),
+            a4_size.height() / 2.0,
+            a4_size.width(),
+            a4_size.height() / 2.0,
+            PdfColor::new(255, 0, 0, 255),
+            PdfPoints::new(3.0),
+        )?;
+    }
+
+    Ok(())
+}
+
+fn make_month_calendar(
+    pdfium: &Pdfium,
+    page: &mut PdfPage,
+    odd: bool,
+    month: &str,
+) -> anyhow::Result<()> {
+    let now = time::OffsetDateTime::now_utc();
+    let next_year = (now.year() + 1).to_string();
+    let locale = sys_locale::get_locales()
+        .filter(|i| i != "C")
+        .next()
+        .context("no locale")?;
+    let lang = locale.split('-').next().context("split() failed")?;
+    let cal_ps = tempfile::Builder::new().suffix(".ps").tempfile()?;
+    let cal_ps_path = tempfile_to_path(&cal_ps)?;
+    pcal(&[
+        "-o".to_string(),
+        cal_ps_path.to_string(),
+        "-f".to_string(),
+        format!("calendar_{lang}.txt"),
+        month.to_string(),
+        next_year,
+    ])?;
+    let cal_pdf = tempfile::Builder::new().suffix(".pdf").tempfile()?;
+    let cal_pdf_path = tempfile_to_path(&cal_pdf)?;
+    ps2pdf(&cal_ps_path, &cal_pdf_path)?;
+    let cal_doc = pdfium.load_pdf_from_file(&cal_pdf_path, None)?;
+    let mut cal_object = page
+        .objects_mut()
+        .create_x_object_form_object(&cal_doc, 0)?;
+
+    let a4_size = PdfPagePaperSize::a4();
+    cal_object.rotate_clockwise_degrees(90.0)?;
+    cal_object.scale(0.5, 0.5)?;
+    if odd {
+        cal_object.translate(PdfPoints::new(0.0), a4_size.height())?;
+    } else {
+        cal_object.translate(PdfPoints::new(0.0), a4_size.height() / 2.0)?;
     }
 
     Ok(())
@@ -161,14 +200,11 @@ fn main() -> anyhow::Result<()> {
     let args = Arguments::parse(&argv)?;
     let pdfium = Pdfium::default();
 
-    // A4: 210 x 297 mm.
-    let a4_width = 595.275590551;
-    let a4_height = 841.88976378;
     let mut output_pdf = pdfium.create_new_pdf()?;
     let mut page = output_pdf
         .pages_mut()
         .create_page_at_end(PdfPagePaperSize::a4())?;
-    create_grid(&args, &mut page, a4_width, a4_height)?;
+    create_grid(&args, &mut page)?;
 
     for month in 1..13 {
         println!("{month}...");
@@ -184,42 +220,12 @@ fn main() -> anyhow::Result<()> {
         }
 
         // Handle the calendar part.
-        let now = time::OffsetDateTime::now_utc();
-        let next_year = (now.year() + 1).to_string();
-        let locale = sys_locale::get_locales()
-            .filter(|i| i != "C")
-            .next()
-            .context("no locale")?;
-        let lang = locale.split('-').next().context("split() failed")?;
-        let cal_ps = tempfile::Builder::new().suffix(".ps").tempfile()?;
-        let cal_ps_path = tempfile_to_path(&cal_ps)?;
-        pcal(&[
-            "-o".to_string(),
-            cal_ps_path.to_string(),
-            "-f".to_string(),
-            format!("calendar_{lang}.txt"),
-            month_string.to_string(),
-            next_year,
-        ])?;
-        let cal_pdf = tempfile::Builder::new().suffix(".pdf").tempfile()?;
-        let cal_pdf_path = tempfile_to_path(&cal_pdf)?;
-        ps2pdf(&cal_ps_path, &cal_pdf_path)?;
-        let cal_doc = pdfium.load_pdf_from_file(&cal_pdf_path, None)?;
-        let mut cal_object = page
-            .objects_mut()
-            .create_x_object_form_object(&cal_doc, 0)?;
+        make_month_calendar(&pdfium, &mut page, odd, &month_string)?;
 
         // Handle the image part.
         make_month_image(&mut page, odd, &month_string)?;
 
-        if odd {
-            cal_object.rotate_clockwise_degrees(90_f32)?;
-            cal_object.scale(0.5, 0.5)?;
-            cal_object.translate(PdfPoints::new(0.0), PdfPoints::new(a4_height))?;
-        } else {
-            cal_object.rotate_clockwise_degrees(90_f32)?;
-            cal_object.scale(0.5, 0.5)?;
-            cal_object.translate(PdfPoints::new(0.0), PdfPoints::new(a4_height / 2.0))?;
+        if !odd {
             page.regenerate_content()?;
         }
 
