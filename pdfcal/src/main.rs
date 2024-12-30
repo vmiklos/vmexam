@@ -13,7 +13,6 @@
 use anyhow::Context as _;
 use pdfium_render::prelude::PdfColor;
 use pdfium_render::prelude::PdfPage;
-use pdfium_render::prelude::PdfPageImageObject;
 use pdfium_render::prelude::PdfPageObjectsCommon as _;
 use pdfium_render::prelude::PdfPagePaperSize;
 use pdfium_render::prelude::PdfPoints;
@@ -185,8 +184,13 @@ fn main() -> anyhow::Result<()> {
             image_offset_x = margin;
             image_offset_y = -(image_bb_height - image_height) / 2_f32 - margin;
         }
-        let page_image_object = PdfPageImageObject::new(&output_pdf, &image)?;
-        let mut image_object = page.objects_mut().add_image_object(page_image_object)?;
+        let mut image_object = page.objects_mut().create_image_object(
+            PdfPoints::new(0.0),
+            PdfPoints::new(0.0),
+            &image,
+            None,
+            None,
+        )?;
 
         if odd {
             image_object.rotate_clockwise_degrees(90_f32)?;
