@@ -11,3 +11,16 @@ index de78727..ef581ce 100644
     printf("} bind def\n\n");
  
     printf("%% -- drawdaynames => --\n");
+diff --git a/src/writefil.c b/src/writefil.c
+index ef581ce..acbd9d8 100644
+--- a/src/writefil.c
++++ b/src/writefil.c
+@@ -978,7 +978,7 @@ void write_psfile (void)
+    printf("	/yearstring year 10 string cvs def\n");
+    printf("	0 Y0 fontsize 0.25 mul add\n");
+    printf("	  calsize small eq { 4 } { weekdayfontsize } ifelse\n");
+-   printf("	  1.15 mul add moveto\n");
++   printf("	  2.0 mul add moveto\n");
+    printf("   yearstring (  ) strcat month_name strcat gridwidth %s\n", title_align);
+    printf("} bind def\n\n");
+ 

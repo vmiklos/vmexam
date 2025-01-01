@@ -173,10 +173,11 @@ fn make_month_image(
         std::io::stdout().flush()?;
     }
     let image = image::ImageReader::open(format!("images/{month}.jpg"))?.decode()?;
+    // Top/right/bottom margin, no left (that is provided by pcal).
     let margin = PdfPoints::from_mm(15.0);
     let a4_size = PdfPagePaperSize::a4();
     let a4_ratio = a4_size.height().value / a4_size.width().value;
-    let image_bb_width = a4_size.width() / 2.0 - margin * 2.0;
+    let image_bb_width = a4_size.width() / 2.0 - margin;
     let image_bb_height = a4_size.height() / 2.0 - margin * 2.0;
     let pixel_ratio = image.width() as f32 / image.height() as f32;
     let image_width;
@@ -187,12 +188,12 @@ fn make_month_image(
     if a4_ratio < pixel_ratio {
         image_width = image_bb_height / pixel_ratio;
         image_height = image_bb_height;
-        image_offset_x = (image_bb_width - image_width) / 2.0 + margin;
+        image_offset_x = (image_bb_width - image_width) / 2.0;
         image_offset_y = -margin;
     } else {
         image_width = image_bb_width;
         image_height = image_bb_width * pixel_ratio;
-        image_offset_x = margin;
+        image_offset_x = PdfPoints::new(0.0);
         image_offset_y = -(image_bb_height - image_height) / 2.0 - margin;
     }
     let mut image_object = page.objects_mut().create_image_object(
