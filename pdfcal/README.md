@@ -13,12 +13,10 @@ make -j8
 cp exec/pcal ~/bin/
 ```
 
-Install Python dependencies:
+## Installation
 
 ```
-python3.11 -m venv pcal-env
-. pcal-env/bin/activate
-pip install -r requirements.txt
+cargo install --git https://github.com/vmiklos/vmexam pdfcal
 ```
 
 ## Usage
@@ -26,10 +24,15 @@ pip install -r requirements.txt
 Place images in images/ as 01.jpg, 02.jpg, ..., then run:
 
 ```
-./pdfcal.py
+pdfcal
 ```
 
-and the result will be produced as out.pdf.
+and the result will be produced as out.pdf. The file is quite large as it doesn't scale down input
+photo images. A print optimized version can be produced by running:
+
+```
+gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/printer -dNOPAUSE -dQUIET -dBATCH -sOutputFile=out.printer.pdf out.pdf
+```
 
 ## Workarounds
 

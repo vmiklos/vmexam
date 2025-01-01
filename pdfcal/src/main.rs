@@ -17,6 +17,7 @@ use pdfium_render::prelude::PdfPageObjectsCommon as _;
 use pdfium_render::prelude::PdfPagePaperSize;
 use pdfium_render::prelude::PdfPoints;
 use pdfium_render::prelude::Pdfium;
+use std::io::Write as _;
 
 /// Converts a tempfile to a path that external commands can access.
 fn tempfile_to_path(tempfile: &tempfile::NamedTempFile) -> anyhow::Result<String> {
@@ -28,25 +29,37 @@ fn tempfile_to_path(tempfile: &tempfile::NamedTempFile) -> anyhow::Result<String
 }
 
 /// Invokes 'pcal' with given arguments.
-fn pcal(args: &[String]) -> anyhow::Result<()> {
-    println!("pcal {}", args.join(" "));
+fn pcal(debug: bool, args: &[String]) -> anyhow::Result<()> {
+    if debug {
+        print!("pcal {}...", args.join(" "));
+        std::io::stdout().flush()?;
+    }
     let exit_status = std::process::Command::new("pcal").args(args).status()?;
     let exit_code = exit_status.code().context("code() failed")?;
     if exit_code != 0 {
         return Err(anyhow::anyhow!("pcal failed"));
+    }
+    if debug {
+        println!("done");
     }
 
     Ok(())
 }
 
 /// Invokes 'ps2pdf' with given arguments.
-fn ps2pdf(ps: &str, pdf: &str) -> anyhow::Result<()> {
-    let exit_status = std::process::Command::new("ps2pdf")
-        .args([ps, pdf])
-        .status()?;
+fn ps2pdf(debug: bool, ps: &str, pdf: &str) -> anyhow::Result<()> {
+    let args = [ps, pdf];
+    if debug {
+        print!("ps2pdf {}...", args.join(" "));
+        std::io::stdout().flush()?;
+    }
+    let exit_status = std::process::Command::new("ps2pdf").args(args).status()?;
     let exit_code = exit_status.code().context("code() failed")?;
     if exit_code != 0 {
         return Err(anyhow::anyhow!("ps2pdf failed"));
+    }
+    if debug {
+        println!("done");
     }
 
     Ok(())
@@ -104,6 +117,7 @@ fn create_grid(args: &Arguments, page: &mut PdfPage) -> anyhow::Result<()> {
 }
 
 fn make_month_calendar(
+    args: &Arguments,
     pdfium: &Pdfium,
     page: &mut PdfPage,
     odd: bool,
@@ -117,17 +131,20 @@ fn make_month_calendar(
     let lang = locale.split('-').next().context("split() failed")?;
     let cal_ps = tempfile::Builder::new().suffix(".ps").tempfile()?;
     let cal_ps_path = tempfile_to_path(&cal_ps)?;
-    pcal(&[
-        "-o".to_string(),
-        cal_ps_path.to_string(),
-        "-f".to_string(),
-        format!("calendar_{lang}.txt"),
-        month.to_string(),
-        next_year,
-    ])?;
+    pcal(
+        args.debug,
+        &[
+            "-o".to_string(),
+            cal_ps_path.to_string(),
+            "-f".to_string(),
+            format!("calendar_{lang}.txt"),
+            month.to_string(),
+            next_year,
+        ],
+    )?;
     let cal_pdf = tempfile::Builder::new().suffix(".pdf").tempfile()?;
     let cal_pdf_path = tempfile_to_path(&cal_pdf)?;
-    ps2pdf(&cal_ps_path, &cal_pdf_path)?;
+    ps2pdf(args.debug, &cal_ps_path, &cal_pdf_path)?;
     let cal_doc = pdfium.load_pdf_from_file(&cal_pdf_path, None)?;
     let mut cal_object = page
         .objects_mut()
@@ -145,10 +162,18 @@ fn make_month_calendar(
     Ok(())
 }
 
-fn make_month_image(page: &mut PdfPage, odd: bool, month: &str) -> anyhow::Result<()> {
+fn make_month_image(
+    args: &Arguments,
+    page: &mut PdfPage,
+    odd: bool,
+    month: &str,
+) -> anyhow::Result<()> {
+    if args.debug {
+        print!("making the image part...");
+        std::io::stdout().flush()?;
+    }
     let image = image::ImageReader::open(format!("images/{month}.jpg"))?.decode()?;
-    // About 15 mm.
-    let margin = PdfPoints::new(42.52);
+    let margin = PdfPoints::from_mm(15.0);
     let a4_size = PdfPagePaperSize::a4();
     let a4_ratio = a4_size.height().value / a4_size.width().value;
     let image_bb_width = a4_size.width() / 2.0 - margin * 2.0;
@@ -190,6 +215,9 @@ fn make_month_image(page: &mut PdfPage, odd: bool, month: &str) -> anyhow::Resul
             a4_size.height() / 2.0 + image_offset_y,
         )?;
     }
+    if args.debug {
+        println!("done");
+    }
 
     Ok(())
 }
@@ -219,10 +247,10 @@ fn main() -> anyhow::Result<()> {
         }
 
         // Handle the calendar part.
-        make_month_calendar(&pdfium, &mut page, odd, &month_string)?;
+        make_month_calendar(&args, &pdfium, &mut page, odd, &month_string)?;
 
         // Handle the image part.
-        make_month_image(&mut page, odd, &month_string)?;
+        make_month_image(&args, &mut page, odd, &month_string)?;
 
         if !odd {
             page.regenerate_content()?;
