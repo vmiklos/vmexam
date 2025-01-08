@@ -113,6 +113,8 @@ $(eval $(call RustPackage_RustPackage,pdfcal))
 
 $(eval $(call RustPackage_RustPackage,pushping))
 
+$(eval $(call RustPackage_RustPackage,rsp-scramble))
+
 $(eval $(call RustPackage_RustPackage,rubik))
 
 $(eval $(call RustPackage_RustPackage,scan-document))
