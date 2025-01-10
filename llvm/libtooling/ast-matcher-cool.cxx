@@ -15,16 +15,17 @@ class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
     void
     run(const clang::ast_matchers::MatchFinder::MatchResult& result) override
     {
-        const auto functionDecl =
-            result.Nodes.getNodeAs<clang::FunctionDecl>("functionDecl");
-        if (!functionDecl)
+        const auto constructorDecl =
+            result.Nodes.getNodeAs<clang::CXXConstructorDecl>(
+                "constructorDecl");
+        if (!constructorDecl)
         {
             return;
         }
 
         std::set<const clang::ParmVarDecl*> functionParams;
         for (const clang::ParmVarDecl* functionParm :
-             functionDecl->parameters())
+             constructorDecl->parameters())
         {
             functionParams.insert(functionParm);
         }
@@ -57,12 +58,6 @@ class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
                 continue;
             }
 
-            llvm::StringRef lambdaParmName = lambdaParm->getName();
-            if (lambdaParmName == "poll")
-            {
-                continue;
-            }
-
             auto it = functionParams.find(lambdaParm);
             if (it == functionParams.end())
             {
@@ -78,7 +73,10 @@ class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
 
             clang::SourceRange range(capture.getLocation());
             clang::SourceLocation location(range.getBegin());
-            report(result.Context, "ast-matcher", location) << range;
+            report(result.Context,
+                   "ctor param captured by reference, capture by value instead",
+                   location)
+                << range;
         }
     }
 
@@ -101,8 +99,7 @@ class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
 clang::ast_matchers::StatementMatcher makeMatcher()
 {
     using namespace clang::ast_matchers;
-    return lambdaExpr(hasAncestor(functionDecl().bind("functionDecl")),
-                      hasParent(varDecl()))
+    return lambdaExpr(hasAncestor(cxxConstructorDecl().bind("constructorDecl")))
         .bind("lambdaExpr");
 }
 
