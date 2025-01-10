@@ -33,4 +33,20 @@ WHITELIST_FILE="bugprone-suspicious-xmlsec.whitelist" ~/git/llvm/tools/clang/too
 grep error: log|sort -u
 ----
 
+== ast-matcher
+
+Boilerplate to test ast-matchers.
+
+Run the playground with:
+
+----
+touch test.cpp && make CCACHE_PREFIX=ast-matcher-wrapper CCACHE_DISABLE=1
+----
+
+Run it on online.git code with:
+
+----
+make CCACHE_PREFIX=ast-matcher-wrapper CCACHE_DISABLE=1 build-nocheck
+----
+
 // vim: ft=asciidoc
