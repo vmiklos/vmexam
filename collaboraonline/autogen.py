@@ -9,6 +9,8 @@ def main():
     with open("autogen.input") as stream:
         for line in stream.readlines():
             line = line.strip()
+            if line.startswith("#"):
+                continue
             line = os.path.expandvars(line)
             line = re.sub("\$[A-Za-z_][A-Za-z0-9_]*", "", line)
             cmdline.append(line)
