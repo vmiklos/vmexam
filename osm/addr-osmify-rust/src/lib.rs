@@ -26,37 +26,12 @@ pub trait Network: Send + Sync {
 
 pub use system::StdNetwork;
 
-/// TurboTags contains various tags about one Overpass element.
-#[derive(serde::Deserialize)]
-struct TurboTags {
-    #[serde(rename(deserialize = "addr:city"))]
-    city: String,
-    #[serde(rename(deserialize = "addr:housenumber"))]
-    housenumber: String,
-    #[serde(rename(deserialize = "addr:postcode"))]
-    postcode: String,
-    #[serde(rename(deserialize = "addr:street"))]
-    street: String,
-}
-
-/// TurboElement represents one result from Overpass.
-#[derive(serde::Deserialize)]
-struct TurboElement {
-    tags: TurboTags,
-}
-
-/// TurboResult is the result from Overpass.
-#[derive(serde::Deserialize)]
-struct TurboResult {
-    elements: Vec<TurboElement>,
-}
-
-fn query_turbo(urllib: &dyn Network, query: &str) -> anyhow::Result<TurboResult> {
+fn query_turbo(urllib: &dyn Network, query: &str) -> anyhow::Result<crate::serde::TurboResult> {
     let url = "http://overpass-api.de/api/interpreter";
 
     let buf = urllib.urlopen(url, query)?;
 
-    let elements: TurboResult = match serde_json::from_str(&buf) {
+    let elements: crate::serde::TurboResult = match serde_json::from_str(&buf) {
         Ok(value) => value,
         Err(error) => {
             return Err(anyhow::anyhow!(
@@ -69,17 +44,10 @@ fn query_turbo(urllib: &dyn Network, query: &str) -> anyhow::Result<TurboResult>
     Ok(elements)
 }
 
-/// NominatimResult represents one element in the result array from Nominatim.
-#[derive(Clone, serde::Deserialize)]
-struct NominatimResult {
-    class: String,
-    lat: String,
-    lon: String,
-    osm_type: String,
-    osm_id: u64,
-}
-
-fn query_nominatim(urllib: &dyn Network, query: &str) -> anyhow::Result<Vec<NominatimResult>> {
+fn query_nominatim(
+    urllib: &dyn Network,
+    query: &str,
+) -> anyhow::Result<Vec<crate::serde::NominatimResult>> {
     let prefix = "http://nominatim.openstreetmap.org/search.php?";
     let encoded: String = url::form_urlencoded::Serializer::new(String::new())
         .append_pair("q", query)
@@ -89,7 +57,7 @@ fn query_nominatim(urllib: &dyn Network, query: &str) -> anyhow::Result<Vec<Nomi
 
     let buf = urllib.urlopen(url.as_str(), "")?;
 
-    let elements: Vec<NominatimResult> = match serde_json::from_str(&buf) {
+    let elements: Vec<crate::serde::NominatimResult> = match serde_json::from_str(&buf) {
         Ok(value) => value,
         Err(error) => {
             return Err(anyhow::anyhow!(
@@ -110,7 +78,7 @@ fn osmify(query: &str, urllib: &dyn Network) -> anyhow::Result<String> {
 
     if elements.len() > 1 {
         // There are multiple elements, prefer buildings if possible.
-        let buildings: Vec<NominatimResult> = elements
+        let buildings: Vec<crate::serde::NominatimResult> = elements
             .iter()
             .filter(|i| i.class == "building")
             .cloned()
@@ -222,6 +190,7 @@ pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: &Arc<dyn Network>
     }
 }
 
+mod serde;
 /// Real (not test) trait implementations.
 pub mod system;
 #[cfg(test)]

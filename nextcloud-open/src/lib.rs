@@ -46,20 +46,6 @@ impl Context {
     }
 }
 
-/// Credentials for one specific nextcloud server.
-#[derive(Clone, serde::Deserialize)]
-struct Credential {
-    user: String,
-    principal: String,
-    password: String,
-}
-
-/// Config of nextcloud-open for multiple servers.
-#[derive(serde::Deserialize)]
-struct Config {
-    credentials: HashMap<String, Credential>,
-}
-
 #[derive(Default)]
 struct Account {
     pub local_path: String,
@@ -87,7 +73,7 @@ fn get_nextcloud_config(
 }
 
 /// Gets user / pass for one server from own config.
-fn get_credential(ctx: &Context, server: &str) -> anyhow::Result<Credential> {
+fn get_credential(ctx: &Context, server: &str) -> anyhow::Result<crate::serde::Credential> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let home_path = home_dir.to_string_lossy();
     let mut config_file = ctx
@@ -98,7 +84,7 @@ fn get_credential(ctx: &Context, server: &str) -> anyhow::Result<Credential> {
     let mut content = String::new();
     config_file.read_to_string(&mut content)?;
 
-    let config: Config = toml::from_str(&content)?;
+    let config: crate::serde::Config = toml::from_str(&content)?;
     let credential = config
         .credentials
         .get(server)
@@ -227,5 +213,6 @@ pub fn nextcloud_open(ctx: &Context, input: &vfs::VfsPath) -> anyhow::Result<()>
     Ok(())
 }
 
+mod serde;
 #[cfg(test)]
 mod tests;

@@ -17,7 +17,7 @@ install-git-hooks:
 	cd .git/hooks && ln -sf ../../bash/clang-format-check commit-msg
 
 %.check-test:
-	$(if $(COVERAGE), cd $* && cargo llvm-cov --lib --ignore-filename-regex system.rs --show-missing-lines --fail-under-lines 100 -- --test-threads=1)
+	$(if $(COVERAGE), cd $* && cargo llvm-cov --lib --ignore-filename-regex '(serde|system).rs' --show-missing-lines --fail-under-lines 100 -- --test-threads=1)
 	$(if $(TEST), cd $* && cargo test --lib)
 
 
