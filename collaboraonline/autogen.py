@@ -12,7 +12,7 @@ def main():
             if line.startswith("#"):
                 continue
             line = os.path.expandvars(line)
-            line = re.sub("\$[A-Za-z_][A-Za-z0-9_]*", "", line)
+            line = re.sub(r"\$[A-Za-z_][A-Za-z0-9_]*", "", line)
             cmdline.append(line)
     cmdline.append("--enable-option-checking=fatal")
     print("Running '{}'".format("' '".join(cmdline)))
