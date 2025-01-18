@@ -29,6 +29,6 @@ for i in repos:
         os.chdir("..")
     else:
         # Mirror new repo
-        system("git clone --mirror %s" % i['git_url'])
+        system("git clone --mirror %s" % i['clone_url'])
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
