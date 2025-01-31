@@ -9,5 +9,5 @@ Calculates simple stats on some markdown input:
 Usage:
 
 ```
-markdown-stats test.md test.mak
+markdown-stats test.md test.h
 ```

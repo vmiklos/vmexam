@@ -8,7 +8,7 @@
 #![warn(clippy::all)]
 #![warn(missing_docs)]
 
-//! Calculates some simple stats on a markdown checklist, writing the result in make(1) format.
+//! Calculates some simple stats on a markdown checklist, writing the result as a C header.
 
 use anyhow::Context as _;
 use std::io::BufRead as _;
@@ -36,15 +36,15 @@ fn main() -> anyhow::Result<()> {
     }
 
     let mut make_file = std::fs::File::create(make_path).context("can't create make output")?;
-    writeln!(make_file, "CHECKMARK_DONE = {}", checkmark_done)?;
+    writeln!(make_file, "#define CHECKMARK_DONE {}", checkmark_done)?;
     let checkmark_total = checkmark_todo + checkmark_done;
-    writeln!(make_file, "CHECKMARK_TOTAL = {}", checkmark_total)?;
+    writeln!(make_file, "#define CHECKMARK_TOTAL {}", checkmark_total)?;
     writeln!(
         make_file,
-        "CHECKMARK_PROGRESS = {0:.2}",
+        "#define CHECKMARK_PROGRESS {0:.2}",
         checkmark_done as f64 / checkmark_total as f64 * 100.0
     )?;
-    writeln!(make_file, "BULLET_COUNT = {}", bullet_count)?;
+    writeln!(make_file, "#define BULLET_COUNT {}", bullet_count)?;
 
     Ok(())
 }
