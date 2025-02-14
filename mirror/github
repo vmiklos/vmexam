@@ -12,8 +12,21 @@ def system(cmd):
 
 search = len(sys.argv) > 1 and sys.argv[1] == "--search"
 os.chdir(os.path.dirname(__file__))
-sock = urllib.request.urlopen('https://api.github.com/users/%s/repos?per_page=100' % os.environ['USER'])
-repos = json.loads(sock.read().decode('utf-8'))
+api_url = 'https://api.github.com/users/%s/repos' % os.environ['USER']
+repos = []
+while True:
+    with urllib.request.urlopen(api_url) as response:
+        repos += json.loads(response.read().decode('utf-8'))
+    next_url = ''
+    if 'Link' in response.headers:
+        for link in response.headers['Link'].split(', '):
+            tokens = link.split('; ')
+            if 'rel="next"' in tokens:
+                next_url = tokens[0].strip('<>')
+                break
+    if not next_url:
+        break
+    api_url = next_url
 
 for i in repos:
     if search:
