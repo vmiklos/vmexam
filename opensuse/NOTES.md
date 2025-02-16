@@ -6,6 +6,7 @@
 
 ```
 osc build --alternative-project openSUSE:Leap:15.6 standard
+osc build --alternative-project openSUSE:Factory
 osc build --alternative-project openSUSE:Leap:42.3 --release 9999 standard (custom release)
 osc build --alternative-project openSUSE:Leap:15.1:Update ports (ARM)
 ```
