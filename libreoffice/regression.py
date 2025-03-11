@@ -37,8 +37,18 @@ def get_regression_count(name, mode):
             "ctype": "atom",
         }
     url += urllib.parse.urlencode(params)
-    with urllib.request.urlopen(url) as stream:
-        atom = stream.read()
+    sys.stderr.write(url + "...")
+    sys.stderr.flush()
+    while True:
+        try:
+            with urllib.request.urlopen(url) as stream:
+                atom = stream.read()
+            break
+        except urllib.error.URLError as url_error:
+            sys.stderr.write("urlopen() failed: " + str(url_error))
+            time.sleep(1)
+    sys.stderr.write(" done.\n")
+    sys.stderr.flush()
     feed = minidom.parseString(atom)
     return len(feed.getElementsByTagName("entry"))
 
