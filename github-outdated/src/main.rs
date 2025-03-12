@@ -55,6 +55,16 @@ fn handle_action(config: &Config, job: &str, action: &str) -> anyhow::Result<()>
     Ok(())
 }
 
+#[derive(serde::Deserialize)]
+struct RelMonItem {
+    versions: Vec<String>,
+}
+
+#[derive(serde::Deserialize)]
+struct RelMonResponse {
+    items: Vec<RelMonItem>,
+}
+
 fn handle_rust(
     job: &str,
     parameters: &std::collections::HashMap<String, String>,
@@ -62,15 +72,12 @@ fn handle_rust(
     for (key, value) in parameters {
         if key == "toolchain" {
             let actual_version = value;
-            let args = ["rustc", "--version"];
-            let (first, rest) = args
-                .split_first()
-                .ok_or_else(|| anyhow::anyhow!("args is an empty list"))?;
-            let output = std::process::Command::new(first).args(rest).output()?;
-            let stdout = std::str::from_utf8(&output.stdout)?.to_string();
-            let mut tokens = stdout.split(' ');
-            let _name = tokens.next().context("next failed")?;
-            let expected_version = tokens.next().context("next failed")?;
+            let url = "https://release-monitoring.org/api/v2/projects/?name=rust";
+            let client = isahc::HttpClient::builder().build()?;
+            let mut response = client.get(url)?;
+            let text = response.text()?;
+            let response: RelMonResponse = serde_json::from_str(&text)?;
+            let expected_version = &response.items[0].versions[0];
             if actual_version != expected_version {
                 println!(
                     "Job name: {job}, rust version: {actual_version}, latest version: {expected_version}"
