@@ -32,7 +32,10 @@ fn main() -> anyhow::Result<()> {
     let args: Vec<String> = std::env::args().collect();
     let (_, subprocess_args) = args.split_first().context("args.split_first() failed")?;
     let (first, rest) = subprocess_args.split_first().context("missing command")?;
-    let exit_status = std::process::Command::new(first).args(rest).status()?;
+    let exit_status = std::process::Command::new(first)
+        .args(rest)
+        .status()
+        .context("failed to execute the command as a child process")?;
     let exit_code = exit_status.code().context("code() failed")?;
     let command = subprocess_args.join(" ");
     // passed or failed
