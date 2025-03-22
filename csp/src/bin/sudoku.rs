@@ -12,6 +12,13 @@
 //! <https://medium.com/@ev.zafeiratos/sudoku-solver-with-python-a-methodical-approach-for-algorithm-optimization-part-1-b2c99887167f>.
 
 use anyhow::Context as _;
+use clap::Parser as _;
+
+#[derive(clap::Parser)]
+struct Arguments {
+    /// Path to problem file: 9 numbers in 9 lines.
+    problem_path: String,
+}
 
 const MODEL_WIDTH: usize = 9;
 const MODEL_HEIGHT: usize = 9;
@@ -22,6 +29,9 @@ fn create_model(problem: &str) -> anyhow::Result<Model> {
     let mut model: Model = [[0; MODEL_WIDTH]; MODEL_HEIGHT];
     let fro_rows = problem.split('\n');
     for (row_index, fro_row) in fro_rows.enumerate() {
+        if row_index >= MODEL_HEIGHT {
+            break;
+        }
         let mut row: ModelRow = [0; MODEL_WIDTH];
         for (cell_index, cell) in fro_row.chars().enumerate() {
             let value: usize = cell.to_digit(10).context("to_digit() failed")?.try_into()?;
@@ -87,16 +97,9 @@ fn solve(model: &mut Model) -> bool {
 }
 
 fn main() -> anyhow::Result<()> {
-    let problem = r#"200080300
-060070084
-030500209
-000105408
-000000000
-402706000
-301007040
-720040060
-004010003"#;
-    let mut model = create_model(problem)?;
+    let args = Arguments::parse();
+    let problem = std::fs::read_to_string(args.problem_path)?;
+    let mut model = create_model(&problem)?;
     assert!(solve(&mut model));
     for row in model {
         for cell in row {
