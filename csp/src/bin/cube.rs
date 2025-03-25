@@ -144,11 +144,6 @@ fn parse_rotation(rotation: i8) -> (i8, i8, i8) {
     (x, y, z)
 }
 
-fn rotation_to_string(rotation: i8) -> String {
-    let (x, y, z) = parse_rotation(rotation);
-    format!("x: {x}, y: {y}, z: {z}")
-}
-
 fn rotate_color(colors: &[i8; 6], side: i8, rotation: i8) -> Option<i8> {
     if rotation == -1 {
         return None;
@@ -327,68 +322,51 @@ fn main() {
 
     println!("found a solution:");
     println!(
-        "ubl: use cube {}, then rotate: {}",
+        "ubl: use cube {}, then U is {}, F is {}",
         model.solution[0][0] + 1,
-        rotation_to_string(model.solution[1][0])
+        color_to_string(get_model_color(&model, SLOT_UBL, SIDE_U)),
+        color_to_string(get_model_color(&model, SLOT_UBL, SIDE_F))
     );
     println!(
-        "ubr: use cube {}, then rotate: {}",
+        "ubr: use cube {}, then U is {}, F is {}",
         model.solution[0][1] + 1,
-        rotation_to_string(model.solution[1][1])
+        color_to_string(get_model_color(&model, SLOT_UBR, SIDE_U)),
+        color_to_string(get_model_color(&model, SLOT_UBR, SIDE_F))
     );
     println!(
-        "ufr: use cube {}, then rotate: {}",
+        "ufr: use cube {}, then U is {}, F is {}",
         model.solution[0][2] + 1,
-        rotation_to_string(model.solution[1][2])
-    );
-    println!(
-        "ufl: use cube {}, then rotate: {}",
-        model.solution[0][3] + 1,
-        rotation_to_string(model.solution[1][3])
-    );
-    println!(
-        "dfl: use cube {}, then rotate: {}",
-        model.solution[0][4] + 1,
-        rotation_to_string(model.solution[1][4])
-    );
-    println!(
-        "dfr: use cube {}, then rotate: {}",
-        model.solution[0][5] + 1,
-        rotation_to_string(model.solution[1][5])
-    );
-    println!(
-        "dbr: use cube {}, then rotate: {}",
-        model.solution[0][6] + 1,
-        rotation_to_string(model.solution[1][6])
-    );
-    println!(
-        "dbl: use cube {}, then rotate: {}",
-        model.solution[0][7] + 1,
-        rotation_to_string(model.solution[1][7])
-    );
-
-    println!(
-        "hint: U will have color {}",
-        color_to_string(get_model_color(&model, SLOT_UBL, SIDE_U))
-    );
-    println!(
-        "hint: D will have color {}",
-        color_to_string(get_model_color(&model, SLOT_DFL, SIDE_D))
-    );
-    println!(
-        "hint: R will have color {}",
-        color_to_string(get_model_color(&model, SLOT_UBR, SIDE_R))
-    );
-    println!(
-        "hint: L will have color {}",
-        color_to_string(get_model_color(&model, SLOT_UBL, SIDE_L))
-    );
-    println!(
-        "hint: F will have color {}",
+        color_to_string(get_model_color(&model, SLOT_UFR, SIDE_U)),
         color_to_string(get_model_color(&model, SLOT_UFR, SIDE_F))
     );
     println!(
-        "hint: B will have color {}",
-        color_to_string(get_model_color(&model, SLOT_UBL, SIDE_B))
+        "ufl: use cube {}, then U is {}, F is {}",
+        model.solution[0][3] + 1,
+        color_to_string(get_model_color(&model, SLOT_UFL, SIDE_U)),
+        color_to_string(get_model_color(&model, SLOT_UFL, SIDE_F))
+    );
+    println!(
+        "dfl: use cube {}, then U is {}, F is {}",
+        model.solution[0][4] + 1,
+        color_to_string(get_model_color(&model, SLOT_DFL, SIDE_U)),
+        color_to_string(get_model_color(&model, SLOT_DFL, SIDE_F))
+    );
+    println!(
+        "dfr: use cube {}, then U is {}, F is {}",
+        model.solution[0][5] + 1,
+        color_to_string(get_model_color(&model, SLOT_DFR, SIDE_U)),
+        color_to_string(get_model_color(&model, SLOT_DFR, SIDE_F))
+    );
+    println!(
+        "dbr: use cube {}, then U is {}, F is {}",
+        model.solution[0][6] + 1,
+        color_to_string(get_model_color(&model, SLOT_DBR, SIDE_U)),
+        color_to_string(get_model_color(&model, SLOT_DBR, SIDE_F))
+    );
+    println!(
+        "dbl: use cube {}, then U is {}, F is {}",
+        model.solution[0][7] + 1,
+        color_to_string(get_model_color(&model, SLOT_DBL, SIDE_U)),
+        color_to_string(get_model_color(&model, SLOT_DBL, SIDE_F))
     );
 }
