@@ -1,0 +1,8 @@
+red,purple,green,blue,brown,yellow
+brown,blue,green,red,yellow,purple
+brown,purple,yellow,green,red,blue
+brown,yellow,red,green,blue,purple
+yellow,blue,green,purple,red,brown
+yellow,green,brown,blue,red,purple
+blue,brown,purple,green,red,yellow
+blue,yellow,brown,green,red,purple

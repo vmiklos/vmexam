@@ -16,6 +16,14 @@
 //! The first 5 sides are easy to do manually, the 6th side is tricky: this solver does all sides
 //! for you.
 
+use clap::Parser as _;
+
+#[derive(clap::Parser)]
+struct Arguments {
+    /// Path to problem file: 9 numbers in 9 lines.
+    problem_path: String,
+}
+
 const SLOT_UBL: i8 = 0;
 const SLOT_UBR: i8 = 1;
 const SLOT_UFR: i8 = 2;
@@ -32,28 +40,6 @@ const SIDE_L: i8 = 3;
 const SIDE_F: i8 = 4;
 const SIDE_B: i8 = 5;
 
-const BLUE: i8 = 0;
-const YELLOW: i8 = 1;
-const BROWN: i8 = 2;
-const GREEN: i8 = 3;
-const PURPLE: i8 = 4;
-const RED: i8 = 5;
-
-fn color_to_string(color: Option<i8>) -> &'static str {
-    match color {
-        Some(value) => match value {
-            BLUE => "blue",
-            YELLOW => "yellow",
-            BROWN => "brown",
-            GREEN => "green",
-            PURPLE => "purple",
-            RED => "red",
-            _ => unreachable!(),
-        },
-        None => "",
-    }
-}
-
 struct Model {
     /// Slots: -1 or 0..7
     /// - order is: UBL, UBR, UFR, UFL, DFL, DFR, DBR, DBL
@@ -66,6 +52,15 @@ struct Model {
     /// colors: 0..5 for blue..red
     /// - e.g. if 0.0 is RED, then the up of the 0th cube is red
     colors: [[i8; 6]; 8],
+    /// List of the 6 color names
+    color_names: Vec<String>,
+}
+
+fn color_to_string(model: &Model, color: Option<i8>) -> String {
+    match color {
+        Some(value) => model.color_names[value as usize].to_string(),
+        None => "".to_string(),
+    }
 }
 
 struct Position {
@@ -75,22 +70,38 @@ struct Position {
     cell: usize,
 }
 
-fn create_model() -> Model {
+fn create_model(problem: &str) -> Model {
+    let mut colors: [[i8; 6]; 8] = [[0; 6]; 8];
+    let mut color_names: Vec<String> = Vec::new();
+    let lines = problem.split('\n');
+    for (line_index, line) in lines.enumerate() {
+        if line_index >= 8 {
+            break;
+        }
+
+        let mut row: [i8; 6] = [0; 6];
+        let tokens = line.split(',');
+        for (index, color) in tokens.enumerate() {
+            let color = color.to_string();
+            let color_num = match color_names.iter().position(|i| i == &color) {
+                Some(value) => value,
+                None => {
+                    color_names.push(color);
+                    color_names.len() - 1
+                }
+            };
+            row[index] = color_num as i8;
+        }
+        colors[line_index] = row;
+    }
+
     Model {
         solution: [
             [-1, -1, -1, -1, -1, -1, -1, -1],
             [-1, -1, -1, -1, -1, -1, -1, -1],
         ],
-        colors: [
-            [RED, PURPLE, GREEN, BLUE, BROWN, YELLOW],
-            [BROWN, BLUE, GREEN, RED, YELLOW, PURPLE],
-            [BROWN, PURPLE, YELLOW, GREEN, RED, BLUE],
-            [BROWN, YELLOW, RED, GREEN, BLUE, PURPLE],
-            [YELLOW, BLUE, GREEN, PURPLE, RED, BROWN],
-            [YELLOW, GREEN, BROWN, BLUE, RED, PURPLE],
-            [BLUE, BROWN, PURPLE, GREEN, RED, YELLOW],
-            [BLUE, YELLOW, BROWN, GREEN, RED, PURPLE],
-        ],
+        colors,
+        color_names,
     }
 }
 
@@ -312,61 +323,65 @@ fn solve(model: &mut Model) -> bool {
     false
 }
 
-fn main() {
-    let mut model = create_model();
+fn main() -> anyhow::Result<()> {
+    let args = Arguments::parse();
+    let problem = std::fs::read_to_string(args.problem_path)?;
+    let mut model = create_model(&problem);
     let ret = solve(&mut model);
     if !ret {
         println!("found no solutions");
-        return;
+        return Ok(());
     }
 
     println!("found a solution:");
     println!(
-        "ubl: use cube {}, then U is {}, F is {}",
-        model.solution[0][0] + 1,
-        color_to_string(get_model_color(&model, SLOT_UBL, SIDE_U)),
-        color_to_string(get_model_color(&model, SLOT_UBL, SIDE_F))
-    );
-    println!(
-        "ubr: use cube {}, then U is {}, F is {}",
-        model.solution[0][1] + 1,
-        color_to_string(get_model_color(&model, SLOT_UBR, SIDE_U)),
-        color_to_string(get_model_color(&model, SLOT_UBR, SIDE_F))
-    );
-    println!(
-        "ufr: use cube {}, then U is {}, F is {}",
-        model.solution[0][2] + 1,
-        color_to_string(get_model_color(&model, SLOT_UFR, SIDE_U)),
-        color_to_string(get_model_color(&model, SLOT_UFR, SIDE_F))
-    );
-    println!(
-        "ufl: use cube {}, then U is {}, F is {}",
-        model.solution[0][3] + 1,
-        color_to_string(get_model_color(&model, SLOT_UFL, SIDE_U)),
-        color_to_string(get_model_color(&model, SLOT_UFL, SIDE_F))
-    );
-    println!(
         "dfl: use cube {}, then U is {}, F is {}",
         model.solution[0][4] + 1,
-        color_to_string(get_model_color(&model, SLOT_DFL, SIDE_U)),
-        color_to_string(get_model_color(&model, SLOT_DFL, SIDE_F))
+        color_to_string(&model, get_model_color(&model, SLOT_DFL, SIDE_U)),
+        color_to_string(&model, get_model_color(&model, SLOT_DFL, SIDE_F))
     );
     println!(
         "dfr: use cube {}, then U is {}, F is {}",
         model.solution[0][5] + 1,
-        color_to_string(get_model_color(&model, SLOT_DFR, SIDE_U)),
-        color_to_string(get_model_color(&model, SLOT_DFR, SIDE_F))
+        color_to_string(&model, get_model_color(&model, SLOT_DFR, SIDE_U)),
+        color_to_string(&model, get_model_color(&model, SLOT_DFR, SIDE_F))
     );
     println!(
         "dbr: use cube {}, then U is {}, F is {}",
         model.solution[0][6] + 1,
-        color_to_string(get_model_color(&model, SLOT_DBR, SIDE_U)),
-        color_to_string(get_model_color(&model, SLOT_DBR, SIDE_F))
+        color_to_string(&model, get_model_color(&model, SLOT_DBR, SIDE_U)),
+        color_to_string(&model, get_model_color(&model, SLOT_DBR, SIDE_F))
     );
     println!(
         "dbl: use cube {}, then U is {}, F is {}",
         model.solution[0][7] + 1,
-        color_to_string(get_model_color(&model, SLOT_DBL, SIDE_U)),
-        color_to_string(get_model_color(&model, SLOT_DBL, SIDE_F))
+        color_to_string(&model, get_model_color(&model, SLOT_DBL, SIDE_U)),
+        color_to_string(&model, get_model_color(&model, SLOT_DBL, SIDE_F))
     );
+    println!(
+        "ubl: use cube {}, then U is {}, F is {}",
+        model.solution[0][0] + 1,
+        color_to_string(&model, get_model_color(&model, SLOT_UBL, SIDE_U)),
+        color_to_string(&model, get_model_color(&model, SLOT_UBL, SIDE_F))
+    );
+    println!(
+        "ubr: use cube {}, then U is {}, F is {}",
+        model.solution[0][1] + 1,
+        color_to_string(&model, get_model_color(&model, SLOT_UBR, SIDE_U)),
+        color_to_string(&model, get_model_color(&model, SLOT_UBR, SIDE_F))
+    );
+    println!(
+        "ufr: use cube {}, then U is {}, F is {}",
+        model.solution[0][2] + 1,
+        color_to_string(&model, get_model_color(&model, SLOT_UFR, SIDE_U)),
+        color_to_string(&model, get_model_color(&model, SLOT_UFR, SIDE_F))
+    );
+    println!(
+        "ufl: use cube {}, then U is {}, F is {}",
+        model.solution[0][3] + 1,
+        color_to_string(&model, get_model_color(&model, SLOT_UFL, SIDE_U)),
+        color_to_string(&model, get_model_color(&model, SLOT_UFL, SIDE_F))
+    );
+
+    Ok(())
 }
