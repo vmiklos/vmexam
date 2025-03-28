@@ -15,34 +15,34 @@
 //! for you.
 
 /// Up-bottom-left corner.
-pub const SLOT_UBL: i8 = 0;
+pub const SLOT_UBL: usize = 0;
 /// Up-bottom-right corner.
-pub const SLOT_UBR: i8 = 1;
+pub const SLOT_UBR: usize = 1;
 /// Up-front-right corner.
-pub const SLOT_UFR: i8 = 2;
+pub const SLOT_UFR: usize = 2;
 /// Up-front-left corner.
-pub const SLOT_UFL: i8 = 3;
+pub const SLOT_UFL: usize = 3;
 /// Down-front-left corner.
-pub const SLOT_DFL: i8 = 4;
+pub const SLOT_DFL: usize = 4;
 /// Down-front-right corner.
-pub const SLOT_DFR: i8 = 5;
+pub const SLOT_DFR: usize = 5;
 /// Down-bottom-right corner.
-pub const SLOT_DBR: i8 = 6;
+pub const SLOT_DBR: usize = 6;
 /// Down-bottom-left corner.
-pub const SLOT_DBL: i8 = 7;
+pub const SLOT_DBL: usize = 7;
 
 /// Upper side.
-pub const SIDE_U: i8 = 0;
+pub const SIDE_U: usize = 0;
 /// Down side.
-pub const SIDE_D: i8 = 1;
+pub const SIDE_D: usize = 1;
 /// Right side.
-pub const SIDE_R: i8 = 2;
+pub const SIDE_R: usize = 2;
 /// Left side.
-pub const SIDE_L: i8 = 3;
+pub const SIDE_L: usize = 3;
 /// Front side.
-pub const SIDE_F: i8 = 4;
+pub const SIDE_F: usize = 4;
 /// Back side.
-pub const SIDE_B: i8 = 5;
+pub const SIDE_B: usize = 5;
 
 struct Position {
     /// Row in the model
@@ -53,17 +53,17 @@ struct Position {
 
 /// Contains the calculated `solution` for the problem specified by `colors`.
 pub struct Model {
-    /// Slots: -1 or 0..7
+    /// Slots: 0 or 1..8
     /// - order is: UBL, UBR, UFR, UFL, DFL, DFR, DBR, DBL
     /// - e.g. if slot 0 is 2: for UBL, use the 2nd cube
     ///
-    /// X, Y and Z rotations: -1 or 0..63 (0..3 each)
+    /// X, Y and Z rotations: 0 or 1..64 (0..3 each)
     /// - e.g. if rotation 0 is 3: UBL has been rotated 3 times on the Z axis
-    solution: [[i8; 8]; 2],
+    solution: [[usize; 8]; 2],
     /// 8 cubes (0th..7th cube), 6 sides: U D R L F B
     /// colors: 0..5 for blue..red
     /// - e.g. if 0.0 is RED, then the up of the 0th cube is red
-    colors: [[i8; 6]; 8],
+    colors: [[usize; 6]; 8],
     /// List of the 6 color names
     color_names: Vec<String>,
 }
@@ -71,7 +71,7 @@ pub struct Model {
 impl Model {
     /// Creates a model from an input string.
     pub fn new(problem: &str) -> Model {
-        let mut colors: [[i8; 6]; 8] = [[0; 6]; 8];
+        let mut colors: [[usize; 6]; 8] = [[0; 6]; 8];
         let mut color_names: Vec<String> = Vec::new();
         let lines = problem.split('\n');
         for (line_index, line) in lines.enumerate() {
@@ -79,7 +79,7 @@ impl Model {
                 break;
             }
 
-            let mut row: [i8; 6] = [0; 6];
+            let mut row: [usize; 6] = [0; 6];
             let tokens = line.split(',');
             for (index, color) in tokens.enumerate() {
                 let color = color.to_string();
@@ -90,33 +90,30 @@ impl Model {
                         color_names.len() - 1
                     }
                 };
-                row[index] = color_num as i8;
+                row[index] = color_num;
             }
             colors[line_index] = row;
         }
 
         Model {
-            solution: [
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-            ],
+            solution: [[0; 8]; 2],
             colors,
             color_names,
         }
     }
 
     /// Gets the name of a color index.
-    pub fn get_color_string(&self, slot: i8, side: i8) -> String {
+    pub fn get_color_string(&self, slot: usize, side: usize) -> String {
         let color = self.get_color_index(slot, side);
         match color {
-            Some(value) => self.color_names[value as usize].to_string(),
+            Some(value) => self.color_names[value].to_string(),
             None => "".to_string(),
         }
     }
 
     /// Gets what cube index to use for a specific corner.
-    pub fn get_cube_index(&self, slot: i8) -> i8 {
-        self.solution[0][slot as usize] + 1
+    pub fn get_cube_index(&self, slot: usize) -> usize {
+        self.solution[0][slot]
     }
 
     /// Solves a specified, but not calcualted model.
@@ -128,31 +125,31 @@ impl Model {
             }
         };
         let limit = if pos.row == 0 { 8 } else { 64 };
-        for i in 0..limit {
+        for i in 1..=limit {
             if self.is_valid(i, &pos) {
                 self.solution[pos.row][pos.cell] = i;
                 if self.solve() {
                     return true;
                 }
-                self.solution[pos.row][pos.cell] = -1;
+                self.solution[pos.row][pos.cell] = 0;
             }
         }
         false
     }
 
     /// Gets the color index of a given corner's given side.
-    fn get_color_index(&self, slot: i8, side: i8) -> Option<i8> {
+    fn get_color_index(&self, slot: usize, side: usize) -> Option<usize> {
         rotate_color(
-            &self.colors[self.solution[0][slot as usize] as usize],
+            &self.colors[self.solution[0][slot] - 1],
             side,
-            self.solution[1][slot as usize],
+            self.solution[1][slot],
         )
     }
 
     fn find_empty(&self) -> Option<Position> {
         for row in 0..2 {
             for cell in 0..8 {
-                if self.solution[row][cell] == -1 {
+                if self.solution[row][cell] == 0 {
                     return Some(Position { row, cell });
                 }
             }
@@ -161,22 +158,18 @@ impl Model {
         None
     }
 
-    fn get_candidate_color(&self, slot: i8, side: i8, num: i8) -> Option<i8> {
-        rotate_color(
-            &self.colors[self.solution[0][slot as usize] as usize],
-            side,
-            num,
-        )
+    fn get_candidate_color(&self, slot: usize, side: usize, num: usize) -> Option<usize> {
+        rotate_color(&self.colors[self.solution[0][slot] - 1], side, num)
     }
 
     fn is_valid_color(
         &self,
-        model_slot: i8,
+        model_slot: usize,
         candidate_pos: &Position,
-        side: i8,
-        candidate_rotation: i8,
+        side: usize,
+        candidate_rotation: usize,
     ) -> bool {
-        let candidate_slot = candidate_pos.cell as i8;
+        let candidate_slot = candidate_pos.cell;
         if let Some(model_color) = self.get_color_index(model_slot, side) {
             let candidate_color =
                 match self.get_candidate_color(candidate_slot, side, candidate_rotation) {
@@ -192,7 +185,7 @@ impl Model {
         true
     }
 
-    fn is_valid(&self, num: i8, pos: &Position) -> bool {
+    fn is_valid(&self, num: usize, pos: &Position) -> bool {
         if pos.row == 0 {
             for i in 0..8 {
                 if self.solution[0][i] == num {
@@ -200,7 +193,7 @@ impl Model {
                 }
             }
         } else {
-            match pos.cell as i8 {
+            match pos.cell {
                 SLOT_UBL => {
                     // provides U
                     // provides B
@@ -284,49 +277,49 @@ impl Model {
     }
 }
 
-fn rotate_x(sides: &mut [i8; 6]) {
+fn rotate_x(sides: &mut [usize; 6]) {
     let tmp = *sides;
-    sides[SIDE_U as usize] = tmp[SIDE_F as usize];
-    sides[SIDE_D as usize] = tmp[SIDE_B as usize];
+    sides[SIDE_U] = tmp[SIDE_F];
+    sides[SIDE_D] = tmp[SIDE_B];
     // no R
     // no L
-    sides[SIDE_F as usize] = tmp[SIDE_D as usize];
-    sides[SIDE_B as usize] = tmp[SIDE_U as usize];
+    sides[SIDE_F] = tmp[SIDE_D];
+    sides[SIDE_B] = tmp[SIDE_U];
 }
 
-fn rotate_y(sides: &mut [i8; 6]) {
+fn rotate_y(sides: &mut [usize; 6]) {
     let tmp = *sides;
     // no U
     // no D
-    sides[SIDE_R as usize] = tmp[SIDE_B as usize];
-    sides[SIDE_L as usize] = tmp[SIDE_F as usize];
-    sides[SIDE_F as usize] = tmp[SIDE_R as usize];
-    sides[SIDE_B as usize] = tmp[SIDE_L as usize];
+    sides[SIDE_R] = tmp[SIDE_B];
+    sides[SIDE_L] = tmp[SIDE_F];
+    sides[SIDE_F] = tmp[SIDE_R];
+    sides[SIDE_B] = tmp[SIDE_L];
 }
 
-fn rotate_z(sides: &mut [i8; 6]) {
+fn rotate_z(sides: &mut [usize; 6]) {
     let tmp = *sides;
-    sides[SIDE_U as usize] = tmp[SIDE_L as usize];
-    sides[SIDE_D as usize] = tmp[SIDE_R as usize];
-    sides[SIDE_R as usize] = tmp[SIDE_U as usize];
-    sides[SIDE_L as usize] = tmp[SIDE_D as usize];
+    sides[SIDE_U] = tmp[SIDE_L];
+    sides[SIDE_D] = tmp[SIDE_R];
+    sides[SIDE_R] = tmp[SIDE_U];
+    sides[SIDE_L] = tmp[SIDE_D];
     // no F
     // no B
 }
 
 /// Input is 0..63, which contains the X, Y and Z rotations
-fn parse_rotation(rotation: i8) -> (i8, i8, i8) {
+fn parse_rotation(rotation: usize) -> (usize, usize, usize) {
     let x = rotation / 16;
     let y = rotation % 16 / 4;
     let z = rotation % 4;
     (x, y, z)
 }
 
-fn rotate_color(colors: &[i8; 6], side: i8, rotation: i8) -> Option<i8> {
-    if rotation == -1 {
+fn rotate_color(colors: &[usize; 6], side: usize, rotation: usize) -> Option<usize> {
+    if rotation == 0 {
         return None;
     }
-    let (x_rotation, y_rotation, z_rotation) = parse_rotation(rotation);
+    let (x_rotation, y_rotation, z_rotation) = parse_rotation(rotation - 1);
     let mut sides = [SIDE_U, SIDE_D, SIDE_R, SIDE_L, SIDE_F, SIDE_B];
     for _ in 0..x_rotation {
         rotate_x(&mut sides);
@@ -337,5 +330,5 @@ fn rotate_color(colors: &[i8; 6], side: i8, rotation: i8) -> Option<i8> {
     for _ in 0..z_rotation {
         rotate_z(&mut sides);
     }
-    Some(colors[sides[side as usize] as usize])
+    Some(colors[sides[side]])
 }

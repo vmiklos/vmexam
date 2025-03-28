@@ -18,7 +18,7 @@ struct Arguments {
     problem_path: String,
 }
 
-fn print_slot(model: &csp::cube::Model, slot: i8, slot_name: &str) {
+fn print_slot(model: &csp::cube::Model, slot: usize, slot_name: &str) {
     println!(
         "{}: use cube {}, then U is {}, F is {}",
         slot_name,
