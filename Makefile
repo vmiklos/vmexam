@@ -10,7 +10,7 @@ check:
 	$(info make check: ok)
 
 coverage-info:
-	$(info $(words $(RUST_COVERED_PACKAGES)) covered packages:$(RUST_COVERED_PACKAGES))
+	$(info $(words $(RUST_COVERED_PACKAGES)) covered packages: $(RUST_COVERED_PACKAGES))
 	$(info $(words $(filter-out $(RUST_COVERED_PACKAGES),$(RUST_PACKAGES))) not covered packages: $(filter-out $(RUST_COVERED_PACKAGES),$(RUST_PACKAGES)))
 
 install-git-hooks:
@@ -73,9 +73,9 @@ $(eval $(call RustPackage_RustPackage,avg))
 $(eval $(call RustPackage_RustPackage,binary-dumper))
 
 $(eval $(call RustPackage_RustPackage,csp))
+$(eval $(call RustPackage_use_test,csp))
 
 $(eval $(call RustPackage_RustPackage,darcs-git))
-$(eval $(call RustPackage_use_test,darcs-git))
 $(eval $(call RustPackage_use_coverage,darcs-git))
 
 $(eval $(call RustPackage_RustPackage,fit2json))
