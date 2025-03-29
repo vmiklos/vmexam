@@ -20,9 +20,9 @@ struct Arguments {
 
 fn print_slot(model: &csp::cube::Model, slot: usize, slot_name: &str) {
     println!(
-        "{}: use cube {}, then U is {}, F is {}",
-        slot_name,
+        "cube is {}, corner is {}, U is {}, F is {}",
         model.get_cube_index(slot),
+        slot_name,
         model.get_color_string(slot, csp::cube::SIDE_U),
         model.get_color_string(slot, csp::cube::SIDE_F)
     );
@@ -38,7 +38,6 @@ fn main() -> anyhow::Result<()> {
         return Ok(());
     }
 
-    println!("found a solution:");
     print_slot(&model, csp::cube::SLOT_DFL, "dfl");
     print_slot(&model, csp::cube::SLOT_DFR, "dfr");
     print_slot(&model, csp::cube::SLOT_DBR, "dbr");
