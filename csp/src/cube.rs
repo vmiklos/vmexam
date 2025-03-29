@@ -57,8 +57,8 @@ pub struct Model {
     /// - order is: UBL, UBR, UFR, UFL, DFL, DFR, DBR, DBL
     /// - e.g. if slot 0 is 2: for UBL, use the 2nd cube
     ///
-    /// X, Y and Z rotations: 0 or 1..64 (0..3 each)
-    /// - e.g. if rotation 0 is 3: UBL has been rotated 3 times on the Z axis
+    /// Cube rotations: 0 or 1..24
+    /// - e.g. if rotation 0 is 3: UBL has been rotated according to row 3 in rotate_color()
     solution: [[usize; 8]; 2],
     /// 8 cubes (0th..7th cube), 6 sides: U D R L F B
     /// colors: 0..5 for blue..red
@@ -124,7 +124,7 @@ impl Model {
                 return true;
             }
         };
-        let limit = if pos.row == 0 { 8 } else { 64 };
+        let limit = if pos.row == 0 { 8 } else { 24 };
         for i in 1..=limit {
             if self.is_valid(i, &pos) {
                 self.solution[pos.row][pos.cell] = i;
@@ -277,58 +277,37 @@ impl Model {
     }
 }
 
-fn rotate_x(sides: &mut [usize; 6]) {
-    let tmp = *sides;
-    sides[SIDE_U] = tmp[SIDE_F];
-    sides[SIDE_D] = tmp[SIDE_B];
-    // no R
-    // no L
-    sides[SIDE_F] = tmp[SIDE_D];
-    sides[SIDE_B] = tmp[SIDE_U];
-}
-
-fn rotate_y(sides: &mut [usize; 6]) {
-    let tmp = *sides;
-    // no U
-    // no D
-    sides[SIDE_R] = tmp[SIDE_B];
-    sides[SIDE_L] = tmp[SIDE_F];
-    sides[SIDE_F] = tmp[SIDE_R];
-    sides[SIDE_B] = tmp[SIDE_L];
-}
-
-fn rotate_z(sides: &mut [usize; 6]) {
-    let tmp = *sides;
-    sides[SIDE_U] = tmp[SIDE_L];
-    sides[SIDE_D] = tmp[SIDE_R];
-    sides[SIDE_R] = tmp[SIDE_U];
-    sides[SIDE_L] = tmp[SIDE_D];
-    // no F
-    // no B
-}
-
-/// Input is 0..63, which contains the X, Y and Z rotations
-fn parse_rotation(rotation: usize) -> (usize, usize, usize) {
-    let x = rotation / 16;
-    let y = rotation % 16 / 4;
-    let z = rotation % 4;
-    (x, y, z)
-}
-
 fn rotate_color(colors: &[usize; 6], side: usize, rotation: usize) -> Option<usize> {
     if rotation == 0 {
         return None;
     }
-    let (x_rotation, y_rotation, z_rotation) = parse_rotation(rotation - 1);
-    let mut sides = [SIDE_U, SIDE_D, SIDE_R, SIDE_L, SIDE_F, SIDE_B];
-    for _ in 0..x_rotation {
-        rotate_x(&mut sides);
-    }
-    for _ in 0..y_rotation {
-        rotate_y(&mut sides);
-    }
-    for _ in 0..z_rotation {
-        rotate_z(&mut sides);
-    }
+    // First is no rotation, the the rest of the 24 combinations.
+    let rotations = [
+        [SIDE_U, SIDE_D, SIDE_R, SIDE_L, SIDE_F, SIDE_B],
+        [SIDE_U, SIDE_D, SIDE_B, SIDE_F, SIDE_R, SIDE_L],
+        [SIDE_U, SIDE_D, SIDE_L, SIDE_R, SIDE_B, SIDE_F],
+        [SIDE_U, SIDE_D, SIDE_F, SIDE_B, SIDE_L, SIDE_R],
+        [SIDE_D, SIDE_U, SIDE_L, SIDE_R, SIDE_F, SIDE_B],
+        [SIDE_D, SIDE_U, SIDE_B, SIDE_F, SIDE_L, SIDE_R],
+        [SIDE_D, SIDE_U, SIDE_R, SIDE_L, SIDE_B, SIDE_F],
+        [SIDE_D, SIDE_U, SIDE_F, SIDE_B, SIDE_R, SIDE_L],
+        [SIDE_R, SIDE_L, SIDE_D, SIDE_U, SIDE_F, SIDE_B],
+        [SIDE_R, SIDE_L, SIDE_B, SIDE_F, SIDE_D, SIDE_U],
+        [SIDE_R, SIDE_L, SIDE_U, SIDE_D, SIDE_B, SIDE_F],
+        [SIDE_R, SIDE_L, SIDE_F, SIDE_B, SIDE_U, SIDE_D],
+        [SIDE_L, SIDE_R, SIDE_U, SIDE_D, SIDE_F, SIDE_B],
+        [SIDE_L, SIDE_R, SIDE_B, SIDE_F, SIDE_U, SIDE_D],
+        [SIDE_L, SIDE_R, SIDE_D, SIDE_U, SIDE_B, SIDE_F],
+        [SIDE_L, SIDE_R, SIDE_F, SIDE_B, SIDE_D, SIDE_U],
+        [SIDE_F, SIDE_B, SIDE_R, SIDE_L, SIDE_D, SIDE_U],
+        [SIDE_F, SIDE_B, SIDE_U, SIDE_D, SIDE_R, SIDE_L],
+        [SIDE_F, SIDE_B, SIDE_L, SIDE_R, SIDE_U, SIDE_D],
+        [SIDE_F, SIDE_B, SIDE_D, SIDE_U, SIDE_L, SIDE_R],
+        [SIDE_B, SIDE_F, SIDE_R, SIDE_L, SIDE_U, SIDE_D],
+        [SIDE_B, SIDE_F, SIDE_D, SIDE_U, SIDE_R, SIDE_L],
+        [SIDE_B, SIDE_F, SIDE_L, SIDE_R, SIDE_D, SIDE_U],
+        [SIDE_B, SIDE_F, SIDE_U, SIDE_D, SIDE_L, SIDE_R],
+    ];
+    let sides = rotations[rotation - 1];
     Some(colors[sides[side]])
 }
