@@ -30,6 +30,7 @@ pub const SLOT_DFR: usize = 5;
 pub const SLOT_DBR: usize = 6;
 /// Down-bottom-left corner.
 pub const SLOT_DBL: usize = 7;
+const SLOTS_SIZE: usize = 8;
 
 /// Upper side.
 pub const SIDE_U: usize = 0;
@@ -53,17 +54,17 @@ struct Position {
 
 /// Contains the calculated `solution` for the problem specified by `colors`.
 pub struct Model {
-    /// Slots: 0 or 1..8
+    /// Slots: 0 or 1..SLOTS_SIZE
     /// - order is: UBL, UBR, UFR, UFL, DFL, DFR, DBR, DBL
     /// - e.g. if slot 0 is 2: for UBL, use the 2nd cube
     ///
     /// Cube rotations: 0 or 1..24
     /// - e.g. if rotation 0 is 3: UBL has been rotated according to row 3 in rotate_color()
-    solution: [[usize; 8]; 2],
-    /// 8 cubes (0th..7th cube), 6 sides: U D R L F B
+    solution: [[usize; SLOTS_SIZE]; 2],
+    /// SLOTS_SIZE cubes (0th..7th cube), 6 sides: U D R L F B
     /// colors: 0..5 for blue..red
     /// - e.g. if 0.0 is RED, then the up of the 0th cube is red
-    colors: [[usize; 6]; 8],
+    colors: [[usize; 6]; SLOTS_SIZE],
     /// List of the 6 color names
     color_names: Vec<String>,
 }
@@ -71,11 +72,11 @@ pub struct Model {
 impl Model {
     /// Creates a model from an input string.
     pub fn new(problem: &str) -> Model {
-        let mut colors: [[usize; 6]; 8] = [[0; 6]; 8];
+        let mut colors: [[usize; 6]; SLOTS_SIZE] = [[0; 6]; SLOTS_SIZE];
         let mut color_names: Vec<String> = Vec::new();
         let lines = problem.split('\n');
         for (line_index, line) in lines.enumerate() {
-            if line_index >= 8 {
+            if line_index >= SLOTS_SIZE {
                 break;
             }
 
@@ -96,7 +97,7 @@ impl Model {
         }
 
         Model {
-            solution: [[0; 8]; 2],
+            solution: [[0; SLOTS_SIZE]; 2],
             colors,
             color_names,
         }
@@ -124,7 +125,7 @@ impl Model {
                 return true;
             }
         };
-        let limit = if pos.row == 0 { 8 } else { 24 };
+        let limit = if pos.row == 0 { SLOTS_SIZE } else { 24 };
         for i in 1..=limit {
             if self.is_valid(i, &pos) {
                 self.solution[pos.row][pos.cell] = i;
@@ -148,7 +149,7 @@ impl Model {
 
     fn find_empty(&self) -> Option<Position> {
         for row in 0..2 {
-            for cell in 0..8 {
+            for cell in 0..SLOTS_SIZE {
                 if self.solution[row][cell] == 0 {
                     return Some(Position { row, cell });
                 }
@@ -187,7 +188,7 @@ impl Model {
 
     fn is_valid(&self, num: usize, pos: &Position) -> bool {
         if pos.row == 0 {
-            for i in 0..8 {
+            for i in 0..SLOTS_SIZE {
                 if self.solution[0][i] == num {
                     return false;
                 }
