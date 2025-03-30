@@ -46,6 +46,11 @@ pub const SIDE_F: usize = 4;
 pub const SIDE_B: usize = 5;
 const SIDES_COUNT: usize = 6;
 
+const ROW_SLOTS: usize = 0;
+const ROW_ROTATIONS: usize = 1;
+const ROWS_COUNT: usize = 2;
+const ROTATIONS_COUNT: usize = 24;
+
 struct Position {
     /// Row in the model
     row: usize,
@@ -59,9 +64,9 @@ pub struct Model {
     /// - order is: UBL, UBR, UFR, UFL, DFL, DFR, DBR, DBL
     /// - e.g. if slot 0 is 2: for UBL, use the 2nd cube
     ///
-    /// Cube rotations: 0 or 1..24
+    /// Cube rotations: 0 or 1..ROTATIONS_COUNT
     /// - e.g. if rotation 0 is 3: UBL has been rotated according to row 3 in rotate_color()
-    solution: [[usize; SLOTS_COUNT]; 2],
+    solution: [[usize; SLOTS_COUNT]; ROWS_COUNT],
     /// SLOTS_SIZE cubes (0th..7th cube), SIDES_COUNT sides: U D R L F B
     /// colors: 0..5 for blue..red
     /// - e.g. if 0.0 is RED, then the up of the 0th cube is red
@@ -98,7 +103,7 @@ impl Model {
         }
 
         Model {
-            solution: [[0; SLOTS_COUNT]; 2],
+            solution: [[0; SLOTS_COUNT]; ROWS_COUNT],
             colors,
             color_names,
         }
@@ -115,7 +120,7 @@ impl Model {
 
     /// Gets what cube index to use for a specific corner.
     pub fn get_cube_index(&self, slot: usize) -> usize {
-        self.solution[0][slot]
+        self.solution[ROW_SLOTS][slot]
     }
 
     /// Solves a specified, but not calcualted model.
@@ -126,7 +131,11 @@ impl Model {
                 return true;
             }
         };
-        let limit = if pos.row == 0 { SLOTS_COUNT } else { 24 };
+        let limit = if pos.row == ROW_SLOTS {
+            SLOTS_COUNT
+        } else {
+            ROTATIONS_COUNT
+        };
         for i in 1..=limit {
             if self.is_valid(i, &pos) {
                 self.solution[pos.row][pos.cell] = i;
@@ -142,14 +151,14 @@ impl Model {
     /// Gets the color index of a given corner's given side.
     fn get_color_index(&self, slot: usize, side: usize) -> Option<usize> {
         rotate_color(
-            &self.colors[self.solution[0][slot] - 1],
+            &self.colors[self.solution[ROW_SLOTS][slot] - 1],
             side,
-            self.solution[1][slot],
+            self.solution[ROW_ROTATIONS][slot],
         )
     }
 
     fn find_empty(&self) -> Option<Position> {
-        for row in 0..2 {
+        for row in 0..ROWS_COUNT {
             for cell in 0..SLOTS_COUNT {
                 if self.solution[row][cell] == 0 {
                     return Some(Position { row, cell });
@@ -161,7 +170,7 @@ impl Model {
     }
 
     fn get_candidate_color(&self, slot: usize, side: usize, num: usize) -> Option<usize> {
-        rotate_color(&self.colors[self.solution[0][slot] - 1], side, num)
+        rotate_color(&self.colors[self.solution[ROW_SLOTS][slot] - 1], side, num)
     }
 
     fn is_valid_color(
@@ -188,9 +197,9 @@ impl Model {
     }
 
     fn is_valid(&self, num: usize, pos: &Position) -> bool {
-        if pos.row == 0 {
+        if pos.row == ROW_SLOTS {
             for i in 0..SLOTS_COUNT {
-                if self.solution[0][i] == num {
+                if self.solution[ROW_SLOTS][i] == num {
                     return false;
                 }
             }
