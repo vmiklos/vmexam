@@ -14,23 +14,53 @@
 //! The first 5 sides are easy to do manually, the 6th side is tricky: this solver does all sides
 //! for you.
 
-/// Up-bottom-left corner.
-pub const SLOT_UBL: usize = 0;
-/// Up-bottom-right corner.
-pub const SLOT_UBR: usize = 1;
-/// Up-front-right corner.
-pub const SLOT_UFR: usize = 2;
-/// Up-front-left corner.
-pub const SLOT_UFL: usize = 3;
-/// Down-front-left corner.
-pub const SLOT_DFL: usize = 4;
-/// Down-front-right corner.
-pub const SLOT_DFR: usize = 5;
-/// Down-bottom-right corner.
-pub const SLOT_DBR: usize = 6;
-/// Down-bottom-left corner.
-pub const SLOT_DBL: usize = 7;
+use anyhow::Context as _;
+
+/// Corners of a cube.
+#[derive(Clone, Copy)]
+pub enum Slot {
+    /// Up-bottom-left corner.
+    UBL = 0,
+    /// Up-bottom-right corner.
+    UBR = 1,
+    /// Up-front-right corner.
+    UFR = 2,
+    /// Up-front-left corner.
+    UFL = 3,
+    /// Down-front-left corner.
+    DFL = 4,
+    /// Down-front-right corner.
+    DFR = 5,
+    /// Down-bottom-right corner.
+    DBR = 6,
+    /// Down-bottom-left corner.
+    DBL = 7,
+}
 const SLOTS_COUNT: usize = 8;
+
+impl TryFrom<usize> for Slot {
+    type Error = anyhow::Error;
+
+    fn try_from(value: usize) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(Slot::UBL),
+            1 => Ok(Slot::UBR),
+            2 => Ok(Slot::UFR),
+            3 => Ok(Slot::UFL),
+            4 => Ok(Slot::DFL),
+            5 => Ok(Slot::DFR),
+            6 => Ok(Slot::DBR),
+            7 => Ok(Slot::DBL),
+            _ => Err(anyhow::anyhow!("invalid slot")),
+        }
+    }
+}
+
+impl From<Slot> for usize {
+    fn from(val: Slot) -> Self {
+        val as usize
+    }
+}
 
 /// Upper side.
 pub const SIDE_U: usize = 0;
@@ -60,7 +90,7 @@ struct Position {
 }
 
 struct Constraint {
-    model_corner: usize,
+    model_corner: Slot,
     candidate_corner: Position,
     side: usize,
     candidate_color: usize,
@@ -68,7 +98,7 @@ struct Constraint {
 
 impl Constraint {
     fn new(
-        model_corner: usize,
+        model_corner: Slot,
         candidate_corner: &Position,
         side: usize,
         candidate_color: usize,
@@ -134,25 +164,23 @@ impl Model {
     }
 
     /// Gets the name of a color index.
-    pub fn get_color_string(&self, slot: usize, side: usize) -> String {
-        let color = self.get_color_index(slot, side);
-        match color {
-            Some(value) => self.color_names[value].to_string(),
-            None => "".to_string(),
-        }
+    pub fn get_color_string(&self, slot: Slot, side: usize) -> anyhow::Result<String> {
+        let index = self.get_color_index(slot, side).context("no color")?;
+        Ok(self.color_names[index].to_string())
     }
 
     /// Gets what cube index to use for a specific corner.
-    pub fn get_cube_index(&self, slot: usize) -> usize {
+    pub fn get_cube_index(&self, slot: Slot) -> usize {
+        let slot: usize = slot.into();
         self.solution[ROW_SLOTS][slot]
     }
 
     /// Solves a specified, but not calcualted model.
-    pub fn solve(&mut self) -> bool {
+    pub fn solve(&mut self) -> anyhow::Result<bool> {
         let pos = match self.find_empty() {
             Some(value) => value,
             None => {
-                return true;
+                return Ok(true);
             }
         };
         let limit = if pos.row == ROW_SLOTS {
@@ -161,19 +189,20 @@ impl Model {
             ROTATIONS_COUNT
         };
         for i in 1..=limit {
-            if self.is_valid(i, &pos) {
+            if self.is_valid(i, &pos)? {
                 self.solution[pos.row][pos.cell] = i;
-                if self.solve() {
-                    return true;
+                if self.solve()? {
+                    return Ok(true);
                 }
                 self.solution[pos.row][pos.cell] = 0;
             }
         }
-        false
+        Ok(false)
     }
 
     /// Gets the color index of a given corner's given side.
-    fn get_color_index(&self, slot: usize, side: usize) -> Option<usize> {
+    fn get_color_index(&self, slot: Slot, side: usize) -> Option<usize> {
+        let slot: usize = slot.into();
         rotate_color(
             &self.colors[self.solution[ROW_SLOTS][slot] - 1],
             side,
@@ -226,58 +255,57 @@ impl Model {
         true
     }
 
-    fn is_valid(&self, num: usize, pos: &Position) -> bool {
+    fn is_valid(&self, num: usize, pos: &Position) -> anyhow::Result<bool> {
         if pos.row == ROW_SLOTS {
-            return self.is_valid_slot(num);
+            return Ok(self.is_valid_slot(num));
         }
         let mut constraints: Vec<Constraint> = Vec::new();
-        match pos.cell {
-            SLOT_UBL => {
+        match Slot::try_from(pos.cell)? {
+            Slot::UBL => {
                 // provides U, B & L
             }
-            SLOT_UBR => {
-                constraints.push(Constraint::new(SLOT_UBL, pos, SIDE_U, num));
-                constraints.push(Constraint::new(SLOT_UBL, pos, SIDE_B, num));
+            Slot::UBR => {
+                constraints.push(Constraint::new(Slot::UBL, pos, SIDE_U, num));
+                constraints.push(Constraint::new(Slot::UBL, pos, SIDE_B, num));
                 // provides R
             }
-            SLOT_UFR => {
-                constraints.push(Constraint::new(SLOT_UBR, pos, SIDE_U, num));
+            Slot::UFR => {
+                constraints.push(Constraint::new(Slot::UBR, pos, SIDE_U, num));
                 // provides F
-                constraints.push(Constraint::new(SLOT_UBR, pos, SIDE_R, num));
+                constraints.push(Constraint::new(Slot::UBR, pos, SIDE_R, num));
             }
-            SLOT_UFL => {
-                constraints.push(Constraint::new(SLOT_UBL, pos, SIDE_U, num));
-                constraints.push(Constraint::new(SLOT_UFR, pos, SIDE_F, num));
-                constraints.push(Constraint::new(SLOT_UFR, pos, SIDE_L, num));
+            Slot::UFL => {
+                constraints.push(Constraint::new(Slot::UBL, pos, SIDE_U, num));
+                constraints.push(Constraint::new(Slot::UFR, pos, SIDE_F, num));
+                constraints.push(Constraint::new(Slot::UFR, pos, SIDE_L, num));
             }
-            SLOT_DFL => {
+            Slot::DFL => {
                 // provides D
-                constraints.push(Constraint::new(SLOT_UFR, pos, SIDE_F, num));
-                constraints.push(Constraint::new(SLOT_UBL, pos, SIDE_L, num));
+                constraints.push(Constraint::new(Slot::UFR, pos, SIDE_F, num));
+                constraints.push(Constraint::new(Slot::UBL, pos, SIDE_L, num));
             }
-            SLOT_DFR => {
-                constraints.push(Constraint::new(SLOT_DFL, pos, SIDE_D, num));
-                constraints.push(Constraint::new(SLOT_UFR, pos, SIDE_F, num));
-                constraints.push(Constraint::new(SLOT_UBR, pos, SIDE_R, num));
+            Slot::DFR => {
+                constraints.push(Constraint::new(Slot::DFL, pos, SIDE_D, num));
+                constraints.push(Constraint::new(Slot::UFR, pos, SIDE_F, num));
+                constraints.push(Constraint::new(Slot::UBR, pos, SIDE_R, num));
             }
-            SLOT_DBR => {
-                constraints.push(Constraint::new(SLOT_DFL, pos, SIDE_D, num));
-                constraints.push(Constraint::new(SLOT_UBL, pos, SIDE_B, num));
-                constraints.push(Constraint::new(SLOT_UBR, pos, SIDE_R, num));
+            Slot::DBR => {
+                constraints.push(Constraint::new(Slot::DFL, pos, SIDE_D, num));
+                constraints.push(Constraint::new(Slot::UBL, pos, SIDE_B, num));
+                constraints.push(Constraint::new(Slot::UBR, pos, SIDE_R, num));
             }
-            SLOT_DBL => {
-                constraints.push(Constraint::new(SLOT_DFL, pos, SIDE_D, num));
-                constraints.push(Constraint::new(SLOT_UBL, pos, SIDE_B, num));
-                constraints.push(Constraint::new(SLOT_UBL, pos, SIDE_L, num));
+            Slot::DBL => {
+                constraints.push(Constraint::new(Slot::DFL, pos, SIDE_D, num));
+                constraints.push(Constraint::new(Slot::UBL, pos, SIDE_B, num));
+                constraints.push(Constraint::new(Slot::UBL, pos, SIDE_L, num));
             }
-            _ => unreachable!(),
         }
         for constraint in constraints {
             if !self.is_valid_color(&constraint) {
-                return false;
+                return Ok(false);
             }
         }
-        true
+        Ok(true)
     }
 }
 

@@ -18,34 +18,40 @@ struct Arguments {
     problem_path: String,
 }
 
-fn print_slot(model: &csp::cube::Model, slot: usize, slot_name: &str) {
+fn print_slot(
+    model: &csp::cube::Model,
+    slot: csp::cube::Slot,
+    slot_name: &str,
+) -> anyhow::Result<()> {
     println!(
         "cube is {}, corner is {}, U is {}, F is {}",
         model.get_cube_index(slot),
         slot_name,
-        model.get_color_string(slot, csp::cube::SIDE_U),
-        model.get_color_string(slot, csp::cube::SIDE_F)
+        model.get_color_string(slot, csp::cube::SIDE_U)?,
+        model.get_color_string(slot, csp::cube::SIDE_F)?
     );
+
+    Ok(())
 }
 
 fn main() -> anyhow::Result<()> {
     let args = Arguments::parse();
     let problem = std::fs::read_to_string(args.problem_path)?;
     let mut model = csp::cube::Model::new(&problem);
-    let ret = model.solve();
+    let ret = model.solve()?;
     if !ret {
         println!("found no solutions");
         return Ok(());
     }
 
-    print_slot(&model, csp::cube::SLOT_DFL, "dfl");
-    print_slot(&model, csp::cube::SLOT_DFR, "dfr");
-    print_slot(&model, csp::cube::SLOT_DBR, "dbr");
-    print_slot(&model, csp::cube::SLOT_DBL, "dbl");
-    print_slot(&model, csp::cube::SLOT_UBL, "ubl");
-    print_slot(&model, csp::cube::SLOT_UBR, "ubr");
-    print_slot(&model, csp::cube::SLOT_UFR, "ufr");
-    print_slot(&model, csp::cube::SLOT_UFL, "ufl");
+    print_slot(&model, csp::cube::Slot::DFL, "dfl")?;
+    print_slot(&model, csp::cube::Slot::DFR, "dfr")?;
+    print_slot(&model, csp::cube::Slot::DBR, "dbr")?;
+    print_slot(&model, csp::cube::Slot::DBL, "dbl")?;
+    print_slot(&model, csp::cube::Slot::UBL, "ubl")?;
+    print_slot(&model, csp::cube::Slot::UBR, "ubr")?;
+    print_slot(&model, csp::cube::Slot::UFR, "ufr")?;
+    print_slot(&model, csp::cube::Slot::UFL, "ufl")?;
 
     Ok(())
 }
