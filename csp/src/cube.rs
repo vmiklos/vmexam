@@ -51,11 +51,35 @@ const ROW_ROTATIONS: usize = 1;
 const ROWS_COUNT: usize = 2;
 const ROTATIONS_COUNT: usize = 24;
 
+#[derive(Clone)]
 struct Position {
     /// Row in the model
     row: usize,
     /// Column in a row
     cell: usize,
+}
+
+struct Constraint {
+    model_corner: usize,
+    candidate_corner: Position,
+    side: usize,
+    candidate_color: usize,
+}
+
+impl Constraint {
+    fn new(
+        model_corner: usize,
+        candidate_corner: &Position,
+        side: usize,
+        candidate_color: usize,
+    ) -> Self {
+        Constraint {
+            model_corner,
+            candidate_corner: candidate_corner.clone(),
+            side,
+            candidate_color,
+        }
+    }
 }
 
 /// Contains the calculated `solution` for the problem specified by `colors`.
@@ -173,22 +197,18 @@ impl Model {
         rotate_color(&self.colors[self.solution[ROW_SLOTS][slot] - 1], side, num)
     }
 
-    fn is_valid_color(
-        &self,
-        model_slot: usize,
-        candidate_pos: &Position,
-        side: usize,
-        candidate_rotation: usize,
-    ) -> bool {
-        let candidate_slot = candidate_pos.cell;
-        if let Some(model_color) = self.get_color_index(model_slot, side) {
-            let candidate_color =
-                match self.get_candidate_color(candidate_slot, side, candidate_rotation) {
-                    Some(value) => value,
-                    None => {
-                        return false;
-                    }
-                };
+    fn is_valid_color(&self, constraint: &Constraint) -> bool {
+        if let Some(model_color) = self.get_color_index(constraint.model_corner, constraint.side) {
+            let candidate_color = match self.get_candidate_color(
+                constraint.candidate_corner.cell,
+                constraint.side,
+                constraint.candidate_color,
+            ) {
+                Some(value) => value,
+                None => {
+                    return false;
+                }
+            };
             if candidate_color != model_color {
                 return false;
             }
@@ -196,92 +216,65 @@ impl Model {
         true
     }
 
+    fn is_valid_slot(&self, num: usize) -> bool {
+        for i in 0..SLOTS_COUNT {
+            if self.solution[ROW_SLOTS][i] == num {
+                return false;
+            }
+        }
+
+        true
+    }
+
     fn is_valid(&self, num: usize, pos: &Position) -> bool {
         if pos.row == ROW_SLOTS {
-            for i in 0..SLOTS_COUNT {
-                if self.solution[ROW_SLOTS][i] == num {
-                    return false;
-                }
+            return self.is_valid_slot(num);
+        }
+        let mut constraints: Vec<Constraint> = Vec::new();
+        match pos.cell {
+            SLOT_UBL => {
+                // provides U, B & L
             }
-        } else {
-            match pos.cell {
-                SLOT_UBL => {
-                    // provides U
-                    // provides B
-                    // provides L
-                }
-                SLOT_UBR => {
-                    if !self.is_valid_color(SLOT_UBL, pos, SIDE_U, num) {
-                        return false;
-                    }
-                    if !self.is_valid_color(SLOT_UBL, pos, SIDE_B, num) {
-                        return false;
-                    }
-                    // provides R
-                }
-                SLOT_UFR => {
-                    if !self.is_valid_color(SLOT_UBR, pos, SIDE_U, num) {
-                        return false;
-                    }
-                    // provides F
-                    if !self.is_valid_color(SLOT_UBR, pos, SIDE_R, num) {
-                        return false;
-                    }
-                }
-                SLOT_UFL => {
-                    if !self.is_valid_color(SLOT_UBL, pos, SIDE_U, num) {
-                        return false;
-                    }
-                    if !self.is_valid_color(SLOT_UFR, pos, SIDE_F, num) {
-                        return false;
-                    }
-                    if !self.is_valid_color(SLOT_UBL, pos, SIDE_L, num) {
-                        return false;
-                    }
-                }
-                SLOT_DFL => {
-                    // provides D
-                    if !self.is_valid_color(SLOT_UFR, pos, SIDE_F, num) {
-                        return false;
-                    }
-                    if !self.is_valid_color(SLOT_UBL, pos, SIDE_L, num) {
-                        return false;
-                    }
-                }
-                SLOT_DFR => {
-                    if !self.is_valid_color(SLOT_DFL, pos, SIDE_D, num) {
-                        return false;
-                    }
-                    if !self.is_valid_color(SLOT_UFR, pos, SIDE_F, num) {
-                        return false;
-                    }
-                    if !self.is_valid_color(SLOT_UBR, pos, SIDE_R, num) {
-                        return false;
-                    }
-                }
-                SLOT_DBR => {
-                    if !self.is_valid_color(SLOT_DFL, pos, SIDE_D, num) {
-                        return false;
-                    }
-                    if !self.is_valid_color(SLOT_UBL, pos, SIDE_B, num) {
-                        return false;
-                    }
-                    if !self.is_valid_color(SLOT_UBR, pos, SIDE_R, num) {
-                        return false;
-                    }
-                }
-                SLOT_DBL => {
-                    if !self.is_valid_color(SLOT_DFL, pos, SIDE_D, num) {
-                        return false;
-                    }
-                    if !self.is_valid_color(SLOT_UBL, pos, SIDE_B, num) {
-                        return false;
-                    }
-                    if !self.is_valid_color(SLOT_UBL, pos, SIDE_L, num) {
-                        return false;
-                    }
-                }
-                _ => unreachable!(),
+            SLOT_UBR => {
+                constraints.push(Constraint::new(SLOT_UBL, pos, SIDE_U, num));
+                constraints.push(Constraint::new(SLOT_UBL, pos, SIDE_B, num));
+                // provides R
+            }
+            SLOT_UFR => {
+                constraints.push(Constraint::new(SLOT_UBR, pos, SIDE_U, num));
+                // provides F
+                constraints.push(Constraint::new(SLOT_UBR, pos, SIDE_R, num));
+            }
+            SLOT_UFL => {
+                constraints.push(Constraint::new(SLOT_UBL, pos, SIDE_U, num));
+                constraints.push(Constraint::new(SLOT_UFR, pos, SIDE_F, num));
+                constraints.push(Constraint::new(SLOT_UFR, pos, SIDE_L, num));
+            }
+            SLOT_DFL => {
+                // provides D
+                constraints.push(Constraint::new(SLOT_UFR, pos, SIDE_F, num));
+                constraints.push(Constraint::new(SLOT_UBL, pos, SIDE_L, num));
+            }
+            SLOT_DFR => {
+                constraints.push(Constraint::new(SLOT_DFL, pos, SIDE_D, num));
+                constraints.push(Constraint::new(SLOT_UFR, pos, SIDE_F, num));
+                constraints.push(Constraint::new(SLOT_UBR, pos, SIDE_R, num));
+            }
+            SLOT_DBR => {
+                constraints.push(Constraint::new(SLOT_DFL, pos, SIDE_D, num));
+                constraints.push(Constraint::new(SLOT_UBL, pos, SIDE_B, num));
+                constraints.push(Constraint::new(SLOT_UBR, pos, SIDE_R, num));
+            }
+            SLOT_DBL => {
+                constraints.push(Constraint::new(SLOT_DFL, pos, SIDE_D, num));
+                constraints.push(Constraint::new(SLOT_UBL, pos, SIDE_B, num));
+                constraints.push(Constraint::new(SLOT_UBL, pos, SIDE_L, num));
+            }
+            _ => unreachable!(),
+        }
+        for constraint in constraints {
+            if !self.is_valid_color(&constraint) {
+                return false;
             }
         }
         true
