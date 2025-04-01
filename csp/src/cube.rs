@@ -17,7 +17,8 @@
 use anyhow::Context as _;
 
 /// Corners of a cube.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, num_enum::IntoPrimitive, num_enum::TryFromPrimitive)]
+#[repr(usize)]
 pub enum Slot {
     /// Up-bottom-left corner.
     UBL = 0,
@@ -37,30 +38,6 @@ pub enum Slot {
     DBL = 7,
 }
 const SLOTS_COUNT: usize = 8;
-
-impl TryFrom<usize> for Slot {
-    type Error = anyhow::Error;
-
-    fn try_from(value: usize) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(Slot::UBL),
-            1 => Ok(Slot::UBR),
-            2 => Ok(Slot::UFR),
-            3 => Ok(Slot::UFL),
-            4 => Ok(Slot::DFL),
-            5 => Ok(Slot::DFR),
-            6 => Ok(Slot::DBR),
-            7 => Ok(Slot::DBL),
-            _ => Err(anyhow::anyhow!("invalid slot")),
-        }
-    }
-}
-
-impl From<Slot> for usize {
-    fn from(val: Slot) -> Self {
-        val as usize
-    }
-}
 
 /// Upper side.
 pub const SIDE_U: usize = 0;

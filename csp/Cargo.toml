@@ -8,4 +8,5 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.97"
 clap = { version = "4.5.4", features = ["derive"] }
+num_enum = "0.7.3"
 puzzle-solver = "0.4.1"
