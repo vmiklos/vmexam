@@ -17,6 +17,7 @@ time (
 
     ./autogen.py
     make -j$(getconf _NPROCESSORS_ONLN)
+    make -j$(getconf _NPROCESSORS_ONLN) -C test check SUPPRESS_TESTS=y
     make ctags
     kill-wrapper 'make -C test check' 1200
     # make -C cypress_test check-desktop
