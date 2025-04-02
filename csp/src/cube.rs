@@ -39,18 +39,23 @@ pub enum Slot {
 }
 const SLOTS_COUNT: usize = 8;
 
-/// Upper side.
-pub const SIDE_U: usize = 0;
-/// Down side.
-pub const SIDE_D: usize = 1;
-/// Right side.
-pub const SIDE_R: usize = 2;
-/// Left side.
-pub const SIDE_L: usize = 3;
-/// Front side.
-pub const SIDE_F: usize = 4;
-/// Back side.
-pub const SIDE_B: usize = 5;
+/// Sides of a cube.
+#[derive(Clone, Copy, num_enum::IntoPrimitive, num_enum::TryFromPrimitive)]
+#[repr(usize)]
+pub enum Side {
+    /// Upper side.
+    U = 0,
+    /// Down side.
+    D = 1,
+    /// Right side.
+    R = 2,
+    /// Left side.
+    L = 3,
+    /// Front side.
+    F = 4,
+    /// Back side.
+    B = 5,
+}
 const SIDES_COUNT: usize = 6;
 
 const ROW_SLOTS: usize = 0;
@@ -68,17 +73,12 @@ struct Position {
 struct Constraint {
     model_corner: Slot,
     candidate_corner: Slot,
-    side: usize,
+    side: Side,
     candidate_color: usize,
 }
 
 impl Constraint {
-    fn new(
-        model_corner: Slot,
-        candidate_corner: Slot,
-        side: usize,
-        candidate_color: usize,
-    ) -> Self {
+    fn new(model_corner: Slot, candidate_corner: Slot, side: Side, candidate_color: usize) -> Self {
         Constraint {
             model_corner,
             candidate_corner,
@@ -99,7 +99,7 @@ pub struct Model {
     solution: [[usize; SLOTS_COUNT]; ROWS_COUNT],
     /// SLOTS_SIZE cubes (0th..7th cube), SIDES_COUNT sides: U D R L F B
     /// colors: 0..5 for blue..red
-    /// - e.g. if 0.0 is RED, then the up of the 0th cube is red
+    /// - e.g. if 0.0 is red, then the up of the 0th cube is red
     colors: [[usize; SIDES_COUNT]; SLOTS_COUNT],
     /// List of the SIDES_COUNT color names
     color_names: Vec<String>,
@@ -140,7 +140,7 @@ impl Model {
     }
 
     /// Gets the name of a color index.
-    pub fn get_color_string(&self, slot: Slot, side: usize) -> anyhow::Result<String> {
+    pub fn get_color_string(&self, slot: Slot, side: Side) -> anyhow::Result<String> {
         let index = self.get_color_index(slot, side).context("no color")?;
         Ok(self.color_names[index].to_string())
     }
@@ -177,7 +177,7 @@ impl Model {
     }
 
     /// Gets the color index of a given corner's given side.
-    fn get_color_index(&self, slot: Slot, side: usize) -> Option<usize> {
+    fn get_color_index(&self, slot: Slot, side: Side) -> Option<usize> {
         let slot: usize = slot.into();
         rotate_color(
             &self.colors[self.solution[ROW_SLOTS][slot] - 1],
@@ -198,7 +198,7 @@ impl Model {
         None
     }
 
-    fn get_candidate_color(&self, slot: Slot, side: usize, num: usize) -> Option<usize> {
+    fn get_candidate_color(&self, slot: Slot, side: Side, num: usize) -> Option<usize> {
         let slot: usize = slot.into();
         rotate_color(&self.colors[self.solution[ROW_SLOTS][slot] - 1], side, num)
     }
@@ -243,39 +243,39 @@ impl Model {
                 // provides U, B & L
             }
             Slot::UBR => {
-                constraints.push(Constraint::new(Slot::UBL, slot, SIDE_U, num));
-                constraints.push(Constraint::new(Slot::UBL, slot, SIDE_B, num));
+                constraints.push(Constraint::new(Slot::UBL, slot, Side::U, num));
+                constraints.push(Constraint::new(Slot::UBL, slot, Side::B, num));
                 // provides R
             }
             Slot::UFR => {
-                constraints.push(Constraint::new(Slot::UBR, slot, SIDE_U, num));
+                constraints.push(Constraint::new(Slot::UBR, slot, Side::U, num));
                 // provides F
-                constraints.push(Constraint::new(Slot::UBR, slot, SIDE_R, num));
+                constraints.push(Constraint::new(Slot::UBR, slot, Side::R, num));
             }
             Slot::UFL => {
-                constraints.push(Constraint::new(Slot::UBL, slot, SIDE_U, num));
-                constraints.push(Constraint::new(Slot::UFR, slot, SIDE_F, num));
-                constraints.push(Constraint::new(Slot::UFR, slot, SIDE_L, num));
+                constraints.push(Constraint::new(Slot::UBL, slot, Side::U, num));
+                constraints.push(Constraint::new(Slot::UFR, slot, Side::F, num));
+                constraints.push(Constraint::new(Slot::UFR, slot, Side::L, num));
             }
             Slot::DFL => {
                 // provides D
-                constraints.push(Constraint::new(Slot::UFR, slot, SIDE_F, num));
-                constraints.push(Constraint::new(Slot::UBL, slot, SIDE_L, num));
+                constraints.push(Constraint::new(Slot::UFR, slot, Side::F, num));
+                constraints.push(Constraint::new(Slot::UBL, slot, Side::L, num));
             }
             Slot::DFR => {
-                constraints.push(Constraint::new(Slot::DFL, slot, SIDE_D, num));
-                constraints.push(Constraint::new(Slot::UFR, slot, SIDE_F, num));
-                constraints.push(Constraint::new(Slot::UBR, slot, SIDE_R, num));
+                constraints.push(Constraint::new(Slot::DFL, slot, Side::D, num));
+                constraints.push(Constraint::new(Slot::UFR, slot, Side::F, num));
+                constraints.push(Constraint::new(Slot::UBR, slot, Side::R, num));
             }
             Slot::DBR => {
-                constraints.push(Constraint::new(Slot::DFL, slot, SIDE_D, num));
-                constraints.push(Constraint::new(Slot::UBL, slot, SIDE_B, num));
-                constraints.push(Constraint::new(Slot::UBR, slot, SIDE_R, num));
+                constraints.push(Constraint::new(Slot::DFL, slot, Side::D, num));
+                constraints.push(Constraint::new(Slot::UBL, slot, Side::B, num));
+                constraints.push(Constraint::new(Slot::UBR, slot, Side::R, num));
             }
             Slot::DBL => {
-                constraints.push(Constraint::new(Slot::DFL, slot, SIDE_D, num));
-                constraints.push(Constraint::new(Slot::UBL, slot, SIDE_B, num));
-                constraints.push(Constraint::new(Slot::UBL, slot, SIDE_L, num));
+                constraints.push(Constraint::new(Slot::DFL, slot, Side::D, num));
+                constraints.push(Constraint::new(Slot::UBL, slot, Side::B, num));
+                constraints.push(Constraint::new(Slot::UBL, slot, Side::L, num));
             }
         }
         for constraint in constraints {
@@ -287,37 +287,39 @@ impl Model {
     }
 }
 
-fn rotate_color(colors: &[usize; SIDES_COUNT], side: usize, rotation: usize) -> Option<usize> {
+fn rotate_color(colors: &[usize; SIDES_COUNT], side: Side, rotation: usize) -> Option<usize> {
     if rotation == 0 {
         return None;
     }
     // First is no rotation, the the rest of the 24 combinations.
     let rotations = [
-        [SIDE_U, SIDE_D, SIDE_R, SIDE_L, SIDE_F, SIDE_B],
-        [SIDE_U, SIDE_D, SIDE_B, SIDE_F, SIDE_R, SIDE_L],
-        [SIDE_U, SIDE_D, SIDE_L, SIDE_R, SIDE_B, SIDE_F],
-        [SIDE_U, SIDE_D, SIDE_F, SIDE_B, SIDE_L, SIDE_R],
-        [SIDE_D, SIDE_U, SIDE_L, SIDE_R, SIDE_F, SIDE_B],
-        [SIDE_D, SIDE_U, SIDE_B, SIDE_F, SIDE_L, SIDE_R],
-        [SIDE_D, SIDE_U, SIDE_R, SIDE_L, SIDE_B, SIDE_F],
-        [SIDE_D, SIDE_U, SIDE_F, SIDE_B, SIDE_R, SIDE_L],
-        [SIDE_R, SIDE_L, SIDE_D, SIDE_U, SIDE_F, SIDE_B],
-        [SIDE_R, SIDE_L, SIDE_B, SIDE_F, SIDE_D, SIDE_U],
-        [SIDE_R, SIDE_L, SIDE_U, SIDE_D, SIDE_B, SIDE_F],
-        [SIDE_R, SIDE_L, SIDE_F, SIDE_B, SIDE_U, SIDE_D],
-        [SIDE_L, SIDE_R, SIDE_U, SIDE_D, SIDE_F, SIDE_B],
-        [SIDE_L, SIDE_R, SIDE_B, SIDE_F, SIDE_U, SIDE_D],
-        [SIDE_L, SIDE_R, SIDE_D, SIDE_U, SIDE_B, SIDE_F],
-        [SIDE_L, SIDE_R, SIDE_F, SIDE_B, SIDE_D, SIDE_U],
-        [SIDE_F, SIDE_B, SIDE_R, SIDE_L, SIDE_D, SIDE_U],
-        [SIDE_F, SIDE_B, SIDE_U, SIDE_D, SIDE_R, SIDE_L],
-        [SIDE_F, SIDE_B, SIDE_L, SIDE_R, SIDE_U, SIDE_D],
-        [SIDE_F, SIDE_B, SIDE_D, SIDE_U, SIDE_L, SIDE_R],
-        [SIDE_B, SIDE_F, SIDE_R, SIDE_L, SIDE_U, SIDE_D],
-        [SIDE_B, SIDE_F, SIDE_D, SIDE_U, SIDE_R, SIDE_L],
-        [SIDE_B, SIDE_F, SIDE_L, SIDE_R, SIDE_D, SIDE_U],
-        [SIDE_B, SIDE_F, SIDE_U, SIDE_D, SIDE_L, SIDE_R],
+        [Side::U, Side::D, Side::R, Side::L, Side::F, Side::B],
+        [Side::U, Side::D, Side::B, Side::F, Side::R, Side::L],
+        [Side::U, Side::D, Side::L, Side::R, Side::B, Side::F],
+        [Side::U, Side::D, Side::F, Side::B, Side::L, Side::R],
+        [Side::D, Side::U, Side::L, Side::R, Side::F, Side::B],
+        [Side::D, Side::U, Side::B, Side::F, Side::L, Side::R],
+        [Side::D, Side::U, Side::R, Side::L, Side::B, Side::F],
+        [Side::D, Side::U, Side::F, Side::B, Side::R, Side::L],
+        [Side::R, Side::L, Side::D, Side::U, Side::F, Side::B],
+        [Side::R, Side::L, Side::B, Side::F, Side::D, Side::U],
+        [Side::R, Side::L, Side::U, Side::D, Side::B, Side::F],
+        [Side::R, Side::L, Side::F, Side::B, Side::U, Side::D],
+        [Side::L, Side::R, Side::U, Side::D, Side::F, Side::B],
+        [Side::L, Side::R, Side::B, Side::F, Side::U, Side::D],
+        [Side::L, Side::R, Side::D, Side::U, Side::B, Side::F],
+        [Side::L, Side::R, Side::F, Side::B, Side::D, Side::U],
+        [Side::F, Side::B, Side::R, Side::L, Side::D, Side::U],
+        [Side::F, Side::B, Side::U, Side::D, Side::R, Side::L],
+        [Side::F, Side::B, Side::L, Side::R, Side::U, Side::D],
+        [Side::F, Side::B, Side::D, Side::U, Side::L, Side::R],
+        [Side::B, Side::F, Side::R, Side::L, Side::U, Side::D],
+        [Side::B, Side::F, Side::D, Side::U, Side::R, Side::L],
+        [Side::B, Side::F, Side::L, Side::R, Side::D, Side::U],
+        [Side::B, Side::F, Side::U, Side::D, Side::L, Side::R],
     ];
     let sides = rotations[rotation - 1];
-    Some(colors[sides[side]])
+    let side: usize = side.into();
+    let color: usize = sides[side].into();
+    Some(colors[color])
 }

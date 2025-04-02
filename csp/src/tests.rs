@@ -30,104 +30,104 @@ blue,yellow,brown,green,red,purple"#;
     assert_eq!(model.get_cube_index(cube::Slot::DFL), 7);
     assert_eq!(
         model
-            .get_color_string(cube::Slot::DFL, cube::SIDE_U)
+            .get_color_string(cube::Slot::DFL, cube::Side::U)
             .unwrap(),
         "green"
     );
     assert_eq!(
         model
-            .get_color_string(cube::Slot::DFL, cube::SIDE_F)
+            .get_color_string(cube::Slot::DFL, cube::Side::F)
             .unwrap(),
         "yellow"
     );
     assert_eq!(model.get_cube_index(cube::Slot::DFR), 5);
     assert_eq!(
         model
-            .get_color_string(cube::Slot::DFL, cube::SIDE_U)
+            .get_color_string(cube::Slot::DFL, cube::Side::U)
             .unwrap(),
         "green"
     );
     assert_eq!(
         model
-            .get_color_string(cube::Slot::DFL, cube::SIDE_F)
+            .get_color_string(cube::Slot::DFL, cube::Side::F)
             .unwrap(),
         "yellow"
     );
     assert_eq!(model.get_cube_index(cube::Slot::DBR), 4);
     assert_eq!(
         model
-            .get_color_string(cube::Slot::DBR, cube::SIDE_U)
+            .get_color_string(cube::Slot::DBR, cube::Side::U)
             .unwrap(),
         "blue"
     );
     assert_eq!(
         model
-            .get_color_string(cube::Slot::DBR, cube::SIDE_F)
+            .get_color_string(cube::Slot::DBR, cube::Side::F)
             .unwrap(),
         "yellow"
     );
     assert_eq!(model.get_cube_index(cube::Slot::DBL), 8);
     assert_eq!(
         model
-            .get_color_string(cube::Slot::DBL, cube::SIDE_U)
+            .get_color_string(cube::Slot::DBL, cube::Side::U)
             .unwrap(),
         "red"
     );
     assert_eq!(
         model
-            .get_color_string(cube::Slot::DBL, cube::SIDE_F)
+            .get_color_string(cube::Slot::DBL, cube::Side::F)
             .unwrap(),
         "green"
     );
     assert_eq!(model.get_cube_index(cube::Slot::UBL), 1);
     assert_eq!(
         model
-            .get_color_string(cube::Slot::UBL, cube::SIDE_U)
+            .get_color_string(cube::Slot::UBL, cube::Side::U)
             .unwrap(),
         "purple"
     );
     assert_eq!(
         model
-            .get_color_string(cube::Slot::UBL, cube::SIDE_F)
+            .get_color_string(cube::Slot::UBL, cube::Side::F)
             .unwrap(),
         "yellow"
     );
     assert_eq!(model.get_cube_index(cube::Slot::UBR), 2);
     assert_eq!(
         model
-            .get_color_string(cube::Slot::UBR, cube::SIDE_U)
+            .get_color_string(cube::Slot::UBR, cube::Side::U)
             .unwrap(),
         "purple"
     );
     assert_eq!(
         model
-            .get_color_string(cube::Slot::UBR, cube::SIDE_F)
+            .get_color_string(cube::Slot::UBR, cube::Side::F)
             .unwrap(),
         "blue"
     );
     assert_eq!(model.get_cube_index(cube::Slot::UFR), 3);
     assert_eq!(
         model
-            .get_color_string(cube::Slot::UFR, cube::SIDE_U)
+            .get_color_string(cube::Slot::UFR, cube::Side::U)
             .unwrap(),
         "purple"
     );
     assert_eq!(
         model
-            .get_color_string(cube::Slot::UFR, cube::SIDE_F)
+            .get_color_string(cube::Slot::UFR, cube::Side::F)
             .unwrap(),
         "yellow"
     );
     assert_eq!(model.get_cube_index(cube::Slot::UFL), 6);
     assert_eq!(
         model
-            .get_color_string(cube::Slot::UFL, cube::SIDE_U)
+            .get_color_string(cube::Slot::UFL, cube::Side::U)
             .unwrap(),
         "purple"
     );
     assert_eq!(
         model
-            .get_color_string(cube::Slot::UFL, cube::SIDE_F)
+            .get_color_string(cube::Slot::UFL, cube::Side::F)
             .unwrap(),
         "yellow"
     );

@@ -27,8 +27,8 @@ fn print_slot(
         "cube is {}, corner is {}, U is {}, F is {}",
         model.get_cube_index(slot),
         slot_name,
-        model.get_color_string(slot, csp::cube::SIDE_U)?,
-        model.get_color_string(slot, csp::cube::SIDE_F)?
+        model.get_color_string(slot, csp::cube::Side::U)?,
+        model.get_color_string(slot, csp::cube::Side::F)?
     );
 
     Ok(())
