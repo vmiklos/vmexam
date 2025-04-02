@@ -58,7 +58,6 @@ const ROW_ROTATIONS: usize = 1;
 const ROWS_COUNT: usize = 2;
 const ROTATIONS_COUNT: usize = 24;
 
-#[derive(Clone)]
 struct Position {
     /// Row in the model
     row: usize,
@@ -68,7 +67,7 @@ struct Position {
 
 struct Constraint {
     model_corner: Slot,
-    candidate_corner: Position,
+    candidate_corner: Slot,
     side: usize,
     candidate_color: usize,
 }
@@ -76,13 +75,13 @@ struct Constraint {
 impl Constraint {
     fn new(
         model_corner: Slot,
-        candidate_corner: &Position,
+        candidate_corner: Slot,
         side: usize,
         candidate_color: usize,
     ) -> Self {
         Constraint {
             model_corner,
-            candidate_corner: candidate_corner.clone(),
+            candidate_corner,
             side,
             candidate_color,
         }
@@ -199,14 +198,15 @@ impl Model {
         None
     }
 
-    fn get_candidate_color(&self, slot: usize, side: usize, num: usize) -> Option<usize> {
+    fn get_candidate_color(&self, slot: Slot, side: usize, num: usize) -> Option<usize> {
+        let slot: usize = slot.into();
         rotate_color(&self.colors[self.solution[ROW_SLOTS][slot] - 1], side, num)
     }
 
     fn is_valid_color(&self, constraint: &Constraint) -> bool {
         if let Some(model_color) = self.get_color_index(constraint.model_corner, constraint.side) {
             let candidate_color = match self.get_candidate_color(
-                constraint.candidate_corner.cell,
+                constraint.candidate_corner,
                 constraint.side,
                 constraint.candidate_color,
             ) {
@@ -237,44 +237,45 @@ impl Model {
             return Ok(self.is_valid_slot(num));
         }
         let mut constraints: Vec<Constraint> = Vec::new();
-        match Slot::try_from(pos.cell)? {
+        let slot = Slot::try_from(pos.cell)?;
+        match slot {
             Slot::UBL => {
                 // provides U, B & L
             }
             Slot::UBR => {
-                constraints.push(Constraint::new(Slot::UBL, pos, SIDE_U, num));
-                constraints.push(Constraint::new(Slot::UBL, pos, SIDE_B, num));
+                constraints.push(Constraint::new(Slot::UBL, slot, SIDE_U, num));
+                constraints.push(Constraint::new(Slot::UBL, slot, SIDE_B, num));
                 // provides R
             }
             Slot::UFR => {
-                constraints.push(Constraint::new(Slot::UBR, pos, SIDE_U, num));
+                constraints.push(Constraint::new(Slot::UBR, slot, SIDE_U, num));
                 // provides F
-                constraints.push(Constraint::new(Slot::UBR, pos, SIDE_R, num));
+                constraints.push(Constraint::new(Slot::UBR, slot, SIDE_R, num));
             }
             Slot::UFL => {
-                constraints.push(Constraint::new(Slot::UBL, pos, SIDE_U, num));
-                constraints.push(Constraint::new(Slot::UFR, pos, SIDE_F, num));
-                constraints.push(Constraint::new(Slot::UFR, pos, SIDE_L, num));
+                constraints.push(Constraint::new(Slot::UBL, slot, SIDE_U, num));
+                constraints.push(Constraint::new(Slot::UFR, slot, SIDE_F, num));
+                constraints.push(Constraint::new(Slot::UFR, slot, SIDE_L, num));
             }
             Slot::DFL => {
                 // provides D
-                constraints.push(Constraint::new(Slot::UFR, pos, SIDE_F, num));
-                constraints.push(Constraint::new(Slot::UBL, pos, SIDE_L, num));
+                constraints.push(Constraint::new(Slot::UFR, slot, SIDE_F, num));
+                constraints.push(Constraint::new(Slot::UBL, slot, SIDE_L, num));
             }
             Slot::DFR => {
-                constraints.push(Constraint::new(Slot::DFL, pos, SIDE_D, num));
-                constraints.push(Constraint::new(Slot::UFR, pos, SIDE_F, num));
-                constraints.push(Constraint::new(Slot::UBR, pos, SIDE_R, num));
+                constraints.push(Constraint::new(Slot::DFL, slot, SIDE_D, num));
+                constraints.push(Constraint::new(Slot::UFR, slot, SIDE_F, num));
+                constraints.push(Constraint::new(Slot::UBR, slot, SIDE_R, num));
             }
             Slot::DBR => {
-                constraints.push(Constraint::new(Slot::DFL, pos, SIDE_D, num));
-                constraints.push(Constraint::new(Slot::UBL, pos, SIDE_B, num));
-                constraints.push(Constraint::new(Slot::UBR, pos, SIDE_R, num));
+                constraints.push(Constraint::new(Slot::DFL, slot, SIDE_D, num));
+                constraints.push(Constraint::new(Slot::UBL, slot, SIDE_B, num));
+                constraints.push(Constraint::new(Slot::UBR, slot, SIDE_R, num));
             }
             Slot::DBL => {
-                constraints.push(Constraint::new(Slot::DFL, pos, SIDE_D, num));
-                constraints.push(Constraint::new(Slot::UBL, pos, SIDE_B, num));
-                constraints.push(Constraint::new(Slot::UBL, pos, SIDE_L, num));
+                constraints.push(Constraint::new(Slot::DFL, slot, SIDE_D, num));
+                constraints.push(Constraint::new(Slot::UBL, slot, SIDE_B, num));
+                constraints.push(Constraint::new(Slot::UBL, slot, SIDE_L, num));
             }
         }
         for constraint in constraints {
