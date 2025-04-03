@@ -15,9 +15,12 @@
 //! for you.
 
 use anyhow::Context as _;
+use strum::EnumCount as _;
 
 /// Corners of a cube.
-#[derive(Clone, Copy, num_enum::IntoPrimitive, num_enum::TryFromPrimitive)]
+#[derive(
+    Clone, Copy, num_enum::IntoPrimitive, num_enum::TryFromPrimitive, strum_macros::EnumCount,
+)]
 #[repr(usize)]
 pub enum Slot {
     /// Up-bottom-left corner.
@@ -37,10 +40,11 @@ pub enum Slot {
     /// Down-bottom-left corner.
     DBL = 7,
 }
-const SLOTS_COUNT: usize = 8;
 
 /// Sides of a cube.
-#[derive(Clone, Copy, num_enum::IntoPrimitive, num_enum::TryFromPrimitive)]
+#[derive(
+    Clone, Copy, num_enum::IntoPrimitive, num_enum::TryFromPrimitive, strum_macros::EnumCount,
+)]
 #[repr(usize)]
 pub enum Side {
     /// Upper side.
@@ -56,7 +60,6 @@ pub enum Side {
     /// Back side.
     B = 5,
 }
-const SIDES_COUNT: usize = 6;
 
 const ROW_SLOTS: usize = 0;
 const ROW_ROTATIONS: usize = 1;
@@ -96,27 +99,27 @@ pub struct Model {
     ///
     /// Cube rotations: 0 or 1..ROTATIONS_COUNT
     /// - e.g. if rotation 0 is 3: UBL has been rotated according to row 3 in rotate_color()
-    solution: [[usize; SLOTS_COUNT]; ROWS_COUNT],
-    /// SLOTS_SIZE cubes (0th..7th cube), SIDES_COUNT sides: U D R L F B
+    solution: [[usize; Slot::COUNT]; ROWS_COUNT],
+    /// SLOTS_SIZE cubes (0th..7th cube), Side::COUNT sides: U D R L F B
     /// colors: 0..5 for blue..red
     /// - e.g. if 0.0 is red, then the up of the 0th cube is red
-    colors: [[usize; SIDES_COUNT]; SLOTS_COUNT],
-    /// List of the SIDES_COUNT color names
+    colors: [[usize; Side::COUNT]; Slot::COUNT],
+    /// List of the Side::COUNT color names
     color_names: Vec<String>,
 }
 
 impl Model {
     /// Creates a model from an input string.
     pub fn new(problem: &str) -> Model {
-        let mut colors: [[usize; SIDES_COUNT]; SLOTS_COUNT] = [[0; SIDES_COUNT]; SLOTS_COUNT];
+        let mut colors: [[usize; Side::COUNT]; Slot::COUNT] = [[0; Side::COUNT]; Slot::COUNT];
         let mut color_names: Vec<String> = Vec::new();
         let lines = problem.split('\n');
         for (line_index, line) in lines.enumerate() {
-            if line_index >= SLOTS_COUNT {
+            if line_index >= Slot::COUNT {
                 break;
             }
 
-            let mut row: [usize; SIDES_COUNT] = [0; SIDES_COUNT];
+            let mut row: [usize; Side::COUNT] = [0; Side::COUNT];
             let tokens = line.split(',');
             for (index, color) in tokens.enumerate() {
                 let color = color.to_string();
@@ -133,7 +136,7 @@ impl Model {
         }
 
         Model {
-            solution: [[0; SLOTS_COUNT]; ROWS_COUNT],
+            solution: [[0; Slot::COUNT]; ROWS_COUNT],
             colors,
             color_names,
         }
@@ -160,7 +163,7 @@ impl Model {
             }
         };
         let limit = if pos.row == ROW_SLOTS {
-            SLOTS_COUNT
+            Slot::COUNT
         } else {
             ROTATIONS_COUNT
         };
@@ -188,7 +191,7 @@ impl Model {
 
     fn find_empty(&self) -> Option<Position> {
         for row in 0..ROWS_COUNT {
-            for cell in 0..SLOTS_COUNT {
+            for cell in 0..Slot::COUNT {
                 if self.solution[row][cell] == 0 {
                     return Some(Position { row, cell });
                 }
@@ -223,7 +226,7 @@ impl Model {
     }
 
     fn is_valid_slot(&self, num: usize) -> bool {
-        for i in 0..SLOTS_COUNT {
+        for i in 0..Slot::COUNT {
             if self.solution[ROW_SLOTS][i] == num {
                 return false;
             }
@@ -287,7 +290,7 @@ impl Model {
     }
 }
 
-fn rotate_color(colors: &[usize; SIDES_COUNT], side: Side, rotation: usize) -> Option<usize> {
+fn rotate_color(colors: &[usize; Side::COUNT], side: Side, rotation: usize) -> Option<usize> {
     if rotation == 0 {
         return None;
     }
