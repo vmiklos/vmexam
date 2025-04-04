@@ -18,20 +18,52 @@ struct Arguments {
     problem_path: String,
 }
 
-fn print_slot(
+fn get_slot(
     model: &csp::cube::Model,
     slot: csp::cube::Slot,
     slot_name: &str,
-) -> anyhow::Result<()> {
-    println!(
-        "cube is {}, corner is {}, U is {}, F is {}",
-        model.get_cube_index(slot),
-        slot_name,
+) -> anyhow::Result<Vec<String>> {
+    Ok([
+        model.get_cube_index(slot).to_string(),
+        slot_name.to_string(),
         model.get_color_string(slot, csp::cube::Side::U)?,
-        model.get_color_string(slot, csp::cube::Side::F)?
-    );
+        model.get_color_string(slot, csp::cube::Side::F)?,
+    ]
+    .to_vec())
+}
 
-    Ok(())
+fn print_markdown(table: &[Vec<String>]) {
+    // Calc column widths.
+    let mut col_widths: Vec<usize> = Vec::new();
+    for col_index in 0..table[0].len() {
+        let mut width = 0;
+        for row in table {
+            if row[col_index].len() > width {
+                width = row[col_index].len();
+            }
+        }
+        col_widths.push(width);
+    }
+
+    // Print with header bottom line & padding.
+    for (row_index, row) in table.iter().enumerate() {
+        for (cell_index, cell) in row.iter().enumerate() {
+            print!("{:width$}", cell, width = col_widths[cell_index]);
+            if cell_index < col_widths.len() - 1 {
+                print!(" ");
+            }
+        }
+        println!();
+        if row_index == 0 {
+            for (cell_index, _) in row.iter().enumerate() {
+                print!("{:-<width$}", "", width = col_widths[cell_index]);
+                if cell_index < col_widths.len() - 1 {
+                    print!(" ");
+                }
+            }
+            println!();
+        }
+    }
 }
 
 fn main() -> anyhow::Result<()> {
@@ -44,14 +76,22 @@ fn main() -> anyhow::Result<()> {
         return Ok(());
     }
 
-    print_slot(&model, csp::cube::Slot::DFL, "dfl")?;
-    print_slot(&model, csp::cube::Slot::DFR, "dfr")?;
-    print_slot(&model, csp::cube::Slot::DBR, "dbr")?;
-    print_slot(&model, csp::cube::Slot::DBL, "dbl")?;
-    print_slot(&model, csp::cube::Slot::UBL, "ubl")?;
-    print_slot(&model, csp::cube::Slot::UBR, "ubr")?;
-    print_slot(&model, csp::cube::Slot::UFR, "ufr")?;
-    print_slot(&model, csp::cube::Slot::UFL, "ufl")?;
+    let mut table: Vec<Vec<String>> = vec![vec![
+        "Cube".to_string(),
+        "Corner".to_string(),
+        "U".to_string(),
+        "F".to_string(),
+    ]];
+    table.push(get_slot(&model, csp::cube::Slot::DFL, "DFL")?);
+    table.push(get_slot(&model, csp::cube::Slot::DFR, "DFR")?);
+    table.push(get_slot(&model, csp::cube::Slot::DBR, "DBR")?);
+    table.push(get_slot(&model, csp::cube::Slot::DBL, "DBL")?);
+    table.push(get_slot(&model, csp::cube::Slot::UBL, "UBL")?);
+    table.push(get_slot(&model, csp::cube::Slot::UBR, "UBR")?);
+    table.push(get_slot(&model, csp::cube::Slot::UFR, "UFR")?);
+    table.push(get_slot(&model, csp::cube::Slot::UFL, "UFL")?);
+
+    print_markdown(&table);
 
     Ok(())
 }
