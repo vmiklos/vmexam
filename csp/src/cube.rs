@@ -258,7 +258,7 @@ impl Model {
             Slot::UFL => {
                 constraints.push(Constraint::new(Slot::UBL, slot, Side::U, num));
                 constraints.push(Constraint::new(Slot::UFR, slot, Side::F, num));
-                constraints.push(Constraint::new(Slot::UFR, slot, Side::L, num));
+                constraints.push(Constraint::new(Slot::UBL, slot, Side::L, num));
             }
             Slot::DFL => {
                 // provides D
