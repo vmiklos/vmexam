@@ -201,23 +201,20 @@ impl Model {
         None
     }
 
-    fn get_candidate_color(&self, slot: Slot, side: Side, num: usize) -> Option<usize> {
+    fn get_candidate_color(&self, slot: Slot, side: Side, num: usize) -> usize {
         let slot: usize = slot.into();
+        // num is never 0, so this always returns a value
         rotate_color(&self.colors[self.solution[ROW_SLOTS][slot] - 1], side, num)
+            .expect("no candidate color")
     }
 
     fn is_valid_color(&self, constraint: &Constraint) -> bool {
         if let Some(model_color) = self.get_color_index(constraint.model_corner, constraint.side) {
-            let candidate_color = match self.get_candidate_color(
+            let candidate_color = self.get_candidate_color(
                 constraint.candidate_corner,
                 constraint.side,
                 constraint.candidate_color,
-            ) {
-                Some(value) => value,
-                None => {
-                    return false;
-                }
-            };
+            );
             if candidate_color != model_color {
                 return false;
             }
