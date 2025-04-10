@@ -1,4 +1,7 @@
 --with-distro=CPLinux-LOKit
---with-lang=en-US
+CC=gcc-12
+CXX=g++-12
+--with-lang=en-US de
 --without-myspell-dicts
 --with-package-format=no
+--with-referenced-git=/home/vmiklos/git/libreoffice/core-4git
