@@ -14,10 +14,10 @@ Config file: ~/.config/qemu-exec-clientrc
 
 [qemu-exec-client]
 guest-ip = 192.168.x.y
+drive_letter = z:
 
 You may want to customize:
 - shared directory
-- network drive letter
 - guest port
 """
 
@@ -53,7 +53,7 @@ def get_config() -> configparser.ConfigParser:
     return config
 
 
-def host_to_guest(argv: List[str]) -> List[str]:
+def host_to_guest(argv: List[str], drive_letter: str) -> List[str]:
     """Map from host path to guest path."""
     abs_argv = []
     for arg in argv:
@@ -64,7 +64,7 @@ def host_to_guest(argv: List[str]) -> List[str]:
                 abs_argv.append(os.path.abspath(arg))
         else:
             abs_argv.append(arg)
-    abs_argv = [i.replace(os.path.join(os.environ["HOME"], "git"), 'z:') for i in abs_argv]
+    abs_argv = [i.replace(os.path.join(os.environ["HOME"], "git"), drive_letter) for i in abs_argv]
     abs_argv = [i.replace("/", "\\") for i in abs_argv]
     return abs_argv
 
@@ -96,7 +96,8 @@ def main() -> None:
     if command:
         argv = [command] + argv
 
-    argv = host_to_guest(argv)
+    drive_letter = config.get('qemu-exec-client', 'drive-letter').strip()
+    argv = host_to_guest(argv, drive_letter)
 
     payload_dict: Dict[str, Any] = {
         "command": argv
