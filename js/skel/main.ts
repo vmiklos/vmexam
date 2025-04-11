@@ -6,6 +6,9 @@
 
 document.addEventListener("DOMContentLoaded", function() {
     const body = document.querySelector('body');
+    if (!body) {
+        return;
+    }
     body.appendChild(document.createTextNode('skel'));
 });
 
