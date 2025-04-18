@@ -82,6 +82,8 @@ $(eval $(call RustPackage_RustPackage,fit2json))
 
 $(eval $(call RustPackage_RustPackage,git-ls-projects))
 
+$(eval $(call RustPackage_RustPackage,git-review-link))
+
 $(eval $(call RustPackage_RustPackage,github-outdated))
 
 $(eval $(call RustPackage_RustPackage,hyphen))
