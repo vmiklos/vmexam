@@ -35,13 +35,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     );
     const response = await window.fetch(request);
     const result = await (<Promise<RubikResult>>response.json());
-    const pre = document.createElement("pre");
+    const scramble = document.createElement("div");
+    scramble.style.fontSize = 'xxx-large';
     if (result.error === "") {
-        pre.innerText = result.ok;
+        scramble.innerText = result.ok.replace('\n', '');
     } else {
-        pre.innerText = "Error: " + result.error;
+        scramble.innerText = "Error: " + result.error;
     }
-    body.appendChild(pre);
+    body.appendChild(scramble);
 
     const help = document.createElement("p");
     help.appendChild(document.createTextNode("See "));
