@@ -15,8 +15,6 @@ use isahc::ReadResponseExt as _;
 
 #[derive(serde::Deserialize)]
 struct Release {
-    draft: bool,
-    prerelease: bool,
     tag_name: String,
 }
 
@@ -29,27 +27,20 @@ fn handle_action(config: &Config, job: &str, action: &str) -> anyhow::Result<()>
     let mut tokens = action.split('@');
     let repo = tokens.next().context("next failed")?;
     let actual_version = tokens.next().context("next failed")?;
-    let url = format!("https://api.github.com/repos/{repo}/releases");
+    let url = format!("https://api.github.com/repos/{repo}/releases/latest");
     let client = isahc::HttpClient::builder()
         .default_header("Authorization", &format!("Bearer {}", config.access_token))
         .build()?;
     let mut response = client.get(&url)?;
     let text = response.text()?;
-    let releases: Vec<Release> = serde_json::from_str(&text)?;
-    for release in releases {
-        if release.draft || release.prerelease {
-            continue;
-        }
-
-        let expected_version = release.tag_name;
-        if actual_version != expected_version {
-            println!(
-                "Job name: {job}, action name: {repo}, project version: {actual_version}, latest version: {expected_version}"
-            );
-        } else {
-            println!("Job name: {job}, action name: {repo}, up to date");
-        }
-        break;
+    let release: Release = serde_json::from_str(&text)?;
+    let expected_version = release.tag_name;
+    if actual_version != expected_version {
+        println!(
+            "Job name: {job}, action name: {repo}, project version: {actual_version}, latest version: {expected_version}"
+        );
+    } else {
+        println!("Job name: {job}, action name: {repo}, up to date");
     }
 
     Ok(())
