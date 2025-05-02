@@ -50,10 +50,7 @@ struct Error {
     message: String,
 }
 
-fn get_first_pull(config: &Config, url: &str) -> anyhow::Result<Pull> {
-    let client = isahc::HttpClient::builder()
-        .default_header("Authorization", &format!("Bearer {}", config.access_token))
-        .build()?;
+fn get_first_pull(client: &isahc::HttpClient, url: &str) -> anyhow::Result<Pull> {
     let mut response = client.get(url)?;
     let text = response.text()?;
     let pulls: Vec<Pull> = match serde_json::from_str(&text) {
@@ -83,10 +80,7 @@ struct Review {
     user: User,
 }
 
-fn get_approvers(config: &Config, url: &str) -> anyhow::Result<Vec<String>> {
-    let client = isahc::HttpClient::builder()
-        .default_header("Authorization", &format!("Bearer {}", config.access_token))
-        .build()?;
+fn get_approvers(client: &isahc::HttpClient, url: &str) -> anyhow::Result<Vec<String>> {
     let mut response = client.get(url)?;
     let text = response.text()?;
     let reviews: Vec<Review> = match serde_json::from_str(&text) {
@@ -116,12 +110,15 @@ fn main() -> anyhow::Result<()> {
     let owner_repo = get_owner_repo().context("failed to determine owner/repo")?;
     let commit = args.commit;
     let api_url = format!("https://api.github.com/repos/{owner_repo}/commits/{commit}/pulls");
-    let pull = get_first_pull(&config, &api_url)?;
+    let client = isahc::HttpClient::builder()
+        .default_header("Authorization", &format!("Bearer {}", config.access_token))
+        .build()?;
+    let pull = get_first_pull(&client, &api_url)?;
     println!("Reviewed-on: {}", pull.html_url);
 
     // Search for reviewers
     let reviews_url = format!("{}/reviews", pull.url);
-    let approvers = get_approvers(&config, &reviews_url)?;
+    let approvers = get_approvers(&client, &reviews_url)?;
     for approver in approvers {
         println!("Reviewed-by: {}", approver);
     }
