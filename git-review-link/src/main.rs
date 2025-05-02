@@ -39,8 +39,9 @@ fn get_owner_repo() -> anyhow::Result<String> {
     ))
 }
 
-#[derive(serde::Deserialize)]
+#[derive(Clone, serde::Deserialize)]
 struct Pull {
+    url: String,
     html_url: String,
 }
 
@@ -49,7 +50,7 @@ struct Error {
     message: String,
 }
 
-fn get_first_pull(config: &Config, url: &str) -> anyhow::Result<String> {
+fn get_first_pull(config: &Config, url: &str) -> anyhow::Result<Pull> {
     let client = isahc::HttpClient::builder()
         .default_header("Authorization", &format!("Bearer {}", config.access_token))
         .build()?;
@@ -68,7 +69,40 @@ fn get_first_pull(config: &Config, url: &str) -> anyhow::Result<String> {
             return Err(anyhow::anyhow!("No pull request found for this commit"));
         }
     };
-    Ok(pull.html_url.to_string())
+    Ok(pull.clone())
+}
+
+#[derive(serde::Deserialize)]
+struct User {
+    login: String,
+}
+
+#[derive(serde::Deserialize)]
+struct Review {
+    state: String,
+    user: User,
+}
+
+fn get_approvers(config: &Config, url: &str) -> anyhow::Result<Vec<String>> {
+    let client = isahc::HttpClient::builder()
+        .default_header("Authorization", &format!("Bearer {}", config.access_token))
+        .build()?;
+    let mut response = client.get(url)?;
+    let text = response.text()?;
+    let reviews: Vec<Review> = match serde_json::from_str(&text) {
+        Ok(value) => value,
+        Err(_) => {
+            let error: Error = serde_json::from_str(&text)?;
+            return Err(anyhow::anyhow!(error.message));
+        }
+    };
+
+    let reviewers: Vec<_> = reviews
+        .iter()
+        .filter(|i| i.state == "APPROVED")
+        .map(|i| i.user.login.to_string())
+        .collect();
+    Ok(reviewers)
 }
 
 fn main() -> anyhow::Result<()> {
@@ -83,7 +117,14 @@ fn main() -> anyhow::Result<()> {
     let commit = args.commit;
     let api_url = format!("https://api.github.com/repos/{owner_repo}/commits/{commit}/pulls");
     let pull = get_first_pull(&config, &api_url)?;
-    println!("{pull}");
+    println!("Reviewed-on: {}", pull.html_url);
+
+    // Search for reviewers
+    let reviews_url = format!("{}/reviews", pull.url);
+    let approvers = get_approvers(&config, &reviews_url)?;
+    for approver in approvers {
+        println!("Reviewed-by: {}", approver);
+    }
 
     Ok(())
 }
