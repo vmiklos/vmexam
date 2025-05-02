@@ -19,13 +19,17 @@ pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
     let wide = request.get_param("wide").is_some();
 
     if let Some(state) = request.get_param("state") {
-        if state == "f2l-solved" {
+        if state == "f2l-solved" || state == "oll-solved" {
             // Generate a scramble that allows practicing solving the last layer.
             let table = kewb::fs::decode_table(TABLE)?;
             let mut solver = kewb::Solver::new(&table, 25, None);
             let mut states = Vec::new();
 
-            let state = kewb::generators::generate_state_f2l_solved();
+            let state = if state == "f2l-solved" {
+                kewb::generators::generate_state_f2l_solved()
+            } else {
+                kewb::generators::generate_state_oll_solved()
+            };
             let scramble = kewb::scramble::scramble_from_state(state, &mut solver)?;
 
             states.push(state);
