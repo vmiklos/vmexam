@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const scramble = document.createElement("div");
     scramble.style.fontSize = 'xxx-large';
     if (result.error === "") {
-        scramble.innerText = result.ok.replace('\n', '');
+        scramble.innerText = result.ok;
     } else {
         scramble.innerText = "Error: " + result.error;
     }

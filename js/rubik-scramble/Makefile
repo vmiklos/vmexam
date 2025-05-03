@@ -22,4 +22,4 @@ run:
 	python3 -m http.server
 
 install:
-	scp index.html bundle.js wilson:share/pages/rubik-scramble/
+	cp index.html bundle.js ~/git/vmiklos.hu/pages/rubik-scramble/
