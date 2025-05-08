@@ -99,6 +99,56 @@ fn get_approvers(client: &isahc::HttpClient, url: &str) -> anyhow::Result<Vec<St
     Ok(reviewers)
 }
 
+struct Run {
+    name: String,
+    status: String,
+    conclusion: String,
+}
+
+#[derive(serde::Deserialize)]
+struct CheckRun {
+    name: String,
+    status: String,
+    conclusion: String,
+}
+
+#[derive(serde::Deserialize)]
+struct CheckRunsResponse {
+    check_runs: Vec<CheckRun>,
+}
+
+fn get_check_runs(
+    client: &isahc::HttpClient,
+    owner_repo: &str,
+    commit: &str,
+    statuses: &mut Vec<Run>,
+) -> anyhow::Result<()> {
+    let checks_url =
+        format!("https://api.github.com/repos/{owner_repo}/commits/{commit}/check-runs");
+    let mut response = client.get(checks_url)?;
+    let text = response.text()?;
+    let check_runs_response: CheckRunsResponse = match serde_json::from_str(&text) {
+        Ok(value) => value,
+        Err(_) => {
+            let error: Error = serde_json::from_str(&text)?;
+            return Err(anyhow::anyhow!(
+                "failed to fetch check-runs: {}",
+                error.message
+            ));
+        }
+    };
+
+    for check_run in check_runs_response.check_runs {
+        statuses.push(Run {
+            name: check_run.name,
+            status: check_run.status,
+            conclusion: check_run.conclusion,
+        });
+    }
+
+    Ok(())
+}
+
 fn main() -> anyhow::Result<()> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let home_dir: String = home_dir.to_str().context("to_str() failed")?.into();
@@ -121,6 +171,15 @@ fn main() -> anyhow::Result<()> {
     let approvers = get_approvers(&client, &reviews_url)?;
     for approver in approvers {
         println!("Reviewed-by: {}", approver);
+    }
+
+    let mut statuses: Vec<Run> = Vec::new();
+    get_check_runs(&client, &owner_repo, &commit, &mut statuses)?;
+    for status in statuses {
+        println!(
+            "status: name is {}, status is {}, conclusion is {}",
+            status.name, status.status, status.conclusion
+        );
     }
 
     Ok(())
