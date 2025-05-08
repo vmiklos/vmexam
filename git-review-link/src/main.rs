@@ -233,7 +233,7 @@ fn main() -> anyhow::Result<()> {
         }
     }
     if passed == runs.len() {
-        println!("Tested-by: {} checks", passed);
+        println!("Tested-by: All {} checks", passed);
     } else {
         println!("Checks:");
         for run in runs {
