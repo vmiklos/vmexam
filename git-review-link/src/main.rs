@@ -40,9 +40,15 @@ fn get_owner_repo() -> anyhow::Result<String> {
 }
 
 #[derive(Clone, serde::Deserialize)]
+struct Head {
+    sha: String,
+}
+
+#[derive(Clone, serde::Deserialize)]
 struct Pull {
     url: String,
     html_url: String,
+    head: Head,
 }
 
 #[derive(serde::Deserialize)]
@@ -149,6 +155,50 @@ fn get_check_runs(
     Ok(())
 }
 
+#[derive(serde::Deserialize)]
+struct Status {
+    context: String,
+    state: String,
+}
+
+#[derive(serde::Deserialize)]
+struct StatusResponse {
+    statuses: Vec<Status>,
+}
+
+fn get_status(
+    client: &isahc::HttpClient,
+    owner_repo: &str,
+    commit: &str,
+    runs: &mut Vec<Run>,
+) -> anyhow::Result<()> {
+    let status_url = format!("https://api.github.com/repos/{owner_repo}/commits/{commit}/status");
+    let mut response = client.get(status_url)?;
+    let text = response.text()?;
+    let status_response: StatusResponse = match serde_json::from_str(&text) {
+        Ok(value) => value,
+        Err(_) => {
+            let error: Error = serde_json::from_str(&text)?;
+            return Err(anyhow::anyhow!("failed to fetch status: {}", error.message));
+        }
+    };
+
+    for status in status_response.statuses {
+        runs.push(Run {
+            name: status.context,
+            status: if status.state != "pending" {
+                "completed"
+            } else {
+                "in_progress"
+            }
+            .to_string(),
+            conclusion: status.state,
+        });
+    }
+
+    Ok(())
+}
+
 fn main() -> anyhow::Result<()> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let home_dir: String = home_dir.to_str().context("to_str() failed")?.into();
@@ -173,13 +223,25 @@ fn main() -> anyhow::Result<()> {
         println!("Reviewed-by: {}", approver);
     }
 
-    let mut statuses: Vec<Run> = Vec::new();
-    get_check_runs(&client, &owner_repo, &commit, &mut statuses)?;
-    for status in statuses {
-        println!(
-            "status: name is {}, status is {}, conclusion is {}",
-            status.name, status.status, status.conclusion
-        );
+    let mut runs: Vec<Run> = Vec::new();
+    get_check_runs(&client, &owner_repo, &pull.head.sha, &mut runs)?;
+    get_status(&client, &owner_repo, &pull.head.sha, &mut runs)?;
+    let mut passed = 0;
+    for run in runs.iter() {
+        if run.status == "completed" && run.conclusion == "success" {
+            passed += 1;
+        }
+    }
+    if passed == runs.len() {
+        println!("Tested-by: {} checks", passed);
+    } else {
+        println!("Checks:");
+        for run in runs {
+            println!(
+                "- {}: status is {}, conclusion is {}",
+                run.name, run.status, run.conclusion
+            );
+        }
     }
 
     Ok(())
