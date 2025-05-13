@@ -12,8 +12,8 @@
 
 use anyhow::Context as _;
 use clap::Parser as _;
-use isahc::config::Configurable as _;
 use isahc::ReadResponseExt as _;
+use isahc::config::Configurable as _;
 use std::rc::Rc;
 
 struct StdNetwork {}

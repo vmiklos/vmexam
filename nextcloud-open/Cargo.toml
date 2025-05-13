@@ -1,21 +1,21 @@
 [package]
 name = "nextcloud-open"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0.68"
-clap = { version = "4.3.0", features = ["derive"] }
-configparser = "3.0.2"
-home = "0.5.4"
+anyhow = "1.0.98"
+clap = { version = "4.5.38", features = ["derive"] }
+configparser = "3.1.0"
+home = "0.5.11"
 isahc = "1.7.2"
-serde = { version = "1.0.201", features = ["derive"] }
+serde = { version = "1.0.219", features = ["derive"] }
 sxd-document = "0.3.2"
 sxd-xpath = "0.4.2"
-toml = "0.8.12"
-url = "2.3.1"
-url_open = "0.0.1"
+toml = "0.8.22"
+url = "2.5.4"
+url_open = "0.0.2"
 urlencoding = "2.1.2"
-vfs = "0.9.0"
+vfs = "0.12.1"
