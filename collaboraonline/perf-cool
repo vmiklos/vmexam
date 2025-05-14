@@ -1,0 +1,7 @@
+#!/bin/bash -e
+# Based on Caolán McNamara's online.git scripts/profile-cool
+
+kitpid=$1
+sudo perf record -F50 --call-graph dwarf,65528 --pid $kitpid
+sudo chown $USER.users perf.data
+perf script --no-inline | stackcollapse-perf.pl | sed -E -s "s/^kitbgsv[^;]+/kitbgsv/" | flamegraph.pl > perf-$kitpid.svg
