@@ -60,6 +60,8 @@ fn main() -> anyhow::Result<()> {
                 "go.mod",
                 // Kotlin
                 "app/build.gradle",
+                // Java
+                "pom.xml",
                 // C++
                 "include/CMakeLists.txt",
             ];
