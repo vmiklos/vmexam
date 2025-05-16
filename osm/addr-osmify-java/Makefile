@@ -13,3 +13,6 @@ docs:
 
 tags:
 	ctags --fields=+iaS --extra=+q -R --totals=yes src
+
+check-outdated:
+	mvn versions:display-dependency-updates
