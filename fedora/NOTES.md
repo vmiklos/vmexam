@@ -56,7 +56,7 @@ fedpkg --release f39 mockbuild
 ## Fedora 41 -> Fedora 42
 
 - <https://docs.fedoraproject.org/en-US/quick-docs/upgrading-fedora-offline/> for the package upgrades
-- screen 5, given a screen 4 config like <https://github.com/vmiklos/dotfiles/blob/4f91eec5b6b4f2d7d7beeb17a5531888ed2b2df9/.screenrc#L3-L4>, a new caption string is like this:
+- screen 5, given a [screen 4 config](https://github.com/vmiklos/dotfiles/blob/4f91eec5b6b4f2d7d7beeb17a5531888ed2b2df9/.screenrc#L3-L4), a new caption string is like this:
 
 ```
 caption always
