@@ -1,17 +1,17 @@
 [package]
 name = "pdfcal"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
-anyhow = "1.0.95"
-clap = "4.5.23"
-image = "0.25.5"
+anyhow = "1.0.98"
+clap = "4.5.38"
+image = "0.25.6"
 pdfium-render = "0.8.27"
 sys-locale = "0.3.2"
-tempfile = "3.14.0"
-time = "0.3.37"
+tempfile = "3.20.0"
+time = "0.3.41"
 
-# Till <https://github.com/ajrcarey/pdfium-render/pull/182> is merged and hits a release.
+# Till <https://github.com/ajrcarey/pdfium-render/pull/182> hits a release.
 [patch.crates-io]
-pdfium-render = { git = "https://github.com/vmiklos/pdfium-render", rev = "1af90808ab83f7eb464e257376e34c48d5de2ab1" }
+pdfium-render = { git = "https://github.com/ajrcarey/pdfium-render", rev = "54876b08562445b193e6d1159d70e14e611a0e12" }
