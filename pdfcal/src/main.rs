@@ -12,7 +12,9 @@
 
 use anyhow::Context as _;
 use pdfium_render::prelude::PdfColor;
+use pdfium_render::prelude::PdfDocument;
 use pdfium_render::prelude::PdfPage;
+use pdfium_render::prelude::PdfPageObjectCommon as _;
 use pdfium_render::prelude::PdfPageObjectsCommon as _;
 use pdfium_render::prelude::PdfPagePaperSize;
 use pdfium_render::prelude::PdfPoints;
@@ -116,10 +118,11 @@ fn create_grid(args: &Arguments, page: &mut PdfPage) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn make_month_calendar(
+fn make_month_calendar<'a>(
     args: &Arguments,
-    pdfium: &Pdfium,
-    page: &mut PdfPage,
+    pdfium: &'a Pdfium,
+    document: &mut PdfDocument<'a>,
+    page: &mut PdfPage<'a>,
     odd: bool,
     month: &str,
 ) -> anyhow::Result<()> {
@@ -146,9 +149,12 @@ fn make_month_calendar(
     let cal_pdf_path = tempfile_to_path(&cal_pdf)?;
     ps2pdf(args.debug, &cal_ps_path, &cal_pdf_path)?;
     let cal_doc = pdfium.load_pdf_from_file(&cal_pdf_path, None)?;
-    let mut cal_object = page
-        .objects_mut()
-        .create_x_object_form_object(&cal_doc, 0)?;
+    let mut cal_object = cal_doc
+        .pages()
+        .get(0)?
+        .objects()
+        .copy_into_x_object_form_object(document)?;
+    cal_object.move_to_page(page)?;
 
     let a4_size = PdfPagePaperSize::a4();
     cal_object.rotate_clockwise_degrees(90.0)?;
@@ -248,7 +254,14 @@ fn main() -> anyhow::Result<()> {
         }
 
         // Handle the calendar part.
-        make_month_calendar(&args, &pdfium, &mut page, odd, &month_string)?;
+        make_month_calendar(
+            &args,
+            &pdfium,
+            &mut output_pdf,
+            &mut page,
+            odd,
+            &month_string,
+        )?;
 
         // Handle the image part.
         make_month_image(&args, &mut page, odd, &month_string)?;
