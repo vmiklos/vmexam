@@ -97,7 +97,24 @@ fn get_approvers(client: &isahc::HttpClient, url: &str) -> anyhow::Result<Vec<St
         }
     };
 
-    let reviewers: Vec<_> = reviews
+    // Only keep the last review from everyone.
+    let mut filtered: Vec<Review> = Vec::new();
+    for review in reviews {
+        let mut found = false;
+        for i in &mut filtered {
+            if i.user.login == review.user.login {
+                i.state = review.state.to_string();
+                found = true;
+                break;
+            }
+        }
+
+        if !found {
+            filtered.push(review);
+        }
+    }
+
+    let reviewers: Vec<_> = filtered
         .iter()
         .filter(|i| i.state == "APPROVED")
         .map(|i| i.user.login.to_string())
