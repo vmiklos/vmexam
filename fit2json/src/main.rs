@@ -33,6 +33,7 @@ struct Activity {
     average_speed: f64,
     max_speed: f64,
     elapsed_time: f64,
+    start_date: String,
 }
 
 fn checked_run(first: &str, rest: &[&str]) -> anyhow::Result<()> {
@@ -67,6 +68,18 @@ fn format_duration(num_seconds: i64) -> String {
     format!("{hours}:{minutes:0>2}:{seconds:0>2}")
 }
 
+/// Try to improve input_date by presenting a non-local date as a local one.
+fn improve_date(input_date: &str) -> anyhow::Result<String> {
+    let format = time::format_description::well_known::Rfc3339;
+    let mut date_time = time::OffsetDateTime::parse(input_date, &format)?;
+    let local_offset = time::UtcOffset::current_local_offset()?;
+    if date_time.offset() == local_offset {
+        return Err(anyhow::anyhow!("matching offset"));
+    }
+    date_time = date_time.to_offset(local_offset);
+    Ok(date_time.format(&format)?)
+}
+
 /// Returns stats in general and name in particular.
 fn extract_stats(args: &Arguments) -> anyhow::Result<(Vec<(String, String)>, String)> {
     let mut stats: Vec<(String, String)> = Vec::new();
@@ -99,6 +112,11 @@ fn extract_stats(args: &Arguments) -> anyhow::Result<(Vec<(String, String)>, Str
         "Elapsed time".into(),
         format_duration(activity.elapsed_time as i64),
     ));
+    let mut start_date = activity.start_date.to_string();
+    if let Ok(improved) = improve_date(&start_date) {
+        start_date = improved;
+    }
+    stats.push(("Start date".into(), start_date));
     Ok((stats, activity.name.to_string()))
 }
 
