@@ -1,9 +1,9 @@
 [package]
 name = "mutt-display-filter"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
-anyhow = "1.0.86"
+anyhow = "1.0.98"
 bytelines = "2.5.0"
-time = { version = "0.3.36", features = ["formatting", "local-offset", "parsing"] }
+time = { version = "0.3.41", features = ["formatting", "local-offset", "parsing"] }
