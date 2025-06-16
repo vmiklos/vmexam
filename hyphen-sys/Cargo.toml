@@ -1,11 +1,11 @@
 [package]
 name = "hyphen-sys"
 version = "0.1.0+hyphen-2.8.8"
-edition = "2021"
+edition = "2024"
 build = "build.rs"
 
 [dependencies]
-libc = "0.2.155"
+libc = "0.2.173"
 
 [build-dependencies]
-bindgen = "0.69.4"
+bindgen = "0.72.0"
