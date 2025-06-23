@@ -1,13 +1,13 @@
 [package]
 name = "git-ls-projects"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
-anyhow = "1.0.86"
-clap = "4.5.4"
+anyhow = "1.0.98"
+clap = "4.5.40"
 glob = "0.3.1"
-serde = { version = "1.0.203", features = ["derive"] }
-serde_json = "1.0.117"
-time = { version = "0.3.36", features = ["local-offset", "serde-well-known"] }
-toml = "0.8.13"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
+time = { version = "0.3.41", features = ["local-offset", "serde-well-known"] }
+toml = "0.8.23"
