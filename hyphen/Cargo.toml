@@ -1,11 +1,11 @@
 [package]
 name = "hyphen"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 hyphen-sys = { path = "../hyphen-sys" }
 libc = "0.2.155"
-thiserror = "1.0.61"
+thiserror = "2.0.12"
