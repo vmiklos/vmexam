@@ -1,9 +1,12 @@
+// Copyright 2025 Miklos Vajna
+//
+// SPDX-License-Identifier: MIT
+
 package main
 
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -26,7 +29,7 @@ func MockUrlopen(t *testing.T, routes []URLRoute) func(string, string) (string, 
 			}
 
 			if len(route.DataPath) > 0 {
-				content, err := ioutil.ReadFile(route.DataPath)
+				content, err := os.ReadFile(route.DataPath)
 				if err != nil {
 					return "", fmt.Errorf("ReadFile: %s", err)
 				}
@@ -35,7 +38,7 @@ func MockUrlopen(t *testing.T, routes []URLRoute) func(string, string) (string, 
 				}
 			}
 
-			content, err := ioutil.ReadFile(route.ResultPath)
+			content, err := os.ReadFile(route.ResultPath)
 			if err != nil {
 				return "", fmt.Errorf("ReadFile: %s", err)
 			}
@@ -110,7 +113,7 @@ func TestNominatimNobuildings(t *testing.T) {
 	}
 	Urlopen = MockUrlopen(t, []URLRoute{route})
 
-	want := "osmify: No results from nominatim\n"
+	want := "osmify: no results from nominatim\n"
 	os.Args = []string{"", "Mészáros utca 58/a, Budapestt"}
 	buf := new(bytes.Buffer)
 	Main(buf)
@@ -137,7 +140,7 @@ func TestOverpassNoresults(t *testing.T) {
 	routes = append(routes, route)
 	Urlopen = MockUrlopen(t, routes)
 
-	want := "osmify: No results from overpass\n"
+	want := "osmify: no results from overpass\n"
 	os.Args = []string{"", "Mészáros utca 58/a, Budapest"}
 	buf := new(bytes.Buffer)
 	Main(buf)

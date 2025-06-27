@@ -1,3 +1,7 @@
+// Copyright 2025 Miklos Vajna
+//
+// SPDX-License-Identifier: MIT
+
 package main
 
 import (
@@ -7,6 +11,7 @@ import (
 )
 
 func urlopen(url string, data string) (string, error) {
+	// notest
 	if len(data) == 0 {
 		resp, err := http.Get(url)
 		if err != nil {

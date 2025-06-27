@@ -1,3 +1,7 @@
+// Copyright 2025 Miklos Vajna
+//
+// SPDX-License-Identifier: MIT
+
 package main
 
 import (
@@ -52,7 +56,7 @@ func queryNominatim(query string) (*[]NominatimResult, error) {
 	nominatimURL += params.Encode()
 	resp, err := Urlopen(nominatimURL, "")
 	if err != nil {
-		return nil, fmt.Errorf("Urlopen: %s", err)
+		return nil, fmt.Errorf("urlopen: %s", err)
 	}
 
 	var result []NominatimResult
@@ -67,7 +71,7 @@ func queryTurbo(query string) (*TurboResult, error) {
 	turboURL := "http://overpass-api.de/api/interpreter"
 	resp, err := Urlopen(turboURL, query)
 	if err != nil {
-		return nil, fmt.Errorf("Urlopen: %s", err)
+		return nil, fmt.Errorf("urlopen: %s", err)
 	}
 
 	var result TurboResult
@@ -86,7 +90,7 @@ func osmify(query string) (*string, error) {
 	}
 
 	if len(*elements) == 0 {
-		return nil, fmt.Errorf("No results from nominatim")
+		return nil, fmt.Errorf("no results from nominatim")
 	}
 
 	if len(*elements) > 1 {
@@ -123,7 +127,7 @@ out body;`, objectType, objectID)
 
 	turboElements := turboResult.Elements
 	if len(turboElements) == 0 {
-		return nil, fmt.Errorf("No results from overpass")
+		return nil, fmt.Errorf("no results from overpass")
 	}
 
 	turboElement := turboElements[0]
