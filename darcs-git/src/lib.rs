@@ -50,7 +50,7 @@ fn ask_string(ctx: &dyn Context, question: &str) -> anyhow::Result<String> {
 fn ask_char(ctx: &dyn Context, question: &str) -> anyhow::Result<String> {
     flushed_print(ctx, question)?;
     let ret = ctx.readch()?;
-    println!("{}", ret);
+    println!("{ret}");
     Ok(ret)
 }
 

@@ -55,7 +55,7 @@ pub fn app(request: &rouille::Request) -> rouille::Response {
         },
         Err(err) => RubikResult {
             ok: "".to_string(),
-            error: format!("{:?}", err),
+            error: format!("{err:?}"),
         },
     };
     rouille::Response::json(&result)

@@ -131,7 +131,7 @@ pub fn main(args: Vec<String>, stream: &mut dyn std::io::Write, time: &dyn Time)
     match our_main(args, stream, time) {
         Ok(_) => 0,
         Err(err) => {
-            writeln!(stream, "{:?}", err).unwrap();
+            writeln!(stream, "{err:?}").unwrap();
             1
         }
     }

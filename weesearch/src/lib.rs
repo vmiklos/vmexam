@@ -305,7 +305,7 @@ fn handle_month(
         return Ok(results);
     }
     if let Some(ref date_filter) = filters.date {
-        if !date_filter.is_match(&format!("{}-{}", year, month_string)) {
+        if !date_filter.is_match(&format!("{year}-{month_string}")) {
             return Ok(results);
         }
     }
@@ -361,7 +361,7 @@ pub fn main(
     match our_main(args, stream, fs, time) {
         Ok(_) => 0,
         Err(err) => {
-            stream.write_all(format!("{:?}\n", err).as_bytes()).unwrap();
+            stream.write_all(format!("{err:?}\n").as_bytes()).unwrap();
             1
         }
     }

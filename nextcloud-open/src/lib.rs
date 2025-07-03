@@ -171,7 +171,7 @@ fn get_url(ctx: &Context, account: &Account, user_path: &UserPath) -> anyhow::Re
     let encoded_path = urlencoding::encode(path);
     let mut full_url = format!("{}/index.php/apps/files/", account.url);
     if user_path.file_name.is_empty() {
-        full_url += &format!("?dir=/{}/", encoded_path);
+        full_url += &format!("?dir=/{encoded_path}/");
     } else {
         let credential = get_credential(ctx, &account.url)?;
         let url = format!(
@@ -196,9 +196,9 @@ fn get_url(ctx: &Context, account: &Account, user_path: &UserPath) -> anyhow::Re
             xml,
         )?;
         let fileid = get_fileid(&xml_response).context("get_fileid() failed")?;
-        full_url += &format!("files/{}?dir=/{}&openfile=true", fileid, encoded_path);
+        full_url += &format!("files/{fileid}?dir=/{encoded_path}&openfile=true");
     }
-    println!("Opening <{}>.", full_url);
+    println!("Opening <{full_url}>.");
     Ok(url::Url::parse(&full_url)?)
 }
 

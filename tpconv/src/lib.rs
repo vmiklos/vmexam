@@ -90,7 +90,7 @@ pub fn main(args: Vec<String>, stream: &mut dyn std::io::Write) -> i32 {
     match our_main(args, stream) {
         Ok(_) => 0,
         Err(err) => {
-            stream.write_all(format!("{:?}\n", err).as_bytes()).unwrap();
+            stream.write_all(format!("{err:?}\n").as_bytes()).unwrap();
             1
         }
     }

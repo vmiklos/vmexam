@@ -41,20 +41,20 @@ impl TestContext {
 
     fn set_env_args(&mut self, env_args: &[&str]) {
         let mut v: Vec<String> = vec!["darcs-git".into()];
-        v.append(&mut env_args.into_iter().map(|i| i.to_string()).collect());
+        v.append(&mut env_args.iter().map(|i| i.to_string()).collect());
         self.env_args = v;
     }
 
     fn set_command_statuses(&mut self, command_statuses: &[(&str, i32)]) {
         let v: Vec<(String, i32)> = command_statuses
-            .into_iter()
+            .iter()
             .map(|(k, v)| (k.to_string(), *v))
             .collect();
         self.command_statuses = RefCell::new(VecDeque::from(v));
     }
 
     fn set_read_chars(&mut self, read_chars: &[char]) {
-        let v: Vec<String> = read_chars.into_iter().map(|i| i.to_string()).collect();
+        let v: Vec<String> = read_chars.iter().map(|i| i.to_string()).collect();
         self.read_chars = RefCell::new(VecDeque::from(v));
     }
 
@@ -66,7 +66,7 @@ impl TestContext {
 impl Context for TestContext {
     fn command_status(&self, command: &str, args: &[&str]) -> anyhow::Result<i32> {
         assert_eq!(command, "git");
-        println!("TestContext::command_status: args is {:?}", args);
+        println!("TestContext::command_status: args is {args:?}");
         let cmdline = args.join(" ");
         let mut command_statuses = self.command_statuses.borrow_mut();
         let command_status = command_statuses.pop_front().unwrap();
@@ -76,7 +76,7 @@ impl Context for TestContext {
 
     fn command_output(&self, command: &str, args: &[&str]) -> anyhow::Result<String> {
         assert_eq!(command, "git");
-        println!("TestContext::command_output: args is {:?}", args);
+        println!("TestContext::command_output: args is {args:?}");
         let cmdline = args.join(" ");
         let mut command_outputs = self.command_outputs.borrow_mut();
         let command_output = command_outputs.pop_front().unwrap();

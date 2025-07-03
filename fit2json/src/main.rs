@@ -187,7 +187,7 @@ fn main() -> anyhow::Result<()> {
         .insert("description".into(), description);
     serde_json::to_writer(std::fs::File::create(&json_path)?, &json)?;
     if args.json.is_none() {
-        println!("{}", json_path);
+        println!("{json_path}");
     }
     Ok(())
 }

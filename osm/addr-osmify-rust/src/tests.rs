@@ -45,7 +45,7 @@ impl Network for TestNetwork {
             return Ok(contents);
         }
 
-        return Err(anyhow::anyhow!("unexpected url: {}", url));
+        Err(anyhow::anyhow!("unexpected url: {}", url))
     }
 
     fn isatty(&self) -> bool {
@@ -289,7 +289,7 @@ fn test_noargs() {
 
     let buf_vec = buf.into_inner();
     let buf_string = std::str::from_utf8(&buf_vec).unwrap();
-    assert_eq!(buf_string.starts_with("usage: "), true);
+    assert!(buf_string.starts_with("usage: "));
 }
 
 /// Checks if the test network impl catches missing mocks.
@@ -309,10 +309,10 @@ fn test_network() {
 
     let ret = urllib.urlopen("http://www.example1.com", "");
 
-    assert_eq!(ret.is_err(), true);
+    assert!(ret.is_err());
 
     // Not routed URL.
     let ret = urllib.urlopen("http://www.example2.com", "");
 
-    assert_eq!(ret.is_err(), true);
+    assert!(ret.is_err());
 }

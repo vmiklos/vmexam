@@ -51,26 +51,26 @@ impl<'a> BootstrapRecord<'a> {
             byte_array.push(read_u16(self.cursor)?);
             word_count += 1;
             if word_count == 8 {
-                let offset = format!("{:04X}", array_start_pos);
+                let offset = format!("{array_start_pos:04X}");
                 let byte_string = byte_array
                     .iter()
-                    .map(|i| format!("{:04X}", i))
+                    .map(|i| format!("{i:04X}"))
                     .collect::<Vec<_>>()
                     .join(" ");
-                println!(r#"<chunk offset="{}" bytes="{}"/>"#, offset, byte_string);
+                println!(r#"<chunk offset="{offset}" bytes="{byte_string}"/>"#);
                 word_count = 0;
                 byte_array.clear();
                 array_start_pos = self.cursor.position();
             }
         }
         if word_count != 0 {
-            let offset = format!("{:04X}", array_start_pos);
+            let offset = format!("{array_start_pos:04X}");
             let byte_string = byte_array
                 .iter()
-                .map(|i| format!("{:04X}", i))
+                .map(|i| format!("{i:04X}"))
                 .collect::<Vec<_>>()
                 .join(" ");
-            println!(r#"<chunk offset="{}" bytes="{}"/>"#, offset, byte_string);
+            println!(r#"<chunk offset="{offset}" bytes="{byte_string}"/>"#);
         }
         println!("</bootstrap-record>");
         Ok(())

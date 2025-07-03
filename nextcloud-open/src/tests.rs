@@ -144,13 +144,12 @@ version=4\n\
         .create_file()
         .unwrap()
         .write_all(
-            format!(
-                r#"[credentials."https://nextcloud.example.com"]
+            r#"[credentials."https://nextcloud.example.com"]
 user = "myuser"
 principal = "myprincipal"
 password = "mypassword"
 "#
-            )
+            .to_string()
             .as_bytes(),
         )
         .unwrap();
@@ -195,7 +194,7 @@ fn test_config_read_error() {
     config_file
         .create_file()
         .unwrap()
-        .write_all(format!("[Invalid").as_bytes())
+        .write_all("[Invalid".to_string().as_bytes())
         .unwrap();
     let network: Rc<dyn Network> = Rc::new(TestNetwork::new(&[]));
     let input = root
@@ -205,7 +204,7 @@ fn test_config_read_error() {
 
     let ret = nextcloud_open(&ctx, &input);
 
-    assert_eq!(ret.is_err(), true);
+    assert!(ret.is_err());
 }
 
 /// Tests the case when the input is a directory, not a file.

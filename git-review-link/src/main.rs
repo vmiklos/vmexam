@@ -237,7 +237,7 @@ fn main() -> anyhow::Result<()> {
     let reviews_url = format!("{}/reviews", pull.url);
     let approvers = get_approvers(&client, &reviews_url)?;
     for approver in approvers {
-        println!("Reviewed-by: {}", approver);
+        println!("Reviewed-by: {approver}");
     }
 
     let mut runs: Vec<Run> = Vec::new();
@@ -250,7 +250,7 @@ fn main() -> anyhow::Result<()> {
         }
     }
     if passed == runs.len() {
-        println!("Tested-by: All {} checks", passed);
+        println!("Tested-by: All {passed} checks");
     } else {
         println!("Checks:");
         for run in runs {

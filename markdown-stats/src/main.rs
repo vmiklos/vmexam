@@ -36,15 +36,15 @@ fn main() -> anyhow::Result<()> {
     }
 
     let mut make_file = std::fs::File::create(make_path).context("can't create make output")?;
-    writeln!(make_file, "#define CHECKMARK_DONE {}", checkmark_done)?;
+    writeln!(make_file, "#define CHECKMARK_DONE {checkmark_done}")?;
     let checkmark_total = checkmark_todo + checkmark_done;
-    writeln!(make_file, "#define CHECKMARK_TOTAL {}", checkmark_total)?;
+    writeln!(make_file, "#define CHECKMARK_TOTAL {checkmark_total}")?;
     writeln!(
         make_file,
         "#define CHECKMARK_PROGRESS {0:.2}",
         checkmark_done as f64 / checkmark_total as f64 * 100.0
     )?;
-    writeln!(make_file, "#define BULLET_COUNT {}", bullet_count)?;
+    writeln!(make_file, "#define BULLET_COUNT {bullet_count}")?;
 
     Ok(())
 }

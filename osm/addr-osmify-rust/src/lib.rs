@@ -53,7 +53,7 @@ fn query_nominatim(
         .append_pair("q", query)
         .append_pair("format", "json")
         .finish();
-    let url = format!("{}{}", prefix, encoded);
+    let url = format!("{prefix}{encoded}");
 
     let buf = urllib.urlopen(url.as_str(), "")?;
 
@@ -99,10 +99,9 @@ fn osmify(query: &str, urllib: &dyn Network) -> anyhow::Result<String> {
     let overpass_query = format!(
         r#"[out:json];
 (
-    {}({});
+    {object_type}({object_id});
 );
-out body;"#,
-        object_type, object_id
+out body;"#
     );
     let turbo_result = query_turbo(urllib, &overpass_query)?;
     let elements = turbo_result.elements;
@@ -116,10 +115,10 @@ out body;"#,
     let housenumber = &tags.housenumber;
     let postcode = &tags.postcode;
     let street = &tags.street;
-    let addr = format!("{} {}, {} {}", postcode, city, street, housenumber);
+    let addr = format!("{postcode} {city}, {street} {housenumber}");
 
     // Print the result.
-    Ok(format!("{},{} ({})", lat, lon, addr))
+    Ok(format!("{lat},{lon} ({addr})"))
 }
 
 fn spinner(
@@ -137,7 +136,7 @@ fn spinner(
                 }
                 std::io::stdout().flush()?;
                 let result = result?;
-                writeln!(stream, "{}", result)?;
+                writeln!(stream, "{result}")?;
                 return Ok(());
             }
             Err(_) => {
@@ -184,7 +183,7 @@ pub fn main(args: Vec<String>, stream: &mut dyn Write, urllib: &Arc<dyn Network>
     match our_main(args, stream, urllib) {
         Ok(_) => 0,
         Err(err) => {
-            stream.write_all(format!("{:?}\n", err).as_bytes()).unwrap();
+            stream.write_all(format!("{err:?}\n").as_bytes()).unwrap();
             1
         }
     }

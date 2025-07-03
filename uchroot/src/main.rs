@@ -42,10 +42,10 @@ fn main() -> anyhow::Result<()> {
 
     // Map the current effective user and group IDs to root in the user
     // namespace.
-    std::fs::write("/proc/self/uid_map", format!("0 {} 1", euid))
+    std::fs::write("/proc/self/uid_map", format!("0 {euid} 1"))
         .context("failed to write uid_map")?;
     std::fs::write("/proc/self/setgroups", "deny").context("failed to write setgroups")?;
-    std::fs::write("/proc/self/gid_map", format!("0 {} 1", egid))
+    std::fs::write("/proc/self/gid_map", format!("0 {egid} 1"))
         .context("failed to write gid_map")?;
 
     // Create bind mounts if we find a mounts.conf.
