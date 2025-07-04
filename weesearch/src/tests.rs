@@ -340,3 +340,21 @@ fn test_regex_bad() {
 
     assert_eq!(ret, 1);
 }
+
+#[test]
+fn test_transliterate() {
+    let mut ctx = TestContext::new(&["--transliterate", "he"]);
+    ctx.create_dir_all(".local/share/weechat/logs/2020/05");
+    ctx.file_write_all(
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog",
+        "2020-05-10 19:34:33	mynick	hé\n".as_bytes(),
+    );
+
+    assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.root, &ctx.time), 0);
+
+    let buf = ctx.into_buf_string();
+    assert_eq!(
+        buf,
+        ".local/share/weechat/logs/2020/05/mychan1.weechatlog:2020-05-10 19:34:33	mynick	hé\n"
+    );
+}

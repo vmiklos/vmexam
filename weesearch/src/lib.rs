@@ -177,21 +177,23 @@ struct Filters {
 impl Filters {
     fn new(args: &Arguments, time: &dyn Time) -> anyhow::Result<Self> {
         let from = match args.from {
-            Some(ref value) => Some(Matcher::new(
-                value.as_str(),
-                args.ignore_case,
-                args.transliterate,
-                args.fixed_strings,
-            )?),
+            Some(ref value) => {
+                let n = value.as_str();
+                let i = args.ignore_case;
+                let t = args.transliterate;
+                let f = args.fixed_strings;
+                Some(Matcher::new(n, i, t, f)?)
+            }
             None => None,
         };
         let channel = match args.channel {
-            Some(ref value) => Some(Matcher::new(
-                value.as_str(),
-                args.ignore_case,
-                args.transliterate,
-                args.fixed_strings,
-            )?),
+            Some(ref value) => {
+                let n = value.as_str();
+                let i = args.ignore_case;
+                let t = args.transliterate;
+                let f = args.fixed_strings;
+                Some(Matcher::new(n, i, t, f)?)
+            }
             None => None,
         };
         let date = match args.date {
@@ -199,25 +201,22 @@ impl Filters {
                 if date == "all" {
                     None
                 } else {
-                    Some(Matcher::new(
-                        date.as_str(),
-                        args.ignore_case,
-                        args.transliterate,
-                        args.fixed_strings,
-                    )?)
+                    let n = date.as_str();
+                    let i = args.ignore_case;
+                    let t = args.transliterate;
+                    let f = args.fixed_strings;
+                    Some(Matcher::new(n, i, t, f)?)
                 }
             }
             None => {
                 // Default to the current month.
                 let now = time.now();
                 let format = time::format_description::parse("[year]-[month]")?;
-                let needle = &now.format(&format)?;
-                Some(Matcher::new(
-                    needle,
-                    args.transliterate,
-                    args.ignore_case,
-                    args.fixed_strings,
-                )?)
+                let n = &now.format(&format)?;
+                let i = args.ignore_case;
+                let t = args.transliterate;
+                let f = args.fixed_strings;
+                Some(Matcher::new(n, i, t, f)?)
             }
         };
         let content = match args.content {
