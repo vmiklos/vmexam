@@ -5,13 +5,9 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.98"
-clap = "4.5.38"
+clap = "4.5.40"
 image = "0.25.6"
-pdfium-render = "0.8.27"
+pdfium-render = "0.8.33"
 sys-locale = "0.3.2"
 tempfile = "3.20.0"
 time = "0.3.41"
-
-# Till <https://github.com/ajrcarey/pdfium-render/pull/182> hits a release.
-[patch.crates-io]
-pdfium-render = { git = "https://github.com/ajrcarey/pdfium-render", rev = "244be14366abd61c0863926078ed09433dc5f951" }
