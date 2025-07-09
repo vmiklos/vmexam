@@ -56,7 +56,9 @@ fn main() -> anyhow::Result<()> {
     let minutes = duration.num_minutes() % 60;
     let hours = duration.num_hours();
     let duration = format!("{hours}:{minutes:0>2}:{seconds:0>2}");
-    let body = format!("{result} {host}:{working_directory}$ {command}: exit code is {exit_code}, finished in {duration}");
+    let body = format!(
+        "{result} {host}:{working_directory}$ {command}: exit code is {exit_code}, finished in {duration}"
+    );
     let payload = Message {
         msgtype: "m.text".into(),
         body,
