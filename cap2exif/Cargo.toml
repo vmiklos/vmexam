@@ -1,0 +1,8 @@
+[package]
+name = "cap2exif"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.98"
+rexiv2 = "0.10.0"
