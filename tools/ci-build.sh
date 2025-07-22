@@ -13,6 +13,7 @@ if [ -n "${GITHUB_WORKFLOW}" ]; then
     sudo apt install hyphen-hu
     sudo apt install libhyphen-dev
     sudo apt install libssl-dev
+    sudo apt install libgexiv2-dev
 
     # Build from source: cargo install --version 0.4.6 cargo-llvm-cov
     # Binary install:
