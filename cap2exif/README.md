@@ -6,7 +6,7 @@ inside JPEG files.
 ## Installation
 
 ```
-zypper in libgexiv2-devel
+zypper in libgexiv2-devel # provides gexiv2.pc
 cargo install --git https://github.com/vmiklos/vmexam cap2exif
 ```
 

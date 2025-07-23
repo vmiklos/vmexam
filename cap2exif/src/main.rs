@@ -20,7 +20,9 @@ fn main() -> anyhow::Result<()> {
     for line in content.lines() {
         let mut tokens = line.split('\t');
         let path = tokens.next().context("no filename")?;
-        let caption = tokens.next().context("no caption")?;
+        let Some(caption) = tokens.next() else {
+            continue;
+        };
         let meta = rexiv2::Metadata::new_from_path(path)?;
         meta.set_tag_string("Exif.Photo.UserComment", caption)?;
         meta.set_tag_string("Xmp.dc.title", caption)?;
