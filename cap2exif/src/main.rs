@@ -18,9 +18,15 @@ fn main() -> anyhow::Result<()> {
     let content = std::fs::read_to_string("captions.txt")?;
 
     for line in content.lines() {
+        if line.starts_with("#") {
+            // This line is a comment, ignore.
+            continue;
+        }
+
         let mut tokens = line.split('\t');
         let path = tokens.next().context("no filename")?;
         let Some(caption) = tokens.next() else {
+            // No caption, ignore.
             continue;
         };
         let meta = rexiv2::Metadata::new_from_path(path)?;
