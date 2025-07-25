@@ -12,6 +12,8 @@ cargo install --git https://github.com/vmiklos/vmexam cap2exif
 
 ## Usage
 
+### Writing exif metadata
+
 Given captions.txt in the current directory:
 
 ```
@@ -24,5 +26,10 @@ When running:
 cap2exif
 ```
 
-It'll set captions so that tools like [Geeqie](https://www.geeqie.org/) or
+Then it'll set captions so that tools like [Geeqie](https://www.geeqie.org/) or
 [Memories](https://github.com/pulsejet/memories) can show those captions.
+
+### Renaming files
+
+When the `-r` option is used, the tool names images based on exif data, so that multiple DSC0001.jpg
+can be placed into a single directory, without manual renaming.
