@@ -35,6 +35,9 @@ fn rename() -> anyhow::Result<()> {
     for entry in std::fs::read_dir(".")? {
         let entry = entry?;
         let old_path = entry.path();
+        if !old_path.ends_with(".jpg") || !old_path.ends_with(".JPG") {
+            continue;
+        }
         let old_file_name = old_path.into_os_string();
         let meta = rexiv2::Metadata::new_from_path(&old_file_name)?;
         let date_time = meta.get_tag_string("Exif.Image.DateTime")?;
