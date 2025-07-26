@@ -35,7 +35,8 @@ fn rename() -> anyhow::Result<()> {
     for entry in std::fs::read_dir(".")? {
         let entry = entry?;
         let old_path = entry.path();
-        if !old_path.ends_with(".jpg") || !old_path.ends_with(".JPG") {
+        let old_extension = old_path.extension().context("no extension")?;
+        if old_extension != "jpg" && old_extension != "JPG" {
             continue;
         }
         let old_file_name = old_path.into_os_string();
