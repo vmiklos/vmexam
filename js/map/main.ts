@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const collection = await response.json();
         document.title = collection.title;
         for (const activity of collection.activities) {
-            activityURLs.push(activity.id + ".json");
+            activityURLs.push(activity + ".json");
         }
     }
     let bounds: L.LatLngBounds | null = null;

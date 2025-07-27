@@ -13,14 +13,8 @@ It's also possible to group acitivities together with a JSON like this:
 {
     "title": "mytitle",
     "activities": [
-        {
-            "date": "mydate comment",
-            "id": "rd9mcAxgJWG3271aD0VRGjQ"
-        },
-        {
-            "date": "mydate comment",
-            "id": "rd9mcAxgJWG3271aD0VRGjR"
-        }
+        "rd9mcAxgJWG3271aD0VRGjQ",
+        "rd9mcAxgJWG3271aD0VRGjR"
     ]
 }
 ```
