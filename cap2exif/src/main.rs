@@ -35,13 +35,18 @@ fn rename() -> anyhow::Result<()> {
     for entry in std::fs::read_dir(".")? {
         let entry = entry?;
         let old_path = entry.path();
-        let old_extension = old_path.extension().context("no extension")?;
+        let Some(old_extension) = old_path.extension() else {
+            continue;
+        };
         if old_extension != "jpg" && old_extension != "JPG" {
             continue;
         }
         let old_file_name = old_path.into_os_string();
         let meta = rexiv2::Metadata::new_from_path(&old_file_name)?;
-        let date_time = meta.get_tag_string("Exif.Image.DateTime")?;
+        let Ok(date_time) = meta.get_tag_string("Exif.Image.DateTime") else {
+            println!("WARNING: no Exif.Image.DateTime in {old_file_name:?}");
+            continue;
+        };
         // E.g. '2025:07:14 22:27:39'.
         let exif_format =
             time::format_description::parse("[year]:[month]:[day] [hour]:[minute]:[second]")?;
