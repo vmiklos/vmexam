@@ -71,5 +71,5 @@ fn app(request: &rouille::Request) -> rouille::Response {
 fn main() {
     let port = 8000;
     println!("Starting the server at <http://127.0.0.1:{port}/>.");
-    rouille::start_server_with_pool(format!("0.0.0.0:{port}"), None, move |request| app(request));
+    rouille::start_server_with_pool(format!("0.0.0.0:{port}"), None, app);
 }
