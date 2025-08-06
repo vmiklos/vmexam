@@ -13,11 +13,30 @@
 use anyhow::Context as _;
 use std::io::Read as _;
 
+#[cfg(windows)]
+use std::os::windows::process::CommandExt as _;
+
 #[derive(serde::Deserialize)]
 struct Payload {
     command: Vec<String>,
 }
 
+#[cfg(windows)]
+fn run(args: Vec<String>) -> anyhow::Result<String> {
+    let creation_flags = windows::Win32::System::Threading::DETACHED_PROCESS
+        | windows::Win32::System::Threading::CREATE_NEW_PROCESS_GROUP
+        | windows::Win32::System::Threading::CREATE_NO_WINDOW;
+    let (first, rest) = args
+        .split_first()
+        .ok_or_else(|| anyhow::anyhow!("args is an empty list"))?;
+    std::process::Command::new(first)
+        .args(rest)
+        .creation_flags(creation_flags.0)
+        .spawn()?;
+    Ok("".to_string())
+}
+
+#[cfg(not(windows))]
 fn run(args: Vec<String>) -> anyhow::Result<String> {
     let (first, rest) = args
         .split_first()
@@ -52,7 +71,5 @@ fn app(request: &rouille::Request) -> rouille::Response {
 fn main() {
     let port = 8000;
     println!("Starting the server at <http://127.0.0.1:{port}/>.");
-    rouille::start_server_with_pool(format!("127.0.0.1:{port}"), None, move |request| {
-        app(request)
-    });
+    rouille::start_server_with_pool(format!("0.0.0.0:{port}"), None, move |request| app(request));
 }
