@@ -50,7 +50,10 @@ fn rename() -> anyhow::Result<()> {
         // E.g. '2025:07:14 22:27:39'.
         let exif_format =
             time::format_description::parse("[year]:[month]:[day] [hour]:[minute]:[second]")?;
-        let parsed = time::PrimitiveDateTime::parse(&date_time, &exif_format)?;
+        let Ok(parsed) = time::PrimitiveDateTime::parse(&date_time, &exif_format) else {
+            println!("WARNING: failed to parse {date_time:?} as a date time in {old_file_name:?}");
+            continue;
+        };
         // E.g. '20250725_092556.jpg'.
         let fs_format =
             time::format_description::parse("./[year][month][day]_[hour][minute][second].jpg")?;
