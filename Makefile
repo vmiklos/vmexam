@@ -119,6 +119,8 @@ $(eval $(call RustPackage_RustPackage,pdfcal))
 
 $(eval $(call RustPackage_RustPackage,pushping))
 
+$(eval $(call RustPackage_RustPackage,qemu/exec-server))
+
 $(eval $(call RustPackage_RustPackage,rsp-scramble))
 
 $(eval $(call RustPackage_RustPackage,rubik))
