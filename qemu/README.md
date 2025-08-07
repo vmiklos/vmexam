@@ -11,7 +11,7 @@ apps as well.
 Start the server like this:
 
 ````
-python exec_server.py
+exec-server
 ```
 
 Start the client like this:

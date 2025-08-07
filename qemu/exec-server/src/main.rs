@@ -7,6 +7,8 @@
 #![deny(warnings)]
 #![warn(clippy::all)]
 #![warn(missing_docs)]
+// Do not display a console window on startup.
+#![windows_subsystem = "windows"]
 
 //! Commandline interface to exec-server.
 
@@ -19,6 +21,7 @@ use std::os::windows::process::CommandExt as _;
 #[derive(serde::Deserialize)]
 struct Payload {
     command: Vec<String>,
+    sync: Option<String>,
 }
 
 #[cfg(windows)]
@@ -38,6 +41,10 @@ fn run(args: Vec<String>) -> anyhow::Result<String> {
 
 #[cfg(not(windows))]
 fn run(args: Vec<String>) -> anyhow::Result<String> {
+    run_sync(args)
+}
+
+fn run_sync(args: Vec<String>) -> anyhow::Result<String> {
     let (first, rest) = args
         .split_first()
         .ok_or_else(|| anyhow::anyhow!("args is an empty list"))?;
@@ -53,7 +60,15 @@ fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
 
     let payload: Payload = serde_json::from_str(&payload)?;
     let mut body = "OK".to_string();
-    let out = run(payload.command)?;
+    let mut detach = true;
+    if payload.sync.is_some() {
+        detach = false;
+    }
+    let out = if detach {
+        run(payload.command)?
+    } else {
+        run_sync(payload.command)?
+    };
     if !out.is_empty() {
         body += &format!("\n{}", out.trim());
     }
