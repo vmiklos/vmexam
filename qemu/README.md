@@ -17,7 +17,7 @@ exec-server
 Start the client like this:
 
 ```
-./exec_client.py calc.exe
+exec-client calc.exe
 ```
 
 A winword wrapper script is included to give an idea about an app-specific wrapper.
