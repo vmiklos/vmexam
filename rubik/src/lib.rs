@@ -52,7 +52,7 @@ pub fn shuffle(lang: &str, wide: bool) -> anyhow::Result<String> {
         let mut side;
         loop {
             // Randomly pick one side of the cube.
-            side = pick_side(rand::thread_rng().gen_range(1..7), lang);
+            side = pick_side(rand::rng().random_range(1..7), lang);
             if side != prev_side {
                 break;
             }
@@ -61,7 +61,7 @@ pub fn shuffle(lang: &str, wide: bool) -> anyhow::Result<String> {
         prev_side = side.to_string();
         // Wide turn?
         let wide = if wide {
-            match rand::thread_rng().gen_range(1..4) {
+            match rand::rng().random_range(1..4) {
                 1 => "",
                 2 => "w",
                 3 => {
@@ -76,7 +76,7 @@ pub fn shuffle(lang: &str, wide: bool) -> anyhow::Result<String> {
             ""
         };
         // Randomly pick a direction.
-        let direction = match rand::thread_rng().gen_range(1..4) {
+        let direction = match rand::rng().random_range(1..4) {
             1 => "",
             2 => "'",
             3 => "2",
