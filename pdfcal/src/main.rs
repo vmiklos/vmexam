@@ -270,10 +270,10 @@ fn main() -> anyhow::Result<()> {
             page.regenerate_content()?;
         }
 
-        if let Some(limit) = args.limit {
-            if month == limit {
-                break;
-            }
+        if let Some(limit) = args.limit
+            && month == limit
+        {
+            break;
         }
     }
 

@@ -69,10 +69,10 @@ fn get_subscribed_folders(
     let ignored_folders = config.ignore.get(&args.server);
     for folder in folders.iter() {
         let folder_name: String = folder.name().to_string();
-        if let Some(value) = ignored_folders {
-            if value.contains(&folder_name) {
-                continue;
-            }
+        if let Some(value) = ignored_folders
+            && value.contains(&folder_name)
+        {
+            continue;
         }
         folder_names.push(folder_name);
     }

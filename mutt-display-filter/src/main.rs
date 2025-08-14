@@ -1,3 +1,15 @@
+/*
+ * Copyright 2025 Miklos Vajna
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#![deny(warnings)]
+#![warn(clippy::all)]
+#![warn(missing_docs)]
+
+//! Display filter for mutt.
+
 use std::io::Write as _;
 
 /// Try to improve input_date by wrapping a non-local date in a local one.
@@ -21,13 +33,11 @@ fn main() -> anyhow::Result<()> {
         if line.is_empty() {
             in_header = false;
         }
-        if in_header {
-            if let Some(input_date) = line.strip_prefix(b"Date: ") {
-                let input_date = String::from_utf8(input_date.to_vec())?;
-                if let Ok(improved) = improve_date(&input_date) {
-                    println!("Date: {improved} ({input_date})");
-                    continue;
-                }
+        if in_header && let Some(input_date) = line.strip_prefix(b"Date: ") {
+            let input_date = String::from_utf8(input_date.to_vec())?;
+            if let Ok(improved) = improve_date(&input_date) {
+                println!("Date: {improved} ({input_date})");
+                continue;
             }
         }
         stdout.write_all(&line)?;
