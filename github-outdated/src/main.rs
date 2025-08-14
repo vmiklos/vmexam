@@ -119,10 +119,10 @@ fn main() -> anyhow::Result<()> {
                 if let Some(action) = step.uses {
                     handle_action(&config, &job_name, &action)?;
 
-                    if action.starts_with("dtolnay/rust-toolchain") {
-                        if let Some(with) = step.with {
-                            handle_rust(&job_name, &with)?;
-                        }
+                    if action.starts_with("dtolnay/rust-toolchain")
+                        && let Some(with) = step.with
+                    {
+                        handle_rust(&job_name, &with)?;
                     }
                 }
             }
