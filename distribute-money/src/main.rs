@@ -52,12 +52,11 @@ fn distribute_money(accounts: &[Account]) -> Vec<Transaction> {
 
     let mut transactions: Vec<Transaction> = Vec::new();
 
-    let mut i = 0_usize;
-    let mut j = 0_usize;
-    while i < debtors.len() && j < creditors.len() {
-        let debtor = &mut debtors[i];
-        let creditor = &mut creditors[j];
+    let mut debtors_iter = debtors.iter_mut().peekable();
+    let mut creditors_iter = creditors.iter_mut().peekable();
 
+    while let (Some(debtor), Some(creditor)) = (debtors_iter.peek_mut(), creditors_iter.peek_mut())
+    {
         let amount = std::cmp::min(debtor.balance, creditor.balance);
         transactions.push(Transaction::new(&debtor.owner, &creditor.owner, amount));
 
@@ -65,10 +64,10 @@ fn distribute_money(accounts: &[Account]) -> Vec<Transaction> {
         creditor.balance -= amount;
 
         if debtor.balance == 0 {
-            i += 1;
+            debtors_iter.next();
         }
         if creditor.balance == 0 {
-            j += 1;
+            creditors_iter.next();
         }
     }
 
