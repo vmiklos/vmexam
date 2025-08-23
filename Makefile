@@ -80,6 +80,8 @@ $(eval $(call RustPackage_use_test,csp))
 $(eval $(call RustPackage_RustPackage,darcs-git))
 $(eval $(call RustPackage_use_coverage,darcs-git))
 
+$(eval $(call RustPackage_RustPackage,distribute-money))
+
 $(eval $(call RustPackage_RustPackage,fit2json))
 
 $(eval $(call RustPackage_RustPackage,git-ls-projects))
