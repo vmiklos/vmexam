@@ -44,7 +44,7 @@ pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
         }
     }
 
-    rubik::shuffle(&lang, wide)
+    rubik::shuffle(&lang, wide, /*megaminx=*/false)
 }
 
 pub fn app(request: &rouille::Request) -> rouille::Response {
