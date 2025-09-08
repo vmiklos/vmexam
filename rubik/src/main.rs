@@ -23,6 +23,9 @@ struct Shuffle {
     lang: Option<String>,
     #[arg(short, long)]
     wide: bool,
+    /// 12 sides instead of 6, also 1, 2, 3 or 4 turns instead of -1, 1 or 2.
+    #[arg(short, long)]
+    megaminx: bool,
 }
 
 /// Solves a state of the cube.
@@ -110,7 +113,7 @@ fn shuffle(args: &Shuffle) -> anyhow::Result<()> {
         Some(value) => value.as_str(),
         None => "en",
     };
-    print!("{}", rubik::shuffle(lang, args.wide)?);
+    print!("{}", rubik::shuffle(lang, args.wide, args.megaminx)?);
     Ok(())
 }
 

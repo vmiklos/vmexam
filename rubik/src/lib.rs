@@ -12,7 +12,7 @@
 
 use rand::Rng as _;
 
-fn pick_side(index: u8, lang: &str) -> String {
+fn pick_side(index: u8, lang: &str, megaminx: bool) -> String {
     if lang == "hu" {
         match index {
             1 => "S",
@@ -21,6 +21,25 @@ fn pick_side(index: u8, lang: &str) -> String {
             4 => "N",
             5 => "F",
             6 => "L",
+            _ => {
+                unreachable!();
+            }
+        }
+        .to_string()
+    } else if megaminx {
+        match index {
+            1 => "white",
+            2 => "red",
+            3 => "green",
+            4 => "purple",
+            5 => "yellow",
+            6 => "blue",
+            7 => "grey",
+            8 => "orange",
+            9 => "limegreen",
+            10 => "pink",
+            11 => "lightyellow",
+            12 => "darkblue",
             _ => {
                 unreachable!();
             }
@@ -45,14 +64,17 @@ fn pick_side(index: u8, lang: &str) -> String {
 /// Produces a scramble, i.e. rotate the cube in 24 random steps.
 ///
 /// * `wide` - allow wide turns, useful for 4x4, not relevant for 3x3.
-pub fn shuffle(lang: &str, wide: bool) -> anyhow::Result<String> {
+/// * `megaminx` - allow megaminx turns, 12 sides and 4 kind of turns
+pub fn shuffle(lang: &str, wide: bool, megaminx: bool) -> anyhow::Result<String> {
     let mut ret: Vec<String> = Vec::new();
     let mut prev_side = "".to_string();
-    for step in 1..25 {
+    let steps = if megaminx { 49 } else { 25 };
+    for step in 1..steps {
         let mut side;
         loop {
             // Randomly pick one side of the cube.
-            side = pick_side(rand::rng().random_range(1..7), lang);
+            let sides = if megaminx { 13 } else { 7 };
+            side = pick_side(rand::rng().random_range(1..sides), lang, megaminx);
             if side != prev_side {
                 break;
             }
@@ -76,16 +98,25 @@ pub fn shuffle(lang: &str, wide: bool) -> anyhow::Result<String> {
             ""
         };
         // Randomly pick a direction.
-        let direction = match rand::rng().random_range(1..4) {
-            1 => "",
-            2 => "'",
-            3 => "2",
-            _ => {
-                unreachable!();
+        let direction = if megaminx {
+            rand::rng().random_range(1..5).to_string()
+        } else {
+            match rand::rng().random_range(1..4) {
+                1 => "",
+                2 => "'",
+                3 => "2",
+                _ => {
+                    unreachable!();
+                }
             }
+            .to_string()
         };
         let turn = format!("{side}{wide}{direction}");
-        ret.push(format!("{turn: <4}"));
+        ret.push(if megaminx {
+            format!("{turn: <13}")
+        } else {
+            format!("{turn: <4}")
+        });
         if step % 4 == 0 {
             ret.push(" ".to_string());
         }
