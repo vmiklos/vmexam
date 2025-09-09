@@ -44,7 +44,8 @@ pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
         }
     }
 
-    rubik::shuffle(&lang, wide, /*megaminx=*/ false)
+    let colors: &[String] = &[];
+    rubik::shuffle(&lang, wide, /*megaminx=*/ false, colors)
 }
 
 pub fn app(request: &rouille::Request) -> rouille::Response {

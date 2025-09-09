@@ -12,7 +12,7 @@
 
 use rand::Rng as _;
 
-fn pick_side(index: u8, lang: &str, megaminx: bool) -> String {
+fn pick_side(index: u8, lang: &str, megaminx: bool, colors: &[String]) -> String {
     if lang == "hu" {
         match index {
             1 => "S",
@@ -27,24 +27,29 @@ fn pick_side(index: u8, lang: &str, megaminx: bool) -> String {
         }
         .to_string()
     } else if megaminx {
-        match index {
-            1 => "white",
-            2 => "red",
-            3 => "green",
-            4 => "purple",
-            5 => "yellow",
-            6 => "blue",
-            7 => "grey",
-            8 => "orange",
-            9 => "limegreen",
-            10 => "pink",
-            11 => "lightyellow",
-            12 => "darkblue",
-            _ => {
-                unreachable!();
-            }
-        }
-        .to_string()
+        let colors: Vec<String> = if colors.is_empty() {
+            [
+                "white",
+                "red",
+                "green",
+                "purple",
+                "yellow",
+                "blue",
+                "grey",
+                "orange",
+                "limegreen",
+                "pink",
+                "lightyellow",
+                "darkblue",
+            ]
+            .iter()
+            .map(|i| i.to_string())
+            .collect()
+        } else {
+            colors.into()
+        };
+        let index = index as usize - 1;
+        colors[index].to_string()
     } else {
         match index {
             1 => "F",
@@ -65,7 +70,13 @@ fn pick_side(index: u8, lang: &str, megaminx: bool) -> String {
 ///
 /// * `wide` - allow wide turns, useful for 4x4, not relevant for 3x3.
 /// * `megaminx` - allow megaminx turns, 12 sides and 4 kind of turns
-pub fn shuffle(lang: &str, wide: bool, megaminx: bool) -> anyhow::Result<String> {
+/// * `colors` -- 12 color names, if the megaminx default is not what you want
+pub fn shuffle(
+    lang: &str,
+    wide: bool,
+    megaminx: bool,
+    colors: &[String],
+) -> anyhow::Result<String> {
     let mut ret: Vec<String> = Vec::new();
     let mut prev_side = "".to_string();
     let steps = if megaminx { 49 } else { 25 };
@@ -74,7 +85,7 @@ pub fn shuffle(lang: &str, wide: bool, megaminx: bool) -> anyhow::Result<String>
         loop {
             // Randomly pick one side of the cube.
             let sides = if megaminx { 13 } else { 7 };
-            side = pick_side(rand::rng().random_range(1..sides), lang, megaminx);
+            side = pick_side(rand::rng().random_range(1..sides), lang, megaminx, colors);
             if side != prev_side {
                 break;
             }

@@ -26,6 +26,10 @@ struct Shuffle {
     /// 12 sides instead of 6, also 1, 2, 3 or 4 turns instead of -1, 1 or 2.
     #[arg(short, long)]
     megaminx: bool,
+    /// Custom colors of a megaminx, if the standard white,red,green,purple,yellow,blue and
+    /// grey,orange,limegreen,ping,lightyellow,darkblue is not what you have.
+    #[arg(short, long)]
+    colors: Option<String>,
 }
 
 /// Solves a state of the cube.
@@ -113,7 +117,14 @@ fn shuffle(args: &Shuffle) -> anyhow::Result<()> {
         Some(value) => value.as_str(),
         None => "en",
     };
-    print!("{}", rubik::shuffle(lang, args.wide, args.megaminx)?);
+    let colors = match &args.colors {
+        Some(value) => value.split(",").map(|i| i.to_string()).collect(),
+        None => vec![],
+    };
+    print!(
+        "{}",
+        rubik::shuffle(lang, args.wide, args.megaminx, &colors)?
+    );
     Ok(())
 }
 
