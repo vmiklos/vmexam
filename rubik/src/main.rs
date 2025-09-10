@@ -28,8 +28,8 @@ struct Shuffle {
     megaminx: bool,
     /// Custom colors of a megaminx, if the standard white,red,green,purple,yellow,blue and
     /// grey,orange,limegreen,ping,lightyellow,darkblue is not what you have.
-    #[arg(short, long)]
-    colors: Option<String>,
+    #[arg(short, long, value_delimiter = ',')]
+    colors: Vec<String>,
 }
 
 /// Solves a state of the cube.
@@ -117,13 +117,14 @@ fn shuffle(args: &Shuffle) -> anyhow::Result<()> {
         Some(value) => value.as_str(),
         None => "en",
     };
-    let colors = match &args.colors {
-        Some(value) => value.split(",").map(|i| i.to_string()).collect(),
-        None => vec![],
-    };
+    if !args.colors.is_empty() && args.colors.len() != 12 {
+        return Err(anyhow::anyhow!(
+            "if colors are provided, 12 colors are needed"
+        ));
+    }
     print!(
         "{}",
-        rubik::shuffle(lang, args.wide, args.megaminx, &colors)?
+        rubik::shuffle(lang, args.wide, args.megaminx, &args.colors)?
     );
     Ok(())
 }
