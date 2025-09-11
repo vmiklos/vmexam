@@ -17,6 +17,7 @@ pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
         .get_param("lang")
         .context("missing GET param: lang")?;
     let wide = request.get_param("wide").is_some();
+    let megaminx = request.get_param("megaminx").is_some();
 
     if let Some(state) = request.get_param("state") {
         if state == "f2l-solved" || state == "oll-solved" {
@@ -44,8 +45,11 @@ pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
         }
     }
 
-    let colors: &[String] = &[];
-    rubik::shuffle(&lang, wide, /*megaminx=*/ false, colors)
+    let mut colors: Vec<String> = Vec::new();
+    if let Some(value) = request.get_param("colors") {
+        colors = value.split(",").map(|i| i.to_string()).collect();
+    };
+    rubik::shuffle(&lang, wide, megaminx, &colors)
 }
 
 pub fn app(request: &rouille::Request) -> rouille::Response {
