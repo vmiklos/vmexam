@@ -3,3 +3,7 @@ CC=clang
 CXX=clang++
 --enable-dbgutil
 --enable-werror
+# invoke Meson as 'meson', not 'python3 meson'
+MESON=/usr/bin/meson
+# online.git is not compatible with system nss
+--without-system-nss
