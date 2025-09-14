@@ -45,11 +45,7 @@ pub fn our_app(request: &rouille::Request) -> anyhow::Result<String> {
         }
     }
 
-    let mut colors: Vec<String> = Vec::new();
-    if let Some(value) = request.get_param("colors") {
-        colors = value.split(",").map(|i| i.to_string()).collect();
-    };
-    rubik::shuffle(&lang, wide, megaminx, &colors)
+    rubik::shuffle(&lang, wide, megaminx)
 }
 
 pub fn app(request: &rouille::Request) -> rouille::Response {

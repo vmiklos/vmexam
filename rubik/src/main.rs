@@ -23,13 +23,9 @@ struct Shuffle {
     lang: Option<String>,
     #[arg(short, long)]
     wide: bool,
-    /// 12 sides instead of 6, also 1, 2, 3 or 4 turns instead of -1, 1 or 2.
+    /// 12 sides instead of 6, also just R, D and U turns.
     #[arg(short, long)]
     megaminx: bool,
-    /// Custom colors of a megaminx, if the standard white,red,green,purple,yellow,blue and
-    /// grey,orange,limegreen,ping,lightyellow,darkblue is not what you have.
-    #[arg(short, long, value_delimiter = ',')]
-    colors: Vec<String>,
 }
 
 /// Solves a state of the cube.
@@ -117,15 +113,7 @@ fn shuffle(args: &Shuffle) -> anyhow::Result<()> {
         Some(value) => value.as_str(),
         None => "en",
     };
-    if !args.colors.is_empty() && args.colors.len() != 12 {
-        return Err(anyhow::anyhow!(
-            "if colors are provided, 12 colors are needed"
-        ));
-    }
-    print!(
-        "{}",
-        rubik::shuffle(lang, args.wide, args.megaminx, &args.colors)?
-    );
+    print!("{}", rubik::shuffle(lang, args.wide, args.megaminx)?);
     Ok(())
 }
 

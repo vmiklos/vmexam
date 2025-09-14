@@ -12,7 +12,7 @@
 
 use rand::Rng as _;
 
-fn pick_side(index: u8, lang: &str, megaminx: bool, colors: &[String]) -> String {
+fn pick_side(index: u8, lang: &str, megaminx: bool) -> String {
     if lang == "hu" {
         match index {
             1 => "S",
@@ -27,29 +27,15 @@ fn pick_side(index: u8, lang: &str, megaminx: bool, colors: &[String]) -> String
         }
         .to_string()
     } else if megaminx {
-        let colors: Vec<String> = if colors.is_empty() {
-            [
-                "white",
-                "red",
-                "green",
-                "purple",
-                "yellow",
-                "blue",
-                "grey",
-                "orange",
-                "limegreen",
-                "pink",
-                "lightyellow",
-                "darkblue",
-            ]
-            .iter()
-            .map(|i| i.to_string())
-            .collect()
-        } else {
-            colors.into()
-        };
-        let index = index as usize - 1;
-        colors[index].to_string()
+        match index {
+            1 => "R",
+            2 => "D",
+            3 => "U",
+            _ => {
+                unreachable!();
+            }
+        }
+        .to_string()
     } else {
         match index {
             1 => "F",
@@ -69,14 +55,8 @@ fn pick_side(index: u8, lang: &str, megaminx: bool, colors: &[String]) -> String
 /// Produces a scramble, i.e. rotate the cube in 24 random steps.
 ///
 /// * `wide` - allow wide turns, useful for 4x4, not relevant for 3x3.
-/// * `megaminx` - allow megaminx turns, 12 sides and 4 kind of turns
-/// * `colors` -- 12 color names, if the megaminx default is not what you want
-pub fn shuffle(
-    lang: &str,
-    wide: bool,
-    megaminx: bool,
-    colors: &[String],
-) -> anyhow::Result<String> {
+/// * `megaminx` - allow megaminx turns, 3 sides and 2 kind of turns
+pub fn shuffle(lang: &str, wide: bool, megaminx: bool) -> anyhow::Result<String> {
     let mut ret: Vec<String> = Vec::new();
     let mut prev_side = "".to_string();
     let steps = if megaminx { 49 } else { 25 };
@@ -84,8 +64,8 @@ pub fn shuffle(
         let mut side;
         loop {
             // Randomly pick one side of the cube.
-            let sides = if megaminx { 13 } else { 7 };
-            side = pick_side(rand::rng().random_range(1..sides), lang, megaminx, colors);
+            let sides = if megaminx { 4 } else { 7 };
+            side = pick_side(rand::rng().random_range(1..sides), lang, megaminx);
             if side != prev_side {
                 break;
             }
@@ -110,7 +90,26 @@ pub fn shuffle(
         };
         // Randomly pick a direction.
         let direction = if megaminx {
-            rand::rng().random_range(1..5).to_string()
+            match rand::rng().random_range(1..3) {
+                1 => {
+                    if side == "U" {
+                        ""
+                    } else {
+                        "++"
+                    }
+                }
+                2 => {
+                    if side == "U" {
+                        "'"
+                    } else {
+                        "--"
+                    }
+                }
+                _ => {
+                    unreachable!();
+                }
+            }
+            .to_string()
         } else {
             match rand::rng().random_range(1..4) {
                 1 => "",
@@ -123,11 +122,7 @@ pub fn shuffle(
             .to_string()
         };
         let turn = format!("{side}{wide}{direction}");
-        ret.push(if megaminx {
-            format!("{turn: <13}")
-        } else {
-            format!("{turn: <4}")
-        });
+        ret.push(format!("{turn: <4}"));
         if step % 4 == 0 {
             ret.push(" ".to_string());
         }
