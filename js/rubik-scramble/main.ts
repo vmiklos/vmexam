@@ -39,21 +39,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         megaminx = "";
     }
 
-    const colorsParam = urlParams.get("colors");
-    let colors;
-    if (colorsParam != null) {
-        colors = "&colors=" + colorsParam;
-    } else {
-        colors = "";
-    }
-
     const request = new Request(
-        "https://share.vmiklos.hu/apps/rubik-scramble/?lang=" +
-            lang +
-            wide +
-            state +
-            megaminx +
-            colors
+        "https://share.vmiklos.hu/apps/rubik-scramble/?lang=" + lang + wide + state + megaminx
     );
     const response = await window.fetch(request);
     const result = await (<Promise<RubikResult>>response.json());
