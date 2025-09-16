@@ -4,25 +4,43 @@
  * SPDX-License-Identifier: MIT
  */
 
+export {}
+
+interface Comment
+{
+    text: string;
+    url: string;
+}
+
+declare global
+{
+    interface Window
+    {
+        commentList: Array<Comment> | undefined;
+    }
+}
+
 async function refreshClick()
 {
-    const jsonPath = "comments.json";
-
     // Fetch comment list if needed.
     if (window.commentList === undefined)
     {
+        const jsonPath = "comments.json";
         const request = new Request(jsonPath);
         const response = await window.fetch(request);
         window.commentList = await response.json();
+    }
+    if (!window.commentList)
+    {
+        return;
     }
 
     // Pick a random comment.
     const index = Math.floor(Math.random() * window.commentList.length);
     const comment = window.commentList[index];
-    const commentElement = <HTMLElement>document.querySelector('#comment');
+    const commentElement = document.querySelector('#comment') as HTMLElement;
     commentElement.innerText = comment.text;
-    const permalinkElement =
-        <HTMLAnchorElement>document.querySelector('#permalink');
+    const permalinkElement = document.querySelector("#permalink") as HTMLAnchorElement;
     permalinkElement.href = comment.url;
 }
 
