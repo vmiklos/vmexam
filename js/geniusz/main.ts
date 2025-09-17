@@ -16,7 +16,7 @@ function refreshTopics()
     topicList = arrayShuffle(topicList);
     for (let i = 0; i < topicList.length; i++)
     {
-        const topic = <HTMLElement>document.querySelector('#topic' + i);
+        const topic = document.querySelector('#topic' + i) as HTMLElement;
         topic.innerText = topicList[i];
     }
 }
@@ -31,9 +31,8 @@ function refreshSeries()
 {
     const first = getRandomInt(1, 27);
     const second = getRandomInt(1, 10);
-    const series = <HTMLElement>document.querySelector('#seriesId');
-    const seriesQuestion =
-        <HTMLElement>document.querySelector('#seriesQuestionId');
+    const series = document.querySelector('#seriesId') as HTMLElement;
+    const seriesQuestion = document.querySelector("#seriesQuestionId") as HTMLElement;
     series.innerText = String(first);
     seriesQuestion.innerText = String(second);
 }
@@ -42,26 +41,25 @@ function refreshGeneric()
 {
     const first = getRandomInt(1, 130);
     const second = getRandomInt(1, 10);
-    const generic = <HTMLElement>document.querySelector('#genericId');
-    const genericQuestion =
-        <HTMLElement>document.querySelector('#genericQuestionId');
+    const generic = document.querySelector('#genericId') as HTMLElement;
+    const genericQuestion = document.querySelector("#genericQuestionId") as HTMLElement;
     generic.innerText = String(first);
     genericQuestion.innerText = String(second);
 }
 
 document.addEventListener("DOMContentLoaded", function() {
     // Topics.
-    const topicsButton = <HTMLElement>document.querySelector('#topicsButton');
+    const topicsButton = document.querySelector('#topicsButton') as HTMLElement;
     topicsButton.onclick = refreshTopics;
     refreshTopics();
 
     // Random topic question: 1..27 for the series, 1..10 for the question.
-    const seriesButton = <HTMLElement>document.querySelector('#seriesButton');
+    const seriesButton = document.querySelector('#seriesButton') as HTMLElement;
     seriesButton.onclick = refreshSeries;
     refreshSeries();
 
     // Random generic question: 1..130 for the series, 1..10 for the question.
-    const genericButton = <HTMLElement>document.querySelector('#genericButton');
+    const genericButton = document.querySelector('#genericButton') as HTMLElement;
     genericButton.onclick = refreshGeneric;
     refreshGeneric();
 });

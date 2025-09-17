@@ -11,7 +11,9 @@ bundle.js: main.ts tsconfig.json webpack.config.js package-lock.json Makefile co
 
 package-lock.json: package.json
 	npm install
-	touch package-lock.json
+
+config.mak:
+	touch config.mak
 
 check:
 	npx eslint main.ts

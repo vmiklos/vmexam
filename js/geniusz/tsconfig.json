@@ -2,13 +2,13 @@
     "compilerOptions": {
         "target": "es5",
 	"sourceMap": true,
-	"noImplicitAny": true,
+	"strict": true,
+	"erasableSyntaxOnly": true,
         "lib": [
             "dom",
             "es2016"
         ],
 	"module": "es6",
-	"esModuleInterop": true,
 	"moduleResolution": "node"
     }
 }
