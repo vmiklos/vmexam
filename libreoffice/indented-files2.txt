@@ -155,7 +155,7 @@ vcl/qa/cppunit/filter/ipdf/ipdf.cxx
 vcl/qa/cppunit/gen/gen.cxx
 vcl/source/filter/ipdf/pdfdocument.cxx
 vcl/source/filter/ipdf/pdfread.cxx
-vcl/source/gdi/pdfobjectcopier.cxx
+vcl/source/pdf/pdfobjectcopier.cxx
 vcl/source/pdf/PDFiumTools.cxx
 sw/source/writerfilter/inc/dmapper/DomainMapperFactory.hxx
 sw/source/writerfilter/inc/dmapper/GraphicZOrderHelper.hxx
