@@ -12,7 +12,7 @@ interface DescriptionSupplier {
 }
 
 function onEachFeature(
-    map: L.Map,
+    map: L.Map | null,
     feature: geojson.Feature<geojson.GeometryObject, DescriptionSupplier>,
     layer: L.Layer
 ) {
@@ -21,7 +21,7 @@ function onEachFeature(
     }
 
     if (map != null) {
-        const geometry = <geojson.MultiPoint>feature.geometry;
+        const geometry = feature.geometry as geojson.MultiPoint;
         L.popup()
             .setLatLng([geometry.coordinates[0][1], geometry.coordinates[0][0]])
             .setContent(feature.properties.description)
@@ -87,6 +87,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 bounds.extend(geoJSON.getBounds());
             }
         }
+    }
+    if (bounds == null) {
+        return;
     }
     map.fitBounds(bounds);
 });
