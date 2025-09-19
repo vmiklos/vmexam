@@ -1,7 +1,5 @@
 # qemu exec server
 
-Provides a set of simple Rust apps in a single web server process.
-
 This can potentially auto-start inside a Windows VM:
 
 - go to C:/Users/you/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup

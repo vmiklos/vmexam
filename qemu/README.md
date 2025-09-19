@@ -19,5 +19,3 @@ Start the client like this:
 ```
 exec-client calc.exe
 ```
-
-A winword wrapper script is included to give an idea about an app-specific wrapper.
