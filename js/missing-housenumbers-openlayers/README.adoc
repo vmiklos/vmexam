@@ -1,2 +1,0 @@
-This is the same as the stock missing-housenumers project, i.e. shows a list of OSM areas/relations
-on a map with colors. This was the first version, using https://openlayers.org/[openlayers].
