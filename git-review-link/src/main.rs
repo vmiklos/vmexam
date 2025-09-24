@@ -49,6 +49,7 @@ struct Pull {
     url: String,
     html_url: String,
     head: Head,
+    state: String,
 }
 
 #[derive(serde::Deserialize)]
@@ -59,13 +60,23 @@ struct Error {
 fn get_first_pull(client: &isahc::HttpClient, url: &str) -> anyhow::Result<Pull> {
     let mut response = client.get(url)?;
     let text = response.text()?;
-    let pulls: Vec<Pull> = match serde_json::from_str(&text) {
+    let mut pulls: Vec<Pull> = match serde_json::from_str(&text) {
         Ok(value) => value,
         Err(_) => {
             let error: Error = serde_json::from_str(&text)?;
             return Err(anyhow::anyhow!(error.message));
         }
     };
+    let closed_pulls: Vec<Pull> = pulls
+        .iter()
+        .filter(|pull| pull.state == "closed")
+        .cloned()
+        .collect();
+    if !closed_pulls.is_empty() {
+        // Prefer closed pulls if there are any, those more likely contain the review we search
+        // for.
+        pulls = closed_pulls;
+    }
     let pull = match pulls.first() {
         Some(value) => value,
         None => {
