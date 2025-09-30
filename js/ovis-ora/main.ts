@@ -8,8 +8,13 @@ import confetti from 'canvas-confetti';
 
 async function drawClock(ratio: number)
 {
-    const canvas = <HTMLCanvasElement>document.getElementById('mycanvas');
+    const canvas = document.getElementById('mycanvas') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d');
+    if (!ctx)
+    {
+        return;
+    }
+
     ctx.clearRect(0, 0, 1000, 1000);
     ctx.fillStyle = 'rgb(0, 255, 0)';
     ctx.fillRect(0, 0, 1000 * ratio, 1000);
@@ -19,13 +24,12 @@ async function drawClock(ratio: number)
 
 async function submitClick()
 {
-    const durationElement =
-        <HTMLInputElement>document.querySelector('#duration');
+    const durationElement = document.querySelector("#duration") as HTMLInputElement;
     durationElement.style.display = 'none';
     let duration = Number(durationElement.value);
-    const submitElement = <HTMLButtonElement>document.querySelector('#submit');
+    const submitElement = document.querySelector('#submit') as HTMLButtonElement;
     submitElement.style.display = 'none;';
-    const canvas = <HTMLCanvasElement>document.getElementById('mycanvas');
+    const canvas = document.getElementById('mycanvas') as HTMLCanvasElement;
     canvas.style.display = 'inline';
     duration *= 60;
     for (let i = 1; i <= duration; i++)
