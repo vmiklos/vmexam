@@ -1,8 +1,6 @@
-CC=gcc-12
-CXX=g++-12
 --enable-dbgutil
 --enable-werror
-# invoke Meson as 'meson', not 'python3 meson'
-MESON=/usr/bin/meson
 # online.git is not compatible with system nss
 --without-system-nss
+# test would hang
+--disable-gpgmepp

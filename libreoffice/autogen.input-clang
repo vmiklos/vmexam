@@ -1,9 +1,8 @@
-# the default 9.0.1 on openSUSE Leap 15.5 is too old, use the 'clang15-devel' package instead
 CC=clang
 CXX=clang++
 --enable-dbgutil
 --enable-werror
-# invoke Meson as 'meson', not 'python3 meson'
-MESON=/usr/bin/meson
 # online.git is not compatible with system nss
 --without-system-nss
+# test would hang
+--disable-gpgmepp
