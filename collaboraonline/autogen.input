@@ -1,5 +1,5 @@
-CC=ccache gcc-12
-CXX=ccache g++-12
+CC=ccache gcc
+CXX=ccache g++
 CFLAGS=-g -O0 $CFLAGS
 CXXFLAGS=-g -O0 $CXXFLAGS
 --prefix=$PWD/install
