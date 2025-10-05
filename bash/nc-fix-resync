@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+# Copyright 2025 Miklos Vajna
+#
+# SPDX-License-Identifier: MIT
+#
+
+# Remove already backed up media from a nextcloud share after a resync (reinstall of Android app).
+
+BACKUP_PATH=$HOME/.config/nc-fix-resync/backup-path
+SYNC_PATH=$HOME/.config/nc-fix-resync/sync-path
+cd $BACKUP_PATH
+for i in *
+do
+    if [ -e $SYNC_PATH/$i ]; then
+        if [ "$1" == "-r" ]; then
+            rm -vf "$SYNC_PATH/$i"
+        else
+            echo "$SYNC_PATH/$i"
+        fi
+    fi
+done
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
