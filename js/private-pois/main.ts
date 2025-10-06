@@ -7,8 +7,13 @@
 import * as geojson from 'geojson';
 import * as L from 'leaflet';
 
+interface NameSupplier {
+    Name: string | null;
+}
+
 // Show POI name on click.
-function onEachFeature(feature: geojson.Feature<geojson.GeometryObject, any>,
+function onEachFeature(
+    feature: geojson.Feature<geojson.GeometryObject, NameSupplier>,
                        layer: L.Layer)
 {
     if (feature.properties == null || feature.properties.Name == null)

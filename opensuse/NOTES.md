@@ -292,3 +292,9 @@ kstart plasmashell #to restart it
 ### openSUSE Leap 15.6 -> openSUSE Leap 16.0 (x86-64)
 
 - the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (opensuse-migration-tool)
+- python3-pelican is gone, instead:
+
+```
+pip3 install pelican
+pip3 install markdown_captions
+```

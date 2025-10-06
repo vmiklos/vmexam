@@ -6,21 +6,16 @@ else
 WEBPACK_OPTIONS = --mode=production
 endif
 
-all: bundle.js leaflet.css
-
 bundle.js: main.ts tsconfig.json webpack.config.js package-lock.json Makefile config.mak
 	npx webpack ${WEBPACK_OPTIONS} --config webpack.config.js
 
-leaflet.css: package-lock.json
-	cp node_modules/leaflet/dist/leaflet.css .
-
 package-lock.json: package.json
 	npm install
-	touch package-lock.json
 
-check: check-lint
+config.mak:
+	touch config.mak
 
-check-lint:
+check:
 	npx eslint main.ts
 
 run:
