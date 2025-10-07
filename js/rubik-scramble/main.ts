@@ -11,6 +11,9 @@ interface RubikResult {
 
 document.addEventListener("DOMContentLoaded", async function () {
     const body = document.querySelector("body");
+    if (!body) {
+        return;
+    }
     const urlParams = new URLSearchParams(window.location.search);
     let lang = urlParams.get("lang");
     if (lang == null) {
@@ -43,7 +46,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         "https://share.vmiklos.hu/apps/rubik-scramble/?lang=" + lang + wide + state + megaminx
     );
     const response = await window.fetch(request);
-    const result = await (<Promise<RubikResult>>response.json());
+    const result = await (response.json() as Promise<RubikResult>);
     const scramble = document.createElement("div");
     scramble.style.fontSize = 'xxx-large';
     if (result.error === "") {
