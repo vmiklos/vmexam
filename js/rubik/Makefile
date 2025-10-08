@@ -11,15 +11,15 @@ bundle.js: main.ts rubik.ts tsconfig.json webpack.config.js package-lock.json Ma
 
 package-lock.json: package.json
 	npm install
-	touch $@
 
-check: check-lint
+config.mak:
+	touch config.mak
 
-check-lint:
+check:
 	npx eslint main.ts rubik.ts
 
 run:
 	python3 -m http.server
 
 install:
-	scp index.html bundle.js wilson:share/pages/rubik/
+	cp index.html bundle.js ~/git/vmiklos.hu/pages/rubik/

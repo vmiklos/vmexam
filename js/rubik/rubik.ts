@@ -377,7 +377,8 @@ class Rubik
     moveComplete()
     {
         this.isMoving = false;
-        this.moveAxis, this.moveDirection = undefined;
+        this.moveAxis = undefined;
+        this.moveDirection = undefined;
         this.clickVector = undefined;
 
         this.pivot.updateMatrixWorld();
