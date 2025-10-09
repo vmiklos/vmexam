@@ -4,72 +4,75 @@
  * SPDX-License-Identifier: MIT
  */
 
-import confetti from 'canvas-confetti';
+import confetti from "canvas-confetti";
 
-function isMedior()
-{
+function isMedior() {
     const urlParams = new URLSearchParams(window.location.search);
-    const value = urlParams.get('medior');
+    const value = urlParams.get("medior");
     return value != null;
 }
 
 /**
  * Senior mode means "a" is 1..10, "b" is 1..10 and "c" is 0.
  */
-function isSenior()
-{
+function isSenior() {
     const urlParams = new URLSearchParams(window.location.search);
-    const value = urlParams.get('senior');
-    const date = urlParams.get('20230429');
+    const value = urlParams.get("senior");
+    const date = urlParams.get("20230429");
     return value != null || date != null;
 }
 
-function createSpan(label: string)
-{
+function createSpan(label: string) {
     const span = document.createElement("span");
     span.innerHTML = label;
     return span;
 }
 
-function checkAnswer()
-{
+function checkAnswer() {
     let a: number;
-    if (isMedior())
-    {
+    if (isMedior()) {
         a = 1;
-    }
-    else
-    {
+    } else {
         const aSpan = document.getElementById("a");
+        if (!aSpan) {
+            return;
+        }
         a = Number(aSpan.innerText);
     }
     const bSpan = document.getElementById("b");
+    if (!bSpan) {
+        return;
+    }
     const b = Number(bSpan.innerText);
     const cSpan = document.getElementById("c");
+    if (!cSpan) {
+        return;
+    }
     let c = 0;
-    if (!isSenior())
-    {
+    if (!isSenior()) {
         c = Number(cSpan.innerText);
     }
     const retSpan = document.getElementById("ret");
+    if (!retSpan) {
+        return;
+    }
     const ret = Number(retSpan.innerText);
     const scoreSpan = document.getElementById("score");
+    if (!scoreSpan) {
+        return;
+    }
     let score = Number(scoreSpan.innerText);
     const origScore = score;
-    if (a * b + c == ret)
-    {
+    if (a * b + c == ret) {
         score += 1;
-    }
-    else
-    {
+    } else {
         score -= 1;
     }
     scoreSpan.innerText = score.toString();
-    if (score > 0 && score > origScore && score % 5 == 0)
-    {
+    if (score > 0 && score > origScore && score % 5 == 0) {
         confetti({
-            particleCount : 150,
-            ticks : 600,
+            particleCount: 150,
+            ticks: 600,
         });
     }
 
@@ -77,22 +80,26 @@ function checkAnswer()
     challenge();
 }
 
-function changeAnswer(delta: number)
-{
+function changeAnswer(delta: number) {
     const retSpan = document.getElementById("ret");
+    if (!retSpan) {
+        return;
+    }
     let ret = Number(retSpan.innerText);
     ret += delta;
     retSpan.innerText = ret.toString();
 }
 
-function incrementAnswer() { changeAnswer(1); }
+function incrementAnswer() {
+    changeAnswer(1);
+}
 
-function decrementAnswer() { changeAnswer(-1); }
+function decrementAnswer() {
+    changeAnswer(-1);
+}
 
-function createLHS(p: HTMLParagraphElement)
-{
-    if (!isMedior())
-    {
+function createLHS(p: HTMLParagraphElement) {
+    if (!isMedior()) {
         const a = document.createElement("span");
         a.id = "a";
         p.appendChild(a);
@@ -103,8 +110,7 @@ function createLHS(p: HTMLParagraphElement)
     const b = document.createElement("span");
     b.id = "b";
     p.appendChild(b);
-    if (!isSenior())
-    {
+    if (!isSenior()) {
         const add = document.createElement("span");
         add.innerText = " + ";
         p.appendChild(add);
@@ -114,8 +120,7 @@ function createLHS(p: HTMLParagraphElement)
     }
 }
 
-function createRHS(p: HTMLParagraphElement)
-{
+function createRHS(p: HTMLParagraphElement) {
     const down = document.createElement("input");
     down.type = "button";
     down.style.verticalAlign = "middle";
@@ -154,8 +159,7 @@ function createRHS(p: HTMLParagraphElement)
     p.appendChild(check);
 }
 
-function createPage()
-{
+function createPage() {
     const body = document.getElementsByTagName("body")[0];
     const p = document.createElement("p");
     p.style.position = "fixed";
@@ -180,38 +184,33 @@ function createPage()
 }
 
 // A random int between min and max, inclusive on both ends.
-function randomIntFromInterval(min: number, max: number): number
-{
+function randomIntFromInterval(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function challenge()
-{
+function challenge() {
     const limit = isMedior() ? 20 : 999;
     let a: number;
     let bMin = 1;
     let bMax: number;
-    let cMax: number;
+    let cMax = 0;
     let c: number;
-    if (isMedior())
-    {
+    if (isMedior()) {
         a = 1;
         bMax = limit / 2;
         cMax = limit / 2;
-    }
-    else
-    {
+    } else {
         // E.g. 3 * 250 + 249 = limit
         const aSpan = document.getElementById("a");
-        if (isSenior())
-        {
+        if (!aSpan) {
+            return;
+        }
+        if (isSenior()) {
             a = randomIntFromInterval(2, 9);
             aSpan.innerText = a.toString();
             bMin = 2;
             bMax = 9;
-        }
-        else
-        {
+        } else {
             a = randomIntFromInterval(1, 3);
             aSpan.innerText = a.toString();
             bMax = limit / 4;
@@ -219,29 +218,34 @@ function challenge()
         }
     }
     const bSpan = document.getElementById("b");
+    if (!bSpan) {
+        return;
+    }
     const b = randomIntFromInterval(bMin, bMax);
     bSpan.innerText = b.toString();
-    if (isSenior())
-    {
+    if (isSenior()) {
         c = 0;
-    }
-    else
-    {
+    } else {
         const cSpan = document.getElementById("c");
+        if (!cSpan) {
+            return;
+        }
         c = randomIntFromInterval(1, cMax);
         cSpan.innerText = c.toString();
     }
     const retSpan = document.getElementById("ret");
+    if (!retSpan) {
+        return;
+    }
     let ret = a * b + c;
     ret += randomIntFromInterval(-4, 4);
-    if (ret < 0)
-    {
+    if (ret < 0) {
         ret = 0;
     }
     retSpan.innerText = ret.toString();
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     createPage();
     challenge();
 });
