@@ -22,4 +22,4 @@ run:
 	python3 -m http.server
 
 install:
-	scp index.html bundle.js szavak.json refresh.svg wilson:share/pages/szavak/
+	cp index.html bundle.js szavak.json refresh.svg ~/git/vmiklos.hu/pages/szavak/
