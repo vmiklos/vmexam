@@ -22,4 +22,4 @@ run:
 	python3 -m http.server
 
 install:
-	scp index.html bundle.js wilson:share/pages/szihkcal/
+	cp index.html bundle.js ~/git/vmiklos.hu/pages/szihkcal/
