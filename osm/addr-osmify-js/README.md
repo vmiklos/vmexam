@@ -1,4 +1,4 @@
-= addr-osmify-js
+# addr-osmify-js
 
 Takes an nominatim query (e.g. 'Mészáros utca 58/a, Budapest') and turns it
 into a string that is readable (so that you can save it to your contacts) and
@@ -16,12 +16,12 @@ This implementation is written in JavaScript:
 
 - [x] static code analysis (eslint)
 
-== Install
+## Install
 
-----
+```
 autoconf
 ./configure
 make
 make check
 make run
-----
+```
