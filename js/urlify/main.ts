@@ -6,9 +6,9 @@
 
 function jumpButtonOnClick()
 {
-    const prefixElement = <HTMLInputElement>document.getElementById('prefix');
+    const prefixElement = document.getElementById('prefix') as HTMLInputElement;
     const prefix = prefixElement.value;
-    const suffixElement = <HTMLInputElement>document.getElementById('suffix');
+    const suffixElement = document.getElementById('suffix') as HTMLInputElement;
     const suffix = suffixElement.value;
     const url = prefix + encodeURI(suffix);
     document.location.href = url;
@@ -16,9 +16,9 @@ function jumpButtonOnClick()
 
 function linkButtonOnClick()
 {
-    const prefixElement = <HTMLInputElement>document.getElementById('prefix');
+    const prefixElement = document.getElementById('prefix') as HTMLInputElement;
     const prefix = prefixElement.value;
-    const suffixElement = <HTMLInputElement>document.getElementById('suffix');
+    const suffixElement = document.getElementById('suffix') as HTMLInputElement;
     const suffix = suffixElement.value;
     const url = prefix + encodeURI(suffix);
     suffixElement.value = url;
@@ -92,15 +92,15 @@ const options: Option[] = [
 
 function selectOnChange()
 {
-    const selectElement = <HTMLSelectElement>document.querySelector('select');
+    const selectElement = document.querySelector('select') as HTMLSelectElement;
     const selectedIndex = selectElement.selectedIndex;
     const option = options[selectedIndex];
 
-    const prefixElement = <HTMLInputElement>document.getElementById('prefix');
+    const prefixElement = document.getElementById('prefix') as HTMLInputElement;
     prefixElement.value = option.prefix;
-    const suffixElement = <HTMLInputElement>document.getElementById('suffix');
+    const suffixElement = document.getElementById('suffix') as HTMLInputElement;
     suffixElement.placeholder = option.placeholder;
-    const noteElement = <HTMLInputElement>document.getElementById('note');
+    const noteElement = document.getElementById('note') as HTMLInputElement;
     noteElement.innerText = option.note;
 }
 
