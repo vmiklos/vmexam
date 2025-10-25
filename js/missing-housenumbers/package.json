@@ -5,15 +5,14 @@
   "author": "Miklos Vajna",
   "license": "MIT",
   "dependencies": {
-    "@types/leaflet": "1.9.20",
-    "@types/node": "24.5.2",
-    "@typescript-eslint/eslint-plugin": "8.44.1",
-    "@typescript-eslint/parser": "8.44.1",
-    "eslint": "9.36.0",
+    "@types/leaflet": "1.9.21",
+    "@types/node": "24.9.1",
+    "eslint": "9.38.0",
     "leaflet": "1.9.4",
     "ts-loader": "9.5.4",
-    "typescript": "5.9.2",
-    "webpack": "5.101.3",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.46.2",
+    "webpack": "5.102.1",
     "webpack-cli": "6.0.1"
   }
 }
