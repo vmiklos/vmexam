@@ -292,6 +292,7 @@ kstart plasmashell #to restart it
 ### openSUSE Leap 15.6 -> openSUSE Leap 16.0 (x86-64)
 
 - the usual steps from <https://en.opensuse.org/SDB:System_upgrade> (opensuse-migration-tool)
+- the usual fix with video codecs in kdenlive: <https://en.opensuse.org/SDB:Firefox_MP4/H.264_Video_Support>
 - python3-pelican is gone, instead:
 
 ```
