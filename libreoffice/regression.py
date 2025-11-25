@@ -10,6 +10,8 @@ import urllib.parse
 import urllib.request
 import sys
 import time
+import os
+import http.cookiejar
 
 
 # mode can be 'comment' (older) or 'field' (newer)
@@ -39,13 +41,17 @@ def get_regression_count(name, mode):
     url += urllib.parse.urlencode(params)
     sys.stderr.write(url + "...")
     sys.stderr.flush()
+    cookies_txt = os.path.expanduser("~/.mozilla/firefox/cookies.txt")
+    cj = http.cookiejar.MozillaCookieJar()
+    cj.load(cookies_txt)
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
     while True:
         try:
-            with urllib.request.urlopen(url) as stream:
+            with opener.open(url) as stream:
                 atom = stream.read()
             break
         except urllib.error.URLError as url_error:
-            sys.stderr.write("urlopen() failed: " + str(url_error))
+            sys.stderr.write("urlopen() failed: " + str(url_error) + "\n")
             time.sleep(1)
     sys.stderr.write(" done.\n")
     sys.stderr.flush()
