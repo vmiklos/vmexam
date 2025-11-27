@@ -12,7 +12,7 @@ if [ -e .gitreview ]; then
         rev=$(git rev-parse HEAD)
         host=$(git config -f .gitreview gerrit.host)
         port=$(git config -f .gitreview gerrit.port)
-        ssh -p $port $host gerrit review --code-review=2 $rev
+        ssh -p $port $host gerrit review --code-review=2 --code-style=1 $rev
     fi
     exit 0
 fi
