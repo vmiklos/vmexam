@@ -1,0 +1,35 @@
+#!/bin/bash -ex
+#
+# Copyright 2025 Miklos Vajna
+#
+# SPDX-License-Identifier: MIT
+#
+
+#
+# Creates a new Dioxus project from skel/.
+#
+# Usage:
+#
+# ./init hello
+# cd hello
+# make run
+#
+
+NAME=$1
+
+cd skel
+FILES=$(git ls-files)
+cd ..
+
+if [ ! -d $NAME ]; then
+    mkdir $NAME
+fi
+cd $NAME
+mkdir -p src/
+for FILE in $FILES
+do
+    cp ../skel/$FILE $FILE
+    sed -i "s/\bskel\b/$NAME/g" $FILE
+done
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:

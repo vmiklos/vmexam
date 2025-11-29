@@ -5,7 +5,7 @@
 # HTML title tag content
 title = "skel"
 
-base_path = "/pages/dioxus/skel/"
+base_path = "/pages/skel/"
 
 # include `assets` in web platform
 [web.resource]
