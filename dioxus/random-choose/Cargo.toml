@@ -1,0 +1,19 @@
+[package]
+name = "random-choose"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+dioxus = { version = "0.7.1", features = [] }
+rand = "0.9.2"
+
+[dependencies.getrandom]
+version = "0.3.4"
+optional = true
+features = []
+
+[features]
+default = ["web"]
+web = ["dioxus/web", "getrandom/wasm_js"]
+desktop = ["dioxus/desktop"]
+mobile = ["dioxus/mobile"]
