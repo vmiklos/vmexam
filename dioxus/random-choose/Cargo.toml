@@ -6,14 +6,20 @@ edition = "2021"
 [dependencies]
 dioxus = { version = "0.7.1", features = [] }
 rand = "0.9.2"
+wasm-bindgen-futures = "0.4.56"
 
 [dependencies.getrandom]
 version = "0.3.4"
 optional = true
 features = []
 
+[dependencies.web-sys]
+version = "0.3.83"
+optional = true
+features = ["Window", "Navigator", "Clipboard"]
+
 [features]
 default = ["web"]
-web = ["dioxus/web", "getrandom/wasm_js"]
+web = ["dioxus/web", "getrandom/wasm_js", "web-sys"]
 desktop = ["dioxus/desktop"]
 mobile = ["dioxus/mobile"]
