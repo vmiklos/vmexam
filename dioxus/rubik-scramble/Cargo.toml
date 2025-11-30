@@ -1,0 +1,26 @@
+[package]
+name = "rubik-scramble"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+dioxus = { version = "0.7.1", features = [] }
+kewb = "0.4.2"
+
+[dependencies.getrandom]
+version = "0.3.4"
+optional = true
+features = []
+
+[features]
+default = ["web"]
+web = ["dioxus/web", "getrandom/wasm_js"]
+desktop = ["dioxus/desktop"]
+mobile = ["dioxus/mobile"]
+
+[build-dependencies]
+kewb = "0.4.2"
+
+# Till <https://github.com/luckasRanarison/kewb/pull/13> hits a release.
+[patch.crates-io]
+kewb = { git = "https://github.com/luckasRanarison/kewb", rev = "69f2c3c72e2cb98bf9f7ee3c6b77bc03e05a29f9" }
