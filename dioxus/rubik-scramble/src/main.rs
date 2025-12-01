@@ -99,25 +99,14 @@ pub fn app() -> Element {
             },
         }
         div { "Scramble:" }
+        div { font_size: "xxx-large", "{scramble}" }
         div {
-            font_size: "xxx-large",
-            "{scramble}"
-        }
-        div {
-            span {
-                "Powered by "
-            }
-            a {
-                href: "https://github.com/vmiklos/vmexam/tree/master/dioxus/rubik-scramble",
+            span { "Powered by " }
+            a { href: "https://github.com/vmiklos/vmexam/tree/master/dioxus/rubik-scramble",
                 "dioxus"
             }
-            span {
-                " and "
-            }
-            a {
-                href: "https://crates.io/crates/kewb",
-                "kewb"
-            }
+            span { " and " }
+            a { href: "https://crates.io/crates/kewb", "kewb" }
         }
     }
 }
