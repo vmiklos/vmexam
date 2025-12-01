@@ -4,8 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.100"
 dioxus = { version = "0.7.1", features = [] }
 kewb = "0.4.2"
+rubik = { path = "../../rubik" }
 
 [dependencies.getrandom]
 version = "0.3.4"
