@@ -12,6 +12,20 @@
 
 use dioxus::prelude::*;
 
+#[cfg(feature = "desktop")]
+fn main() {
+    use dioxus::desktop::tao;
+    let window = tao::window::WindowBuilder::new().with_title("rubik-scramble");
+    dioxus::LaunchBuilder::new()
+        .with_cfg(
+            dioxus::desktop::Config::new()
+                .with_window(window)
+                .with_menu(None),
+        )
+        .launch(app);
+}
+
+#[cfg(not(feature = "desktop"))]
 fn main() {
     dioxus::launch(app);
 }
@@ -19,8 +33,7 @@ fn main() {
 const TABLE: &[u8] = include_bytes!("../bin/table.bin");
 
 #[derive(PartialEq, Clone)]
-enum Scramble
-{
+enum Scramble {
     Wide,
     Normal,
     F2lSolved,
