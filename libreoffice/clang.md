@@ -96,7 +96,9 @@ make -j8 CCACHE_PREFIX=rename-wrapper CCACHE_DISABLE=1 RENAME_ARGS="-csv=$HOME/r
 Generate `compile_commands.json` for clang-rename:
 
 ```
-bear make -j8 CCACHE_DISABLE=1
+mkdir -p browser/dist/
+bear -- make -j8 build-nocheck CCACHE_DISABLE=1
+bear --append -- make -j8 -C test check SUPPRESS_TESTS=y CCACHE_DISABLE=1
 ```
 
 Find with ast matchers:
