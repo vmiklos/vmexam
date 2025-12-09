@@ -51,7 +51,10 @@ def get_regression_count(name, mode):
                 atom = stream.read()
             break
         except urllib.error.URLError as url_error:
-            sys.stderr.write("urlopen() failed: " + str(url_error) + "\n")
+            sys.stderr.write("url error: " + str(url_error) + "\n")
+            time.sleep(1)
+        except http.client.RemoteDisconnected as remote_disconnected:
+            sys.stderr.write("remote disconnected: " + str(remote_disconnected) + "\n")
             time.sleep(1)
     sys.stderr.write(" done.\n")
     sys.stderr.flush()
