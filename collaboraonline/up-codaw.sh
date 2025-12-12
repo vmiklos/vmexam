@@ -1,0 +1,13 @@
+./configure \
+	--enable-windowsapp \
+	--with-app-name='Collabora Office' \
+	--with-lo-builddir=/mnt/c/lo/co-25.04 \
+	--with-lo-path='C:\lo\co-25.04\instdir' \
+	--with-poco-includes=/mnt/c/lo/poco/poco-1.14.2-all/include \
+	--with-poco-libs=/mnt/c/lo/poco/poco-1.14.2-all/lib64 \
+	--with-zstd-includes=/mnt/c/lo/zstd/zstd-1.5.7/lib \
+	--with-zstd-libs=/mnt/c/lo/zstd/zstd-1.5.7/build/VS2010/bin/x64_Release \
+	--with-libpng-includes=/mnt/c/lo/co-25.04/workdir/UnpackedTarball/libpng \
+	--with-libpng-libs=/mnt/c/lo/co-25.04/workdir/LinkTarget/StaticLibrary \
+	--with-zlib-includes=/mnt/c/lo/co-25.04/workdir/UnpackedTarball/zlib \
+	--with-info-url=https://example.com/coda/info.html

@@ -1,0 +1,3 @@
+--host=x86_64-pc-cygwin
+--with-distro=CODAWindows
+--disable-symbols
