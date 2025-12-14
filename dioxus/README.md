@@ -18,6 +18,12 @@ Guard for desktop-specific code:
 #[cfg(feature = "desktop")]
 ```
 
+## Printf debugging
+
+```
+tracing::info!("debug, var is '{}'", var);
+```
+
 ## Web build, install
 
 This is handled via the `Makefile`, `make run` is debug build, `make install` is the release build.
