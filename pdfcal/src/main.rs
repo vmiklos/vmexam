@@ -178,7 +178,10 @@ fn make_month_image(
         print!("making the image part...");
         std::io::stdout().flush()?;
     }
-    let image = image::ImageReader::open(format!("images/{month}.jpg"))?.decode()?;
+    let image_path = format!("images/{month}.jpg");
+    let image = image::ImageReader::open(&image_path)
+        .context(format!("failed to open {image_path}"))?
+        .decode()?;
     // Top/right/bottom margin, no left (that is provided by pcal).
     let margin = PdfPoints::from_mm(15.0);
     let a4_size = PdfPagePaperSize::a4();
