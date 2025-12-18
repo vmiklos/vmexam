@@ -56,10 +56,10 @@ impl TryFrom<&str> for Scramble {
     }
 }
 
-fn make_scramble(kind: Scramble) -> String {
+fn make_scramble(kind: Scramble) -> anyhow::Result<String> {
     if kind == Scramble::F2lSolved || kind == Scramble::OllSolved {
         // Generate a scramble that allows practicing solving the last layer.
-        let table = kewb::fs::decode_table(TABLE).unwrap();
+        let table = kewb::fs::decode_table(TABLE)?;
         let mut solver = kewb::Solver::new(&table, 25, None);
         let mut states = Vec::new();
 
@@ -68,7 +68,7 @@ fn make_scramble(kind: Scramble) -> String {
         } else {
             kewb::generators::generate_state_oll_solved()
         };
-        let scramble = kewb::scramble::scramble_from_state(state, &mut solver).unwrap();
+        let scramble = kewb::scramble::scramble_from_state(state, &mut solver)?;
 
         states.push(state);
         solver.clear();
@@ -78,13 +78,13 @@ fn make_scramble(kind: Scramble) -> String {
             .map(|m| m.to_string())
             .collect::<Vec<String>>()
             .join(" ");
-        return stringified;
+        return Ok(stringified);
     }
 
     let lang = "en";
     let wide = kind == Scramble::Wide;
     let megaminx = kind == Scramble::Megaminx;
-    rubik::shuffle(lang, wide, megaminx).unwrap()
+    rubik::shuffle(lang, wide, megaminx)
 }
 
 /// The root component.
@@ -96,7 +96,8 @@ pub fn app() -> Element {
         select {
             id: "scramble-select",
             onchange: move |event| {
-                scramble_type.set(Scramble::try_from(event.value().as_str()).unwrap())
+                scramble_type.set(Scramble::try_from(event.value().as_str())?);
+                Ok(())
             },
             option { value: "wide", "4x4 (blue goes to the top)" }
             option { value: "normal", "3x3" }
@@ -108,7 +109,8 @@ pub fn app() -> Element {
             r#type: "button",
             value: "OK",
             onclick: move |_| {
-                scramble.set(make_scramble(scramble_type.read().clone()));
+                scramble.set(make_scramble(scramble_type.read().clone())?);
+                Ok(())
             },
         }
         div { "Scramble:" }
