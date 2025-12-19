@@ -62,3 +62,7 @@ fedpkg --release f39 mockbuild
 caption always
 caption string "%{7;0}[%c] mymachine %-w%{0;7}%n %t%{-}%+w"
 ```
+
+## Fedora 42 -> Fedora 43
+
+- <https://docs.fedoraproject.org/en-US/quick-docs/upgrading-fedora-offline/> for the package upgrades
