@@ -10,7 +10,7 @@
 FULL_CHAIN=/etc/letsencrypt/live/analytics.vmiklos.hu-0001/fullchain.pem
 # Write *15 here to test.
 WEEK_IN_SECS=$((168*60*60))
-openssl x509 -enddate -noout -in $FULL_CHAIN -checkend $WEEK_IN_SECS | grep -q 'Certificate will expire'
+openssl x509 -checkend $WEEK_IN_SECS -noout -in $FULL_CHAIN | grep -q 'Certificate will expire'
 if [ $? -eq 0 ]; then
     echo "Your certificate will expire soon." |send-email -f "$(git config user.email|sed "s/.*@/$(hostname)@/")" -s "Cert TODO for `date +%Y%m%d`" $(git config user.email)
 fi
