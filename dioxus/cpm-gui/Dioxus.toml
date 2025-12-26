@@ -1,0 +1,27 @@
+[application]
+name = "cpm-gui"
+
+[web.app]
+
+# HTML title tag content
+title = "cpm-gui"
+
+# include `assets` in web platform
+[web.resource]
+
+# Additional CSS style files
+style = []
+
+# Additional JavaScript files
+script = []
+
+[web.resource.dev]
+
+# Javascript code file
+# serve: [dev-server] only
+script = []
+
+[bundle]
+identifier = "hu.vmiklos.cpm-gui"
+publisher = "Miklos Vajna"
+icon = ["assets/icon.png"]

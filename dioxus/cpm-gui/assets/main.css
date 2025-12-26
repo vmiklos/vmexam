@@ -1,0 +1,23 @@
+table {
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    vertical-align: center;
+}
+
+td {
+    text-align: left;
+    vertical-align: top;
+}
+
+th, td {
+    padding: 4px;
+    text-underline-position: under;
+}
+
+table, th, td {
+    border-width: thin;
+    border-style: solid;
+}
