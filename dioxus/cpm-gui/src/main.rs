@@ -50,15 +50,14 @@ struct Password {
 }
 
 /// Fetch current passwords from a remote server named 'cpm'.
-fn fetch_passwords() -> Vec<Password> {
+fn fetch_passwords() -> anyhow::Result<Vec<Password>> {
     let output = std::process::Command::new("ssh")
         .args(["cpm", "cpm", "export"])
         .stdout(std::process::Stdio::piped())
-        .output()
-        .unwrap();
-    let json_string = String::from_utf8(output.stdout).unwrap();
-    let passwords: Vec<Password> = serde_json::from_str(&json_string).unwrap();
-    passwords
+        .output()?;
+    let json_string = String::from_utf8(output.stdout)?;
+    let passwords: Vec<Password> = serde_json::from_str(&json_string)?;
+    Ok(passwords)
 }
 
 /// Does this password match the search query?
@@ -72,7 +71,13 @@ fn show_password(password: &Password, filter: &str) -> bool {
 
 /// The root component.
 pub fn app() -> Element {
-    let passwords = use_signal(|| fetch_passwords());
+    let passwords: Signal<Vec<Password>> = use_signal(|| match fetch_passwords() {
+        Ok(val) => val,
+        Err(err) => {
+            tracing::error!("failed to fetch passwords: {err:?}");
+            Vec::new()
+        }
+    });
     let mut filter = use_signal(|| "".to_string());
 
     rsx! {
