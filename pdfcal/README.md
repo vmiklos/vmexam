@@ -13,6 +13,12 @@ make -j8
 cp exec/pcal ~/bin/
 ```
 
+Create an initial config:
+
+```
+cp calendar_hu.sample.txt calendar_hu.txt
+```
+
 ## Installation
 
 ```
