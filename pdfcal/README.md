@@ -40,6 +40,8 @@ photo images. A print optimized version can be produced by running:
 gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/printer -dNOPAUSE -dQUIET -dBATCH -sOutputFile=out.printer.pdf out.pdf
 ```
 
+You can use the `--a4` flag to produce 12 A4 pages, instead of 6 A4 pages.
+
 ## Workarounds
 
 ### Bad JPEG
@@ -59,3 +61,8 @@ heif-convert foo.heic foo.jpg
 ```
 
 can do a conversion, then pdfcal can consume the image.
+
+### Custom fill/fit
+
+If your image aspect ratio is not sqrt(2) : 1, and you want to customize how whitespace is added
+around the image, simply provide that aspect ratio in your images, e.g. 3576x2536 pixels is fine.
