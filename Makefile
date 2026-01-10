@@ -104,6 +104,8 @@ $(eval $(call RustPackage_RustPackage,markdown-stats))
 
 $(eval $(call RustPackage_RustPackage,mso-convert))
 
+$(eval $(call RustPackage_RustPackage,mso-convert-tool))
+
 $(eval $(call RustPackage_RustPackage,mutt-display-filter))
 
 $(eval $(call RustPackage_RustPackage,mutt-imap-lister))
