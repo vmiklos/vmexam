@@ -73,8 +73,11 @@ lazy_static! {
             ),
         );
         ret.insert(
-            "docto".into(),
-            ("c:/program files (x86)/docto/docto.exe".into(), true),
+            "mso-convert-tool".into(),
+            (
+                "c:/program files/mso-convert-tool/mso-convert-tool.exe".into(),
+                true,
+            ),
         );
         ret
     };
