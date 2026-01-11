@@ -1,6 +1,6 @@
 # mso-convert
 
-Wrapper around `docto`, makes it similar to `soffice --convert-to <format> <file>`.
+Wrapper around `mso-convert-tool`, makes it similar to `soffice --convert-to <format> <file>`.
 
 Usage example:
 

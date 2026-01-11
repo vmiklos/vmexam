@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-//! Wrapper around docto, makes it similar to 'soffice --convert-to <format> <file>'.
+//! Wrapper around mso-convert-tool, makes it similar to 'soffice --convert-to <format> <file>'.
 
 #![deny(warnings)]
 #![warn(clippy::all)]
@@ -76,23 +76,23 @@ fn main() -> anyhow::Result<()> {
     }
 
     let args = [
-        "-WD",
-        "-f",
+        "--word",
+        "--from",
         &args.input,
-        "-o",
+        "--output",
         &output_file_name,
         "-t",
         get_format(args.to),
     ];
-    let exit_status = std::process::Command::new("docto")
+    let exit_status = std::process::Command::new("mso-convert-tool")
         .args(args)
         .status()
-        .context("failed to execute 'docto' and collect its status")?;
+        .context("failed to execute 'mso-convert-tool' and collect its status")?;
     let exit_code = exit_status.code().context("code() failed")?;
     match exit_code {
         0 => Ok(()),
         _ => Err(anyhow::anyhow!(
-            "executing docto failed with exit code {exit_code}"
+            "executing mso-convert-tool failed with exit code {exit_code}"
         )),
     }
 }
