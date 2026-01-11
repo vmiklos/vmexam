@@ -6,3 +6,7 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0.100"
 clap = "4.5.54"
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62.2", features = ["Win32_Foundation"] }
+winsafe = { version = "0.0.27", features = ["ole", "oleaut"] }

@@ -65,7 +65,62 @@ impl Arguments {
     }
 }
 
+/// Windows implementation, using MSO.
+#[cfg(windows)]
+fn convert(from: &str, output: &str, format: &str) -> anyhow::Result<()> {
+    use winsafe::prelude::oleaut_IDispatch;
+
+    let _com = winsafe::CoInitializeEx(winsafe::co::COINIT::APARTMENTTHREADED)?;
+
+    let clsid = winsafe::CLSIDFromProgID("Word.Application")?;
+
+    let word_app: winsafe::IDispatch = winsafe::CoCreateInstance::<winsafe::IDispatch>(
+        &clsid,
+        None::<&winsafe::IUnknown>,
+        winsafe::co::CLSCTX::LOCAL_SERVER,
+    )?;
+
+    let documents = word_app
+        .invoke_get("Documents", &[])
+        .map_err(|e| anyhow::anyhow!("failed to get Documents: {e}"))?
+        .unwrap_dispatch();
+
+    let document = {
+        // Expected to be an absolute path, don't transform.
+        let file_name = winsafe::Variant::from_str(from);
+        documents
+            .invoke_method("Open", &[&file_name])
+            .map_err(|e| anyhow::anyhow!("Open() failed: {e}"))?
+            .unwrap_dispatch()
+    };
+
+    // Expected to be an absolute path, don't transform.
+    let file_name = winsafe::Variant::from_str(output);
+    // https://learn.microsoft.com/en-us/office/vba/api/word.wdsaveformat
+    let file_format = match format {
+        "wdFormatPDF" => winsafe::Variant::I4(17),
+        "wdFormatDocument97" => winsafe::Variant::I4(0),
+        "wdFormatDocumentDefault" => winsafe::Variant::I4(16),
+        "wdFormatRTF" => winsafe::Variant::I4(6),
+        _ => return Err(anyhow::anyhow!("unimplemented type value")),
+    };
+    document
+        .invoke_method("SaveAs", &[&file_name, &file_format])
+        .map_err(|e| anyhow::anyhow!("SaveAs() failed: {e}"))?;
+
+    document
+        .invoke_method("Close", &[])
+        .map_err(|e| anyhow::anyhow!("Close() failed: {e}"))?;
+
+    word_app
+        .invoke_method("Quit", &[])
+        .map_err(|e| anyhow::anyhow!("Quit() failed: {e}"))?;
+
+    Ok(())
+}
+
 /// Linux implementation, using 'soffice'.
+#[cfg(not(windows))]
 fn convert(from: &str, output: &str, format: &str) -> anyhow::Result<()> {
     let extension = match format {
         "wdFormatPDF" => "pdf",
