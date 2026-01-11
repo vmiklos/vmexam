@@ -156,7 +156,7 @@ fn convert(from: &str, output: &str, format: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn main() -> anyhow::Result<()> {
+fn our_main() -> anyhow::Result<()> {
     let argv: Vec<String> = std::env::args().collect();
     let args = Arguments::parse(&argv)?;
 
@@ -165,4 +165,11 @@ fn main() -> anyhow::Result<()> {
     }
 
     Ok(())
+}
+
+fn main() {
+    if let Err(err) = our_main() {
+        println!("mso-convert-tool our_main failed: {err:?}");
+        std::process::exit(1);
+    }
 }
