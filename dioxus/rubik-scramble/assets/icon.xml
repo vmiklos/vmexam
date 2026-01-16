@@ -1,0 +1,68 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="256dp"
+    android:height="256dp"
+    android:viewportWidth="256"
+    android:viewportHeight="256">
+
+    <!-- Background -->
+    <path
+        android:fillColor="#0F172A"
+        android:pathData="M32,0h192a32,32 0 0 1 32,32v192a32,32 0 0 1 -32,32h-192a32,32 0 0 1 -32,-32v-192a32,32 0 0 1 32,-32z"/>
+
+    <!-- Top shuffle arc -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#22C55E"
+        android:strokeWidth="12"
+        android:strokeLineCap="round"
+        android:pathData="M40,128a88,88 0 0 1 136,-72"/>
+
+    <!-- Top arrow -->
+    <path
+        android:fillColor="#22C55E"
+        android:pathData="M184,36l28,12l-24,16z"/>
+
+    <!-- Bottom shuffle arc -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#F97316"
+        android:strokeWidth="12"
+        android:strokeLineCap="round"
+        android:pathData="M216,128a88,88 0 0 1 -136,72"/>
+
+    <!-- Bottom arrow -->
+    <path
+        android:fillColor="#F97316"
+        android:pathData="M72,220l-28,-12l24,-16z"/>
+
+    <!-- Rubik's Cube base -->
+    <path
+        android:fillColor="#020617"
+        android:pathData="M48,96h72v72h-72z"/>
+
+    <!-- Cube stickers -->
+    <path android:fillColor="#22C55E" android:pathData="M54,102h18v18h-18z"/>
+    <path android:fillColor="#FACC15" android:pathData="M75,102h18v18h-18z"/>
+    <path android:fillColor="#3B82F6" android:pathData="M96,102h18v18h-18z"/>
+
+    <path android:fillColor="#EF4444" android:pathData="M54,123h18v18h-18z"/>
+    <path android:fillColor="#E5E7EB" android:pathData="M75,123h18v18h-18z"/>
+    <path android:fillColor="#22C55E" android:pathData="M96,123h18v18h-18z"/>
+
+    <path android:fillColor="#F97316" android:pathData="M54,144h18v18h-18z"/>
+    <path android:fillColor="#3B82F6" android:pathData="M75,144h18v18h-18z"/>
+    <path android:fillColor="#FACC15" android:pathData="M96,144h18v18h-18z"/>
+
+    <!-- Megaminx base -->
+    <path
+        android:fillColor="#020617"
+        android:pathData="M176,96l32,20l-8,36l-24,16l-24,-16l-8,-36z"/>
+
+    <!-- Megaminx faces -->
+    <path android:fillColor="#22C55E" android:pathData="M176,104l24,16l-6,26l-18,12l-18,-12l-6,-26z"/>
+    <path android:fillColor="#FACC15" android:pathData="M176,104l24,16l-24,12z"/>
+    <path android:fillColor="#3B82F6" android:pathData="M176,104l0,28l-24,-12z"/>
+    <path android:fillColor="#EF4444" android:pathData="M152,120l24,12l-18,12z"/>
+    <path android:fillColor="#F97316" android:pathData="M200,120l-6,26l-18,-14z"/>
+
+</vector>
