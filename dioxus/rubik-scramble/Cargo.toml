@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.100"
-dioxus = { version = "0.7.1", features = [] }
+dioxus = { version = "0.7.2", features = [] }
 kewb = "0.4.2"
 rubik = { path = "../../rubik" }
 
@@ -21,8 +21,4 @@ desktop = ["dioxus/desktop"]
 mobile = ["dioxus/mobile"]
 
 [build-dependencies]
-kewb = "0.4.2"
-
-# Till <https://github.com/luckasRanarison/kewb/pull/13> hits a release.
-[patch.crates-io]
-kewb = { git = "https://github.com/luckasRanarison/kewb", rev = "69f2c3c72e2cb98bf9f7ee3c6b77bc03e05a29f9" }
+kewb = "0.4.3"
