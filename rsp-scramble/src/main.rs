@@ -17,11 +17,11 @@ fn main() {
     for step in 1..25 {
         // Layer index, rotation count, slide index.
         // Rotate this layer: 1-4.
-        let layer = rand::thread_rng().gen_range(1..5);
+        let layer = rand::rng().random_range(1..5);
         // Rotate the layer by this many slots: 1-7.
-        let rotation = rand::thread_rng().gen_range(1..8);
+        let rotation = rand::rng().random_range(1..8);
         // Slide the pieces so the free slot is on this layer, ignoring the free slot: 1-3.
-        let slide = rand::thread_rng().gen_range(1..4);
+        let slide = rand::rng().random_range(1..4);
         ret.push(format!("l{layer}r{rotation}s{slide} "));
         if step % 12 == 0 {
             ret.push("\n".into());
