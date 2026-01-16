@@ -70,29 +70,61 @@ impl Arguments {
 fn convert(from: &str, output: &str, format: &str) -> anyhow::Result<()> {
     use winsafe::prelude::oleaut_IDispatch;
 
+    struct WordApp {
+        dispatch: winsafe::IDispatch,
+    }
+
+    impl WordApp {
+        fn new() -> anyhow::Result<Self> {
+            let clsid = winsafe::CLSIDFromProgID("Word.Application")?;
+            let dispatch = winsafe::CoCreateInstance::<winsafe::IDispatch>(
+                &clsid,
+                None::<&winsafe::IUnknown>,
+                winsafe::co::CLSCTX::LOCAL_SERVER,
+            )?;
+            Ok(WordApp { dispatch })
+        }
+    }
+
+    impl Drop for WordApp {
+        fn drop(&mut self) {
+            self.dispatch.invoke_method("Quit", &[]).unwrap();
+        }
+    }
+
+    struct WordDocument {
+        dispatch: winsafe::IDispatch,
+    }
+
+    impl WordDocument {
+        fn new(documents: &winsafe::IDispatch, from: &str) -> anyhow::Result<Self> {
+            // Expected to be an absolute path, don't transform.
+            let file_name = winsafe::Variant::from_str(from);
+            let dispatch = documents
+                .invoke_method("Open", &[&file_name])
+                .map_err(|e| anyhow::anyhow!("Open() failed: {e}"))?
+                .unwrap_dispatch();
+            Ok(WordDocument { dispatch })
+        }
+    }
+
+    impl Drop for WordDocument {
+        fn drop(&mut self) {
+            self.dispatch.invoke_method("Close", &[]).unwrap();
+        }
+    }
+
     let _com = winsafe::CoInitializeEx(winsafe::co::COINIT::APARTMENTTHREADED)?;
 
-    let clsid = winsafe::CLSIDFromProgID("Word.Application")?;
-
-    let word_app: winsafe::IDispatch = winsafe::CoCreateInstance::<winsafe::IDispatch>(
-        &clsid,
-        None::<&winsafe::IUnknown>,
-        winsafe::co::CLSCTX::LOCAL_SERVER,
-    )?;
+    let word_app = WordApp::new()?;
 
     let documents = word_app
+        .dispatch
         .invoke_get("Documents", &[])
         .map_err(|e| anyhow::anyhow!("failed to get Documents: {e}"))?
         .unwrap_dispatch();
 
-    let document = {
-        // Expected to be an absolute path, don't transform.
-        let file_name = winsafe::Variant::from_str(from);
-        documents
-            .invoke_method("Open", &[&file_name])
-            .map_err(|e| anyhow::anyhow!("Open() failed: {e}"))?
-            .unwrap_dispatch()
-    };
+    let document = WordDocument::new(&documents, from)?;
 
     // Expected to be an absolute path, don't transform.
     let file_name = winsafe::Variant::from_str(output);
@@ -105,22 +137,15 @@ fn convert(from: &str, output: &str, format: &str) -> anyhow::Result<()> {
         _ => return Err(anyhow::anyhow!("unimplemented type value")),
     };
     document
+        .dispatch
         .invoke_method("SaveAs", &[&file_name, &file_format])
         .map_err(|e| anyhow::anyhow!("SaveAs() failed: {e}"))?;
-
-    document
-        .invoke_method("Close", &[])
-        .map_err(|e| anyhow::anyhow!("Close() failed: {e}"))?;
-
-    word_app
-        .invoke_method("Quit", &[])
-        .map_err(|e| anyhow::anyhow!("Quit() failed: {e}"))?;
 
     Ok(())
 }
 
 /// Linux implementation, using 'soffice'.
-#[cfg(not(windows))]
+#[cfg(unix)]
 fn convert(from: &str, output: &str, format: &str) -> anyhow::Result<()> {
     let extension = match format {
         "wdFormatPDF" => "pdf",
