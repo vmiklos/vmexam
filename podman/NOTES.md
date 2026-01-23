@@ -37,8 +37,8 @@ rm -rf /var/lib/docker
 ## create containers
 
 ```
-podman run --name ubuntu1804 --hostname ubuntu1804 -v $HOME:$HOME -ti ubuntu:18.04
 podman run --name ubuntu2204 --hostname ubuntu2204 -v $HOME:$HOME -ti ubuntu:22.04
+podman run --name ubuntu2404 --hostname ubuntu2404 -v $HOME:$HOME -ti ubuntu:24.04
 podman run --name centos7 --hostname centos7 -v $HOME:$HOME -ti centos:centos7
 podman run --name almalinux8 --hostname almalinux8 -v $HOME:$HOME -ti almalinux:8
 podman run --name fedora42 --hostname fedora42 -v $HOME:$HOME -ti fedora:42
@@ -50,8 +50,8 @@ podman run --name sphinx --hostname sphinx -v $HOME:$HOME -ti python:3.9.12-slim
 then
 
 ```
-podman start -ai ubuntu1804
 podman start -ai ubuntu2204
+podman start -ai ubuntu2404
 podman start -ai centos7
 podman start -ai almalinux8
 podman start -ai fedora42
