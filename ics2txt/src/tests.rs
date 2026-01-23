@@ -167,3 +167,21 @@ Dtend      : Tue, 19 Dec 2023 15:00:00 +0100
 "#
     );
 }
+
+#[test]
+fn test_no_time() {
+    let mut ctx = TestContext::new(&["src/fixtures/no-time.ics"]);
+
+    assert_eq!(main(ctx.get_args(), &mut ctx.buf, &ctx.time), 0);
+
+    let buf = ctx.into_buf_string();
+    assert_eq!(
+        buf,
+        r#"Description: My, description
+Location   : https://www.example.com/
+Organizer  : mailto:first.last@example.com
+Dtstart    : Wed, 27 May 2026 01:00:00 +0100 (Wed, 27 May 2026 00:00:00 +0000)
+Dtend      : Thu, 28 May 2026 01:00:00 +0100 (Thu, 28 May 2026 00:00:00 +0000)
+"#
+    );
+}

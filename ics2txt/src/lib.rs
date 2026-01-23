@@ -40,10 +40,25 @@ fn decode_text(encoded: &str) -> String {
 /// Returns an Rfc2822 date time, which contains timezone info.
 fn decode_date_time(property: &ical::property::Property) -> anyhow::Result<String> {
     let value = property.value.as_ref().context("no value")?;
-    let ics_format = time::format_description::well_known::Iso8601::DEFAULT;
-    let date_time = time::PrimitiveDateTime::parse(value, &ics_format)?;
     let params = property.params.as_ref().context("no params")?;
     let params_map: std::collections::HashMap<_, _> = params.iter().cloned().collect();
+    if let Some(vals) = params_map.get("VALUE")
+        && let Some(val) = vals.first()
+        && val == "DATE"
+    {
+        // Date format: YYYYMMDD
+        let description = time::format_description::parse("[year][month][day]")?;
+        let date = time::Date::parse(value, &description)?;
+        let format = time::format_description::well_known::Rfc2822;
+        let time = time::Time::MIDNIGHT;
+        let date_time = time::PrimitiveDateTime::new(date, time);
+        let date_time = date_time.assume_utc();
+        return Ok(date_time.format(&format)?);
+    }
+
+    // Date format: YYYYMMDDTHHMMSS
+    let ics_format = time::format_description::well_known::Iso8601::DEFAULT;
+    let date_time = time::PrimitiveDateTime::parse(value, &ics_format)?;
     let time_zone = params_map["TZID"].first().context("no TZID")?;
     let tz = time_tz::timezones::get_by_name(time_zone).context("can't find timezone")?;
     let time_tz::OffsetResult::Some(date_time) = date_time.assume_timezone(tz) else {
