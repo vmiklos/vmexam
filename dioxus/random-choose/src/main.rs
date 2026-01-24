@@ -12,7 +12,6 @@
 
 use dioxus::prelude::*;
 use rand::Rng as _;
-use std::collections::HashMap;
 
 fn main() {
     dioxus::launch(app);
@@ -43,12 +42,8 @@ fn has_clipboard() -> bool {
 fn init_choices() -> Vec<String> {
     // /?choices=a,b,c,d can be used to init the list, otherwise use the default.
     let window = web_sys::window().unwrap();
-    let mut search = window.location().search().unwrap();
-    if let Some(value) = search.strip_prefix("?") {
-        search = value.to_string();
-    }
-    let iter = form_urlencoded::parse(search.as_bytes());
-    let pairs: HashMap<String, String> = iter.into_owned().collect();
+    let search = window.location().search().unwrap();
+    let pairs = web_sys::UrlSearchParams::new_with_str(&search).unwrap();
     match pairs.get("choices") {
         Some(value) => value.split(",").map(|i| i.to_string()).collect(),
         None => vec!["".to_string(), "".to_string()],
