@@ -64,38 +64,61 @@ fn init_choices() -> Vec<String> {
 pub fn app() -> Element {
     let mut choices = use_signal(|| init_choices());
     let mut choice = use_signal(|| "".to_string());
+    let mut remove_choice = use_signal(|| false);
 
     rsx! {
-        for (i , value) in choices.read().iter().enumerate() {
+        div {
+            "Choices: "
+            for (i , value) in choices.read().iter().enumerate() {
+                input {
+                    id: "input{i}",
+                    value: "{value}",
+                    oninput: move |event| {
+                        let mut vec = choices.write();
+                        vec[i] = event.value().to_string();
+                    },
+                }
+            }
             input {
-                id: "input{i}",
-                value: "{value}",
-                oninput: move |event| {
-                    let mut vec = choices.write();
-                    vec[i] = event.value().to_string();
+                r#type: "button",
+                value: "+",
+                onclick: move |_| {
+                    choices.write().push("".to_string());
                 },
             }
         }
-        input {
-            r#type: "button",
-            value: "+",
-            onclick: move |_| {
-                choices.write().push("".to_string());
-            },
+        div {
+            input {
+                id: "remove-checkbox",
+                r#type: "checkbox",
+                onchange: move |event| {
+                    remove_choice.set(event.value().parse::<bool>().unwrap());
+                },
+            }
+            label { r#for: "remove-checkbox", "Remove choice" }
         }
-        input {
-            r#type: "button",
-            value: "choose",
-            onclick: move |_| {
-                let vec = choices.write();
-                let index = rand::rng().random_range(0..vec.len());
-                *choice.write() = vec[index].to_string();
-            },
+        div {
+            input {
+                r#type: "button",
+                value: "Choose",
+                onclick: move |_| {
+                    let mut vec = choices.write();
+                    if vec.is_empty() {
+                        *choice.write() = "".to_string();
+                        return;
+                    }
+                    let index = rand::rng().random_range(0..vec.len());
+                    *choice.write() = vec[index].to_string();
+                    if *remove_choice.read() {
+                        vec.remove(index);
+                    }
+                },
+            }
         }
         div { "Choice: {choice}" }
         input {
             r#type: "button",
-            value: "copy",
+            value: "Copy",
             onclick: move |_| {
                 #[cfg(feature = "web")] web_clipboard_write_text(choice.read().as_str());
             },
