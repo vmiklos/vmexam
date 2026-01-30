@@ -19,12 +19,21 @@ fn main() {
 
 #[cfg(feature = "web")]
 fn web_clipboard_write_text(text: &str) {
+    async fn try_write_text(text: &str) -> anyhow::Result<()> {
+        let window = web_sys::window().context("no window")?;
+        let navigator = window.navigator().clipboard();
+        let promise = navigator.write_text(text);
+        if let Err(err) = wasm_bindgen_futures::JsFuture::from(promise).await {
+            return Err(anyhow::anyhow!("write_text() failed: {:?}", err));
+        }
+        Ok(())
+    }
+
     let text = text.to_string();
     wasm_bindgen_futures::spawn_local(async move {
-        let window = web_sys::window().unwrap();
-        let navigator = window.navigator().clipboard();
-        let promise = navigator.write_text(&text);
-        wasm_bindgen_futures::JsFuture::from(promise).await.unwrap();
+        if let Err(err) = try_write_text(&text).await {
+            tracing::error!("try_write_text() failed: {:?}", err);
+        }
     });
 }
 
@@ -40,13 +49,22 @@ fn has_clipboard() -> bool {
 
 #[cfg(feature = "web")]
 fn init_choices() -> Vec<String> {
+    fn try_init_choices() -> anyhow::Result<Vec<String>> {
+        // /?choices=a,b,c,d can be used to init the list, otherwise use the default.
+        let window = web_sys::window().context("no window")?;
+        let Ok(search) = window.location().search() else {
+            return Err(anyhow::anyhow!("no location search"));
+        };
+        let Ok(pairs) = web_sys::UrlSearchParams::new_with_str(&search) else {
+            return Err(anyhow::anyhow!("failed to create UrlSearchParams"));
+        };
+        let choices = pairs.get("choices").context("no choices")?;
+        Ok(choices.split(",").map(|i| i.to_string()).collect())
+    }
     // /?choices=a,b,c,d can be used to init the list, otherwise use the default.
-    let window = web_sys::window().unwrap();
-    let search = window.location().search().unwrap();
-    let pairs = web_sys::UrlSearchParams::new_with_str(&search).unwrap();
-    match pairs.get("choices") {
-        Some(value) => value.split(",").map(|i| i.to_string()).collect(),
-        None => vec!["".to_string(), "".to_string()],
+    match try_init_choices() {
+        Ok(value) => value,
+        Err(_) => vec!["".to_string(), "".to_string()],
     }
 }
 
@@ -87,7 +105,7 @@ pub fn app() -> Element {
                 id: "remove-checkbox",
                 r#type: "checkbox",
                 onchange: move |event| {
-                    remove_choice.set(event.value().parse::<bool>().unwrap());
+                    remove_choice.set(event.checked());
                 },
             }
             label { r#for: "remove-checkbox", "Remove choice" }
