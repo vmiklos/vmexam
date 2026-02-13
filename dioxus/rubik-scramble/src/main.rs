@@ -12,6 +12,8 @@
 
 use dioxus::prelude::*;
 
+const MAIN_CSS: Asset = asset!("/assets/main.css");
+
 #[cfg(feature = "desktop")]
 fn main() {
     use dioxus::desktop::tao;
@@ -91,7 +93,9 @@ fn make_scramble(kind: Scramble) -> anyhow::Result<String> {
 pub fn app() -> Element {
     let mut scramble_type = use_signal(|| Scramble::Wide);
     let mut scramble = use_signal(|| "".to_string());
+    let mut scramble_font_size = use_signal(|| "".to_string());
     rsx! {
+        document::Link { rel: "stylesheet", href: MAIN_CSS }
         label { r#for: "scramble-select", "Type: " }
         select {
             id: "scramble-select",
@@ -114,7 +118,7 @@ pub fn app() -> Element {
             },
         }
         div { "Scramble:" }
-        div { font_size: "xxx-large", "{scramble}" }
+        div { font_size: scramble_font_size, "{scramble}" }
         div {
             span { "Powered by " }
             a { href: "https://github.com/vmiklos/vmexam/tree/master/dioxus/rubik-scramble",
@@ -122,6 +126,39 @@ pub fn app() -> Element {
             }
             span { " and " }
             a { href: "https://crates.io/crates/kewb", "kewb" }
+        }
+
+        // Settings
+        input { r#type: "checkbox", id: "settings-toggle", hidden: true }
+        label {
+            r#for: "settings-toggle",
+            class: "gear-button",
+            title: "Settings",
+            "⚙ "
+        }
+        div { class: "settings-overlay",
+            div { class: "settings-panel",
+                label { r#for: "settings-toggle", class: "close-button", "✕" }
+
+                h2 { "Settings" }
+
+                label { r#for: "font-size-select", "Font size:" }
+                select {
+                    id: "font-size-select",
+                    onchange: move |event| {
+                        scramble_font_size.set(event.value());
+                        Ok(())
+                    },
+                    option { value: "xx-small", "extra extra small" }
+                    option { value: "x-small", "extra small" }
+                    option { value: "small", "small" }
+                    option { value: "medium", selected: true, "medium" }
+                    option { value: "large", "large" }
+                    option { value: "x-large", "extra large" }
+                    option { value: "xx-large", "extra extra large" }
+                    option { value: "xxx-large", "extra extra extra large" }
+                }
+            }
         }
     }
 }

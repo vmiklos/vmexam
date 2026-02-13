@@ -1,0 +1,55 @@
+/* Gear icon */
+.gear-button {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  font-size: 24px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Overlay background */
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: none;
+  z-index: 999;
+}
+
+/* Settings panel */
+.settings-panel {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  width: 260px;
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* Close button */
+.close-button {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* Layout */
+.settings-panel h2 {
+  margin-top: 0;
+}
+
+.settings-panel label {
+  display: block;
+  margin: 8px 0;
+  cursor: pointer;
+}
+
+/* Toggle logic */
+#settings-toggle:checked + .gear-button + .settings-overlay {
+  display: block;
+}
