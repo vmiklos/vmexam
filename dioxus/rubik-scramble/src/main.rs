@@ -89,11 +89,22 @@ fn make_scramble(kind: Scramble) -> anyhow::Result<String> {
     rubik::shuffle(lang, wide, megaminx)
 }
 
+fn local_storage_set_item(key: &str, value: &str) {
+    let storage = web_sys::window().unwrap().local_storage().unwrap().unwrap();
+    storage.set(key, value).unwrap();
+}
+
+fn local_storage_get_item(key: &str) -> Option<String> {
+    let storage = web_sys::window().unwrap().local_storage().unwrap().unwrap();
+    storage.get(key).unwrap()
+}
+
 /// The root component.
 pub fn app() -> Element {
     let mut scramble_type = use_signal(|| Scramble::Wide);
     let mut scramble = use_signal(|| "".to_string());
-    let mut scramble_font_size = use_signal(|| "".to_string());
+    let mut scramble_font_size =
+        use_signal(|| local_storage_get_item("scrambleFontSize").unwrap_or("".to_string()));
     rsx! {
         document::Link { rel: "stylesheet", href: MAIN_CSS }
         label { r#for: "scramble-select", "Type: " }
@@ -146,7 +157,9 @@ pub fn app() -> Element {
                 select {
                     id: "font-size-select",
                     onchange: move |event| {
-                        scramble_font_size.set(event.value());
+                        let value = event.value();
+                        scramble_font_size.set(value.to_string());
+                        local_storage_set_item("scrambleFontSize", &value);
                         Ok(())
                     },
                     option { value: "xx-small", "extra extra small" }

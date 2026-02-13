@@ -8,6 +8,7 @@ anyhow = "1.0.100"
 dioxus = { version = "0.7.3", features = [] }
 kewb = "0.4.2"
 rubik = { path = "../../rubik" }
+web-sys = {version = "0.3.83", features =["Storage"]}
 
 [dependencies.getrandom]
 version = "0.3.4"
