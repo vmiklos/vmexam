@@ -99,12 +99,16 @@ fn local_storage_get_item(key: &str) -> Option<String> {
     storage.get(key).unwrap()
 }
 
+fn is_font_size_selected(scramble_font_size: Signal<String>, font_size: &str) -> bool {
+    scramble_font_size() == font_size
+}
+
 /// The root component.
 pub fn app() -> Element {
     let mut scramble_type = use_signal(|| Scramble::Wide);
     let mut scramble = use_signal(|| "".to_string());
     let mut scramble_font_size =
-        use_signal(|| local_storage_get_item("scrambleFontSize").unwrap_or("".to_string()));
+        use_signal(|| local_storage_get_item("scrambleFontSize").unwrap_or("medium".to_string()));
     rsx! {
         document::Link { rel: "stylesheet", href: MAIN_CSS }
         label { r#for: "scramble-select", "Type: " }
@@ -162,14 +166,46 @@ pub fn app() -> Element {
                         local_storage_set_item("scrambleFontSize", &value);
                         Ok(())
                     },
-                    option { value: "xx-small", "extra extra small" }
-                    option { value: "x-small", "extra small" }
-                    option { value: "small", "small" }
-                    option { value: "medium", selected: true, "medium" }
-                    option { value: "large", "large" }
-                    option { value: "x-large", "extra large" }
-                    option { value: "xx-large", "extra extra large" }
-                    option { value: "xxx-large", "extra extra extra large" }
+                    option {
+                        value: "xx-small",
+                        selected: is_font_size_selected(scramble_font_size, "xx-small"),
+                        "extra extra small"
+                    }
+                    option {
+                        value: "x-small",
+                        selected: is_font_size_selected(scramble_font_size, "x-small"),
+                        "extra small"
+                    }
+                    option {
+                        value: "small",
+                        selected: is_font_size_selected(scramble_font_size, "small"),
+                        "small"
+                    }
+                    option {
+                        value: "medium",
+                        selected: is_font_size_selected(scramble_font_size, "medium"),
+                        "medium"
+                    }
+                    option {
+                        value: "large",
+                        selected: is_font_size_selected(scramble_font_size, "large"),
+                        "large"
+                    }
+                    option {
+                        value: "x-large",
+                        selected: is_font_size_selected(scramble_font_size, "x-large"),
+                        "extra large"
+                    }
+                    option {
+                        value: "xx-large",
+                        selected: is_font_size_selected(scramble_font_size, "xx-large"),
+                        "extra extra large"
+                    }
+                    option {
+                        value: "xxx-large",
+                        selected: is_font_size_selected(scramble_font_size, "xxx-large"),
+                        "extra extra extra large"
+                    }
                 }
             }
         }
