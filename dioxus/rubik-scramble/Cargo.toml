@@ -8,16 +8,20 @@ anyhow = "1.0.100"
 dioxus = { version = "0.7.3", features = [] }
 kewb = "0.4.2"
 rubik = { path = "../../rubik" }
-web-sys = {version = "0.3.83", features =["Storage"]}
 
 [dependencies.getrandom]
 version = "0.3.4"
 optional = true
 features = []
 
+[dependencies.web-sys]
+version = "0.3.83"
+optional = true
+features =["Storage"]
+
 [features]
 default = ["web"]
-web = ["dioxus/web", "getrandom/wasm_js"]
+web = ["dioxus/web", "getrandom/wasm_js", "web-sys"]
 desktop = ["dioxus/desktop"]
 mobile = ["dioxus/mobile"]
 

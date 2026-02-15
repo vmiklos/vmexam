@@ -89,11 +89,13 @@ fn make_scramble(kind: Scramble) -> anyhow::Result<String> {
     rubik::shuffle(lang, wide, megaminx)
 }
 
+#[cfg(feature = "web")]
 fn local_storage_set_item(key: &str, value: &str) {
     let storage = web_sys::window().unwrap().local_storage().unwrap().unwrap();
     storage.set(key, value).unwrap();
 }
 
+#[cfg(feature = "web")]
 fn local_storage_get_item(key: &str) -> Option<String> {
     let storage = web_sys::window().unwrap().local_storage().unwrap().unwrap();
     storage.get(key).unwrap()
