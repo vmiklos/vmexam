@@ -7,7 +7,7 @@
     "domready": "1.0.8",
     "nyc": "17.1.0",
     "wait-on": "9.0.1",
-    "webpack": "5.102.1",
+    "webpack": "5.104.1",
     "webpack-cli": "6.0.1"
   },
   "repository": {
