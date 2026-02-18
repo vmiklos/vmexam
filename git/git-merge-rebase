@@ -1,0 +1,10 @@
+#!/bin/bash -e
+#
+# Copyright 2025 Miklos Vajna
+#
+# SPDX-License-Identifier: MIT
+#
+
+git cherry-pick HEAD..$1
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
