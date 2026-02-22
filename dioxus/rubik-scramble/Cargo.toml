@@ -17,13 +17,17 @@ features = []
 [dependencies.web-sys]
 version = "0.3.83"
 optional = true
-features =["Storage"]
+features = ["Storage"]
+
+[dependencies.preferences]
+version = "2.0.0"
+optional = true
 
 [features]
 default = ["web"]
 web = ["dioxus/web", "getrandom/wasm_js", "web-sys"]
 desktop = ["dioxus/desktop"]
-mobile = ["dioxus/mobile"]
+mobile = ["dioxus/mobile", "preferences"]
 
 [build-dependencies]
 kewb = "0.4.3"

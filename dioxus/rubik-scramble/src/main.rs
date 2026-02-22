@@ -11,6 +11,8 @@
 //! Commandline interface to rubik-scramble.
 
 use dioxus::prelude::*;
+#[cfg(target_os = "android")]
+use preferences::Preferences as _;
 
 const MAIN_CSS: Asset = asset!("/assets/main.css");
 
@@ -99,6 +101,25 @@ fn local_storage_set_item(key: &str, value: &str) {
 fn local_storage_get_item(key: &str) -> Option<String> {
     let storage = web_sys::window().unwrap().local_storage().unwrap().unwrap();
     storage.get(key).unwrap()
+}
+
+#[cfg(target_os = "android")]
+const APP_INFO: preferences::AppInfo = preferences::AppInfo {
+    name: "rubik-scramble",
+    author: "vmiklos",
+};
+
+#[cfg(target_os = "android")]
+fn local_storage_set_item(key: &str, value: &str) {
+    value.to_string().save(&APP_INFO, key).unwrap()
+}
+
+#[cfg(target_os = "android")]
+fn local_storage_get_item(key: &str) -> Option<String> {
+    match String::load(&APP_INFO, key) {
+        Ok(value) => Some(value),
+        Err(_) => None,
+    }
 }
 
 fn is_font_size_selected(scramble_font_size: Signal<String>, font_size: &str) -> bool {
