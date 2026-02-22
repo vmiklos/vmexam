@@ -51,19 +51,22 @@ impl nextcloud_open::Network for StdNetwork {
 
 #[derive(clap::Parser)]
 struct Arguments {
-    user_path: std::path::PathBuf,
+    #[clap(num_args = 1..)]
+    user_paths: Vec<std::path::PathBuf>,
 }
 
 fn main() -> anyhow::Result<()> {
     let root: vfs::VfsPath = vfs::PhysicalFS::new("/").into();
     let network = Rc::new(StdNetwork {});
     let args = Arguments::parse();
-    let input = args
-        .user_path
-        .canonicalize()
-        .context(format!("failed to canonicalize {:?}", args.user_path))?;
-    let input = root.join(input.to_string_lossy()).unwrap();
+    let mut inputs: Vec<vfs::VfsPath> = Vec::new();
+    for user_path in args.user_paths {
+        let input = user_path
+            .canonicalize()
+            .with_context(|| format!("failed to canonicalize {:?}", user_path))?;
+        inputs.push(root.join(input.to_string_lossy())?);
+    }
     let ctx = nextcloud_open::Context::new(root, network);
 
-    nextcloud_open::nextcloud_open(&ctx, &input)
+    nextcloud_open::nextcloud_open(&ctx, &inputs)
 }

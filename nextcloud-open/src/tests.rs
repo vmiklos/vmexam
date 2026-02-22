@@ -168,7 +168,7 @@ password = "mypassword"
         .unwrap();
     let ctx = Context::new(root, network);
 
-    nextcloud_open(&ctx, &input).unwrap();
+    nextcloud_open(&ctx, &[input]).unwrap();
 
     let network = ctx.network.as_any().downcast_ref::<TestNetwork>().unwrap();
     let open_browsers = network.open_browsers.borrow_mut();
@@ -202,7 +202,7 @@ fn test_config_read_error() {
         .unwrap();
     let ctx = Context::new(root, network);
 
-    let ret = nextcloud_open(&ctx, &input);
+    let ret = nextcloud_open(&ctx, &[input]);
 
     assert!(ret.is_err());
 }
@@ -243,7 +243,7 @@ version=4\n\
         .unwrap();
     let ctx = Context::new(root, network);
 
-    nextcloud_open(&ctx, &input).unwrap();
+    nextcloud_open(&ctx, &[input]).unwrap();
 
     let network = ctx.network.as_any().downcast_ref::<TestNetwork>().unwrap();
     let open_browsers = network.open_browsers.borrow_mut();

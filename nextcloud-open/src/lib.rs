@@ -202,14 +202,16 @@ fn get_url(ctx: &Context, account: &Account, user_path: &UserPath) -> anyhow::Re
     Ok(url::Url::parse(&full_url)?)
 }
 
-/// Opens the server version of `input` in a browser.
-pub fn nextcloud_open(ctx: &Context, input: &vfs::VfsPath) -> anyhow::Result<()> {
+/// Opens the server version of `inputs` in a browser.
+pub fn nextcloud_open(ctx: &Context, inputs: &[vfs::VfsPath]) -> anyhow::Result<()> {
     let nextcloud_config = get_nextcloud_config(ctx)?;
     let accounts = get_accounts(&nextcloud_config)?;
-    let user_path = get_first_user_path(input)?;
-    let account = get_account(&accounts, &user_path.parent)?;
-    let url = get_url(ctx, account, &user_path)?;
-    ctx.network.open_browser(&url);
+    for input in inputs {
+        let user_path = get_first_user_path(input)?;
+        let account = get_account(&accounts, &user_path.parent)?;
+        let url = get_url(ctx, account, &user_path)?;
+        ctx.network.open_browser(&url);
+    }
     Ok(())
 }
 
