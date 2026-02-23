@@ -61,7 +61,7 @@ struct Config {
 
 /// Main logic of pushping.
 pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<i32> {
-    let start = chrono::Local::now();
+    let start = time::OffsetDateTime::now_local().context("now_local() failed")?;
 
     // Run the command and build a json to be sent.
     let (_, subprocess_args) = args.split_first().context("args.split_first() failed")?;
@@ -82,10 +82,10 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<i32> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let home_dir: String = home_dir.to_str().context("to_str() failed")?.into();
     working_directory = working_directory.replace(&home_dir, "~");
-    let duration = chrono::Local::now() - start;
-    let seconds = duration.num_seconds() % 60;
-    let minutes = duration.num_minutes() % 60;
-    let hours = duration.num_hours();
+    let duration = time::OffsetDateTime::now_local().context("now_local() failed")? - start;
+    let seconds = duration.whole_seconds() % 60;
+    let minutes = duration.whole_minutes() % 60;
+    let hours = duration.whole_hours();
     let duration = format!("{hours}:{minutes:0>2}:{seconds:0>2}");
     let body = format!(
         "{result} {host}:{working_directory}$ {command}: exit code is {exit_code}, finished in {duration}"
