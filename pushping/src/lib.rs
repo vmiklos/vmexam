@@ -11,19 +11,27 @@
 //! Trivial wrapper around a cmdline, sends a note about its exit code.
 
 use anyhow::Context as _;
-use isahc::RequestExt as _;
 use std::io::Read as _;
+use std::rc::Rc;
 
-/// Abstracts away the physical filesystem.
+/// Network interface.
+pub trait Network {
+    /// Posts a JSON to an URL.
+    fn post(&self, url: String, data: String) -> anyhow::Result<()>;
+}
+
+/// Abstracts away the physical filesystem and network.
 pub struct Context {
     /// File system.
     pub fs: vfs::VfsPath,
+    /// Network.
+    pub network: Rc<dyn Network>,
 }
 
 impl Context {
     /// Creates a new Context.
-    pub fn new(fs: vfs::VfsPath) -> Self {
-        Context { fs }
+    pub fn new(fs: vfs::VfsPath, network: Rc<dyn Network>) -> Self {
+        Context { fs, network }
     }
 }
 
@@ -93,7 +101,7 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<i32> {
         "{}/send/m.room.message?access_token={}",
         config.room_url, config.access_token
     );
-    isahc::Request::post(url).body(json)?.send()?;
+    ctx.network.post(url, json)?;
 
     println!("Finished in {duration}");
     Ok(exit_code)
