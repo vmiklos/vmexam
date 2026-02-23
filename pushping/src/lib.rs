@@ -20,18 +20,30 @@ pub trait Network {
     fn post(&self, url: String, data: String) -> anyhow::Result<()>;
 }
 
-/// Abstracts away the physical filesystem and network.
+/// Process interface.
+pub trait Process {
+    /// Runs a command and returns its exit code.
+    fn command_status(&self, command: &str, args: &[&str]) -> anyhow::Result<i32>;
+}
+
+/// Abstracts away the physical filesystem, network and processes.
 pub struct Context {
     /// File system.
     pub fs: vfs::VfsPath,
     /// Network.
     pub network: Rc<dyn Network>,
+    /// Process.
+    pub process: Rc<dyn Process>,
 }
 
 impl Context {
     /// Creates a new Context.
-    pub fn new(fs: vfs::VfsPath, network: Rc<dyn Network>) -> Self {
-        Context { fs, network }
+    pub fn new(fs: vfs::VfsPath, network: Rc<dyn Network>, process: Rc<dyn Process>) -> Self {
+        Context {
+            fs,
+            network,
+            process,
+        }
     }
 }
 
@@ -54,11 +66,8 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<i32> {
     // Run the command and build a json to be sent.
     let (_, subprocess_args) = args.split_first().context("args.split_first() failed")?;
     let (first, rest) = subprocess_args.split_first().context("missing command")?;
-    let exit_status = std::process::Command::new(first)
-        .args(rest)
-        .status()
-        .context("failed to execute the command as a child process")?;
-    let exit_code = exit_status.code().context("code() failed")?;
+    let rest_strs: Vec<&str> = rest.iter().map(|s| s.as_str()).collect();
+    let exit_code = ctx.process.command_status(first, &rest_strs)?;
     let command = subprocess_args.join(" ");
     // passed or failed
     let result = if exit_code == 0 {

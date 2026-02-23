@@ -10,6 +10,7 @@
 
 //! Commandline interface to pushping.
 
+use anyhow::Context as _;
 use isahc::RequestExt as _;
 use std::rc::Rc;
 
@@ -22,11 +23,25 @@ impl pushping::Network for RealNetwork {
     }
 }
 
+struct RealProcess {}
+
+impl pushping::Process for RealProcess {
+    fn command_status(&self, command: &str, args: &[&str]) -> anyhow::Result<i32> {
+        let exit_status = std::process::Command::new(command)
+            .args(args)
+            .status()
+            .context("failed to execute the command as a child process")?;
+        let exit_code = exit_status.code().context("code() failed")?;
+        Ok(exit_code)
+    }
+}
+
 fn main() -> anyhow::Result<()> {
     let args: Vec<String> = std::env::args().collect();
     let ctx = pushping::Context::new(
         vfs::PhysicalFS::new("/").into(),
         Rc::new(RealNetwork {}),
+        Rc::new(RealProcess {}),
     );
     let exit_code = pushping::run(args, &ctx)?;
     std::process::exit(exit_code);
