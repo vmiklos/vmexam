@@ -61,7 +61,7 @@ impl Context {
     }
 }
 
-#[derive(serde::Serialize)]
+#[derive(serde::Serialize, serde::Deserialize)]
 struct Message {
     msgtype: String,
     body: String,
@@ -129,3 +129,6 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<i32> {
     println!("Finished in {duration}");
     Ok(exit_code)
 }
+
+#[cfg(test)]
+mod tests;
