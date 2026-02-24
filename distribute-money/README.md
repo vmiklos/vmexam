@@ -1,6 +1,6 @@
 # distribute-money
 
-A simple tool similar to <https://www.splitwise.com/>.
+Calculates transactions within a group to balance their expenses and settle all outstanding balances.
 
 ## Installation
 

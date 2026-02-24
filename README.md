@@ -8,7 +8,8 @@ test coverage:
 
 - addr-osmify: annotate postal addresses with GPS coordinates
 - darcs-git: a darcs-like wrapper around git
-- distribute-money: a tool similar to splitwise
+- distribute-money: calculates transactions within a group to balance their expenses and settle all
+  outstanding balances
 - ics2txt: .ics file printer for mutt
 - nextcloud-open: open certain files in your browser, based on your local nextcloud sync tree
 - pushping: can run a command and send its exit status to a Matrix channel

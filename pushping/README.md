@@ -6,7 +6,7 @@ Matrix channel.
 ## Installation
 
 ```
-cargo install --git https://github.com/vmiklos/vmexam weesearch
+cargo install --git https://github.com/vmiklos/vmexam pushping
 ```
 
 ## Usage

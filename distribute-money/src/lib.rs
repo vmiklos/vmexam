@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-//! A simple money distribution library, similar to splitwise.
+//! A simple money distribution library for settling debts within a group.
 
 #![deny(warnings)]
 #![warn(clippy::all)]
