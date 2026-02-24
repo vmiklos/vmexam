@@ -36,12 +36,21 @@ impl pushping::Process for RealProcess {
     }
 }
 
+struct RealTime {}
+
+impl pushping::Time for RealTime {
+    fn now(&self) -> time::OffsetDateTime {
+        time::OffsetDateTime::now_local().expect("now_local() failed")
+    }
+}
+
 fn main() -> anyhow::Result<()> {
     let args: Vec<String> = std::env::args().collect();
     let ctx = pushping::Context::new(
         vfs::PhysicalFS::new("/").into(),
         Rc::new(RealNetwork {}),
         Rc::new(RealProcess {}),
+        Rc::new(RealTime {}),
     );
     let exit_code = pushping::run(args, &ctx)?;
     std::process::exit(exit_code);

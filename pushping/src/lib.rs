@@ -26,7 +26,13 @@ pub trait Process {
     fn command_status(&self, command: &str, args: &[&str]) -> anyhow::Result<i32>;
 }
 
-/// Abstracts away the physical filesystem, network and processes.
+/// Time interface.
+pub trait Time {
+    /// Returns the current local time.
+    fn now(&self) -> time::OffsetDateTime;
+}
+
+/// Abstracts away the physical filesystem, network, processes and time.
 pub struct Context {
     /// File system.
     pub fs: vfs::VfsPath,
@@ -34,15 +40,23 @@ pub struct Context {
     pub network: Rc<dyn Network>,
     /// Process.
     pub process: Rc<dyn Process>,
+    /// Time.
+    pub time: Rc<dyn Time>,
 }
 
 impl Context {
     /// Creates a new Context.
-    pub fn new(fs: vfs::VfsPath, network: Rc<dyn Network>, process: Rc<dyn Process>) -> Self {
+    pub fn new(
+        fs: vfs::VfsPath,
+        network: Rc<dyn Network>,
+        process: Rc<dyn Process>,
+        time: Rc<dyn Time>,
+    ) -> Self {
         Context {
             fs,
             network,
             process,
+            time,
         }
     }
 }
@@ -61,7 +75,7 @@ struct Config {
 
 /// Main logic of pushping.
 pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<i32> {
-    let start = time::OffsetDateTime::now_local().context("now_local() failed")?;
+    let start = ctx.time.now();
 
     // Run the command and build a json to be sent.
     let (_, subprocess_args) = args.split_first().context("args.split_first() failed")?;
@@ -82,7 +96,7 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<i32> {
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let home_dir: String = home_dir.to_str().context("to_str() failed")?.into();
     working_directory = working_directory.replace(&home_dir, "~");
-    let duration = time::OffsetDateTime::now_local().context("now_local() failed")? - start;
+    let duration = ctx.time.now() - start;
     let seconds = duration.whole_seconds() % 60;
     let minutes = duration.whole_minutes() % 60;
     let hours = duration.whole_hours();
