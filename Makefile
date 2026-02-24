@@ -123,6 +123,7 @@ $(eval $(call RustPackage_use_coverage,osm/addr-osmify-rust))
 $(eval $(call RustPackage_RustPackage,pdfcal))
 
 $(eval $(call RustPackage_RustPackage,pushping))
+$(eval $(call RustPackage_use_coverage,pushping))
 
 $(eval $(call RustPackage_RustPackage,qemu/exec-client))
 $(eval $(call RustPackage_RustPackage,qemu/exec-server))

@@ -93,7 +93,7 @@ room_url = "https://matrix.example.com"
     let now = time::macros::datetime!(2022-01-01 00:00:00 UTC);
     let time = Rc::new(TestTime::new(now));
     let ctx = Context::new(root, network.clone(), process, time);
-    let args = vec!["pushping".into(), "true".into()];
+    let args = vec!["pushping".into(), "echo".into(), "foo".into()];
 
     let exit_code = run(args, &ctx).unwrap();
 
@@ -110,6 +110,49 @@ room_url = "https://matrix.example.com"
     assert!(
         message
             .body
-            .ends_with("$ true: exit code is 0, finished in 0:00:00")
+            .ends_with("$ echo foo: exit code is 0, finished in 0:00:00")
+    );
+}
+
+#[test]
+fn test_run_failure() {
+    let root: vfs::VfsPath = vfs::MemoryFS::new().into();
+    let home_dir = home::home_dir().unwrap();
+    let home_path = home_dir.to_string_lossy();
+    let config_dir = root.join(&format!("{home_path}/.config")).unwrap();
+    config_dir.create_dir_all().unwrap();
+    let config_file = config_dir.join("pushpingrc").unwrap();
+    config_file
+        .create_file()
+        .unwrap()
+        .write_all(
+            r#"access_token = "mytoken"
+room_url = "https://matrix.example.com"
+"#
+            .as_bytes(),
+        )
+        .unwrap();
+    let network = Rc::new(TestNetwork::new());
+    let process = Rc::new(TestProcess::new(1));
+    let now = time::macros::datetime!(2022-01-01 00:00:00 UTC);
+    let time = Rc::new(TestTime::new(now));
+    let ctx = Context::new(root, network.clone(), process, time);
+    let args = vec!["pushping".into(), "false".into()];
+
+    let exit_code = run(args, &ctx).unwrap();
+
+    assert_eq!(exit_code, 1);
+    assert_eq!(
+        *network.url.borrow(),
+        "https://matrix.example.com/send/m.room.message?access_token=mytoken"
+    );
+    let data = network.data.borrow();
+    let message: Message = serde_json::from_str(&data).unwrap();
+    assert_eq!(message.msgtype, "m.text");
+    assert!(message.body.starts_with("✗ "));
+    assert!(
+        message
+            .body
+            .ends_with("$ false: exit code is 1, finished in 0:00:00")
     );
 }

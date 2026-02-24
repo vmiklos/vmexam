@@ -3,6 +3,14 @@
 This is a <https://www.pushbullet.com/> replacement: can run a command and send its exit status to a
 Matrix channel.
 
+## Installation
+
+```
+cargo install --git https://github.com/vmiklos/vmexam weesearch
+```
+
+## Usage
+
 Config file:
 
 ```
