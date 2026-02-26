@@ -4,6 +4,7 @@
 --without-myspell-dicts
 --without-help
 --without-java
+--enable-python=auto
 # online.git is not compatible with system nss
 --without-system-nss
 # test would hang
