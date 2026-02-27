@@ -39,16 +39,27 @@ impl Network for TestNetwork {
 /// Process implementation, for test purposes.
 pub struct TestProcess {
     exit_code: i32,
+    command: RefCell<String>,
+    args: RefCell<Vec<String>>,
 }
 
 impl TestProcess {
     pub fn new(exit_code: i32) -> Self {
-        TestProcess { exit_code }
+        let command = RefCell::new(String::new());
+        let args = RefCell::new(Vec::new());
+        TestProcess {
+            exit_code,
+            command,
+            args,
+        }
     }
 }
 
 impl Process for TestProcess {
-    fn command_status(&self, _command: &str, _args: &[&str]) -> anyhow::Result<i32> {
+    fn command_status(&self, command: &str, args: &[&str]) -> anyhow::Result<i32> {
+        *self.command.borrow_mut() = command.to_string();
+        let args_vec: Vec<_> = args.iter().map(|i| i.to_string()).collect();
+        *self.args.borrow_mut() = args_vec;
         Ok(self.exit_code)
     }
 
@@ -64,12 +75,12 @@ impl Process for TestProcess {
 /// Time implementation, for test purposes.
 pub struct TestTime {
     now: time::OffsetDateTime,
-    counter: Rc<RefCell<i64>>,
+    counter: RefCell<i64>,
 }
 
 impl TestTime {
     pub fn new(now: time::OffsetDateTime) -> Self {
-        let counter = Rc::new(RefCell::new(0));
+        let counter = RefCell::new(0);
         TestTime { now, counter }
     }
 }
@@ -104,7 +115,7 @@ room_url = "https://matrix.example.com"
     let process = Rc::new(TestProcess::new(0));
     let now = time::macros::datetime!(2022-01-01 00:00:00 UTC);
     let time = Rc::new(TestTime::new(now));
-    let ctx = Context::new(root, network.clone(), process, time);
+    let ctx = Context::new(root, network.clone(), process.clone(), time);
     let args = vec!["pushping".into(), "echo".into(), "foo".into()];
 
     let exit_code = run(args, &ctx).unwrap();
@@ -121,6 +132,11 @@ room_url = "https://matrix.example.com"
         message.body,
         "✓ myhostname:/mydir$ echo foo: exit code is 0, finished in 0:00:01"
     );
+
+    let command = process.command.borrow();
+    assert_eq!(*command, "echo");
+    let args = process.args.borrow();
+    assert_eq!(*args, ["foo"]);
 }
 
 #[test]
