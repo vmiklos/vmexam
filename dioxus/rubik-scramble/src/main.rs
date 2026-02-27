@@ -126,9 +126,20 @@ fn is_font_size_selected(scramble_font_size: Signal<String>, font_size: &str) ->
     scramble_font_size() == font_size
 }
 
+fn is_scramble_type_selected(scramble_type: Signal<Scramble>, candidate: Scramble) -> bool {
+    scramble_type() == candidate
+}
+
 /// The root component.
 pub fn app() -> Element {
-    let mut scramble_type = use_signal(|| Scramble::Wide);
+    let mut scramble_type = use_signal(|| {
+        Scramble::try_from(
+            local_storage_get_item("scrambleType")
+                .unwrap_or("wide".to_string())
+                .as_str(),
+        )
+        .unwrap_or(Scramble::Wide)
+    });
     let mut scramble = use_signal(|| "".to_string());
     let mut scramble_font_size =
         use_signal(|| local_storage_get_item("scrambleFontSize").unwrap_or("medium".to_string()));
@@ -138,14 +149,36 @@ pub fn app() -> Element {
         select {
             id: "scramble-select",
             onchange: move |event| {
-                scramble_type.set(Scramble::try_from(event.value().as_str())?);
+                let value = event.value();
+                scramble_type.set(Scramble::try_from(value.as_str())?);
+                local_storage_set_item("scrambleType", &value);
                 Ok(())
             },
-            option { value: "wide", "4x4 (blue goes to the top)" }
-            option { value: "normal", "3x3" }
-            option { value: "f2l-solved", "3x3 f2l-solved (yellow goes to the top, kewb)" }
-            option { value: "oll-solved", "3x3 oll-solved (yellow goes to the top, kewb)" }
-            option { value: "megaminx", "megaminx" }
+            option {
+                selected: is_scramble_type_selected(scramble_type, Scramble::Wide),
+                value: "wide",
+                "4x4 (blue goes to the top)"
+            }
+            option {
+                selected: is_scramble_type_selected(scramble_type, Scramble::Normal),
+                value: "normal",
+                "3x3"
+            }
+            option {
+                selected: is_scramble_type_selected(scramble_type, Scramble::F2lSolved),
+                value: "f2l-solved",
+                "3x3 f2l-solved (yellow goes to the top, kewb)"
+            }
+            option {
+                selected: is_scramble_type_selected(scramble_type, Scramble::OllSolved),
+                value: "oll-solved",
+                "3x3 oll-solved (yellow goes to the top, kewb)"
+            }
+            option {
+                selected: is_scramble_type_selected(scramble_type, Scramble::Megaminx),
+                value: "megaminx",
+                "megaminx"
+            }
         }
         input {
             r#type: "button",
