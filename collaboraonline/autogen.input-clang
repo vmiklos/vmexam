@@ -7,6 +7,6 @@ CXXFLAGS=-g -O0 $CXXFLAGS
 --enable-silent-rules
 --enable-experimental
 --enable-cypress
---with-lo-path=$HOME/git/libreoffice/co-25.04-clang/instdir
---with-lokit-path=$HOME/git/libreoffice/co-25.04-clang/include
+--with-lo-path=$HOME/git/libreoffice/co-26.04-clang/instdir
+--with-lokit-path=$HOME/git/libreoffice/co-26.04-clang/include
 --enable-coplugin
