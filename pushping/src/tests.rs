@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Miklos Vajna
+ * Copyright 2026 Miklos Vajna
  *
  * SPDX-License-Identifier: MIT
  */
@@ -51,22 +51,34 @@ impl Process for TestProcess {
     fn command_status(&self, _command: &str, _args: &[&str]) -> anyhow::Result<i32> {
         Ok(self.exit_code)
     }
+
+    fn get_hostname(&self) -> anyhow::Result<String> {
+        Ok("myhostname".to_string())
+    }
+
+    fn get_current_dir(&self) -> anyhow::Result<String> {
+        Ok("/mydir".to_string())
+    }
 }
 
 /// Time implementation, for test purposes.
 pub struct TestTime {
     now: time::OffsetDateTime,
+    counter: Rc<RefCell<i64>>,
 }
 
 impl TestTime {
     pub fn new(now: time::OffsetDateTime) -> Self {
-        TestTime { now }
+        let counter = Rc::new(RefCell::new(0));
+        TestTime { now, counter }
     }
 }
 
 impl Time for TestTime {
     fn now(&self) -> time::OffsetDateTime {
-        self.now
+        let mut counter = self.counter.borrow_mut();
+        *counter += 1;
+        self.now + time::Duration::seconds(*counter)
     }
 }
 
@@ -105,12 +117,9 @@ room_url = "https://matrix.example.com"
     let data = network.data.borrow();
     let message: Message = serde_json::from_str(&data).unwrap();
     assert_eq!(message.msgtype, "m.text");
-    // We have the hostname and the current workding directory between the two.
-    assert!(message.body.starts_with("✓ "));
-    assert!(
-        message
-            .body
-            .ends_with("$ echo foo: exit code is 0, finished in 0:00:00")
+    assert_eq!(
+        message.body,
+        "✓ myhostname:/mydir$ echo foo: exit code is 0, finished in 0:00:01"
     );
 }
 
@@ -149,10 +158,8 @@ room_url = "https://matrix.example.com"
     let data = network.data.borrow();
     let message: Message = serde_json::from_str(&data).unwrap();
     assert_eq!(message.msgtype, "m.text");
-    assert!(message.body.starts_with("✗ "));
-    assert!(
-        message
-            .body
-            .ends_with("$ false: exit code is 1, finished in 0:00:00")
+    assert_eq!(
+        message.body,
+        "✗ myhostname:/mydir$ false: exit code is 1, finished in 0:00:01"
     );
 }

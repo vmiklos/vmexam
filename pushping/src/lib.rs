@@ -24,6 +24,12 @@ pub trait Network {
 pub trait Process {
     /// Runs a command and returns its exit code.
     fn command_status(&self, command: &str, args: &[&str]) -> anyhow::Result<i32>;
+
+    /// Get the standard host name for the current machine.
+    fn get_hostname(&self) -> anyhow::Result<String>;
+
+    /// Returns the current working directory.
+    fn get_current_dir(&self) -> anyhow::Result<String>;
 }
 
 /// Time interface.
@@ -89,10 +95,8 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<i32> {
     } else {
         "\u{2717}"
     };
-    let hostname = gethostname::gethostname();
-    let host = hostname.to_str().context("to_str() failed")?;
-    let current_dir = std::env::current_dir()?;
-    let mut working_directory: String = current_dir.to_str().context("to_str() failed")?.into();
+    let host = ctx.process.get_hostname()?;
+    let mut working_directory = ctx.process.get_current_dir()?;
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let home_dir: String = home_dir.to_str().context("to_str() failed")?.into();
     working_directory = working_directory.replace(&home_dir, "~");

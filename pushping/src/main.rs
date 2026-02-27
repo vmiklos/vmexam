@@ -34,6 +34,18 @@ impl pushping::Process for RealProcess {
         let exit_code = exit_status.code().context("code() failed")?;
         Ok(exit_code)
     }
+
+    fn get_hostname(&self) -> anyhow::Result<String> {
+        let hostname = gethostname::gethostname();
+        let host = hostname.to_str().context("to_str() failed")?;
+        Ok(host.to_string())
+    }
+
+    fn get_current_dir(&self) -> anyhow::Result<String> {
+        let current_dir = std::env::current_dir()?;
+        let dir = current_dir.to_str().context("to_str() failed")?;
+        Ok(dir.to_string())
+    }
 }
 
 struct RealTime {}
