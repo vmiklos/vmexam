@@ -1,0 +1,10 @@
+[package]
+name = "json-logger"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde_json = "1.0"
+clap = { version = "4.0", features = ["derive"] }
+time = { version = "0.3", features = ["formatting", "macros", "local-offset"] }
+anyhow = "1.0"
