@@ -4,3 +4,5 @@
 --without-system-nss
 # test would hang
 --disable-gpgmepp
+# online.git cypress tests need this
+--enable-python=internal
