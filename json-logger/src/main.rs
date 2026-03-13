@@ -23,6 +23,10 @@ struct Args {
     /// The directory where log files will be stored.
     #[arg(short, long)]
     log_dir: String,
+
+    /// Print '{}' on stdout if the logging is done without errors.
+    #[arg(short, long)]
+    print_empty: bool,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -67,6 +71,10 @@ fn main() -> anyhow::Result<()> {
         } else {
             eprintln!("Key '{}' not found in input JSON.", args.key);
         }
+    }
+
+    if args.print_empty {
+        std::io::stdout().write_all(b"{}\n")?;
     }
 
     Ok(())
