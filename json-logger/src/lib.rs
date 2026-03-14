@@ -10,6 +10,7 @@
 
 //! Logs the value of one key of the JSON passed in on stdin.
 
+use anyhow::Context as _;
 use clap::Parser as _;
 use std::io::Write as _;
 use std::rc::Rc;
@@ -18,28 +19,6 @@ use std::rc::Rc;
 pub trait Time {
     /// Returns the current local time.
     fn now(&self) -> time::OffsetDateTime;
-}
-
-/// Physical time implementation.
-pub struct PhysicalTime {}
-
-impl Default for PhysicalTime {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl PhysicalTime {
-    /// Creates a new PhysicalTime.
-    pub fn new() -> Self {
-        PhysicalTime {}
-    }
-}
-
-impl Time for PhysicalTime {
-    fn now(&self) -> time::OffsetDateTime {
-        time::OffsetDateTime::now_local().unwrap_or_else(|_| time::OffsetDateTime::now_utc())
-    }
 }
 
 /// Abstracts away the physical filesystem.
@@ -95,33 +74,22 @@ pub fn run(
     let timestamp = now.format(&format)?;
 
     // Log the specified key from the JSON.
-    for input_result in stream {
-        let input = match input_result {
-            Ok(v) => v,
-            Err(e) => {
-                writeln!(stdout, "Failed to parse JSON from stdin: {}", e)?;
-                continue;
-            }
-        };
+    for item in stream {
+        let parsed = item?;
 
-        match input.get(&args.key) {
-            Some(log_value) => {
-                if let Some(log_str) = log_value.as_str() {
-                    let log_path = ctx.fs.join(&args.log_dir)?.join(&filename)?;
-                    if !log_path.exists()? {
-                        log_path.create_file()?;
-                    }
-                    let mut file = log_path.append_file()?;
-
-                    writeln!(file, "[{}] {}", timestamp, log_str)?;
-                } else {
-                    writeln!(stdout, "Value for key '{}' is not a string.", args.key)?;
-                }
-            }
-            None => {
-                writeln!(stdout, "Key '{}' not found in input JSON.", args.key)?;
-            }
+        let log_value = parsed
+            .get(&args.key)
+            .context("key not found in input JSON")?;
+        let log_str = log_value
+            .as_str()
+            .context("value for the key is not a string")?;
+        let log_path = ctx.fs.join(&args.log_dir)?.join(&filename)?;
+        if !log_path.exists()? {
+            log_path.create_file()?;
         }
+        let mut file = log_path.append_file()?;
+
+        writeln!(file, "[{}] {}", timestamp, log_str)?;
     }
 
     if args.print_empty {
