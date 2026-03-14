@@ -13,12 +13,31 @@
 use super::*;
 use std::io::Read as _;
 
+/// Time implementation, for test purposes.
+pub struct TestTime {
+    now: time::OffsetDateTime,
+}
+
+impl TestTime {
+    pub fn new(now: time::OffsetDateTime) -> Self {
+        TestTime { now }
+    }
+}
+
+impl Time for TestTime {
+    fn now(&self) -> time::OffsetDateTime {
+        self.now
+    }
+}
+
 #[test]
 fn test_run_happy() {
     let root: vfs::VfsPath = vfs::MemoryFS::new().into();
     let log_dir = "/logs";
     root.join(log_dir).unwrap().create_dir_all().unwrap();
-    let ctx = Context::new(root.clone());
+    let now = time::macros::datetime!(2026-03-13 23:45:00 UTC);
+    let time = Rc::new(TestTime::new(now));
+    let ctx = Context::new(root.clone(), time);
     let args = vec![
         "json-logger".into(),
         "--key".into(),
@@ -38,6 +57,6 @@ fn test_run_happy() {
     let mut log_file = log_path.open_file().unwrap();
     let mut log_content = String::new();
     log_file.read_to_string(&mut log_content).unwrap();
-    assert!(log_content.contains("bar"));
+    assert_eq!(log_content, "[2026-03-13 23:45:00] bar\n");
     assert_eq!(stdout, b"{}\n");
 }

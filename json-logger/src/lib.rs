@@ -12,17 +12,48 @@
 
 use clap::Parser as _;
 use std::io::Write as _;
+use std::rc::Rc;
+
+/// Abstracts away the current time.
+pub trait Time {
+    /// Returns the current local time.
+    fn now(&self) -> time::OffsetDateTime;
+}
+
+/// Physical time implementation.
+pub struct PhysicalTime {}
+
+impl Default for PhysicalTime {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl PhysicalTime {
+    /// Creates a new PhysicalTime.
+    pub fn new() -> Self {
+        PhysicalTime {}
+    }
+}
+
+impl Time for PhysicalTime {
+    fn now(&self) -> time::OffsetDateTime {
+        time::OffsetDateTime::now_local().unwrap_or_else(|_| time::OffsetDateTime::now_utc())
+    }
+}
 
 /// Abstracts away the physical filesystem.
 pub struct Context {
     /// File system.
     pub fs: vfs::VfsPath,
+    /// Time.
+    pub time: Rc<dyn Time>,
 }
 
 impl Context {
     /// Creates a new Context.
-    pub fn new(fs: vfs::VfsPath) -> Self {
-        Context { fs }
+    pub fn new(fs: vfs::VfsPath, time: Rc<dyn Time>) -> Self {
+        Context { fs, time }
     }
 }
 
@@ -59,7 +90,7 @@ pub fn run(
     let stream = serde_json::Deserializer::from_reader(stdin).into_iter::<serde_json::Value>();
 
     // Find out the timestamp prefix.
-    let now = time::OffsetDateTime::now_local()?;
+    let now = ctx.time.now();
     let format = time::format_description::parse("[year]-[month]-[day] [hour]:[minute]:[second]")?;
     let timestamp = now.format(&format)?;
 
