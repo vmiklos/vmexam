@@ -101,7 +101,7 @@ $(eval $(call RustPackage_RustPackage,ics2txt))
 $(eval $(call RustPackage_use_coverage,ics2txt))
 
 $(eval $(call RustPackage_RustPackage,json-logger))
-$(eval $(call RustPackage_use_test,json-logger))
+$(eval $(call RustPackage_use_coverage,json-logger))
 
 $(eval $(call RustPackage_RustPackage,markdown-stats))
 
