@@ -2,9 +2,10 @@ CFLAGS=-g -O0 $CFLAGS
 CXXFLAGS=-g -O0 $CXXFLAGS
 --prefix=$PWD/install
 --enable-debug
+--enable-silent-rules
 --enable-fuzzers
 --enable-coplugin
 --enable-experimental
 --enable-cypress
---with-lo-path=$HOME/git/libreoffice/co-25.04-san/instdir
---with-lokit-path=$HOME/git/libreoffice/co-25.04-san/include
+--with-lo-path=$HOME/git/libreoffice/co-26.04-san/instdir
+--with-lokit-path=$HOME/git/libreoffice/co-26.04-san/include
