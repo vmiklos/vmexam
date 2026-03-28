@@ -12,6 +12,7 @@
 
 use anyhow::Context as _;
 use base64::Engine as _;
+use clap::Parser as _;
 use isahc::ReadResponseExt as _;
 use isahc::RequestExt as _;
 use log::info;
@@ -133,7 +134,7 @@ fn mirror_activity_data(
         .find(|item| item.starts_with("filename="))
         .context("failed to find filename in content-disposition")?
         .strip_prefix("filename=")
-        .unwrap()
+        .context("failed to strip filename= prefix")?
         .trim_matches('"');
     let extension = filename.split('.').next_back().context("no extension")?;
     let path = year_dir.join(format!("{}.{}", base_name, extension));
@@ -183,25 +184,38 @@ fn mirror_activity(
 }
 
 /// Sets up logging so it has local time timestamp as a prefix.
-fn setup_logging() -> anyhow::Result<()> {
-    let config = simplelog::ConfigBuilder::new()
-        .set_time_format_custom(simplelog::format_description!(
-            "[year]-[month]-[day] [hour]:[minute]:[second]"
-        ))
-        .set_time_offset_to_local()
-        .unwrap()
-        .build();
+fn setup_logging(level: log::LevelFilter) -> anyhow::Result<()> {
+    let mut builder = simplelog::ConfigBuilder::new();
+    builder.set_time_format_custom(simplelog::format_description!(
+        "[year]-[month]-[day] [hour]:[minute]:[second]"
+    ));
+    if builder.set_time_offset_to_local().is_err() {
+        return Err(anyhow::anyhow!("offset to local failed"));
+    }
+    let config = builder.build();
     simplelog::CombinedLogger::init(vec![simplelog::TermLogger::new(
-        simplelog::LevelFilter::Info,
-        config.clone(),
+        level,
+        config,
         simplelog::TerminalMode::Stdout,
         simplelog::ColorChoice::Never,
     )])?;
     Ok(())
 }
 
+#[derive(clap::Parser)]
+struct Args {
+    #[arg(short, long)]
+    quiet: bool,
+}
+
 fn main() -> anyhow::Result<()> {
-    setup_logging()?;
+    let args = Args::parse();
+    let log_level = if args.quiet {
+        log::LevelFilter::Error
+    } else {
+        log::LevelFilter::Info
+    };
+    setup_logging(log_level)?;
 
     let home = home::home_dir().context("home_dir() failed")?;
 

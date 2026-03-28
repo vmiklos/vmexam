@@ -32,3 +32,8 @@ jwt = "..."
 
 Once `strava-mirror` is completed, you can find your activities under
 `~/.local/share/strava-mirror/activities/`.
+
+## Cron
+
+If you want to automate downloading your activities, there is a `--quiet` option to omit the INFO
+log lines, which are only interesting in the interactive case.
