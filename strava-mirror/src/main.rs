@@ -11,6 +11,7 @@
 //! Mirrors your Strava activities.
 
 use anyhow::Context as _;
+use base64::Engine as _;
 use isahc::ReadResponseExt as _;
 use isahc::RequestExt as _;
 use log::info;
@@ -21,6 +22,7 @@ struct Config {
     client_id: String,
     client_secret: String,
     refresh_token: String,
+    jwt: String,
 }
 
 /// Reads the config file.
@@ -58,6 +60,23 @@ fn get_access_token(config: &Config) -> anyhow::Result<String> {
     Ok(token_response.access_token)
 }
 
+/// Parses the JWT to get a Cookie header value.
+fn jwt_to_cookie(jwt: &str) -> anyhow::Result<String> {
+    let parts: Vec<&str> = jwt.split('.').collect();
+    if parts.len() != 3 {
+        // Expected 'header.payload.signature'.
+        return Err(anyhow::anyhow!("JWT doesn't have 3 parts"));
+    }
+    let payload_encoded = parts[1];
+    let payload_bytes = base64::prelude::BASE64_URL_SAFE_NO_PAD.decode(payload_encoded)?;
+    let payload_json: serde_json::Value = serde_json::from_slice(&payload_bytes)?;
+    let strava_remember_id = payload_json["sub"].as_i64().context("no sub key")?;
+    Ok(format!(
+        "strava_remember_id={}; strava_remember_token={}",
+        strava_remember_id, jwt
+    ))
+}
+
 /// One item in the /api/v3/athlete/activities response list.
 #[derive(serde::Deserialize, serde::Serialize)]
 struct ActivitySummary {
@@ -87,11 +106,48 @@ fn list_activities(access_token: &str, page: u32) -> anyhow::Result<Vec<Activity
     Ok(activities)
 }
 
+/// Mirrors the original data of one activity.
+fn mirror_activity_data(
+    id: u64,
+    base_name: &str,
+    year_dir: &std::path::Path,
+    cookie: &str,
+) -> anyhow::Result<()> {
+    let url = format!("https://www.strava.com/activities/{}/export_original", id);
+    info!("HTTP GET '{}'", url);
+    let mut response = isahc::Request::get(url)
+        .header("Cookie", cookie)
+        .body(())?
+        .send()?;
+    let status = response.status();
+    if !status.is_success() {
+        return Err(anyhow::anyhow!("status is not success: {status}"));
+    }
+    let content_disposition = response
+        .headers()
+        .get("content-disposition")
+        .context("missing content-disposition header")?
+        .to_str()?;
+    let filename = content_disposition
+        .split("; ")
+        .find(|item| item.starts_with("filename="))
+        .context("failed to find filename in content-disposition")?
+        .strip_prefix("filename=")
+        .unwrap()
+        .trim_matches('"');
+    let extension = filename.split('.').next_back().context("no extension")?;
+    let path = year_dir.join(format!("{}.{}", base_name, extension));
+    let body = response.bytes()?;
+    std::fs::write(&path, body)?;
+    Ok(())
+}
+
 /// Mirrors one activity if needed.
 fn mirror_activity(
     access_token: &str,
     summary: &ActivitySummary,
     activities_dir: &std::path::Path,
+    cookie: &str,
 ) -> anyhow::Result<()> {
     let year = summary.start_date.year();
     let format = time::format_description::parse("[year]-[month]-[day]T[hour]-[minute]-[second]Z")?;
@@ -117,11 +173,16 @@ fn mirror_activity(
 
         let activity_json: serde_json::Value = response.json()?;
         std::fs::write(&meta_path, serde_json::to_string_pretty(&activity_json)?)?;
+
+        // Also download the actual activity. We don't really know what'll be the filename of this
+        // till we download it, so assume that .meta.json and .fit are downloaded together.
+        mirror_activity_data(id, &base_name, &year_dir, cookie)?;
     }
 
     Ok(())
 }
 
+/// Sets up logging so it has local time timestamp as a prefix.
 fn setup_logging() -> anyhow::Result<()> {
     let config = simplelog::ConfigBuilder::new()
         .set_time_format_custom(simplelog::format_description!(
@@ -153,6 +214,7 @@ fn main() -> anyhow::Result<()> {
         .join("strava-mirror")
         .join("activities");
 
+    let cookie = jwt_to_cookie(&config.jwt)?;
     let mut page = 1;
     loop {
         let activities: Vec<ActivitySummary> = list_activities(&access_token, page)?;
@@ -161,7 +223,7 @@ fn main() -> anyhow::Result<()> {
         }
 
         for activity in activities {
-            mirror_activity(&access_token, &activity, &activities_dir)?;
+            mirror_activity(&access_token, &activity, &activities_dir, &cookie)?;
         }
 
         page += 1;

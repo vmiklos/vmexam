@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0"
+base64 = "0.22"
 home = "0.5"
 isahc = { version = "1.7", features = ["json"] }
 log = "0.4.29"
