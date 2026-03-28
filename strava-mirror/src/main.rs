@@ -13,6 +13,7 @@
 use anyhow::Context as _;
 use isahc::ReadResponseExt as _;
 use isahc::RequestExt as _;
+use log::info;
 
 /// Contents of the config file.
 #[derive(serde::Deserialize)]
@@ -46,6 +47,7 @@ fn get_access_token(config: &Config) -> anyhow::Result<String> {
         ("grant_type", &"refresh_token".to_string()),
     ];
 
+    info!("HTTP POST '{}'", url);
     let mut response = isahc::post(url, serde_urlencoded::to_string(params)?)?;
     let status = response.status();
     if !status.is_success() {
@@ -60,6 +62,7 @@ fn get_access_token(config: &Config) -> anyhow::Result<String> {
 #[derive(serde::Deserialize, serde::Serialize)]
 struct ActivitySummary {
     id: u64,
+    name: String,
     #[serde(with = "time::serde::rfc3339")]
     start_date: time::OffsetDateTime,
 }
@@ -70,6 +73,7 @@ fn list_activities(access_token: &str, page: u32) -> anyhow::Result<Vec<Activity
         "https://www.strava.com/api/v3/athlete/activities?page={}&per_page=200",
         page
     );
+    info!("HTTP GET '{}'", url);
     let mut response = isahc::Request::get(url)
         .header("Authorization", format!("Bearer {}", access_token))
         .body(())?
@@ -100,6 +104,7 @@ fn mirror_activity(
     let meta_path = year_dir.join(format!("{}.meta.json", base_name));
     if !meta_path.exists() {
         let url = format!("https://www.strava.com/api/v3/activities/{}", id);
+        info!("HTTP GET '{}', name is '{}'", url, summary.name);
         let mut response = isahc::Request::get(url)
             .header("Authorization", format!("Bearer {}", access_token))
             .body(())?
@@ -117,7 +122,26 @@ fn mirror_activity(
     Ok(())
 }
 
+fn setup_logging() -> anyhow::Result<()> {
+    let config = simplelog::ConfigBuilder::new()
+        .set_time_format_custom(simplelog::format_description!(
+            "[year]-[month]-[day] [hour]:[minute]:[second]"
+        ))
+        .set_time_offset_to_local()
+        .unwrap()
+        .build();
+    simplelog::CombinedLogger::init(vec![simplelog::TermLogger::new(
+        simplelog::LevelFilter::Info,
+        config.clone(),
+        simplelog::TerminalMode::Stdout,
+        simplelog::ColorChoice::Never,
+    )])?;
+    Ok(())
+}
+
 fn main() -> anyhow::Result<()> {
+    setup_logging()?;
+
     let home = home::home_dir().context("home_dir() failed")?;
 
     let config = read_config(&home)?;
