@@ -44,6 +44,7 @@ podman run --name almalinux8 --hostname almalinux8 -v $HOME:$HOME -ti almalinux:
 podman run --name fedora43 --hostname fedora43 -v $HOME:$HOME -ti fedora:43
 podman run --cap-add=SYS_ADMIN --name fedora39root --hostname fedora39root -v $HOME:$HOME --publish 12345:12345 -ti fedora:39
 podman run --name opensuse156 --hostname opensuse156 -v $HOME:$HOME -ti opensuse/leap:15.6
+podman run --name opensuse160 --hostname opensuse160 -v $HOME:$HOME -ti opensuse/leap:16.0
 podman run --name sphinx --hostname sphinx -v $HOME:$HOME -ti python:3.9.12-slim-bullseye bash
 ```
 
@@ -57,6 +58,7 @@ podman start -ai almalinux8
 podman start -ai fedora43
 podman start -ai fedora39root
 podman start -ai opensuse156
+podman start -ai opensuse160
 podman start -ai sphinx
 ```
 
