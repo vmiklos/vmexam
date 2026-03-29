@@ -50,7 +50,7 @@ fn get_access_token(config: &Config) -> anyhow::Result<String> {
         ("grant_type", &"refresh_token".to_string()),
     ];
 
-    info!("HTTP POST '{}'", url);
+    info!("POST '{}'", url);
     let mut response = isahc::post(url, serde_urlencoded::to_string(params)?)?;
     let status = response.status();
     if !status.is_success() {
@@ -93,7 +93,7 @@ fn list_activities(access_token: &str, page: u32) -> anyhow::Result<Vec<Activity
         "https://www.strava.com/api/v3/athlete/activities?page={}&per_page=200",
         page
     );
-    info!("HTTP GET '{}'", url);
+    info!("GET '{}'", url);
     let mut response = isahc::Request::get(url)
         .header("Authorization", format!("Bearer {}", access_token))
         .body(())?
@@ -115,7 +115,7 @@ fn mirror_activity_data(
     cookie: &str,
 ) -> anyhow::Result<()> {
     let url = format!("https://www.strava.com/activities/{}/export_original", id);
-    info!("HTTP GET '{}'", url);
+    info!("GET '{}'", url);
     let mut response = isahc::Request::get(url)
         .header("Cookie", cookie)
         .body(())?
@@ -161,7 +161,7 @@ fn mirror_activity(
     let meta_path = year_dir.join(format!("{}.meta.json", base_name));
     if !meta_path.exists() {
         let url = format!("https://www.strava.com/api/v3/activities/{}", id);
-        info!("HTTP GET '{}', name is '{}'", url, summary.name);
+        info!("GET '{}', name is '{}'", url, summary.name);
         let mut response = isahc::Request::get(url)
             .header("Authorization", format!("Bearer {}", access_token))
             .body(())?
