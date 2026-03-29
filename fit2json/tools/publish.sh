@@ -15,7 +15,7 @@ if [[ "$HOSTNAME" =~ plug ]]; then
 else
     STRAVA_DEST="plug"
 fi
-BACKUP=$(ssh $STRAVA_DEST 'find .local/share/strava-backup/activities |grep fit$ |sort |tail -n 1')
+BACKUP=$(ssh $STRAVA_DEST 'find .local/share/strava-mirror/activities |grep fit$ |sort |tail -n 1')
 scp $STRAVA_DEST:$BACKUP $STRAVA_DEST:$(echo $BACKUP |sed 's|.fit|.meta.json|') .
 JSON=$(fit2json -- $(basename $BACKUP))
 scp -- $JSON wilson:share/pages/map/

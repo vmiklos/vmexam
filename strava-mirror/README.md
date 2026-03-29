@@ -7,7 +7,7 @@ For now, it only fetches activities: metadata and the original data.
 ## Installation
 
 ```
-cargo install --git https://github.com/vmiklos/vmexam pushping
+cargo install --git https://github.com/vmiklos/vmexam strava-mirror
 ```
 
 ## Usage
