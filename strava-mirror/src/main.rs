@@ -61,6 +61,13 @@ fn get_access_token(config: &Config) -> anyhow::Result<String> {
     Ok(token_response.access_token)
 }
 
+/// Contents of the JWT payload.
+#[derive(serde::Deserialize)]
+struct Jwt {
+    sub: i64,
+    exp: i64,
+}
+
 /// Parses the JWT to get a Cookie header value.
 fn jwt_to_cookie(jwt: &str) -> anyhow::Result<String> {
     let parts: Vec<&str> = jwt.split('.').collect();
@@ -70,8 +77,12 @@ fn jwt_to_cookie(jwt: &str) -> anyhow::Result<String> {
     }
     let payload_encoded = parts[1];
     let payload_bytes = base64::prelude::BASE64_URL_SAFE_NO_PAD.decode(payload_encoded)?;
-    let payload_json: serde_json::Value = serde_json::from_slice(&payload_bytes)?;
-    let strava_remember_id = payload_json["sub"].as_i64().context("no sub key")?;
+    let jwt_payload: Jwt = serde_json::from_slice(&payload_bytes)?;
+    let strava_remember_id = jwt_payload.sub;
+    let exp_datetime = time::OffsetDateTime::from_unix_timestamp(jwt_payload.exp)?;
+    let format = time::macros::format_description!("[year]-[month]-[day] [hour]:[minute]:[second]");
+    let exp_formatted = exp_datetime.format(format)?;
+    info!("JWT expires at {}", exp_formatted);
     Ok(format!(
         "strava_remember_id={}; strava_remember_token={}",
         strava_remember_id, jwt
