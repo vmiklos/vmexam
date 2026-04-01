@@ -83,6 +83,10 @@ fn jwt_to_cookie(jwt: &str) -> anyhow::Result<String> {
     let format = time::macros::format_description!("[year]-[month]-[day] [hour]:[minute]:[second]");
     let exp_formatted = exp_datetime.format(format)?;
     info!("JWT expires at {}", exp_formatted);
+    let now = time::OffsetDateTime::now_utc();
+    if exp_datetime <= now {
+        return Err(anyhow::anyhow!("JWT has expired"));
+    }
     Ok(format!(
         "strava_remember_id={}; strava_remember_token={}",
         strava_remember_id, jwt
