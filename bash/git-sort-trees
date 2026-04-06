@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-# The problem: I store LibreOffice daily builds in a git repo, but sometimes I
+# The problem: I store Office daily builds in a git repo, but sometimes I
 # don't create a daily build (think of weekends), and when bisecting later in
 # that time-range, I create daily builds after-the-fact. Now it's no longer
 # possible to bibisect in the repo, as newer commits refer to older states.

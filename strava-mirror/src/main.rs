@@ -80,7 +80,7 @@ fn jwt_to_cookie(jwt: &str) -> anyhow::Result<String> {
     let jwt_payload: Jwt = serde_json::from_slice(&payload_bytes)?;
     let strava_remember_id = jwt_payload.sub;
     let exp_datetime = time::OffsetDateTime::from_unix_timestamp(jwt_payload.exp)?;
-    let local_offset = time::UtcOffset::current_local_offset().unwrap_or(time::UtcOffset::UTC);
+    let local_offset = time::UtcOffset::current_local_offset()?;
     let exp_formatted =
         exp_datetime
             .to_offset(local_offset)
