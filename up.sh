@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-cd libreoffice/co-26.04
+cd collaboraonline/core
 pushping ./up.sh
 cd ../../collaboraonline/online
 pushping ./up.sh
