@@ -17,6 +17,8 @@ use isahc::ReadResponseExt as _;
 use isahc::RequestExt as _;
 use log::info;
 
+const ACTIVITY_TIMESTAMP_FORMAT: &str = "[year]-[month]-[day]T[hour]-[minute]-[second]Z";
+
 /// Contents of the config file.
 #[derive(serde::Deserialize)]
 struct Config {
@@ -107,12 +109,68 @@ struct ActivitySummary {
     start_date: time::OffsetDateTime,
 }
 
+/// Information about an activity that is already mirrored.
+struct MirroredActivity {
+    start_date: time::OffsetDateTime,
+}
+
+/// Scans the activities directory for existing .meta.json files.
+fn get_mirrored_activities(
+    activities_dir: &std::path::Path,
+) -> anyhow::Result<Vec<MirroredActivity>> {
+    let mut mirrored_activities = Vec::new();
+    if !activities_dir.exists() {
+        return Ok(mirrored_activities);
+    }
+
+    let format = time::format_description::parse(ACTIVITY_TIMESTAMP_FORMAT)?;
+
+    for year_dir in std::fs::read_dir(activities_dir)? {
+        let entry = year_dir?;
+        let path = entry.path();
+        if !path.is_dir() {
+            continue;
+        }
+
+        for entry in std::fs::read_dir(path)? {
+            let entry = entry?;
+            let entry_path = entry.path();
+            let entry_filename = entry_path.file_name().context("file_name() failed")?;
+            let filename = entry_filename.to_str().context("to_str() failed")?;
+
+            if !filename.ends_with(".meta.json") {
+                continue;
+            }
+
+            let timestamp_str = match filename.split('_').next() {
+                Some(t) => t,
+                None => continue,
+            };
+
+            if let Ok(primitive) = time::PrimitiveDateTime::parse(timestamp_str, &format) {
+                mirrored_activities.push(MirroredActivity {
+                    start_date: primitive.assume_utc(),
+                });
+            }
+        }
+    }
+
+    Ok(mirrored_activities)
+}
+
 /// Lists activities: only minimal info that is cheap even for all activities.
-fn list_activities(access_token: &str, page: u32) -> anyhow::Result<Vec<ActivitySummary>> {
-    let url = format!(
+fn list_activities(
+    access_token: &str,
+    page: u32,
+    after: Option<i64>,
+) -> anyhow::Result<Vec<ActivitySummary>> {
+    let mut url = format!(
         "https://www.strava.com/api/v3/athlete/activities?page={}&per_page=200",
         page
     );
+    if let Some(after) = after {
+        url = format!("{}&after={}", url, after);
+    }
     info!("GET '{}'", url);
     let mut response = isahc::Request::get(url)
         .header("Authorization", format!("Bearer {}", access_token))
@@ -171,7 +229,7 @@ fn mirror_activity(
     cookie: &str,
 ) -> anyhow::Result<()> {
     let year = summary.start_date.year();
-    let format = time::format_description::parse("[year]-[month]-[day]T[hour]-[minute]-[second]Z")?;
+    let format = time::format_description::parse(ACTIVITY_TIMESTAMP_FORMAT)?;
     let timestamp = summary.start_date.format(&format)?;
     let id = summary.id;
     let base_name = format!("{}_{}", timestamp, id);
@@ -248,10 +306,14 @@ fn main() -> anyhow::Result<()> {
         .join("strava-mirror")
         .join("activities");
 
+    let mirrored_activities = get_mirrored_activities(&activities_dir)?;
+    let newest_mirrored_activity = mirrored_activities.iter().max_by_key(|a| a.start_date);
+    let after = newest_mirrored_activity.map(|a| a.start_date.unix_timestamp());
+
     let cookie = jwt_to_cookie(&config.jwt)?;
     let mut page = 1;
     loop {
-        let activities: Vec<ActivitySummary> = list_activities(&access_token, page)?;
+        let activities: Vec<ActivitySummary> = list_activities(&access_token, page, after)?;
         if activities.is_empty() {
             break;
         }
