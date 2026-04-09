@@ -16,6 +16,7 @@ use clap::Parser as _;
 use isahc::ReadResponseExt as _;
 use isahc::RequestExt as _;
 use log::info;
+use std::collections::HashMap;
 
 const ACTIVITY_TIMESTAMP_FORMAT: &str = "[year]-[month]-[day]T[hour]-[minute]-[second]Z";
 
@@ -111,14 +112,16 @@ struct ActivitySummary {
 
 /// Information about an activity that is already mirrored.
 struct MirroredActivity {
-    start_date: time::OffsetDateTime,
+    have_meta: bool,
+    have_data: bool,
 }
 
+/// A map of mirrored activities, keyed by their start date.
+type MirroredActivities = HashMap<time::OffsetDateTime, MirroredActivity>;
+
 /// Scans the activities directory for existing .meta.json files.
-fn get_mirrored_activities(
-    activities_dir: &std::path::Path,
-) -> anyhow::Result<Vec<MirroredActivity>> {
-    let mut mirrored_activities = Vec::new();
+fn get_mirrored_activities(activities_dir: &std::path::Path) -> anyhow::Result<MirroredActivities> {
+    let mut mirrored_activities = HashMap::new();
     if !activities_dir.exists() {
         return Ok(mirrored_activities);
     }
@@ -138,19 +141,25 @@ fn get_mirrored_activities(
             let entry_filename = entry_path.file_name().context("file_name() failed")?;
             let filename = entry_filename.to_str().context("to_str() failed")?;
 
-            if !filename.ends_with(".meta.json") {
-                continue;
-            }
-
             let timestamp_str = match filename.split('_').next() {
                 Some(t) => t,
                 None => continue,
             };
 
             if let Ok(primitive) = time::PrimitiveDateTime::parse(timestamp_str, &format) {
-                mirrored_activities.push(MirroredActivity {
-                    start_date: primitive.assume_utc(),
-                });
+                let start_date = primitive.assume_utc();
+                let mirrored_activity =
+                    mirrored_activities
+                        .entry(start_date)
+                        .or_insert(MirroredActivity {
+                            have_meta: false,
+                            have_data: false,
+                        });
+                if filename.ends_with(".meta.json") {
+                    mirrored_activity.have_meta = true;
+                } else {
+                    mirrored_activity.have_data = true;
+                }
             }
         }
     }
@@ -227,6 +236,7 @@ fn mirror_activity(
     summary: &ActivitySummary,
     activities_dir: &std::path::Path,
     cookie: &str,
+    mirrored_activities: &MirroredActivities,
 ) -> anyhow::Result<()> {
     let year = summary.start_date.year();
     let format = time::format_description::parse(ACTIVITY_TIMESTAMP_FORMAT)?;
@@ -236,8 +246,9 @@ fn mirror_activity(
     let year_dir = activities_dir.join(year.to_string());
     std::fs::create_dir_all(&year_dir)?;
 
-    let meta_path = year_dir.join(format!("{}.meta.json", base_name));
-    if !meta_path.exists() {
+    let mirrored_activity = mirrored_activities.get(&summary.start_date);
+
+    if mirrored_activity.is_none_or(|a| !a.have_meta) {
         let url = format!("https://www.strava.com/api/v3/activities/{}", id);
         info!("GET '{}', name is '{}'", url, summary.name);
         let mut response = isahc::Request::get(url)
@@ -251,10 +262,12 @@ fn mirror_activity(
         }
 
         let activity_json: serde_json::Value = response.json()?;
+        let meta_path = year_dir.join(format!("{}.meta.json", base_name));
         std::fs::write(&meta_path, serde_json::to_string_pretty(&activity_json)?)?;
+    }
 
-        // Also download the actual activity. We don't really know what'll be the filename of this
-        // till we download it, so assume that .meta.json and .fit are downloaded together.
+    if mirrored_activity.is_none_or(|a| !a.have_data) {
+        // Also download the actual activity.
         mirror_activity_data(id, &base_name, &year_dir, cookie)?;
     }
 
@@ -307,8 +320,11 @@ fn main() -> anyhow::Result<()> {
         .join("activities");
 
     let mirrored_activities = get_mirrored_activities(&activities_dir)?;
-    let newest_mirrored_activity = mirrored_activities.iter().max_by_key(|a| a.start_date);
-    let after = newest_mirrored_activity.map(|a| a.start_date.unix_timestamp());
+    let newest_mirrored_activity = mirrored_activities
+        .iter()
+        .filter(|(_, a)| a.have_meta && a.have_data)
+        .max_by_key(|(d, _)| *d);
+    let after = newest_mirrored_activity.map(|(d, _)| d.unix_timestamp());
 
     let cookie = jwt_to_cookie(&config.jwt)?;
     let mut page = 1;
@@ -319,7 +335,13 @@ fn main() -> anyhow::Result<()> {
         }
 
         for activity in activities {
-            mirror_activity(&access_token, &activity, &activities_dir, &cookie)?;
+            mirror_activity(
+                &access_token,
+                &activity,
+                &activities_dir,
+                &cookie,
+                &mirrored_activities,
+            )?;
         }
 
         page += 1;
