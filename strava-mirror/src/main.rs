@@ -12,6 +12,9 @@
 
 use anyhow::Context as _;
 use clap::Parser as _;
+use isahc::RequestExt as _;
+use std::collections::HashMap;
+use std::rc::Rc;
 
 /// Command-line arguments.
 #[derive(clap::Parser)]
@@ -19,6 +22,29 @@ pub struct Args {
     /// Be quiet.
     #[arg(short, long)]
     pub quiet: bool,
+}
+
+/// Real network implementation, using isahc.
+struct RealNetwork {}
+
+impl strava_mirror::Network for RealNetwork {
+    fn get(
+        &self,
+        url: &str,
+        headers: &HashMap<String, String>,
+    ) -> anyhow::Result<isahc::Response<isahc::Body>> {
+        let mut request = isahc::Request::get(url);
+        for (key, value) in headers {
+            request = request.header(key, value);
+        }
+        let response = request.body(())?.send()?;
+        Ok(response)
+    }
+
+    fn post(&self, url: &str, body: &str) -> anyhow::Result<isahc::Response<isahc::Body>> {
+        let response = isahc::post(url, body)?;
+        Ok(response)
+    }
 }
 
 /// Sets up logging so it has local time timestamp as a prefix.
@@ -51,7 +77,8 @@ fn main() -> anyhow::Result<()> {
 
     let home = home::home_dir().context("home_dir() failed")?;
     let fs: vfs::VfsPath = vfs::PhysicalFS::new(home).into();
-    let ctx = strava_mirror::Context { fs };
+    let network = Rc::new(RealNetwork {});
+    let ctx = strava_mirror::Context { fs, network };
 
-    strava_mirror::run(Vec::new(), &ctx)
+    strava_mirror::run(std::env::args().collect(), &ctx)
 }

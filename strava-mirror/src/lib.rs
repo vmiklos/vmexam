@@ -13,18 +13,32 @@
 use anyhow::Context as _;
 use base64::Engine as _;
 use isahc::ReadResponseExt as _;
-use isahc::RequestExt as _;
 use log::info;
 use std::collections::HashMap;
 use std::io::Read as _;
 use std::io::Write as _;
+use std::rc::Rc;
 
 const ACTIVITY_TIMESTAMP_FORMAT: &str = "[year]-[month]-[day]T[hour]-[minute]-[second]Z";
+
+/// Network interface.
+pub trait Network {
+    /// GET request.
+    fn get(
+        &self,
+        url: &str,
+        headers: &HashMap<String, String>,
+    ) -> anyhow::Result<isahc::Response<isahc::Body>>;
+    /// POST request.
+    fn post(&self, url: &str, body: &str) -> anyhow::Result<isahc::Response<isahc::Body>>;
+}
 
 /// The context of the application.
 pub struct Context {
     /// The filesystem to use.
     pub fs: vfs::VfsPath,
+    /// The network to use.
+    pub network: Rc<dyn Network>,
 }
 
 /// Contents of the config file.
@@ -54,7 +68,7 @@ struct TokenResponse {
 }
 
 /// Gets an access token from a refresh token.
-fn get_access_token(config: &Config) -> anyhow::Result<String> {
+fn get_access_token(ctx: &Context, config: &Config) -> anyhow::Result<String> {
     let url = "https://www.strava.com/oauth/token";
     let params = [
         ("client_id", &config.client_id),
@@ -64,7 +78,9 @@ fn get_access_token(config: &Config) -> anyhow::Result<String> {
     ];
 
     info!("POST '{}'", url);
-    let mut response = isahc::post(url, serde_urlencoded::to_string(params)?)?;
+    let mut response = ctx
+        .network
+        .post(url, &serde_urlencoded::to_string(params)?)?;
     let status = response.status();
     if !status.is_success() {
         return Err(anyhow::anyhow!("status is not success: {status}"));
@@ -174,6 +190,7 @@ fn get_mirrored_activities(activities_dir: &vfs::VfsPath) -> anyhow::Result<Mirr
 
 /// Lists activities: only minimal info that is cheap even for all activities.
 fn list_activities(
+    ctx: &Context,
     access_token: &str,
     page: u32,
     after: Option<i64>,
@@ -186,10 +203,12 @@ fn list_activities(
         url = format!("{}&after={}", url, after);
     }
     info!("GET '{}'", url);
-    let mut response = isahc::Request::get(url)
-        .header("Authorization", format!("Bearer {}", access_token))
-        .body(())?
-        .send()?;
+    let mut headers = HashMap::new();
+    headers.insert(
+        "Authorization".to_string(),
+        format!("Bearer {}", access_token),
+    );
+    let mut response = ctx.network.get(&url, &headers)?;
     let status = response.status();
     if !status.is_success() {
         return Err(anyhow::anyhow!("status is not success: {status}"));
@@ -201,6 +220,7 @@ fn list_activities(
 
 /// Mirrors the original data of one activity.
 fn mirror_activity_data(
+    ctx: &Context,
     id: u64,
     base_name: &str,
     year_dir: &vfs::VfsPath,
@@ -208,10 +228,9 @@ fn mirror_activity_data(
 ) -> anyhow::Result<()> {
     let url = format!("https://www.strava.com/activities/{}/export_original", id);
     info!("GET '{}'", url);
-    let mut response = isahc::Request::get(url)
-        .header("Cookie", cookie)
-        .body(())?
-        .send()?;
+    let mut headers = HashMap::new();
+    headers.insert("Cookie".to_string(), cookie.to_string());
+    let mut response = ctx.network.get(&url, &headers)?;
     let status = response.status();
     if !status.is_success() {
         return Err(anyhow::anyhow!("status is not success: {status}"));
@@ -237,6 +256,7 @@ fn mirror_activity_data(
 
 /// Mirrors one activity if needed.
 fn mirror_activity(
+    ctx: &Context,
     access_token: &str,
     summary: &ActivitySummary,
     activities_dir: &vfs::VfsPath,
@@ -256,10 +276,12 @@ fn mirror_activity(
     if mirrored_activity.is_none_or(|a| !a.have_meta) {
         let url = format!("https://www.strava.com/api/v3/activities/{}", id);
         info!("GET '{}', name is '{}'", url, summary.name);
-        let mut response = isahc::Request::get(url)
-            .header("Authorization", format!("Bearer {}", access_token))
-            .body(())?
-            .send()?;
+        let mut headers = HashMap::new();
+        headers.insert(
+            "Authorization".to_string(),
+            format!("Bearer {}", access_token),
+        );
+        let mut response = ctx.network.get(&url, &headers)?;
 
         let status = response.status();
         if !status.is_success() {
@@ -275,7 +297,7 @@ fn mirror_activity(
 
     if mirrored_activity.is_none_or(|a| !a.have_data) {
         // Also download the actual activity.
-        mirror_activity_data(id, &base_name, &year_dir, cookie)?;
+        mirror_activity_data(ctx, id, &base_name, &year_dir, cookie)?;
     }
 
     Ok(())
@@ -286,7 +308,7 @@ pub fn run(_args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
     let home = &ctx.fs;
 
     let config = read_config(ctx)?;
-    let access_token = get_access_token(&config)?;
+    let access_token = get_access_token(ctx, &config)?;
 
     let activities_dir = home.join(".local/share/strava-mirror/activities")?;
 
@@ -300,13 +322,14 @@ pub fn run(_args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
     let cookie = jwt_to_cookie(&config.jwt)?;
     let mut page = 1;
     loop {
-        let activities: Vec<ActivitySummary> = list_activities(&access_token, page, after)?;
+        let activities: Vec<ActivitySummary> = list_activities(ctx, &access_token, page, after)?;
         if activities.is_empty() {
             break;
         }
 
         for activity in activities {
             mirror_activity(
+                ctx,
                 &access_token,
                 &activity,
                 &activities_dir,
