@@ -12,6 +12,7 @@
 
 use anyhow::Context as _;
 use base64::Engine as _;
+use clap::Parser as _;
 use isahc::ReadResponseExt as _;
 use log::info;
 use std::collections::HashMap;
@@ -303,8 +304,42 @@ fn mirror_activity(
     Ok(())
 }
 
+/// Sets up logging so it has local time timestamp as a prefix.
+fn setup_logging(level: log::LevelFilter) -> anyhow::Result<()> {
+    let mut builder = simplelog::ConfigBuilder::new();
+    builder.set_time_format_custom(simplelog::format_description!(
+        "[year]-[month]-[day] [hour]:[minute]:[second]"
+    ));
+    if builder.set_time_offset_to_local().is_err() {
+        return Err(anyhow::anyhow!("offset to local failed"));
+    }
+    let config = builder.build();
+    simplelog::CombinedLogger::init(vec![simplelog::TermLogger::new(
+        level,
+        config,
+        simplelog::TerminalMode::Stdout,
+        simplelog::ColorChoice::Never,
+    )])?;
+    Ok(())
+}
+
+/// Command-line arguments.
+#[derive(clap::Parser)]
+pub struct Args {
+    /// Be quiet.
+    #[arg(short, long)]
+    pub quiet: bool,
+}
+
 /// Mirrors your Strava activities.
-pub fn run(_args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
+pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
+    let args = Args::parse_from(args);
+    let log_level = if args.quiet {
+        log::LevelFilter::Error
+    } else {
+        log::LevelFilter::Info
+    };
+    setup_logging(log_level)?;
     let home = &ctx.fs;
 
     let config = read_config(ctx)?;
