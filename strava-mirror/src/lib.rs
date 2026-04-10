@@ -34,12 +34,22 @@ pub trait Network {
     fn post(&self, url: &str, body: &str) -> anyhow::Result<isahc::Response<isahc::Body>>;
 }
 
+/// Time interface.
+pub trait Time {
+    /// Returns the current time in local time.
+    fn now(&self) -> time::OffsetDateTime;
+    /// Converts a Unix timestamp to local time.
+    fn to_local_offset(&self, timestamp: i64) -> anyhow::Result<time::OffsetDateTime>;
+}
+
 /// The context of the application.
 pub struct Context {
     /// The filesystem to use.
     pub fs: vfs::VfsPath,
     /// The network to use.
     pub network: Rc<dyn Network>,
+    /// The time to use.
+    pub time: Rc<dyn Time>,
 }
 
 /// Contents of the config file.
@@ -99,7 +109,7 @@ struct Jwt {
 }
 
 /// Parses the JWT to get a Cookie header value.
-fn jwt_to_cookie(jwt: &str) -> anyhow::Result<String> {
+fn jwt_to_cookie(ctx: &Context, jwt: &str) -> anyhow::Result<String> {
     let parts: Vec<&str> = jwt.split('.').collect();
     if parts.len() != 3 {
         // Expected 'header.payload.signature'.
@@ -109,16 +119,12 @@ fn jwt_to_cookie(jwt: &str) -> anyhow::Result<String> {
     let payload_bytes = base64::prelude::BASE64_URL_SAFE_NO_PAD.decode(payload_encoded)?;
     let jwt_payload: Jwt = serde_json::from_slice(&payload_bytes)?;
     let strava_remember_id = jwt_payload.sub;
-    let exp_datetime = time::OffsetDateTime::from_unix_timestamp(jwt_payload.exp)?;
-    let local_offset = time::UtcOffset::current_local_offset()?;
-    let exp_formatted =
-        exp_datetime
-            .to_offset(local_offset)
-            .format(time::macros::format_description!(
-                "[year]-[month]-[day] [hour]:[minute]:[second]"
-            ))?;
+    let exp_datetime = ctx.time.to_local_offset(jwt_payload.exp)?;
+    let exp_formatted = exp_datetime.format(time::macros::format_description!(
+        "[year]-[month]-[day] [hour]:[minute]:[second]"
+    ))?;
     info!("JWT expires at {}", exp_formatted);
-    let now = time::OffsetDateTime::now_utc();
+    let now = ctx.time.now();
     if exp_datetime <= now {
         return Err(anyhow::anyhow!("JWT has expired"));
     }
@@ -354,7 +360,7 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
         .max_by_key(|(d, _)| *d);
     let after = newest_mirrored_activity.map(|(d, _)| d.unix_timestamp());
 
-    let cookie = jwt_to_cookie(&config.jwt)?;
+    let cookie = jwt_to_cookie(ctx, &config.jwt)?;
     let mut page = 1;
     loop {
         let activities: Vec<ActivitySummary> = list_activities(ctx, &access_token, page, after)?;
