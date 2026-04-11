@@ -13,7 +13,6 @@
 use anyhow::Context as _;
 use base64::Engine as _;
 use clap::Parser as _;
-use isahc::ReadResponseExt as _;
 use log::info;
 use std::collections::HashMap;
 use std::io::Read as _;
@@ -22,16 +21,22 @@ use std::rc::Rc;
 
 const ACTIVITY_TIMESTAMP_FORMAT: &str = "[year]-[month]-[day]T[hour]-[minute]-[second]Z";
 
+/// Network response.
+pub struct NetworkResponse {
+    /// The status code.
+    pub status_code: u16,
+    /// The headers.
+    pub headers: HashMap<String, String>,
+    /// The body.
+    pub body: Vec<u8>,
+}
+
 /// Network interface.
 pub trait Network {
     /// GET request.
-    fn get(
-        &self,
-        url: &str,
-        headers: &HashMap<String, String>,
-    ) -> anyhow::Result<isahc::Response<isahc::Body>>;
+    fn get(&self, url: &str, headers: &HashMap<String, String>) -> anyhow::Result<NetworkResponse>;
     /// POST request.
-    fn post(&self, url: &str, body: &str) -> anyhow::Result<isahc::Response<isahc::Body>>;
+    fn post(&self, url: &str, body: &str) -> anyhow::Result<NetworkResponse>;
 }
 
 /// Time interface.
@@ -89,15 +94,17 @@ fn get_access_token(ctx: &Context, config: &Config) -> anyhow::Result<String> {
     ];
 
     info!("POST '{}'", url);
-    let mut response = ctx
+    let response = ctx
         .network
         .post(url, &serde_urlencoded::to_string(params)?)?;
-    let status = response.status();
-    if !status.is_success() {
-        return Err(anyhow::anyhow!("status is not success: {status}"));
+    if response.status_code != 200 {
+        return Err(anyhow::anyhow!(
+            "status is not success: {}",
+            response.status_code
+        ));
     }
 
-    let token_response: TokenResponse = response.json()?;
+    let token_response: TokenResponse = serde_json::from_slice(&response.body)?;
     Ok(token_response.access_token)
 }
 
@@ -215,13 +222,15 @@ fn list_activities(
         "Authorization".to_string(),
         format!("Bearer {}", access_token),
     );
-    let mut response = ctx.network.get(&url, &headers)?;
-    let status = response.status();
-    if !status.is_success() {
-        return Err(anyhow::anyhow!("status is not success: {status}"));
+    let response = ctx.network.get(&url, &headers)?;
+    if response.status_code != 200 {
+        return Err(anyhow::anyhow!(
+            "status is not success: {}",
+            response.status_code
+        ));
     }
 
-    let activities: Vec<ActivitySummary> = response.json()?;
+    let activities: Vec<ActivitySummary> = serde_json::from_slice(&response.body)?;
     Ok(activities)
 }
 
@@ -237,16 +246,17 @@ fn mirror_activity_data(
     info!("GET '{}'", url);
     let mut headers = HashMap::new();
     headers.insert("Cookie".to_string(), cookie.to_string());
-    let mut response = ctx.network.get(&url, &headers)?;
-    let status = response.status();
-    if !status.is_success() {
-        return Err(anyhow::anyhow!("status is not success: {status}"));
+    let response = ctx.network.get(&url, &headers)?;
+    if response.status_code != 200 {
+        return Err(anyhow::anyhow!(
+            "status is not success: {}",
+            response.status_code
+        ));
     }
     let content_disposition = response
-        .headers()
+        .headers
         .get("content-disposition")
-        .context("missing content-disposition header")?
-        .to_str()?;
+        .context("missing content-disposition header")?;
     let filename = content_disposition
         .split("; ")
         .find(|item| item.starts_with("filename="))
@@ -256,8 +266,7 @@ fn mirror_activity_data(
         .trim_matches('"');
     let extension = filename.split('.').next_back().context("no extension")?;
     let path = year_dir.join(format!("{}.{}", base_name, extension))?;
-    let body = response.bytes()?;
-    path.create_file()?.write_all(&body)?;
+    path.create_file()?.write_all(&response.body)?;
     Ok(())
 }
 
@@ -288,14 +297,16 @@ fn mirror_activity(
             "Authorization".to_string(),
             format!("Bearer {}", access_token),
         );
-        let mut response = ctx.network.get(&url, &headers)?;
+        let response = ctx.network.get(&url, &headers)?;
 
-        let status = response.status();
-        if !status.is_success() {
-            return Err(anyhow::anyhow!("status is not success: {status}"));
+        if response.status_code != 200 {
+            return Err(anyhow::anyhow!(
+                "status is not success: {}",
+                response.status_code
+            ));
         }
 
-        let activity_json: serde_json::Value = response.json()?;
+        let activity_json: serde_json::Value = serde_json::from_slice(&response.body)?;
         let meta_path = year_dir.join(format!("{}.meta.json", base_name))?;
         meta_path
             .create_file()?

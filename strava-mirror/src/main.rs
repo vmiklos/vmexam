@@ -11,6 +11,7 @@
 //! Commandline interface to strava_mirror.
 
 use anyhow::Context as _;
+use isahc::ReadResponseExt as _;
 use isahc::RequestExt as _;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -23,18 +24,36 @@ impl strava_mirror::Network for RealNetwork {
         &self,
         url: &str,
         headers: &HashMap<String, String>,
-    ) -> anyhow::Result<isahc::Response<isahc::Body>> {
+    ) -> anyhow::Result<strava_mirror::NetworkResponse> {
         let mut request = isahc::Request::get(url);
         for (key, value) in headers {
             request = request.header(key, value);
         }
-        let response = request.body(())?.send()?;
-        Ok(response)
+        let mut response = request.body(())?.send()?;
+        let mut headers = HashMap::new();
+        for (key, value) in response.headers() {
+            headers.insert(key.to_string(), value.to_str()?.to_string());
+        }
+        let body = response.bytes()?;
+        Ok(strava_mirror::NetworkResponse {
+            status_code: response.status().as_u16(),
+            headers,
+            body,
+        })
     }
 
-    fn post(&self, url: &str, body: &str) -> anyhow::Result<isahc::Response<isahc::Body>> {
-        let response = isahc::post(url, body)?;
-        Ok(response)
+    fn post(&self, url: &str, body: &str) -> anyhow::Result<strava_mirror::NetworkResponse> {
+        let mut response = isahc::post(url, body)?;
+        let mut headers = HashMap::new();
+        for (key, value) in response.headers() {
+            headers.insert(key.to_string(), value.to_str()?.to_string());
+        }
+        let body = response.bytes()?;
+        Ok(strava_mirror::NetworkResponse {
+            status_code: response.status().as_u16(),
+            headers,
+            body,
+        })
     }
 }
 
