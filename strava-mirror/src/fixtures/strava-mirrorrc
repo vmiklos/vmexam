@@ -1,0 +1,5 @@
+client_id = "42"
+client_secret = "myclientsecret"
+refresh_token = "myrefreshtoken"
+# sub: 42, exp: 1778138776 (2026-05-07)
+jwt = "AAA.ewogICAgInN1YiI6IDQyLAogICAgImV4cCI6IDE3NzgxMzg3NzYKfQo.CCC"

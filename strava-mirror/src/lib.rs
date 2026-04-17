@@ -13,11 +13,16 @@
 use anyhow::Context as _;
 use base64::Engine as _;
 use clap::Parser as _;
-use log::info;
 use std::collections::HashMap;
 use std::io::Read as _;
 use std::io::Write as _;
 use std::rc::Rc;
+
+#[cfg(not(test))]
+use log::info;
+
+#[cfg(test)]
+use std::println as info;
 
 const ACTIVITY_TIMESTAMP_FORMAT: &str = "[year]-[month]-[day]T[hour]-[minute]-[second]Z";
 
@@ -395,3 +400,6 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests;
