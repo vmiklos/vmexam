@@ -326,6 +326,106 @@ fn mirror_activity(
     Ok(())
 }
 
+#[derive(serde::Deserialize)]
+struct NominatimResponse {
+    address: NominatimAddress,
+}
+
+#[derive(serde::Deserialize)]
+struct NominatimAddress {
+    country: String,
+}
+
+#[derive(serde::Deserialize)]
+struct ActivityMetadata {
+    start_latlng: Option<Vec<f64>>,
+}
+
+/// Queries the country of one activity.
+fn query_activity_country(
+    ctx: &Context,
+    entry: &vfs::VfsPath,
+    cache: &mut HashMap<String, String>,
+) -> anyhow::Result<()> {
+    let filename = entry.filename();
+    if !filename.ends_with(".meta.json") {
+        return Ok(());
+    }
+
+    let mut meta_content = String::new();
+    entry.open_file()?.read_to_string(&mut meta_content)?;
+    let metadata: ActivityMetadata = serde_json::from_str(&meta_content)?;
+    let Some(start_latlng) = metadata.start_latlng else {
+        return Ok(());
+    };
+    if start_latlng.len() < 2 {
+        return Ok(());
+    }
+
+    let lat = start_latlng[0];
+    let lon = start_latlng[1];
+    let query = format!("lat={}&lon={}", lat, lon);
+    let country = if let Some(country) = cache.get(&query) {
+        country.to_string()
+    } else {
+        let url = format!(
+            "https://nominatim.openstreetmap.org/reverse?{}&format=json",
+            query
+        );
+        info!("GET '{}'", url);
+        let response = ctx.network.get(&url, &HashMap::new())?;
+        if response.status_code != 200 {
+            return Err(anyhow::anyhow!(
+                "status is not success: {}",
+                response.status_code
+            ));
+        }
+        let nominatim_response: NominatimResponse = serde_json::from_slice(&response.body)?;
+        let country = nominatim_response.address.country;
+        cache.insert(query, country.clone());
+        std::thread::sleep(std::time::Duration::from_secs(1));
+        country
+    };
+    println!("{}: {}", filename, country);
+    Ok(())
+}
+
+/// Queries the country of an activity based on its start location.
+fn query_countries(ctx: &Context) -> anyhow::Result<()> {
+    let home = &ctx.fs;
+    let activities_dir = home.join(".local/share/strava-mirror/activities")?;
+    if !activities_dir.exists()? {
+        return Ok(());
+    }
+
+    let cache_path = home.join(".local/share/strava-mirror/nominatim-cache.json")?;
+    let mut cache: HashMap<String, String> = if cache_path.exists()? {
+        let mut cache_content = String::new();
+        cache_path.open_file()?.read_to_string(&mut cache_content)?;
+        serde_json::from_str(&cache_content)?
+    } else {
+        HashMap::new()
+    };
+
+    for year_dir in activities_dir.read_dir()? {
+        if year_dir.is_file()? {
+            continue;
+        }
+
+        for entry in year_dir.read_dir()? {
+            query_activity_country(ctx, &entry, &mut cache)?;
+        }
+    }
+
+    let cache_dir = cache_path.parent();
+    cache_dir.create_dir_all()?;
+    cache_path
+        .create_file()?
+        .write_all(serde_json::to_string_pretty(&cache)?.as_bytes())?;
+
+    Ok(())
+}
+
 /// Sets up logging so it has local time timestamp as a prefix.
 fn setup_logging(level: log::LevelFilter) -> anyhow::Result<()> {
     let mut builder = simplelog::ConfigBuilder::new();
@@ -351,6 +451,10 @@ pub struct Args {
     /// Be quiet.
     #[arg(short, long)]
     pub quiet: bool,
+
+    /// Query stats from local activities.
+    #[arg(long)]
+    pub query: Option<String>,
 }
 
 /// Mirrors your Strava activities.
@@ -362,6 +466,14 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
         log::LevelFilter::Info
     };
     setup_logging(log_level)?;
+
+    if let Some(query) = args.query {
+        if query == "countries" {
+            return query_countries(ctx);
+        }
+        return Err(anyhow::anyhow!("unknown query: {}", query));
+    }
+
     let home = &ctx.fs;
 
     let config = read_config(ctx)?;
