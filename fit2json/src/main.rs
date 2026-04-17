@@ -13,7 +13,7 @@
 use anyhow::Context as _;
 use base64::Engine as _;
 use clap::Parser as _;
-use rand::RngCore as _;
+use rand::Rng as _;
 
 #[derive(clap::Parser)]
 struct Arguments {
@@ -131,7 +131,7 @@ fn main() -> anyhow::Result<()> {
         Some(ref value) => value.to_string(),
         None => {
             let mut bytes = [0; 17];
-            rand::thread_rng().fill_bytes(&mut bytes);
+            rand::rng().fill_bytes(&mut bytes);
             let b64 = base64::prelude::BASE64_STANDARD.encode(bytes);
             let mut urlsafe: String = b64
                 .chars()
