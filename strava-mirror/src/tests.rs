@@ -199,3 +199,47 @@ jwt = "invalid""#;
     let err = ret.unwrap_err().to_string();
     assert!(err.contains("JWT doesn't have 3 parts"));
 }
+
+#[test]
+fn test_jwt_to_cookie_expired() {
+    // Given a config with an expired JWT:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let mut responses = HashMap::new();
+    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/oauth/token".to_string(),
+        NetworkResponse {
+            status_code: 200,
+            headers: HashMap::new(),
+            body: token_body,
+        },
+    );
+    let network = Rc::new(TestNetwork { responses });
+    // Config's JWT expires on 2026-05-07, so set "now" to 2026-05-09.
+    let now = time::macros::datetime!(2026-05-09 12:00:00 UTC);
+    let time = Rc::new(TestTime { now });
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    let config_dir = fs.join(".config").unwrap();
+    config_dir.create_dir_all().unwrap();
+    let config_content = std::fs::read_to_string("src/fixtures/strava-mirrorrc").unwrap();
+    config_dir
+        .join("strava-mirrorrc")
+        .unwrap()
+        .create_file()
+        .unwrap()
+        .write_all(config_content.as_bytes())
+        .unwrap();
+
+    // When mirroring activities:
+    let args = vec!["strava-mirror".to_string()];
+    let ret = run(args, &ctx);
+
+    // Then make sure there is a failure:
+    assert!(ret.is_err());
+    let err = ret.unwrap_err().to_string();
+    assert!(err.contains("JWT has expired"));
+}

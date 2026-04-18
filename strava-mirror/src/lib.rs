@@ -132,9 +132,11 @@ fn jwt_to_cookie(ctx: &Context, jwt: &str) -> anyhow::Result<String> {
     let jwt_payload: Jwt = serde_json::from_slice(&payload_bytes)?;
     let strava_remember_id = jwt_payload.sub;
     let exp_datetime = ctx.time.to_local_offset(jwt_payload.exp)?;
-    let exp_formatted = exp_datetime.format(time::macros::format_description!(
-        "[year]-[month]-[day] [hour]:[minute]:[second]"
-    ))?;
+    let exp_formatted = exp_datetime
+        .format(time::macros::format_description!(
+            "[year]-[month]-[day] [hour]:[minute]:[second]"
+        ))
+        .expect("OffsetDateTime::format() failed");
     info!("JWT expires at {}", exp_formatted);
     let now = ctx.time.now();
     if exp_datetime <= now {
