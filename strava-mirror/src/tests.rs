@@ -48,6 +48,14 @@ struct TestTime {
     now: time::OffsetDateTime,
 }
 
+impl Default for TestTime {
+    fn default() -> Self {
+        Self {
+            now: time::macros::datetime!(2026-04-12 12:00:00 UTC),
+        }
+    }
+}
+
 impl Time for TestTime {
     fn now(&self) -> time::OffsetDateTime {
         self.now
@@ -81,8 +89,7 @@ fn test_no_activities() {
         },
     );
     let network = Rc::new(TestNetwork { responses });
-    let now = time::macros::datetime!(2026-04-12 12:00:00 UTC);
-    let time = Rc::new(TestTime { now });
+    let time = Rc::new(TestTime::default());
     let ctx = Context {
         fs: fs.clone(),
         network,
@@ -121,8 +128,7 @@ fn test_get_access_token_error() {
         },
     );
     let network = Rc::new(TestNetwork { responses });
-    let now = time::macros::datetime!(2026-04-12 12:00:00 UTC);
-    let time = Rc::new(TestTime { now });
+    let time = Rc::new(TestTime::default());
     let ctx = Context {
         fs: fs.clone(),
         network,
@@ -147,4 +153,49 @@ fn test_get_access_token_error() {
     assert!(ret.is_err());
     let err = ret.unwrap_err().to_string();
     assert!(err.contains("status is not success: 500"));
+}
+
+#[test]
+fn test_jwt_to_cookie_error() {
+    // Given a config with an invalid JWT:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let mut responses = HashMap::new();
+    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/oauth/token".to_string(),
+        NetworkResponse {
+            status_code: 200,
+            headers: HashMap::new(),
+            body: token_body,
+        },
+    );
+    let network = Rc::new(TestNetwork { responses });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    let config_dir = fs.join(".config").unwrap();
+    config_dir.create_dir_all().unwrap();
+    let config_content = r#"client_id = "42"
+client_secret = "s"
+refresh_token = "r"
+jwt = "invalid""#;
+    config_dir
+        .join("strava-mirrorrc")
+        .unwrap()
+        .create_file()
+        .unwrap()
+        .write_all(config_content.as_bytes())
+        .unwrap();
+
+    // When mirroring activities:
+    let args = vec!["strava-mirror".to_string()];
+    let ret = run(args, &ctx);
+
+    // Then make sure there is a failure:
+    assert!(ret.is_err());
+    let err = ret.unwrap_err().to_string();
+    assert!(err.contains("JWT doesn't have 3 parts"));
 }
