@@ -106,3 +106,45 @@ fn test_no_activities() {
     // Then make sure there is no failure:
     assert!(ret.is_ok());
 }
+
+#[test]
+fn test_get_access_token_error() {
+    // Given the oauth token request fails:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let mut responses = HashMap::new();
+    responses.insert(
+        "https://www.strava.com/oauth/token".to_string(),
+        NetworkResponse {
+            status_code: 500,
+            headers: HashMap::new(),
+            body: b"".to_vec(),
+        },
+    );
+    let network = Rc::new(TestNetwork { responses });
+    let now = time::macros::datetime!(2026-04-12 12:00:00 UTC);
+    let time = Rc::new(TestTime { now });
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    let config_dir = fs.join(".config").unwrap();
+    config_dir.create_dir_all().unwrap();
+    let config_content = std::fs::read_to_string("src/fixtures/strava-mirrorrc").unwrap();
+    config_dir
+        .join("strava-mirrorrc")
+        .unwrap()
+        .create_file()
+        .unwrap()
+        .write_all(config_content.as_bytes())
+        .unwrap();
+
+    // When mirroring activities:
+    let args = vec!["strava-mirror".to_string()];
+    let ret = run(args, &ctx);
+
+    // Then make sure there is a failure:
+    assert!(ret.is_err());
+    let err = ret.unwrap_err().to_string();
+    assert!(err.contains("status is not success: 500"));
+}

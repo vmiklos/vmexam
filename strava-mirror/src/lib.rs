@@ -436,12 +436,12 @@ fn setup_logging(level: log::LevelFilter) -> anyhow::Result<()> {
         return Err(anyhow::anyhow!("offset to local failed"));
     }
     let config = builder.build();
-    simplelog::CombinedLogger::init(vec![simplelog::TermLogger::new(
+    let _ = simplelog::CombinedLogger::init(vec![simplelog::TermLogger::new(
         level,
         config,
         simplelog::TerminalMode::Stdout,
         simplelog::ColorChoice::Never,
-    )])?;
+    )]);
     Ok(())
 }
 
