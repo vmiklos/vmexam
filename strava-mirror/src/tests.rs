@@ -243,3 +243,100 @@ fn test_jwt_to_cookie_expired() {
     let err = ret.unwrap_err().to_string();
     assert!(err.contains("JWT has expired"));
 }
+
+#[test]
+fn test_mirror_activity() {
+    // Given a single activity configured:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let mut responses = HashMap::new();
+    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/oauth/token".to_string(),
+        NetworkResponse {
+            status_code: 200,
+            headers: HashMap::new(),
+            body: token_body,
+        },
+    );
+    let activities_body = std::fs::read("src/fixtures/activities-1.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/api/v3/athlete/activities?page=1&per_page=200".to_string(),
+        NetworkResponse {
+            status_code: 200,
+            headers: HashMap::new(),
+            body: activities_body,
+        },
+    );
+    responses.insert(
+        "https://www.strava.com/api/v3/athlete/activities?page=2&per_page=200".to_string(),
+        NetworkResponse {
+            status_code: 200,
+            headers: HashMap::new(),
+            body: b"[]".to_vec(),
+        },
+    );
+    let activity_meta_body = std::fs::read("src/fixtures/activity1.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/api/v3/activities/1".to_string(),
+        NetworkResponse {
+            status_code: 200,
+            headers: HashMap::new(),
+            body: activity_meta_body,
+        },
+    );
+    let mut data_headers = HashMap::new();
+    data_headers.insert(
+        "content-disposition".to_string(),
+        "attachment; filename=\"activity.fit\"".to_string(),
+    );
+    responses.insert(
+        "https://www.strava.com/activities/1/export_original".to_string(),
+        NetworkResponse {
+            status_code: 200,
+            headers: data_headers,
+            body: b"fitdata".to_vec(),
+        },
+    );
+    let network = Rc::new(TestNetwork { responses });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    let config_dir = fs.join(".config").unwrap();
+    config_dir.create_dir_all().unwrap();
+    let config_content = std::fs::read_to_string("src/fixtures/strava-mirrorrc").unwrap();
+    config_dir
+        .join("strava-mirrorrc")
+        .unwrap()
+        .create_file()
+        .unwrap()
+        .write_all(config_content.as_bytes())
+        .unwrap();
+
+    // When mirroring activities:
+    let args = vec!["strava-mirror".to_string()];
+    run(args, &ctx).unwrap();
+
+    // Then make sure the 2 expeced files are created:
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    assert!(activities_dir.exists().unwrap());
+    let base_name = "2025-04-09T07-44-48Z_1";
+    assert!(
+        activities_dir
+            .join(format!("{}.meta.json", base_name))
+            .unwrap()
+            .exists()
+            .unwrap()
+    );
+    assert!(
+        activities_dir
+            .join(format!("{}.fit", base_name))
+            .unwrap()
+            .exists()
+            .unwrap()
+    );
+}
