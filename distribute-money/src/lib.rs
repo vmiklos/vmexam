@@ -48,13 +48,13 @@ impl Transaction {
 pub fn distribute_money(accounts: &[Account]) -> Vec<Transaction> {
     let mut creditors: Vec<Account> = accounts.iter().filter(|i| i.balance > 0).cloned().collect();
     // Order big amounts first, i.e. reverse sort.
-    creditors.sort_by(|a, b| b.balance.cmp(&a.balance));
+    creditors.sort_by_key(|b| std::cmp::Reverse(b.balance));
     let mut debtors: Vec<Account> = accounts
         .iter()
         .filter(|i| i.balance < 0)
         .map(|i| Account::new(&i.owner, -i.balance))
         .collect();
-    debtors.sort_by(|a, b| b.balance.cmp(&a.balance));
+    debtors.sort_by_key(|b| std::cmp::Reverse(b.balance));
 
     let mut transactions: Vec<Transaction> = Vec::new();
 
