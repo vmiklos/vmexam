@@ -88,7 +88,7 @@ fn get_credential(ctx: &Context, server: &str) -> anyhow::Result<crate::serde::C
     let credential = config
         .credentials
         .get(server)
-        .context("no such server in config")?;
+        .context("no such server in nextcloud-openrc")?;
     Ok(credential.clone())
 }
 
