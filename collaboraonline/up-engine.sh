@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Builds core.git from scratch.
+# Builds online.git engine/ from scratch.
 #
 
 BRANCH=$(git symbolic-ref HEAD|sed 's|refs/heads/||')
@@ -16,9 +16,6 @@ time (
     (cd instdir && rm -rf user && ln -s $HOME/.config/collaboraofficedev/${BRANCH##*/}/user)
     make check
     make vim-ide-integration
-    if [ $BRANCH == main ]; then
-        style-check-files
-    fi
 ) 2>&1 |tee log
 
 exit ${PIPESTATUS[0]}

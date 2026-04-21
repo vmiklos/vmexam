@@ -9,7 +9,6 @@
 # zypper in python3-polib
 
 time (
-    git pull -r
     # make distclean is broken
     if [ -e Makefile ]; then
         make clean
@@ -18,7 +17,8 @@ time (
     ./autogen.py
     make -j$(getconf _NPROCESSORS_ONLN)
     make -j$(getconf _NPROCESSORS_ONLN) -C test check SUPPRESS_TESTS=y
-    make ctags
+    # exclude engine/ and non-tracked directories automatically
+    ctags --c++-kinds=+p --fields=+iaS --extra=+q -R --totals=yes $(git ls-files|grep /|sed 's|/.*||'|grep -v engine|sort -u)
     kill-wrapper 'make -C test check' 1200
     # make -C cypress_test check-desktop
     # make -C cypress_test check-mobile

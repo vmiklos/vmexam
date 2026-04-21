@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
-cd collaboraonline/core
+cd collaboraonline/online/engine
 pushping ./up.sh
-cd ../../collaboraonline/online
+cd ..
 pushping ./up.sh
 
 # vim:set shiftwidth=4 expandtab:
