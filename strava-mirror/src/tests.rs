@@ -430,3 +430,27 @@ fn test_list_activities_after() {
             .unwrap()
     );
 }
+
+#[test]
+fn test_get_mirrored_activities_ignore_file() {
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs.join(".local/share/strava-mirror/activities").unwrap();
+    activities_dir.create_dir_all().unwrap();
+    // Create a plain file under activities/, which should be ignored.
+    activities_dir
+        .join("ignore-me")
+        .unwrap()
+        .create_file()
+        .unwrap();
+    // Create a year directory and a valid meta file to ensure we still process other things.
+    let year_dir = activities_dir.join("2025").unwrap();
+    year_dir.create_dir_all().unwrap();
+    let timestamp_str = "2025-04-09T07-44-48Z";
+    let base_name = format!("{}_1", timestamp_str);
+    let meta_path = year_dir.join(format!("{}.meta.json", base_name)).unwrap();
+    meta_path.create_file().unwrap().write_all(b"{}").unwrap();
+
+    let mirrored_activities = get_mirrored_activities(&activities_dir).unwrap();
+
+    assert_eq!(mirrored_activities.len(), 1);
+}
