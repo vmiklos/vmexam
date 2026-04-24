@@ -66,6 +66,19 @@ impl Time for TestTime {
     }
 }
 
+fn setup_config(fs: &vfs::VfsPath) {
+    let config_dir = fs.join(".config").unwrap();
+    config_dir.create_dir_all().unwrap();
+    let config_content = std::fs::read_to_string("src/fixtures/strava-mirrorrc").unwrap();
+    config_dir
+        .join("strava-mirrorrc")
+        .unwrap()
+        .create_file()
+        .unwrap()
+        .write_all(config_content.as_bytes())
+        .unwrap();
+}
+
 #[test]
 fn test_no_activities() {
     // Given no activities:
@@ -95,16 +108,7 @@ fn test_no_activities() {
         network,
         time,
     };
-    let config_dir = fs.join(".config").unwrap();
-    config_dir.create_dir_all().unwrap();
-    let config_content = std::fs::read_to_string("src/fixtures/strava-mirrorrc").unwrap();
-    config_dir
-        .join("strava-mirrorrc")
-        .unwrap()
-        .create_file()
-        .unwrap()
-        .write_all(config_content.as_bytes())
-        .unwrap();
+    setup_config(&fs);
 
     // When mirroring activities:
     let args = vec!["strava-mirror".to_string()];
@@ -134,16 +138,7 @@ fn test_get_access_token_error() {
         network,
         time,
     };
-    let config_dir = fs.join(".config").unwrap();
-    config_dir.create_dir_all().unwrap();
-    let config_content = std::fs::read_to_string("src/fixtures/strava-mirrorrc").unwrap();
-    config_dir
-        .join("strava-mirrorrc")
-        .unwrap()
-        .create_file()
-        .unwrap()
-        .write_all(config_content.as_bytes())
-        .unwrap();
+    setup_config(&fs);
 
     // When mirroring activities:
     let args = vec!["strava-mirror".to_string()];
@@ -223,16 +218,7 @@ fn test_jwt_to_cookie_expired() {
         network,
         time,
     };
-    let config_dir = fs.join(".config").unwrap();
-    config_dir.create_dir_all().unwrap();
-    let config_content = std::fs::read_to_string("src/fixtures/strava-mirrorrc").unwrap();
-    config_dir
-        .join("strava-mirrorrc")
-        .unwrap()
-        .create_file()
-        .unwrap()
-        .write_all(config_content.as_bytes())
-        .unwrap();
+    setup_config(&fs);
 
     // When mirroring activities:
     let args = vec!["strava-mirror".to_string()];
@@ -304,16 +290,7 @@ fn test_mirror_activity() {
         network,
         time,
     };
-    let config_dir = fs.join(".config").unwrap();
-    config_dir.create_dir_all().unwrap();
-    let config_content = std::fs::read_to_string("src/fixtures/strava-mirrorrc").unwrap();
-    config_dir
-        .join("strava-mirrorrc")
-        .unwrap()
-        .create_file()
-        .unwrap()
-        .write_all(config_content.as_bytes())
-        .unwrap();
+    setup_config(&fs);
 
     // When mirroring activities:
     let args = vec!["strava-mirror".to_string()];
@@ -429,16 +406,7 @@ fn test_list_activities_after() {
         network,
         time,
     };
-    let config_dir = fs.join(".config").unwrap();
-    config_dir.create_dir_all().unwrap();
-    let config_content = std::fs::read_to_string("src/fixtures/strava-mirrorrc").unwrap();
-    config_dir
-        .join("strava-mirrorrc")
-        .unwrap()
-        .create_file()
-        .unwrap()
-        .write_all(config_content.as_bytes())
-        .unwrap();
+    setup_config(&fs);
 
     // When doing incremental mirroring to get the second activity:
     let args = vec!["strava-mirror".to_string()];
