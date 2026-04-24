@@ -183,10 +183,7 @@ fn get_mirrored_activities(activities_dir: &vfs::VfsPath) -> anyhow::Result<Mirr
         for entry in year_dir.read_dir()? {
             let filename = entry.filename();
 
-            let timestamp_str = match filename.split('_').next() {
-                Some(t) => t,
-                None => continue,
-            };
+            let timestamp_str = filename.split('_').next().context("next() failed")?;
 
             if let Ok(primitive) = time::PrimitiveDateTime::parse(timestamp_str, &format) {
                 let start_date = primitive.assume_utc();
