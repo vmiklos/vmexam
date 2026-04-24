@@ -340,25 +340,25 @@ struct ActivityMetadata {
     start_latlng: Option<Vec<f64>>,
 }
 
-/// Queries the country of one activity.
-fn query_activity_country(
+/// Gets the country of one activity.
+fn get_activity_country(
     ctx: &Context,
     entry: &vfs::VfsPath,
     cache: &mut HashMap<String, String>,
-) -> anyhow::Result<()> {
+) -> anyhow::Result<Option<(String, String)>> {
     let filename = entry.filename();
     if !filename.ends_with(".meta.json") {
-        return Ok(());
+        return Ok(None);
     }
 
     let mut meta_content = String::new();
     entry.open_file()?.read_to_string(&mut meta_content)?;
     let metadata: ActivityMetadata = serde_json::from_str(&meta_content)?;
     let Some(start_latlng) = metadata.start_latlng else {
-        return Ok(());
+        return Ok(None);
     };
     if start_latlng.len() < 2 {
-        return Ok(());
+        return Ok(None);
     }
 
     let lat = start_latlng[0];
@@ -385,16 +385,16 @@ fn query_activity_country(
         std::thread::sleep(std::time::Duration::from_secs(1));
         country
     };
-    println!("{}: {}", filename, country);
-    Ok(())
+    Ok(Some((filename, country)))
 }
 
-/// Queries the country of an activity based on its start location.
-fn query_countries(ctx: &Context) -> anyhow::Result<()> {
+/// Gets the country of activities based on their start location.
+fn get_countries(ctx: &Context) -> anyhow::Result<HashMap<String, String>> {
+    let mut countries = HashMap::new();
     let home = &ctx.fs;
     let activities_dir = home.join(".local/share/strava-mirror/activities")?;
     if !activities_dir.exists()? {
-        return Ok(());
+        return Ok(countries);
     }
 
     let cache_path = home.join(".local/share/strava-mirror/nominatim-cache.json")?;
@@ -412,7 +412,9 @@ fn query_countries(ctx: &Context) -> anyhow::Result<()> {
         }
 
         for entry in year_dir.read_dir()? {
-            query_activity_country(ctx, &entry, &mut cache)?;
+            if let Some((filename, country)) = get_activity_country(ctx, &entry, &mut cache)? {
+                countries.insert(filename, country);
+            }
         }
     }
 
@@ -422,6 +424,33 @@ fn query_countries(ctx: &Context) -> anyhow::Result<()> {
         .create_file()?
         .write_all(serde_json::to_string_pretty(&cache)?.as_bytes())?;
 
+    Ok(countries)
+}
+
+/// Queries the country of an activity based on its start location.
+fn query_countries(ctx: &Context) -> anyhow::Result<()> {
+    let countries = get_countries(ctx)?;
+    let mut filenames: Vec<_> = countries.keys().collect();
+    filenames.sort();
+    for filename in filenames {
+        println!("{}: {}", filename, countries[filename]);
+    }
+    Ok(())
+}
+
+/// Summarizes countries of activities based on their start location.
+fn query_countries_summary(ctx: &Context) -> anyhow::Result<()> {
+    let countries = get_countries(ctx)?;
+    let mut counts = HashMap::new();
+    for country in countries.values() {
+        let count = counts.entry(country.clone()).or_insert(0);
+        *count += 1;
+    }
+    let mut sorted_counts: Vec<_> = counts.into_iter().collect();
+    sorted_counts.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
+    for (country, count) in sorted_counts {
+        println!("{}: {}", country, count);
+    }
     Ok(())
 }
 
@@ -451,9 +480,13 @@ pub struct Args {
     #[arg(short, long)]
     pub quiet: bool,
 
-    /// Query stats from local activities.
-    #[arg(long)]
+    /// Query stats from local activities. Valid values: 'countries'.
+    #[arg(long, value_name = "KIND")]
     pub query: Option<String>,
+
+    /// Summarize query results.
+    #[arg(long)]
+    pub summary: bool,
 }
 
 /// Mirrors your Strava activities.
@@ -468,6 +501,9 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
 
     if let Some(query) = args.query {
         if query == "countries" {
+            if args.summary {
+                return query_countries_summary(ctx);
+            }
             return query_countries(ctx);
         }
         return Err(anyhow::anyhow!("unknown query: {}", query));

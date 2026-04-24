@@ -33,6 +33,20 @@ jwt = "..."
 Once `strava-mirror` is completed, you can find your activities under
 `~/.local/share/strava-mirror/activities/`.
 
+## Querying
+
+You can query your local activities, e.g. to see which country each activity was in:
+
+```
+strava-mirror --query countries
+```
+
+Use the `--summary` flag to only see the country counts:
+
+```
+strava-mirror --query countries --summary
+```
+
 ## Cron
 
 If you want to automate downloading your activities, there is a `--quiet` option to omit the INFO
