@@ -24,7 +24,6 @@ impl Network for TestNetwork {
     ) -> anyhow::Result<NetworkResponse> {
         if let Some(response) = self.responses.get(url) {
             return Ok(NetworkResponse {
-                status_code: response.status_code,
                 headers: response.headers.clone(),
                 body: response.body.clone(),
             });
@@ -34,12 +33,7 @@ impl Network for TestNetwork {
 
     fn post(&self, url: &str, _body: &str) -> anyhow::Result<NetworkResponse> {
         if let Some(response) = self.responses.get(url) {
-            let status = response.status_code;
-            if status != 200 {
-                return Err(anyhow::anyhow!("status is not success: {status}"));
-            }
             return Ok(NetworkResponse {
-                status_code: response.status_code,
                 headers: response.headers.clone(),
                 body: response.body.clone(),
             });
@@ -92,7 +86,6 @@ fn test_no_activities() {
     responses.insert(
         "https://www.strava.com/oauth/token".to_string(),
         NetworkResponse {
-            status_code: 200,
             headers: HashMap::new(),
             body: token_body,
         },
@@ -100,7 +93,6 @@ fn test_no_activities() {
     responses.insert(
         "https://www.strava.com/api/v3/athlete/activities?page=1&per_page=200".to_string(),
         NetworkResponse {
-            status_code: 200,
             headers: HashMap::new(),
             body: b"[]".to_vec(),
         },
@@ -158,7 +150,6 @@ fn test_jwt_to_cookie_error() {
     responses.insert(
         "https://www.strava.com/oauth/token".to_string(),
         NetworkResponse {
-            status_code: 200,
             headers: HashMap::new(),
             body: token_body,
         },
@@ -203,7 +194,6 @@ fn test_jwt_to_cookie_expired() {
     responses.insert(
         "https://www.strava.com/oauth/token".to_string(),
         NetworkResponse {
-            status_code: 200,
             headers: HashMap::new(),
             body: token_body,
         },
@@ -238,7 +228,6 @@ fn test_mirror_activity() {
     responses.insert(
         "https://www.strava.com/oauth/token".to_string(),
         NetworkResponse {
-            status_code: 200,
             headers: HashMap::new(),
             body: token_body,
         },
@@ -247,7 +236,6 @@ fn test_mirror_activity() {
     responses.insert(
         "https://www.strava.com/api/v3/athlete/activities?page=1&per_page=200".to_string(),
         NetworkResponse {
-            status_code: 200,
             headers: HashMap::new(),
             body: activities_body,
         },
@@ -255,7 +243,6 @@ fn test_mirror_activity() {
     responses.insert(
         "https://www.strava.com/api/v3/athlete/activities?page=2&per_page=200".to_string(),
         NetworkResponse {
-            status_code: 200,
             headers: HashMap::new(),
             body: b"[]".to_vec(),
         },
@@ -264,7 +251,6 @@ fn test_mirror_activity() {
     responses.insert(
         "https://www.strava.com/api/v3/activities/1".to_string(),
         NetworkResponse {
-            status_code: 200,
             headers: HashMap::new(),
             body: activity_meta_body,
         },
@@ -277,7 +263,6 @@ fn test_mirror_activity() {
     responses.insert(
         "https://www.strava.com/activities/1/export_original".to_string(),
         NetworkResponse {
-            status_code: 200,
             headers: data_headers,
             body: b"fitdata".to_vec(),
         },
@@ -346,7 +331,6 @@ fn test_list_activities_after() {
     responses.insert(
         "https://www.strava.com/oauth/token".to_string(),
         NetworkResponse {
-            status_code: 200,
             headers: HashMap::new(),
             body: token_body,
         },
@@ -360,7 +344,6 @@ fn test_list_activities_after() {
     responses.insert(
         activities_url,
         NetworkResponse {
-            status_code: 200,
             headers: HashMap::new(),
             body: activities_body,
         },
@@ -372,7 +355,6 @@ fn test_list_activities_after() {
     responses.insert(
         activities_url_p2,
         NetworkResponse {
-            status_code: 200,
             headers: HashMap::new(),
             body: b"[]".to_vec(),
         },
@@ -380,7 +362,6 @@ fn test_list_activities_after() {
     responses.insert(
         "https://www.strava.com/api/v3/activities/2".to_string(),
         NetworkResponse {
-            status_code: 200,
             headers: HashMap::new(),
             body: b"{\"id\": 2, \"name\": \"myactivity2\"}".to_vec(),
         },
@@ -393,7 +374,6 @@ fn test_list_activities_after() {
     responses.insert(
         "https://www.strava.com/activities/2/export_original".to_string(),
         NetworkResponse {
-            status_code: 200,
             headers: data_headers,
             body: b"fitdata2".to_vec(),
         },

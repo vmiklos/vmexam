@@ -28,8 +28,6 @@ const ACTIVITY_TIMESTAMP_FORMAT: &str = "[year]-[month]-[day]T[hour]-[minute]-[s
 
 /// Network response.
 pub struct NetworkResponse {
-    /// The status code.
-    pub status_code: u16,
     /// The headers.
     pub headers: HashMap<String, String>,
     /// The body.

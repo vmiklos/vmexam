@@ -39,11 +39,7 @@ impl strava_mirror::Network for RealNetwork {
             headers.insert(key.to_string(), value.to_str()?.to_string());
         }
         let body = response.bytes()?;
-        Ok(strava_mirror::NetworkResponse {
-            status_code: response.status().as_u16(),
-            headers,
-            body,
-        })
+        Ok(strava_mirror::NetworkResponse { headers, body })
     }
 
     fn post(&self, url: &str, body: &str) -> anyhow::Result<strava_mirror::NetworkResponse> {
@@ -57,11 +53,7 @@ impl strava_mirror::Network for RealNetwork {
             headers.insert(key.to_string(), value.to_str()?.to_string());
         }
         let body = response.bytes()?;
-        Ok(strava_mirror::NetworkResponse {
-            status_code: response.status().as_u16(),
-            headers,
-            body,
-        })
+        Ok(strava_mirror::NetworkResponse { headers, body })
     }
 }
 
