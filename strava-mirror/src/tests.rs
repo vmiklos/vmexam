@@ -22,13 +22,12 @@ impl Network for TestNetwork {
         url: &str,
         _headers: &HashMap<String, String>,
     ) -> anyhow::Result<NetworkResponse> {
-        if let Some(response) = self.responses.get(url) {
-            return Ok(NetworkResponse {
-                headers: response.headers.clone(),
-                body: response.body.clone(),
-            });
-        }
-        Err(anyhow::anyhow!("Unexpected GET request to {}", url))
+        // For now we have no case when we want to simulate a GET failing.
+        let response = self.responses.get(url).unwrap();
+        return Ok(NetworkResponse {
+            headers: response.headers.clone(),
+            body: response.body.clone(),
+        });
     }
 
     fn post(&self, url: &str, _body: &str) -> anyhow::Result<NetworkResponse> {
@@ -438,4 +437,149 @@ fn test_get_mirrored_activities_ignore_file() {
     let mirrored_activities = get_mirrored_activities(&activities_dir).unwrap();
 
     assert_eq!(mirrored_activities.len(), 1);
+}
+
+#[test]
+fn test_mirror_activity_only_data() {
+    // Given an activity where the meta is already mirrored:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    activities_dir.create_dir_all().unwrap();
+    let timestamp_str = "2025-04-09T07-44-48Z";
+    let base_name = format!("{}_1", timestamp_str);
+    let meta_path = activities_dir
+        .join(format!("{}.meta.json", base_name))
+        .unwrap();
+    meta_path.create_file().unwrap().write_all(b"{}").unwrap();
+
+    let mut responses = HashMap::new();
+    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/oauth/token".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: token_body,
+        },
+    );
+    let activities_body = std::fs::read("src/fixtures/activities-1.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/api/v3/athlete/activities?page=1&per_page=200".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: activities_body,
+        },
+    );
+    responses.insert(
+        "https://www.strava.com/api/v3/athlete/activities?page=2&per_page=200".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"[]".to_vec(),
+        },
+    );
+    // Notice that api/v3/activities/1 is NOT in the responses, so if we try to download it, we fail.
+    let mut data_headers = HashMap::new();
+    data_headers.insert(
+        "content-disposition".to_string(),
+        "attachment; filename=\"activity.fit\"".to_string(),
+    );
+    responses.insert(
+        "https://www.strava.com/activities/1/export_original".to_string(),
+        NetworkResponse {
+            headers: data_headers,
+            body: b"fitdata".to_vec(),
+        },
+    );
+    let network = Rc::new(TestNetwork { responses });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    setup_config(&fs);
+
+    // When mirroring activities:
+    let args = vec!["strava-mirror".to_string()];
+    run(args, &ctx).unwrap();
+
+    // Then make sure the data file is created:
+    assert!(
+        activities_dir
+            .join(format!("{}.fit", base_name))
+            .unwrap()
+            .exists()
+            .unwrap()
+    );
+}
+
+#[test]
+fn test_mirror_activity_already_mirrored() {
+    // Given an activity where both meta and data are already mirrored:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    activities_dir.create_dir_all().unwrap();
+    let timestamp_str = "2025-04-09T07-44-48Z";
+    let base_name = format!("{}_1", timestamp_str);
+    let meta_path = activities_dir
+        .join(format!("{}.meta.json", base_name))
+        .unwrap();
+    meta_path.create_file().unwrap().write_all(b"{}").unwrap();
+    activities_dir
+        .join(format!("{}.fit", base_name))
+        .unwrap()
+        .create_file()
+        .unwrap();
+
+    let mut responses = HashMap::new();
+    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/oauth/token".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: token_body,
+        },
+    );
+    let after_ts = 1744184688;
+    let activities_url = format!(
+        "https://www.strava.com/api/v3/athlete/activities?page=1&per_page=200&after={}",
+        after_ts
+    );
+    let activities_body = std::fs::read("src/fixtures/activities-1.json").unwrap();
+    responses.insert(
+        activities_url,
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: activities_body,
+        },
+    );
+    let activities_url_p2 = format!(
+        "https://www.strava.com/api/v3/athlete/activities?page=2&per_page=200&after={}",
+        after_ts
+    );
+    responses.insert(
+        activities_url_p2,
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"[]".to_vec(),
+        },
+    );
+    // Notice that neither api/v3/activities/1 nor export_original is in the responses.
+    let network = Rc::new(TestNetwork { responses });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    setup_config(&fs);
+
+    // When mirroring activities:
+    let args = vec!["strava-mirror".to_string()];
+    run(args, &ctx).unwrap();
+
+    // Then nothing should be downloaded (verified by lack of unexpected network requests).
 }
