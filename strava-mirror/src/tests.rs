@@ -445,6 +445,12 @@ fn test_get_mirrored_activities_ignore_file() {
     // Create a year directory and a valid meta file to ensure we still process other things.
     let year_dir = activities_dir.join("2025").unwrap();
     year_dir.create_dir_all().unwrap();
+    // Create a file with an underscore but an invalid timestamp format.
+    year_dir
+        .join("invalid-format_1.meta.json")
+        .unwrap()
+        .create_file()
+        .unwrap();
     let timestamp_str = "2025-04-09T07-44-48Z";
     let base_name = format!("{}_1", timestamp_str);
     let meta_path = year_dir.join(format!("{}.meta.json", base_name)).unwrap();
