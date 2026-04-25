@@ -34,6 +34,10 @@ impl Network for TestNetwork {
 
     fn post(&self, url: &str, _body: &str) -> anyhow::Result<NetworkResponse> {
         if let Some(response) = self.responses.get(url) {
+            let status = response.status_code;
+            if status != 200 {
+                return Err(anyhow::anyhow!("status is not success: {status}"));
+            }
             return Ok(NetworkResponse {
                 status_code: response.status_code,
                 headers: response.headers.clone(),
@@ -122,15 +126,7 @@ fn test_no_activities() {
 fn test_get_access_token_error() {
     // Given the oauth token request fails:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
-    let mut responses = HashMap::new();
-    responses.insert(
-        "https://www.strava.com/oauth/token".to_string(),
-        NetworkResponse {
-            status_code: 500,
-            headers: HashMap::new(),
-            body: b"".to_vec(),
-        },
-    );
+    let responses = HashMap::new();
     let network = Rc::new(TestNetwork { responses });
     let time = Rc::new(TestTime::default());
     let ctx = Context {
@@ -147,7 +143,10 @@ fn test_get_access_token_error() {
     // Then make sure there is a failure:
     assert!(ret.is_err());
     let err = ret.unwrap_err().to_string();
-    assert!(err.contains("status is not success: 500"));
+    assert_eq!(
+        err,
+        "Unexpected POST request to https://www.strava.com/oauth/token"
+    );
 }
 
 #[test]

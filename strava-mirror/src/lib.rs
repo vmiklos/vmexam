@@ -102,12 +102,6 @@ fn get_access_token(ctx: &Context, config: &Config) -> anyhow::Result<String> {
     let response = ctx
         .network
         .post(url, &serde_urlencoded::to_string(params)?)?;
-    if response.status_code != 200 {
-        return Err(anyhow::anyhow!(
-            "status is not success: {}",
-            response.status_code
-        ));
-    }
 
     let token_response: TokenResponse = serde_json::from_slice(&response.body)?;
     Ok(token_response.access_token)
@@ -227,12 +221,6 @@ fn list_activities(
         format!("Bearer {}", access_token),
     );
     let response = ctx.network.get(&url, &headers)?;
-    if response.status_code != 200 {
-        return Err(anyhow::anyhow!(
-            "status is not success: {}",
-            response.status_code
-        ));
-    }
 
     let activities: Vec<ActivitySummary> = serde_json::from_slice(&response.body)?;
     Ok(activities)
@@ -251,12 +239,6 @@ fn mirror_activity_data(
     let mut headers = HashMap::new();
     headers.insert("Cookie".to_string(), cookie.to_string());
     let response = ctx.network.get(&url, &headers)?;
-    if response.status_code != 200 {
-        return Err(anyhow::anyhow!(
-            "status is not success: {}",
-            response.status_code
-        ));
-    }
     let content_disposition = response
         .headers
         .get("content-disposition")
@@ -302,13 +284,6 @@ fn mirror_activity(
             format!("Bearer {}", access_token),
         );
         let response = ctx.network.get(&url, &headers)?;
-
-        if response.status_code != 200 {
-            return Err(anyhow::anyhow!(
-                "status is not success: {}",
-                response.status_code
-            ));
-        }
 
         let activity_json: serde_json::Value = serde_json::from_slice(&response.body)?;
         let meta_path = year_dir.join(format!("{}.meta.json", base_name))?;
@@ -373,12 +348,6 @@ fn get_activity_country(
         );
         info!("GET '{}'", url);
         let response = ctx.network.get(&url, &HashMap::new())?;
-        if response.status_code != 200 {
-            return Err(anyhow::anyhow!(
-                "status is not success: {}",
-                response.status_code
-            ));
-        }
         let nominatim_response: NominatimResponse = serde_json::from_slice(&response.body)?;
         let country = nominatim_response.address.country;
         cache.insert(query, country.clone());
