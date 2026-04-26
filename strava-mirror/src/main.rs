@@ -71,6 +71,10 @@ impl strava_mirror::Time for RealTime {
         let local_offset = time::UtcOffset::current_local_offset()?;
         Ok(exp_datetime.to_offset(local_offset))
     }
+
+    fn sleep(&self, duration: std::time::Duration) {
+        std::thread::sleep(duration);
+    }
 }
 
 fn main() -> anyhow::Result<()> {

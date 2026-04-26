@@ -61,6 +61,8 @@ impl Time for TestTime {
     fn to_local_offset(&self, timestamp: i64) -> anyhow::Result<time::OffsetDateTime> {
         Ok(time::OffsetDateTime::from_unix_timestamp(timestamp)?)
     }
+
+    fn sleep(&self, _duration: std::time::Duration) {}
 }
 
 fn setup_config(fs: &vfs::VfsPath) {
@@ -582,4 +584,175 @@ fn test_mirror_activity_already_mirrored() {
     run(args, &ctx).unwrap();
 
     // Then nothing should be downloaded (verified by lack of unexpected network requests).
+}
+
+#[test]
+fn test_query_countries() {
+    // Given an activity with location data and a nominatim cache:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    activities_dir.create_dir_all().unwrap();
+    let timestamp_str = "2025-04-09T07-44-48Z";
+    let base_name = format!("{}_1", timestamp_str);
+    let meta_path = activities_dir
+        .join(format!("{}.meta.json", base_name))
+        .unwrap();
+    // 47.0, 19.0 is in Hungary.
+    meta_path
+        .create_file()
+        .unwrap()
+        .write_all(b"{\"start_latlng\": [47.0, 19.0]}")
+        .unwrap();
+
+    let mut responses = HashMap::new();
+    responses.insert(
+        "https://nominatim.openstreetmap.org/reverse?lat=47&lon=19&format=json".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"{\"address\": {\"country\": \"Hungary\"}}".to_vec(),
+        },
+    );
+    let network = Rc::new(TestNetwork { responses });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    setup_config(&fs);
+
+    // When querying countries:
+    let args = vec![
+        "strava-mirror".to_string(),
+        "--query".to_string(),
+        "countries".to_string(),
+    ];
+    run(args, &ctx).unwrap();
+
+    // Then make sure the cache is created:
+    let cache_path = fs
+        .join(".local/share/strava-mirror/nominatim-cache.json")
+        .unwrap();
+    assert!(cache_path.exists().unwrap());
+}
+
+#[test]
+fn test_query_countries_summary() {
+    // Given two activities in different countries and an existing cache:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    activities_dir.create_dir_all().unwrap();
+    let timestamp_str = "2025-04-09T07-44-48Z";
+
+    // Activity 1 in Hungary
+    let meta_path1 = activities_dir
+        .join(format!("{}_1.meta.json", timestamp_str))
+        .unwrap();
+    meta_path1
+        .create_file()
+        .unwrap()
+        .write_all(b"{\"start_latlng\": [47.0, 19.0]}")
+        .unwrap();
+
+    // Activity 2 in Austria (48.0, 16.0)
+    let meta_path2 = activities_dir
+        .join(format!("{}_2.meta.json", timestamp_str))
+        .unwrap();
+    meta_path2
+        .create_file()
+        .unwrap()
+        .write_all(b"{\"start_latlng\": [48.0, 16.0]}")
+        .unwrap();
+
+    // Pre-existing cache for Hungary
+    let cache_path = fs
+        .join(".local/share/strava-mirror/nominatim-cache.json")
+        .unwrap();
+    cache_path.parent().create_dir_all().unwrap();
+    cache_path
+        .create_file()
+        .unwrap()
+        .write_all(b"{\"lat=47&lon=19\": \"Hungary\"}")
+        .unwrap();
+
+    let mut responses = HashMap::new();
+    // Only Austria needs to be fetched, Hungary is in cache.
+    responses.insert(
+        "https://nominatim.openstreetmap.org/reverse?lat=48&lon=16&format=json".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"{\"address\": {\"country\": \"Austria\"}}".to_vec(),
+        },
+    );
+    let network = Rc::new(TestNetwork { responses });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    setup_config(&fs);
+
+    // When querying countries summary:
+    let args = vec![
+        "strava-mirror".to_string(),
+        "--query".to_string(),
+        "countries".to_string(),
+        "--summary".to_string(),
+    ];
+    run(args, &ctx).unwrap();
+
+    // Then make sure the cache is updated with Austria:
+    let mut cache_content = String::new();
+    cache_path
+        .open_file()
+        .unwrap()
+        .read_to_string(&mut cache_content)
+        .unwrap();
+    assert!(cache_content.contains("Austria"));
+}
+
+#[test]
+fn test_run_unknown_query() {
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let network = Rc::new(TestNetwork {
+        responses: HashMap::new(),
+    });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    setup_config(&fs);
+
+    let args = vec![
+        "strava-mirror".to_string(),
+        "--query".to_string(),
+        "unknown".to_string(),
+    ];
+    let ret = run(args, &ctx);
+    assert!(ret.is_err());
+    assert_eq!(ret.unwrap_err().to_string(), "unknown query: unknown");
+}
+
+#[test]
+fn test_get_countries_no_activities() {
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let network = Rc::new(TestNetwork {
+        responses: HashMap::new(),
+    });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+
+    let countries = get_countries(&ctx).unwrap();
+    assert!(countries.is_empty());
 }

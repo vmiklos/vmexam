@@ -48,6 +48,8 @@ pub trait Time {
     fn now(&self) -> time::OffsetDateTime;
     /// Converts a Unix timestamp to local time.
     fn to_local_offset(&self, timestamp: i64) -> anyhow::Result<time::OffsetDateTime>;
+    /// Sleeps for the given duration.
+    fn sleep(&self, duration: std::time::Duration);
 }
 
 /// The context of the application.
@@ -349,7 +351,7 @@ fn get_activity_country(
         let nominatim_response: NominatimResponse = serde_json::from_slice(&response.body)?;
         let country = nominatim_response.address.country;
         cache.insert(query, country.clone());
-        std::thread::sleep(std::time::Duration::from_secs(1));
+        ctx.time.sleep(std::time::Duration::from_secs(1));
         country
     };
     Ok(Some((filename, country)))
