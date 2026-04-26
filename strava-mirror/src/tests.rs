@@ -756,3 +756,46 @@ fn test_get_countries_no_activities() {
     let countries = get_countries(&ctx).unwrap();
     assert!(countries.is_empty());
 }
+
+#[test]
+fn test_get_activity_country_special_cases() {
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let year_dir = fs.join("2025").unwrap();
+    year_dir.create_dir_all().unwrap();
+    let network = Rc::new(TestNetwork {
+        responses: HashMap::new(),
+    });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    let mut cache = HashMap::new();
+
+    // 1. File without .meta.json suffix
+    let fit_path = year_dir.join("activity.fit").unwrap();
+    fit_path.create_file().unwrap();
+    let ret = get_activity_country(&ctx, &fit_path, &mut cache).unwrap();
+    assert!(ret.is_none());
+
+    // 2. .meta.json without start_latlng
+    let meta_no_latlng = year_dir.join("no_latlng.meta.json").unwrap();
+    meta_no_latlng
+        .create_file()
+        .unwrap()
+        .write_all(b"{}")
+        .unwrap();
+    let ret = get_activity_country(&ctx, &meta_no_latlng, &mut cache).unwrap();
+    assert!(ret.is_none());
+
+    // 3. .meta.json with empty start_latlng
+    let meta_empty_latlng = year_dir.join("empty_latlng.meta.json").unwrap();
+    meta_empty_latlng
+        .create_file()
+        .unwrap()
+        .write_all(b"{\"start_latlng\": []}")
+        .unwrap();
+    let ret = get_activity_country(&ctx, &meta_empty_latlng, &mut cache).unwrap();
+    assert!(ret.is_none());
+}
