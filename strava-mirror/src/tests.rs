@@ -799,3 +799,29 @@ fn test_get_activity_country_special_cases() {
     let ret = get_activity_country(&ctx, &meta_empty_latlng, &mut cache).unwrap();
     assert!(ret.is_none());
 }
+
+#[test]
+fn test_get_countries_ignore_file() {
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs.join(".local/share/strava-mirror/activities").unwrap();
+    activities_dir.create_dir_all().unwrap();
+    // Create a plain file under activities/, which should be ignored by get_countries.
+    activities_dir
+        .join("ignore-me")
+        .unwrap()
+        .create_file()
+        .unwrap();
+
+    let network = Rc::new(TestNetwork {
+        responses: HashMap::new(),
+    });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+
+    let countries = get_countries(&ctx).unwrap();
+    assert!(countries.is_empty());
+}
