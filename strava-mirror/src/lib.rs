@@ -429,9 +429,10 @@ fn setup_logging(level: log::LevelFilter) -> anyhow::Result<()> {
     builder.set_time_format_custom(simplelog::format_description!(
         "[year]-[month]-[day] [hour]:[minute]:[second]"
     ));
-    if builder.set_time_offset_to_local().is_err() {
-        return Err(anyhow::anyhow!("offset to local failed"));
-    }
+
+    // Try to use local time, if possible.
+    let _ret = builder.set_time_offset_to_local();
+
     let config = builder.build();
     let _ = simplelog::CombinedLogger::init(vec![simplelog::TermLogger::new(
         level,
