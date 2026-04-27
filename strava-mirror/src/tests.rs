@@ -825,3 +825,40 @@ fn test_get_countries_ignore_file() {
     let countries = get_countries(&ctx).unwrap();
     assert!(countries.is_empty());
 }
+
+#[test]
+fn test_run_quiet() {
+    // Given no activities and quiet mode:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let mut responses = HashMap::new();
+    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/oauth/token".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: token_body,
+        },
+    );
+    responses.insert(
+        "https://www.strava.com/api/v3/athlete/activities?page=1&per_page=200".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"[]".to_vec(),
+        },
+    );
+    let network = Rc::new(TestNetwork { responses });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    setup_config(&fs);
+
+    // When mirroring activities with --quiet:
+    let args = vec!["strava-mirror".to_string(), "--quiet".to_string()];
+    let ret = run(args, &ctx);
+
+    // Then make sure there is no failure:
+    assert!(ret.is_ok());
+}

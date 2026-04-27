@@ -13,5 +13,6 @@ test coverage:
 - ics2txt: .ics file printer for mutt
 - nextcloud-open: open certain files in your browser, based on your local nextcloud sync tree
 - pushping: can run a command and send its exit status to a Matrix channel
+- strava-mirror: local backup of your sport activities
 - tpconv: convert between typographical units
 - weesearch: search in weechat logs

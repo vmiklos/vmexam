@@ -256,24 +256,29 @@ fn mirror_activity_data(
     Ok(())
 }
 
+/// Options for mirror_activity.
+struct MirrorActivityOptions<'a> {
+    access_token: &'a str,
+    activities_dir: &'a vfs::VfsPath,
+    cookie: &'a str,
+    mirrored_activities: &'a MirroredActivities,
+}
+
 /// Mirrors one activity if needed.
 fn mirror_activity(
     ctx: &Context,
-    access_token: &str,
+    options: &MirrorActivityOptions,
     summary: &ActivitySummary,
-    activities_dir: &vfs::VfsPath,
-    cookie: &str,
-    mirrored_activities: &MirroredActivities,
 ) -> anyhow::Result<()> {
     let year = summary.start_date.year();
     let format = time::format_description::parse(ACTIVITY_TIMESTAMP_FORMAT)?;
     let timestamp = summary.start_date.format(&format)?;
     let id = summary.id;
     let base_name = format!("{}_{}", timestamp, id);
-    let year_dir = activities_dir.join(year.to_string())?;
+    let year_dir = options.activities_dir.join(year.to_string())?;
     year_dir.create_dir_all()?;
 
-    let mirrored_activity = mirrored_activities.get(&summary.start_date);
+    let mirrored_activity = options.mirrored_activities.get(&summary.start_date);
 
     if mirrored_activity.is_none_or(|a| !a.have_meta) {
         let url = format!("https://www.strava.com/api/v3/activities/{}", id);
@@ -281,7 +286,7 @@ fn mirror_activity(
         let mut headers = HashMap::new();
         headers.insert(
             "Authorization".to_string(),
-            format!("Bearer {}", access_token),
+            format!("Bearer {}", options.access_token),
         );
         let response = ctx.network.get(&url, &headers)?;
 
@@ -294,7 +299,7 @@ fn mirror_activity(
 
     if mirrored_activity.is_none_or(|a| !a.have_data) {
         // Also download the actual activity.
-        mirror_activity_data(ctx, id, &base_name, &year_dir, cookie)?;
+        mirror_activity_data(ctx, id, &base_name, &year_dir, options.cookie)?;
     }
 
     Ok(())
@@ -494,6 +499,12 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
     let after = newest_mirrored_activity.map(|(d, _)| d.unix_timestamp());
 
     let cookie = jwt_to_cookie(ctx, &config.jwt)?;
+    let options = MirrorActivityOptions {
+        access_token: &access_token,
+        activities_dir: &activities_dir,
+        cookie: &cookie,
+        mirrored_activities: &mirrored_activities,
+    };
     let mut page = 1;
     loop {
         let activities: Vec<ActivitySummary> = list_activities(ctx, &access_token, page, after)?;
@@ -502,14 +513,7 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
         }
 
         for activity in activities {
-            mirror_activity(
-                ctx,
-                &access_token,
-                &activity,
-                &activities_dir,
-                &cookie,
-                &mirrored_activities,
-            )?;
+            mirror_activity(ctx, &options, &activity)?;
         }
 
         page += 1;
