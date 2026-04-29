@@ -47,6 +47,12 @@ Use the `--summary` flag to only see the country counts:
 strava-mirror --query countries --summary
 ```
 
+Use the `--html` flag to get a more detailed HTML output:
+
+```
+strava-mirror --query countries --html
+```
+
 ## Cron
 
 If you want to automate downloading your activities, there is a `--quiet` option to omit the INFO

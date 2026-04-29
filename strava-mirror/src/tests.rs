@@ -862,3 +862,97 @@ fn test_run_quiet() {
     // Then make sure there is no failure:
     assert!(ret.is_ok());
 }
+
+#[test]
+fn test_query_countries_html() {
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    activities_dir.create_dir_all().unwrap();
+
+    // 1. Activity in Austria (comes before Germany and Hungary by name)
+    let meta_path_at = activities_dir
+        .join("2025-01-01T00-00-00Z_1.meta.json")
+        .unwrap();
+    meta_path_at
+        .create_file()
+        .unwrap()
+        .write_all(b"{\"name\": \"AT\", \"start_latlng\": [48.0, 16.0]}")
+        .unwrap();
+
+    // 2. Activities in Hungary (most activities, should come first)
+    let meta_path_hu1 = activities_dir
+        .join("2025-02-01T00-00-00Z_2.meta.json")
+        .unwrap();
+    meta_path_hu1
+        .create_file()
+        .unwrap()
+        .write_all(b"{\"name\": \"HU1\", \"start_latlng\": [47.0, 19.0]}")
+        .unwrap();
+    let meta_path_hu2 = activities_dir
+        .join("2025-02-02T00-00-00Z_3.meta.json")
+        .unwrap();
+    meta_path_hu2
+        .create_file()
+        .unwrap()
+        .write_all(b"{\"name\": \"HU2\", \"start_latlng\": [47.1, 19.1]}")
+        .unwrap();
+
+    // 3. Activity in Germany (same count as AT, should come after AT by name)
+    let meta_path_de = activities_dir
+        .join("2025-03-01T00-00-00Z_4.meta.json")
+        .unwrap();
+    meta_path_de
+        .create_file()
+        .unwrap()
+        .write_all(b"{\"name\": \"DE\", \"start_latlng\": [52.0, 13.0]}")
+        .unwrap();
+
+    let mut responses = HashMap::new();
+    responses.insert(
+        "https://nominatim.openstreetmap.org/reverse?lat=48&lon=16&format=json".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"{\"address\": {\"country\": \"Austria\"}}".to_vec(),
+        },
+    );
+    responses.insert(
+        "https://nominatim.openstreetmap.org/reverse?lat=47&lon=19&format=json".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"{\"address\": {\"country\": \"Hungary\"}}".to_vec(),
+        },
+    );
+    responses.insert(
+        "https://nominatim.openstreetmap.org/reverse?lat=47.1&lon=19.1&format=json".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"{\"address\": {\"country\": \"Hungary\"}}".to_vec(),
+        },
+    );
+    responses.insert(
+        "https://nominatim.openstreetmap.org/reverse?lat=52&lon=13&format=json".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"{\"address\": {\"country\": \"Germany\"}}".to_vec(),
+        },
+    );
+    let network = Rc::new(TestNetwork { responses });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    setup_config(&fs);
+
+    // When querying countries as HTML:
+    let args = vec![
+        "strava-mirror".to_string(),
+        "--query".to_string(),
+        "countries".to_string(),
+        "--html".to_string(),
+    ];
+    run(args, &ctx).unwrap();
+}
