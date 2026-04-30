@@ -321,12 +321,17 @@ struct ActivityMetadata {
     start_latlng: Option<Vec<f64>>,
 }
 
+struct QueriedActivity {
+    country: String,
+    metadata: ActivityMetadata,
+}
+
 /// Gets the country of one activity.
 fn get_activity_country(
     ctx: &Context,
     entry: &vfs::VfsPath,
     cache: &mut HashMap<String, String>,
-) -> anyhow::Result<Option<(String, String)>> {
+) -> anyhow::Result<Option<(String, QueriedActivity)>> {
     let filename = entry.filename();
     if !filename.ends_with(".meta.json") {
         return Ok(None);
@@ -335,7 +340,7 @@ fn get_activity_country(
     let mut meta_content = String::new();
     entry.open_file()?.read_to_string(&mut meta_content)?;
     let metadata: ActivityMetadata = serde_json::from_str(&meta_content)?;
-    let Some(start_latlng) = metadata.start_latlng else {
+    let Some(ref start_latlng) = metadata.start_latlng else {
         return Ok(None);
     };
     if start_latlng.len() < 2 {
@@ -360,11 +365,12 @@ fn get_activity_country(
         ctx.time.sleep(std::time::Duration::from_secs(1));
         country
     };
-    Ok(Some((filename, country)))
+    let activity = QueriedActivity { country, metadata };
+    Ok(Some((filename, activity)))
 }
 
 /// Gets the country of activities based on their start location.
-fn get_countries(ctx: &Context) -> anyhow::Result<HashMap<String, String>> {
+fn get_countries(ctx: &Context) -> anyhow::Result<HashMap<String, QueriedActivity>> {
     let mut countries = HashMap::new();
     let home = &ctx.fs;
     let activities_dir = home.join(".local/share/strava-mirror/activities")?;
@@ -387,8 +393,8 @@ fn get_countries(ctx: &Context) -> anyhow::Result<HashMap<String, String>> {
         }
 
         for entry in year_dir.read_dir()? {
-            if let Some((filename, country)) = get_activity_country(ctx, &entry, &mut cache)? {
-                countries.insert(filename, country);
+            if let Some((filename, activity)) = get_activity_country(ctx, &entry, &mut cache)? {
+                countries.insert(filename, activity);
             }
         }
     }
@@ -408,17 +414,17 @@ fn query_countries(ctx: &Context) -> anyhow::Result<()> {
     let mut filenames: Vec<_> = countries.keys().collect();
     filenames.sort();
     for filename in filenames {
-        println!("{}: {}", filename, countries[filename]);
+        println!("{}: {}", filename, countries[filename].country);
     }
     Ok(())
 }
 
 /// Summarizes countries of activities based on their start location.
 fn query_countries_summary(ctx: &Context) -> anyhow::Result<()> {
-    let countries = get_countries(ctx)?;
+    let activities = get_countries(ctx)?;
     let mut counts = HashMap::new();
-    for country in countries.values() {
-        let count = counts.entry(country.clone()).or_insert(0);
+    for activity in activities.values() {
+        let count = counts.entry(activity.country.clone()).or_insert(0);
         *count += 1;
     }
     let mut sorted_counts: Vec<_> = counts.into_iter().collect();
@@ -431,20 +437,17 @@ fn query_countries_summary(ctx: &Context) -> anyhow::Result<()> {
 
 /// Summarizes countries of activities based on their start location in HTML format.
 fn query_countries_html(ctx: &Context) -> anyhow::Result<()> {
-    let countries_map = get_countries(ctx)?;
-    let mut country_activities: HashMap<String, Vec<(String, String, String)>> = HashMap::new();
+    let activities_map = get_countries(ctx)?;
+    let mut country_activities: HashMap<String, Vec<(String, String, QueriedActivity)>> =
+        HashMap::new();
 
-    let home = &ctx.fs;
-    let activities_dir = home.join(".local/share/strava-mirror/activities")?;
-
-    for (filename, country) in countries_map {
+    for (filename, activity) in activities_map {
         let base = filename.replace(".meta.json", "");
         let (timestamp, activity_id) = base.rsplit_once('_').context("no _ in filename")?;
-        country_activities.entry(country).or_default().push((
-            timestamp.to_string(),
-            activity_id.to_string(),
-            filename,
-        ));
+        country_activities
+            .entry(activity.country.to_string())
+            .or_default()
+            .push((timestamp.to_string(), activity_id.to_string(), activity));
     }
 
     let total_activities: usize = country_activities.values().map(|v| v.len()).sum();
@@ -463,13 +466,8 @@ fn query_countries_html(ctx: &Context) -> anyhow::Result<()> {
         println!("<details>");
         println!("  <summary>{}: {}</summary>", country, count);
         println!("  <ul>");
-        for (timestamp, activity_id, filename) in activities {
-            let year = &timestamp[..4];
-            let meta_path = activities_dir.join(format!("{}/{}", year, filename))?;
-            let mut meta_content = String::new();
-            meta_path.open_file()?.read_to_string(&mut meta_content)?;
-            let metadata = serde_json::from_str::<ActivityMetadata>(&meta_content)?;
-            let activity_name = metadata.name.context("no name")?;
+        for (timestamp, activity_id, activity) in activities {
+            let activity_name = activity.metadata.name.context("no name")?;
             let url = format!("https://www.strava.com/activities/{}", activity_id);
             println!(
                 "    <li>{}: <a href=\"{}\">{}</a></li>",
