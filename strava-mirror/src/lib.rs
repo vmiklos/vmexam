@@ -317,8 +317,11 @@ struct NominatimAddress {
 
 #[derive(serde::Deserialize)]
 struct ActivityMetadata {
+    id: u64,
     name: Option<String>,
     start_latlng: Option<Vec<f64>>,
+    #[serde(with = "time::serde::rfc3339")]
+    start_date: time::OffsetDateTime,
 }
 
 struct QueriedActivity {
@@ -438,16 +441,13 @@ fn query_countries_summary(ctx: &Context) -> anyhow::Result<()> {
 /// Summarizes countries of activities based on their start location in HTML format.
 fn query_countries_html(ctx: &Context) -> anyhow::Result<()> {
     let activities_map = get_countries(ctx)?;
-    let mut country_activities: HashMap<String, Vec<(String, String, QueriedActivity)>> =
-        HashMap::new();
+    let mut country_activities: HashMap<String, Vec<QueriedActivity>> = HashMap::new();
 
-    for (filename, activity) in activities_map {
-        let base = filename.replace(".meta.json", "");
-        let (timestamp, activity_id) = base.rsplit_once('_').context("no _ in filename")?;
+    for (_filename, activity) in activities_map {
         country_activities
             .entry(activity.country.to_string())
             .or_default()
-            .push((timestamp.to_string(), activity_id.to_string(), activity));
+            .push(activity);
     }
 
     let total_activities: usize = country_activities.values().map(|v| v.len()).sum();
@@ -460,15 +460,17 @@ fn query_countries_html(ctx: &Context) -> anyhow::Result<()> {
     let mut sorted_countries: Vec<_> = country_activities.into_iter().collect();
     sorted_countries.sort_by(|a, b| b.1.len().cmp(&a.1.len()).then_with(|| a.0.cmp(&b.0)));
 
+    let format = time::format_description::parse(ACTIVITY_TIMESTAMP_FORMAT)?;
     for (country, mut activities) in sorted_countries {
-        activities.sort_by(|a, b| b.0.cmp(&a.0));
+        activities.sort_by_key(|b| std::cmp::Reverse(b.metadata.start_date));
         let count = activities.len();
         println!("<details>");
         println!("  <summary>{}: {}</summary>", country, count);
         println!("  <ul>");
-        for (timestamp, activity_id, activity) in activities {
+        for activity in activities {
+            let timestamp = activity.metadata.start_date.format(&format)?;
+            let url = format!("https://www.strava.com/activities/{}", activity.metadata.id);
             let activity_name = activity.metadata.name.context("no name")?;
-            let url = format!("https://www.strava.com/activities/{}", activity_id);
             println!(
                 "    <li>{}: <a href=\"{}\">{}</a></li>",
                 timestamp, url, activity_name
