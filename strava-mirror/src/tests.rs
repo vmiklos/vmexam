@@ -17,11 +17,10 @@ struct TestNetwork {
 }
 
 impl Network for TestNetwork {
-    fn get(
-        &self,
-        url: &str,
-        _headers: &HashMap<String, String>,
-    ) -> anyhow::Result<NetworkResponse> {
+    fn get(&self, url: &str, headers: &HashMap<String, String>) -> anyhow::Result<NetworkResponse> {
+        if url.contains("nominatim.openstreetmap.org") {
+            assert_eq!(headers.get("Accept-Language").unwrap(), "en-US");
+        }
         // For now we have no case when we want to simulate a GET failing.
         let response = self.responses.get(url).unwrap();
         return Ok(NetworkResponse {

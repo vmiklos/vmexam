@@ -361,7 +361,9 @@ fn get_activity_country(
             query
         );
         info!("GET '{}'", url);
-        let response = ctx.network.get(&url, &HashMap::new())?;
+        let mut headers = HashMap::new();
+        headers.insert("Accept-Language".to_string(), "en-US".to_string());
+        let response = ctx.network.get(&url, &headers)?;
         let nominatim_response: NominatimResponse = serde_json::from_slice(&response.body)?;
         let country = nominatim_response.address.country;
         cache.insert(query, country.clone());
