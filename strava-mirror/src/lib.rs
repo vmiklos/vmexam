@@ -98,7 +98,6 @@ fn get_access_token(ctx: &Context, config: &Config) -> anyhow::Result<String> {
         ("grant_type", &"refresh_token".to_string()),
     ];
 
-    info!("POST '{}'", url);
     let response = ctx
         .network
         .post(url, &serde_urlencoded::to_string(params)?)?;
@@ -214,7 +213,6 @@ fn list_activities(
     if let Some(after) = after {
         url = format!("{}&after={}", url, after);
     }
-    info!("GET '{}'", url);
     let mut headers = HashMap::new();
     headers.insert(
         "Authorization".to_string(),
@@ -235,7 +233,6 @@ fn mirror_activity_data(
     cookie: &str,
 ) -> anyhow::Result<()> {
     let url = format!("https://www.strava.com/activities/{}/export_original", id);
-    info!("GET '{}'", url);
     let mut headers = HashMap::new();
     headers.insert("Cookie".to_string(), cookie.to_string());
     let response = ctx.network.get(&url, &headers)?;
@@ -282,7 +279,7 @@ fn mirror_activity(
 
     if mirrored_activity.is_none_or(|a| !a.have_meta) {
         let url = format!("https://www.strava.com/api/v3/activities/{}", id);
-        info!("GET '{}', name is '{}'", url, summary.name);
+        info!("Mirroring activity, name is '{}'", summary.name);
         let mut headers = HashMap::new();
         headers.insert(
             "Authorization".to_string(),
@@ -360,7 +357,6 @@ fn get_activity_country(
             "https://nominatim.openstreetmap.org/reverse?{}&format=json",
             query
         );
-        info!("GET '{}'", url);
         let mut headers = HashMap::new();
         headers.insert("Accept-Language".to_string(), "en-US".to_string());
         let response = ctx.network.get(&url, &headers)?;

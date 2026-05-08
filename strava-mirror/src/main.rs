@@ -13,6 +13,7 @@
 use anyhow::Context as _;
 use isahc::ReadResponseExt as _;
 use isahc::RequestExt as _;
+use log::info;
 use std::collections::HashMap;
 use std::rc::Rc;
 
@@ -25,6 +26,7 @@ impl strava_mirror::Network for RealNetwork {
         url: &str,
         headers: &HashMap<String, String>,
     ) -> anyhow::Result<strava_mirror::NetworkResponse> {
+        info!("GET '{}'", url);
         let mut request = isahc::Request::get(url);
         for (key, value) in headers {
             request = request.header(key, value);
@@ -43,6 +45,7 @@ impl strava_mirror::Network for RealNetwork {
     }
 
     fn post(&self, url: &str, body: &str) -> anyhow::Result<strava_mirror::NetworkResponse> {
+        info!("POST '{}'", url);
         let mut response = isahc::post(url, body)?;
         let status = response.status();
         if !status.is_success() {
