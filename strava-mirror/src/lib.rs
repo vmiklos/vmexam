@@ -199,6 +199,61 @@ fn get_mirrored_activities(activities_dir: &vfs::VfsPath) -> anyhow::Result<Mirr
     Ok(mirrored_activities)
 }
 
+/// Calculates the sleep duration if rate limits are reached.
+fn get_sleep_duration(
+    headers: &HashMap<String, String>,
+    now: time::OffsetDateTime,
+) -> anyhow::Result<std::time::Duration> {
+    let limit = headers
+        .get("x-ratelimit-limit")
+        .context("no x-ratelimit-limit")?;
+    let usage = headers
+        .get("x-ratelimit-usage")
+        .context("no x-ratelimit-usage")?;
+    let limits: Vec<&str> = limit.split(',').collect();
+    let usages: Vec<&str> = usage.split(',').collect();
+
+    let min_limit: u64 = limits[0].parse()?;
+    let min_usage: u64 = usages[0].parse()?;
+    if min_usage >= min_limit {
+        // Sleep until next 15-min boundary.
+        let minutes = now.minute();
+        let seconds = now.second();
+        let next_boundary_minutes = (minutes / 15 + 1) * 15;
+        let sleep_seconds = (next_boundary_minutes as u64 - minutes as u64) * 60 - seconds as u64;
+        return Ok(std::time::Duration::from_secs(sleep_seconds));
+    }
+
+    let day_limit: u64 = limits.get(1).context("no 2nd limit")?.parse()?;
+    let day_usage: u64 = usages.get(1).context("no 2nd usage")?.parse()?;
+    if day_usage >= day_limit {
+        // Sleep until next UTC midnight.
+        let next_midnight = time::OffsetDateTime::new_in_offset(
+            now.date() + time::Duration::days(1),
+            time::macros::time!(00:00),
+            time::UtcOffset::UTC,
+        );
+        let sleep_seconds = (next_midnight - now).whole_seconds() as u64;
+        return Ok(std::time::Duration::from_secs(sleep_seconds));
+    }
+
+    Ok(std::time::Duration::from_secs(0))
+}
+
+/// Handles rate limiting based on response headers.
+fn handle_rate_limit(ctx: &Context, headers: &HashMap<String, String>) {
+    let Ok(sleep_duration) = get_sleep_duration(headers, ctx.time.now()) else {
+        return;
+    };
+    if !sleep_duration.is_zero() {
+        info!(
+            "Sleeping for {} seconds due to rate limits",
+            sleep_duration.as_secs()
+        );
+        ctx.time.sleep(sleep_duration);
+    }
+}
+
 /// Lists activities: only minimal info that is cheap even for all activities.
 fn list_activities(
     ctx: &Context,
@@ -219,6 +274,7 @@ fn list_activities(
         format!("Bearer {}", access_token),
     );
     let response = ctx.network.get(&url, &headers)?;
+    handle_rate_limit(ctx, &response.headers);
 
     let activities: Vec<ActivitySummary> = serde_json::from_slice(&response.body)?;
     Ok(activities)
@@ -286,6 +342,7 @@ fn mirror_activity(
             format!("Bearer {}", options.access_token),
         );
         let response = ctx.network.get(&url, &headers)?;
+        handle_rate_limit(ctx, &response.headers);
 
         let activity_json: serde_json::Value = serde_json::from_slice(&response.body)?;
         let meta_path = year_dir.join(format!("{}.meta.json", base_name))?;

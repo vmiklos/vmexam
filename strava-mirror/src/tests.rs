@@ -42,12 +42,14 @@ impl Network for TestNetwork {
 
 struct TestTime {
     now: time::OffsetDateTime,
+    sleep_called: std::cell::Cell<bool>,
 }
 
 impl Default for TestTime {
     fn default() -> Self {
         Self {
             now: time::macros::datetime!(2026-04-12 12:00:00 UTC),
+            sleep_called: std::cell::Cell::new(false),
         }
     }
 }
@@ -61,7 +63,11 @@ impl Time for TestTime {
         Ok(time::OffsetDateTime::from_unix_timestamp(timestamp)?)
     }
 
-    fn sleep(&self, _duration: std::time::Duration) {}
+    fn sleep(&self, duration: std::time::Duration) {
+        if duration.as_secs() > 0 {
+            self.sleep_called.set(true);
+        }
+    }
 }
 
 fn setup_config(fs: &vfs::VfsPath) {
@@ -201,7 +207,10 @@ fn test_jwt_to_cookie_expired() {
     let network = Rc::new(TestNetwork { responses });
     // Config's JWT expires on 2026-05-07, so set "now" to 2026-05-09.
     let now = time::macros::datetime!(2026-05-09 12:00:00 UTC);
-    let time = Rc::new(TestTime { now });
+    let time = Rc::new(TestTime {
+        now,
+        sleep_called: std::cell::Cell::new(false),
+    });
     let ctx = Context {
         fs: fs.clone(),
         network,
@@ -638,6 +647,75 @@ fn test_query_countries() {
 }
 
 #[test]
+fn test_get_sleep_duration() {
+    let mut headers = HashMap::new();
+    let now = time::macros::datetime!(2026-05-03 10:05:30 UTC);
+
+    // No headers
+    assert!(get_sleep_duration(&headers, now).is_err());
+
+    // Limit provided but usage missing
+    headers.insert("x-ratelimit-limit".to_string(), "100,1000".to_string());
+    assert!(get_sleep_duration(&headers, now).is_err());
+    headers.clear();
+
+    // Headers provided but only one value (malformed)
+    headers.insert("x-ratelimit-limit".to_string(), "100".to_string());
+    headers.insert("x-ratelimit-usage".to_string(), "50".to_string());
+    assert!(get_sleep_duration(&headers, now).is_err());
+    headers.clear();
+
+    // 15-min limit is not a number
+    headers.insert("x-ratelimit-limit".to_string(), "foo,1000".to_string());
+    headers.insert("x-ratelimit-usage".to_string(), "100,200".to_string());
+    assert!(get_sleep_duration(&headers, now).is_err());
+    headers.clear();
+
+    // 15-min usage is not a number
+    headers.insert("x-ratelimit-limit".to_string(), "100,1000".to_string());
+    headers.insert("x-ratelimit-usage".to_string(), "foo,200".to_string());
+    assert!(get_sleep_duration(&headers, now).is_err(),);
+    headers.clear();
+
+    // Daily limit is not a number
+    headers.insert("x-ratelimit-limit".to_string(), "100,foo".to_string());
+    headers.insert("x-ratelimit-usage".to_string(), "50,100".to_string());
+    assert!(get_sleep_duration(&headers, now).is_err());
+    headers.clear();
+
+    // Daily usage is not a number
+    headers.insert("x-ratelimit-limit".to_string(), "100,1000".to_string());
+    headers.insert("x-ratelimit-usage".to_string(), "50,foo".to_string());
+    assert!(get_sleep_duration(&headers, now).is_err());
+    headers.clear();
+
+    // 15-min limit reached
+    headers.insert("x-ratelimit-limit".to_string(), "100,1000".to_string());
+    headers.insert("x-ratelimit-usage".to_string(), "100,200".to_string());
+    // (15 - (5 % 15)) * 60 - 30 = 10 * 60 - 30 = 570
+    assert_eq!(
+        get_sleep_duration(&headers, now).unwrap(),
+        std::time::Duration::from_secs(570)
+    );
+
+    // Daily limit reached
+    headers.insert("x-ratelimit-usage".to_string(), "50,1000".to_string());
+    // next midnight is 2026-05-04 00:00:00.
+    // From 10:05:30 to 00:00:00 is (24 - 10)h - 5m - 30s = 13h 54m 30s = 13*3600 + 54*60 + 30 = 46800 + 3240 + 30 = 50070
+    assert_eq!(
+        get_sleep_duration(&headers, now).unwrap(),
+        std::time::Duration::from_secs(50070)
+    );
+
+    // No limits reached
+    headers.insert("x-ratelimit-usage".to_string(), "50,200".to_string());
+    assert_eq!(
+        get_sleep_duration(&headers, now).unwrap(),
+        std::time::Duration::from_secs(0)
+    );
+}
+
+#[test]
 fn test_query_countries_summary() {
     // Given two activities in different countries and an existing cache:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
@@ -954,4 +1032,47 @@ fn test_query_countries_html() {
         "--html".to_string(),
     ];
     run(args, &ctx).unwrap();
+}
+
+#[test]
+fn test_rate_limit_sleep() {
+    // Given the 15-min rate limit is reached:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let mut responses = HashMap::new();
+    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/oauth/token".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: token_body,
+        },
+    );
+    let mut rate_limit_headers = HashMap::new();
+    rate_limit_headers.insert("x-ratelimit-limit".to_string(), "100,1000".to_string());
+    rate_limit_headers.insert("x-ratelimit-usage".to_string(), "100,200".to_string());
+    responses.insert(
+        "https://www.strava.com/api/v3/athlete/activities?page=1&per_page=200".to_string(),
+        NetworkResponse {
+            headers: rate_limit_headers,
+            body: b"[]".to_vec(),
+        },
+    );
+    let network = Rc::new(TestNetwork { responses });
+    let time = Rc::new(TestTime {
+        now: time::macros::datetime!(2026-05-03 10:05:30 UTC),
+        sleep_called: std::cell::Cell::new(false),
+    });
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time: time.clone(),
+    };
+    setup_config(&fs);
+
+    // When mirroring activities:
+    let args = vec!["strava-mirror".to_string()];
+    run(args, &ctx).unwrap();
+
+    // Then make sure sleep was called:
+    assert!(time.sleep_called.get());
 }
