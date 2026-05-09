@@ -689,22 +689,34 @@ fn test_get_sleep_duration() {
     assert!(get_sleep_duration(&headers, now).is_err());
     headers.clear();
 
-    // 15-min limit reached
+    // 15-min limit reached (with 10s buffer)
     headers.insert("x-ratelimit-limit".to_string(), "100,1000".to_string());
     headers.insert("x-ratelimit-usage".to_string(), "100,200".to_string());
-    // (15 - (5 % 15)) * 60 - 30 = 10 * 60 - 30 = 570
+    // (15 - (5 % 15)) * 60 - 30 + 10 = 10 * 60 - 30 + 10 = 580
     assert_eq!(
         get_sleep_duration(&headers, now).unwrap(),
-        std::time::Duration::from_secs(570)
+        std::time::Duration::from_secs(580)
     );
 
-    // Daily limit reached
-    headers.insert("x-ratelimit-usage".to_string(), "50,1000".to_string());
-    // next midnight is 2026-05-04 00:00:00.
-    // From 10:05:30 to 00:00:00 is (24 - 10)h - 5m - 30s = 13h 54m 30s = 13*3600 + 54*60 + 30 = 46800 + 3240 + 30 = 50070
+    // x-readratelimit-limit is prioritized
+    headers.insert("x-readratelimit-limit".to_string(), "50,500".to_string());
+    headers.insert("x-readratelimit-usage".to_string(), "50,100".to_string());
+    // (15 - (5 % 15)) * 60 - 30 + 10 = 580
     assert_eq!(
         get_sleep_duration(&headers, now).unwrap(),
-        std::time::Duration::from_secs(50070)
+        std::time::Duration::from_secs(580)
+    );
+    headers.clear();
+
+    // Daily limit reached (with 10s buffer)
+    headers.insert("x-ratelimit-limit".to_string(), "100,1000".to_string());
+    headers.insert("x-ratelimit-usage".to_string(), "50,1000".to_string());
+    // next midnight is 2026-05-04 00:00:00.
+    // From 10:05:30 to 00:00:00 is (24 - 10)h - 5m - 30s = 13h 54m 30s = 50070s
+    // 50070 + 10 = 50080
+    assert_eq!(
+        get_sleep_duration(&headers, now).unwrap(),
+        std::time::Duration::from_secs(50080)
     );
 
     // No limits reached

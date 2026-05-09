@@ -205,11 +205,13 @@ fn get_sleep_duration(
     now: time::OffsetDateTime,
 ) -> anyhow::Result<std::time::Duration> {
     let limit = headers
-        .get("x-ratelimit-limit")
-        .context("no x-ratelimit-limit")?;
+        .get("x-readratelimit-limit")
+        .or_else(|| headers.get("x-ratelimit-limit"))
+        .context("no ratelimit-limit")?;
     let usage = headers
-        .get("x-ratelimit-usage")
-        .context("no x-ratelimit-usage")?;
+        .get("x-readratelimit-usage")
+        .or_else(|| headers.get("x-ratelimit-usage"))
+        .context("no ratelimit-usage")?;
     let limits: Vec<&str> = limit.split(',').collect();
     let usages: Vec<&str> = usage.split(',').collect();
 
@@ -221,7 +223,8 @@ fn get_sleep_duration(
         let seconds = now.second();
         let next_boundary_minutes = (minutes / 15 + 1) * 15;
         let sleep_seconds = (next_boundary_minutes as u64 - minutes as u64) * 60 - seconds as u64;
-        return Ok(std::time::Duration::from_secs(sleep_seconds));
+        // Add a 10s buffer to be safe.
+        return Ok(std::time::Duration::from_secs(sleep_seconds + 10));
     }
 
     let day_limit: u64 = limits.get(1).context("no 2nd limit")?.parse()?;
@@ -234,7 +237,8 @@ fn get_sleep_duration(
             time::UtcOffset::UTC,
         );
         let sleep_seconds = (next_midnight - now).whole_seconds() as u64;
-        return Ok(std::time::Duration::from_secs(sleep_seconds));
+        // Add a 10s buffer to be safe.
+        return Ok(std::time::Duration::from_secs(sleep_seconds + 10));
     }
 
     Ok(std::time::Duration::from_secs(0))
