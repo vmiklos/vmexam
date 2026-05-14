@@ -6,16 +6,16 @@ edition = "2024"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0.98"
-clap = { version = "4.5.38", features = ["derive"] }
+anyhow = "1.0.102"
+clap = { version = "4.6.1", features = ["derive"] }
 configparser = "3.1.0"
-home = "0.5.11"
-isahc = "1.7.2"
-serde = { version = "1.0.219", features = ["derive"] }
+home = "0.5.12"
+isahc = "1.8.2"
+serde = { version = "1.0.228", features = ["derive"] }
 sxd-document = "0.3.2"
 sxd-xpath = "0.4.2"
-toml = "0.8.22"
-url = "2.5.4"
+toml = "1.1.2"
+url = "2.5.8"
 url_open = "0.0.2"
 urlencoding = "2.1.2"
-vfs = "0.12.1"
+vfs = "0.13.0"
