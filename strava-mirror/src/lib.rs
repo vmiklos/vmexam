@@ -148,6 +148,7 @@ struct ActivitySummary {
     name: String,
     #[serde(with = "time::serde::rfc3339")]
     start_date: time::OffsetDateTime,
+    start_latlng: Vec<f64>,
 }
 
 /// Information about an activity that is already mirrored.
@@ -355,7 +356,7 @@ fn mirror_activity(
             .write_all(serde_json::to_string_pretty(&activity_json)?.as_bytes())?;
     }
 
-    if mirrored_activity.is_none_or(|a| !a.have_data) {
+    if mirrored_activity.is_none_or(|a| !a.have_data) && !summary.start_latlng.is_empty() {
         // Also download the actual activity.
         mirror_activity_data(ctx, id, &base_name, &year_dir, options.cookie)?;
     }

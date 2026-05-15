@@ -1146,3 +1146,77 @@ fn test_run_full_history() {
 
     // Then no panic occurs (meaning the URL matched the one without &after=).
 }
+
+#[test]
+fn test_mirror_activity_no_latlng() {
+    // Given a single activity with no GPS data:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let mut responses = HashMap::new();
+    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/oauth/token".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: token_body,
+        },
+    );
+    // Note: start_latlng is empty.
+    responses.insert(
+        "https://www.strava.com/api/v3/athlete/activities?page=1&per_page=200".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"[{\"name\": \"manual\", \"id\": 1, \"start_date\": \"2025-04-09T07:44:48Z\", \"start_latlng\": []}]"
+                .to_vec(),
+        },
+    );
+    responses.insert(
+        "https://www.strava.com/api/v3/athlete/activities?page=2&per_page=200".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"[]".to_vec(),
+        },
+    );
+    responses.insert(
+        "https://www.strava.com/api/v3/activities/1".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"{}".to_vec(),
+        },
+    );
+    // Note: NO entry for "https://www.strava.com/activities/1/export_original".
+    // If it's called, TestNetwork will return an error and run() will fail.
+
+    let network = Rc::new(TestNetwork { responses });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    setup_config(&fs);
+
+    // When mirroring activities:
+    let args = vec!["strava-mirror".to_string()];
+    run(args, &ctx).unwrap();
+
+    // Then make sure the meta file is created, but no data file:
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    assert!(activities_dir.exists().unwrap());
+    let base_name = "2025-04-09T07-44-48Z_1";
+    assert!(
+        activities_dir
+            .join(format!("{}.meta.json", base_name))
+            .unwrap()
+            .exists()
+            .unwrap()
+    );
+    assert!(
+        !activities_dir
+            .join(format!("{}.fit", base_name))
+            .unwrap()
+            .exists()
+            .unwrap()
+    );
+}
