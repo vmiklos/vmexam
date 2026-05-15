@@ -637,6 +637,10 @@ pub struct Args {
     /// Output query results as HTML.
     #[arg(long)]
     pub html: bool,
+
+    /// Fetch all activities, don't stop at the newest mirrored one.
+    #[arg(long)]
+    pub full_history: bool,
 }
 
 /// Mirrors your Strava activities.
@@ -670,11 +674,15 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
     let activities_dir = home.join(".local/share/strava-mirror/activities")?;
 
     let mirrored_activities = get_mirrored_activities(&activities_dir)?;
-    let newest_mirrored_activity = mirrored_activities
-        .iter()
-        .filter(|(_, a)| a.have_meta && a.have_data)
-        .max_by_key(|(d, _)| *d);
-    let after = newest_mirrored_activity.map(|(d, _)| d.unix_timestamp());
+    let after = if args.full_history {
+        None
+    } else {
+        let newest_mirrored_activity = mirrored_activities
+            .iter()
+            .filter(|(_, a)| a.have_meta && a.have_data)
+            .max_by_key(|(d, _)| *d);
+        newest_mirrored_activity.map(|(d, _)| d.unix_timestamp())
+    };
 
     let cookie = jwt_to_cookie(ctx, &config.jwt)?;
     let options = MirrorActivityOptions {

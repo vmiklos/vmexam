@@ -1088,3 +1088,61 @@ fn test_rate_limit_sleep() {
     // Then make sure sleep was called:
     assert!(time.sleep_called.get());
 }
+
+#[test]
+fn test_run_full_history() {
+    // Given one activity mirrored already:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    activities_dir.create_dir_all().unwrap();
+    let timestamp_str_1 = "2025-04-09T07-44-48Z";
+    let base_name_1 = format!("{}_1", timestamp_str_1);
+    let meta_path_1 = activities_dir
+        .join(format!("{}.meta.json", base_name_1))
+        .unwrap();
+    let activity1_content = r#"{"id": 1, "start_date": "2025-04-09T07:44:48Z"}"#;
+    meta_path_1
+        .create_file()
+        .unwrap()
+        .write_all(activity1_content.as_bytes())
+        .unwrap();
+    activities_dir
+        .join(format!("{}.fit", base_name_1))
+        .unwrap()
+        .create_file()
+        .unwrap();
+    let mut responses = HashMap::new();
+    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/oauth/token".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: token_body,
+        },
+    );
+    // Note: NO &after= parameter in the URL.
+    let activities_url = "https://www.strava.com/api/v3/athlete/activities?page=1&per_page=200";
+    responses.insert(
+        activities_url.to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"[]".to_vec(),
+        },
+    );
+    let network = Rc::new(TestNetwork { responses });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    setup_config(&fs);
+
+    // When mirroring activities with --full-history:
+    let args = vec!["strava-mirror".to_string(), "--full-history".to_string()];
+    run(args, &ctx).unwrap();
+
+    // Then no panic occurs (meaning the URL matched the one without &after=).
+}
