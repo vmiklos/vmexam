@@ -33,6 +33,10 @@ jwt = "..."
 Once `strava-mirror` is completed, you can find your activities under
 `~/.local/share/strava-mirror/activities/`.
 
+The tool handles rate limiting, it'll sleep enough between requests as necessary. If you have many
+activities, the initial mirroring can take several hours, in practice about 400 activities can be
+mirrored in an hour.
+
 ## Querying
 
 You can query your local activities, e.g. to see which country each activity was in:
