@@ -9,5 +9,4 @@
 # san specific:
 --disable-ld
 --disable-compiler-plugins
---disable-firebird-sdbc
 --without-java
