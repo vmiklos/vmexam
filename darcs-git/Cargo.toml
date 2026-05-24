@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.86"
-clap = "4.5.4"
-console = "0.15.11"
+anyhow = "1.0.102"
+clap = "4.6.1"
+console = "0.16.3"
