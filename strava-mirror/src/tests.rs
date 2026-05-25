@@ -324,8 +324,7 @@ fn test_list_activities_after() {
     let meta_path_1 = activities_dir
         .join(format!("{}.meta.json", base_name_1))
         .unwrap();
-    let activity1_content =
-        r#"{"id": 1, "start_date": "2025-04-09T07:44:48Z", "sport_type": "Ride"}"#;
+    let activity1_content = r#"{"id": 1, "start_date": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time": 3600}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -612,7 +611,7 @@ fn test_query_countries() {
     meta_path
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 1, \"start_date\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\"}")
+        .write_all(b"{\"id\": 1, \"start_date\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\", \"moving_time\": 3600}")
         .unwrap();
 
     let mut responses = HashMap::new();
@@ -745,7 +744,7 @@ fn test_query_countries_summary() {
     meta_path1
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 1, \"start_date\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\"}")
+        .write_all(b"{\"id\": 1, \"start_date\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\", \"moving_time\": 3600}")
         .unwrap();
 
     // Activity 2 in Austria (48.0, 16.0)
@@ -755,7 +754,7 @@ fn test_query_countries_summary() {
     meta_path2
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 2, \"start_date\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [48.0, 16.0], \"sport_type\": \"Ride\"}")
+        .write_all(b"{\"id\": 2, \"start_date\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [48.0, 16.0], \"sport_type\": \"Ride\", \"moving_time\": 3600}")
         .unwrap();
 
     // Pre-existing cache for Hungary
@@ -877,6 +876,7 @@ fn test_get_activity_country_special_cases() {
         start_latlng: None,
         start_date: time::macros::datetime!(2025-04-09 07:44:48 UTC),
         sport_type: "Ride".to_string(),
+        moving_time: 3600,
     };
     let ret = get_activity_country(&ctx, metadata_no_latlng, &mut cache).unwrap();
     assert!(ret.is_none());
@@ -888,6 +888,7 @@ fn test_get_activity_country_special_cases() {
         start_latlng: Some(vec![]),
         start_date: time::macros::datetime!(2025-04-09 07:44:48 UTC),
         sport_type: "Ride".to_string(),
+        moving_time: 3600,
     };
     let ret = get_activity_country(&ctx, metadata_empty_latlng, &mut cache).unwrap();
     assert!(ret.is_none());
@@ -971,7 +972,7 @@ fn test_query_countries_html() {
     meta_path_at
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 1, \"name\": \"AT\", \"start_date\": \"2025-01-01T00:00:00Z\", \"start_latlng\": [48.0, 16.0], \"sport_type\": \"Ride\"}")
+        .write_all(b"{\"id\": 1, \"name\": \"AT\", \"start_date\": \"2025-01-01T00:00:00Z\", \"start_latlng\": [48.0, 16.0], \"sport_type\": \"Ride\", \"moving_time\": 3600}")
         .unwrap();
 
     // 2. Activities in Hungary (most activities, should come first)
@@ -981,7 +982,7 @@ fn test_query_countries_html() {
     meta_path_hu1
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 2, \"name\": \"HU1\", \"start_date\": \"2025-02-01T00:00:00Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\"}")
+        .write_all(b"{\"id\": 2, \"name\": \"HU1\", \"start_date\": \"2025-02-01T00:00:00Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\", \"moving_time\": 3600}")
         .unwrap();
     let meta_path_hu2 = activities_dir
         .join("2025-02-02T00-00-00Z_3.meta.json")
@@ -989,7 +990,7 @@ fn test_query_countries_html() {
     meta_path_hu2
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 3, \"name\": \"HU2\", \"start_date\": \"2025-02-02T00:00:00Z\", \"start_latlng\": [47.1, 19.1], \"sport_type\": \"Ride\"}")
+        .write_all(b"{\"id\": 3, \"name\": \"HU2\", \"start_date\": \"2025-02-02T00:00:00Z\", \"start_latlng\": [47.1, 19.1], \"sport_type\": \"Ride\", \"moving_time\": 3600}")
         .unwrap();
 
     // 3. Activity in Germany (same count as AT, should come after AT by name)
@@ -999,7 +1000,7 @@ fn test_query_countries_html() {
     meta_path_de
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 4, \"name\": \"DE\", \"start_date\": \"2025-03-01T00:00:00Z\", \"start_latlng\": [52.0, 13.0], \"sport_type\": \"Ride\"}")
+        .write_all(b"{\"id\": 4, \"name\": \"DE\", \"start_date\": \"2025-03-01T00:00:00Z\", \"start_latlng\": [52.0, 13.0], \"sport_type\": \"Ride\", \"moving_time\": 3600}")
         .unwrap();
 
     let mut responses = HashMap::new();
@@ -1106,8 +1107,7 @@ fn test_run_full_history() {
     let meta_path_1 = activities_dir
         .join(format!("{}.meta.json", base_name_1))
         .unwrap();
-    let activity1_content =
-        r#"{"id": 1, "start_date": "2025-04-09T07:44:48Z", "sport_type": "Ride"}"#;
+    let activity1_content = r#"{"id": 1, "start_date": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time": 3600}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -1239,7 +1239,7 @@ fn test_query_custom() {
     let meta_path_1 = activities_dir
         .join(format!("{}.meta.json", base_name_1))
         .unwrap();
-    let activity1_content = r#"{"id": 1, "name": "myactivity", "start_date": "2025-04-09T07:44:48Z", "start_latlng": [47.0, 19.0], "sport_type": "Ride"}"#;
+    let activity1_content = r#"{"id": 1, "name": "myactivity", "start_date": "2025-04-09T07:44:48Z", "start_latlng": [47.0, 19.0], "sport_type": "Ride", "moving_time": 3600}"#;
     meta_path_1
         .create_file()
         .unwrap()

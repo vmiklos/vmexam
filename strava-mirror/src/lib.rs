@@ -374,6 +374,7 @@ struct NominatimAddress {
     country: String,
 }
 
+/// One .meta.json file in the mirrored activity list.
 #[derive(serde::Deserialize, serde::Serialize)]
 struct ActivityMetadata {
     id: u64,
@@ -382,6 +383,7 @@ struct ActivityMetadata {
     #[serde(with = "time::serde::rfc3339")]
     start_date: time::OffsetDateTime,
     sport_type: String,
+    moving_time: u64,
 }
 
 struct QueriedActivity {
