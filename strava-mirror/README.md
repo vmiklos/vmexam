@@ -57,6 +57,12 @@ Use the `--html` flag to get a more detailed HTML output:
 strava-mirror --query countries --html
 ```
 
+Custom queries are also supported, e.g. how many activities you had in 2026:
+
+```
+strava-mirror --query custom |jq '[.[] | select(.start_date | startswith("2026"))] | length'
+```
+
 ## Cron
 
 If you want to automate downloading your activities, there is a `--quiet` option to omit the INFO

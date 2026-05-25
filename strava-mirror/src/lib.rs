@@ -374,7 +374,7 @@ struct NominatimAddress {
     country: String,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, serde::Serialize)]
 struct ActivityMetadata {
     id: u64,
     name: Option<String>,
@@ -388,20 +388,41 @@ struct QueriedActivity {
     metadata: ActivityMetadata,
 }
 
-/// Gets the country of one activity.
-fn get_activity_country(
-    ctx: &Context,
-    entry: &vfs::VfsPath,
-    cache: &mut HashMap<String, String>,
-) -> anyhow::Result<Option<(String, QueriedActivity)>> {
-    let filename = entry.filename();
-    if !filename.ends_with(".meta.json") {
-        return Ok(None);
+/// Scans local activities and returns their metadata.
+fn get_local_activities(ctx: &Context) -> anyhow::Result<Vec<(String, ActivityMetadata)>> {
+    let mut activities = Vec::new();
+    let home = &ctx.fs;
+    let activities_dir = home.join(".local/share/strava-mirror/activities")?;
+    if !activities_dir.exists()? {
+        return Ok(activities);
     }
 
-    let mut meta_content = String::new();
-    entry.open_file()?.read_to_string(&mut meta_content)?;
-    let metadata: ActivityMetadata = serde_json::from_str(&meta_content)?;
+    for year_dir in activities_dir.read_dir()? {
+        if year_dir.is_file()? {
+            continue;
+        }
+
+        for entry in year_dir.read_dir()? {
+            let filename = entry.filename();
+            if !filename.ends_with(".meta.json") {
+                continue;
+            }
+
+            let mut meta_content = String::new();
+            entry.open_file()?.read_to_string(&mut meta_content)?;
+            let metadata: ActivityMetadata = serde_json::from_str(&meta_content)?;
+            activities.push((filename, metadata));
+        }
+    }
+    Ok(activities)
+}
+
+/// Gets the country of one activity from its metadata.
+fn get_activity_country(
+    ctx: &Context,
+    metadata: ActivityMetadata,
+    cache: &mut HashMap<String, String>,
+) -> anyhow::Result<Option<QueriedActivity>> {
     let Some(ref start_latlng) = metadata.start_latlng else {
         return Ok(None);
     };
@@ -429,17 +450,13 @@ fn get_activity_country(
         country
     };
     let activity = QueriedActivity { country, metadata };
-    Ok(Some((filename, activity)))
+    Ok(Some(activity))
 }
 
 /// Gets the country of activities based on their start location.
 fn get_countries(ctx: &Context) -> anyhow::Result<HashMap<String, QueriedActivity>> {
     let mut countries = HashMap::new();
     let home = &ctx.fs;
-    let activities_dir = home.join(".local/share/strava-mirror/activities")?;
-    if !activities_dir.exists()? {
-        return Ok(countries);
-    }
 
     let cache_path = home.join(".local/share/strava-mirror/nominatim-cache.json")?;
     let mut cache: HashMap<String, String> = if cache_path.exists()? {
@@ -450,15 +467,10 @@ fn get_countries(ctx: &Context) -> anyhow::Result<HashMap<String, QueriedActivit
         HashMap::new()
     };
 
-    for year_dir in activities_dir.read_dir()? {
-        if year_dir.is_file()? {
-            continue;
-        }
-
-        for entry in year_dir.read_dir()? {
-            if let Some((filename, activity)) = get_activity_country(ctx, &entry, &mut cache)? {
-                countries.insert(filename, activity);
-            }
+    let local_activities = get_local_activities(ctx)?;
+    for (filename, metadata) in local_activities {
+        if let Some(activity) = get_activity_country(ctx, metadata, &mut cache)? {
+            countries.insert(filename, activity);
         }
     }
 
@@ -469,6 +481,16 @@ fn get_countries(ctx: &Context) -> anyhow::Result<HashMap<String, QueriedActivit
         .write_all(serde_json::to_string_pretty(&cache)?.as_bytes())?;
 
     Ok(countries)
+}
+
+/// Queries all local activity metadata.
+fn query_custom(ctx: &Context) -> anyhow::Result<()> {
+    let local_activities = get_local_activities(ctx)?;
+    let mut activities: Vec<ActivityMetadata> =
+        local_activities.into_iter().map(|(_, m)| m).collect();
+    activities.sort_by_key(|m| m.start_date);
+    println!("{}", serde_json::to_string_pretty(&activities)?);
+    Ok(())
 }
 
 /// Queries the country of an activity based on its start location.
@@ -627,7 +649,7 @@ pub struct Args {
     #[arg(short, long)]
     pub quiet: bool,
 
-    /// Query stats from local activities. Valid values: 'countries'.
+    /// Query stats from local activities. Valid values: 'countries', 'custom'.
     #[arg(long, value_name = "KIND")]
     pub query: Option<String>,
 
@@ -663,6 +685,9 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
                 return query_countries_html(ctx);
             }
             return query_countries(ctx);
+        }
+        if query == "custom" {
+            return query_custom(ctx);
         }
         return Err(anyhow::anyhow!("unknown query: {}", query));
     }

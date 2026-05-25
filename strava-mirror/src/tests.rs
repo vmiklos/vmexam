@@ -849,7 +849,8 @@ fn test_get_countries_no_activities() {
 #[test]
 fn test_get_activity_country_special_cases() {
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
-    let year_dir = fs.join("2025").unwrap();
+    let activities_dir = fs.join(".local/share/strava-mirror/activities").unwrap();
+    let year_dir = activities_dir.join("2025").unwrap();
     year_dir.create_dir_all().unwrap();
     let network = Rc::new(TestNetwork {
         responses: HashMap::new(),
@@ -862,30 +863,30 @@ fn test_get_activity_country_special_cases() {
     };
     let mut cache = HashMap::new();
 
-    // 1. File without .meta.json suffix
+    // 1. File without .meta.json suffix: get_local_activities ignores it.
     let fit_path = year_dir.join("activity.fit").unwrap();
     fit_path.create_file().unwrap();
-    let ret = get_activity_country(&ctx, &fit_path, &mut cache).unwrap();
+    let ret = get_local_activities(&ctx).unwrap();
+    assert!(ret.is_empty());
+
+    // 2. Metadata without start_latlng
+    let metadata_no_latlng = ActivityMetadata {
+        id: 1,
+        name: None,
+        start_latlng: None,
+        start_date: time::macros::datetime!(2025-04-09 07:44:48 UTC),
+    };
+    let ret = get_activity_country(&ctx, metadata_no_latlng, &mut cache).unwrap();
     assert!(ret.is_none());
 
-    // 2. .meta.json without start_latlng
-    let meta_no_latlng = year_dir.join("no_latlng.meta.json").unwrap();
-    meta_no_latlng
-        .create_file()
-        .unwrap()
-        .write_all(b"{\"id\": 1, \"start_date\": \"2025-04-09T07:44:48Z\"}")
-        .unwrap();
-    let ret = get_activity_country(&ctx, &meta_no_latlng, &mut cache).unwrap();
-    assert!(ret.is_none());
-
-    // 3. .meta.json with empty start_latlng
-    let meta_empty_latlng = year_dir.join("empty_latlng.meta.json").unwrap();
-    meta_empty_latlng
-        .create_file()
-        .unwrap()
-        .write_all(b"{\"id\": 1, \"start_date\": \"2025-04-09T07:44:48Z\", \"start_latlng\": []}")
-        .unwrap();
-    let ret = get_activity_country(&ctx, &meta_empty_latlng, &mut cache).unwrap();
+    // 3. Metadata with empty start_latlng
+    let metadata_empty_latlng = ActivityMetadata {
+        id: 1,
+        name: None,
+        start_latlng: Some(vec![]),
+        start_date: time::macros::datetime!(2025-04-09 07:44:48 UTC),
+    };
+    let ret = get_activity_country(&ctx, metadata_empty_latlng, &mut cache).unwrap();
     assert!(ret.is_none());
 }
 
@@ -1219,4 +1220,45 @@ fn test_mirror_activity_no_latlng() {
             .exists()
             .unwrap()
     );
+}
+
+#[test]
+fn test_query_custom() {
+    // Given an activity mirrored already:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    activities_dir.create_dir_all().unwrap();
+    let timestamp_str_1 = "2025-04-09T07-44-48Z";
+    let base_name_1 = format!("{}_1", timestamp_str_1);
+    let meta_path_1 = activities_dir
+        .join(format!("{}.meta.json", base_name_1))
+        .unwrap();
+    let activity1_content = r#"{"id": 1, "name": "myactivity", "start_date": "2025-04-09T07:44:48Z", "start_latlng": [47.0, 19.0]}"#;
+    meta_path_1
+        .create_file()
+        .unwrap()
+        .write_all(activity1_content.as_bytes())
+        .unwrap();
+
+    let network = Rc::new(TestNetwork {
+        responses: HashMap::new(),
+    });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+
+    // When querying custom:
+    let args = vec![
+        "strava-mirror".to_string(),
+        "--query".to_string(),
+        "custom".to_string(),
+    ];
+    run(args, &ctx).unwrap();
+
+    // Then no failure occurs and output was printed (stdout is not captured here, but run() returns Ok).
 }
