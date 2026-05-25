@@ -381,6 +381,7 @@ struct ActivityMetadata {
     start_latlng: Option<Vec<f64>>,
     #[serde(with = "time::serde::rfc3339")]
     start_date: time::OffsetDateTime,
+    sport_type: String,
 }
 
 struct QueriedActivity {
