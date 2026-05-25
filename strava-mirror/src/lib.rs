@@ -385,6 +385,7 @@ struct ActivityMetadata {
     sport_type: String,
     moving_time: u64,
     distance: f64,
+    total_elevation_gain: f64,
 }
 
 struct QueriedActivity {
