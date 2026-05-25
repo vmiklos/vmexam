@@ -384,6 +384,7 @@ struct ActivityMetadata {
     start_date: time::OffsetDateTime,
     sport_type: String,
     moving_time: u64,
+    distance: f64,
 }
 
 struct QueriedActivity {
