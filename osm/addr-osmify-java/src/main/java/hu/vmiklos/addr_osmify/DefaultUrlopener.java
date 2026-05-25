@@ -20,8 +20,18 @@ public class DefaultUrlopener implements Urlopener
 {
     public String urlopen(String urlString, String data) throws Exception
     {
+        return urlopen(urlString, data, "");
+    }
+
+    public String urlopen(String urlString, String data, String userAgent)
+        throws Exception
+    {
         URL url = new URL(urlString);
         HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+        if (!userAgent.isEmpty())
+        {
+            connection.setRequestProperty("User-Agent", userAgent);
+        }
 
         if (data.isEmpty())
         {

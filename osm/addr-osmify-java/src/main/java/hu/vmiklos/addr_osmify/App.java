@@ -38,7 +38,8 @@ public final class App
         urlString += "?q=" + URLEncoder.encode(query, "UTF-8");
         urlString += "&format=json";
 
-        return App.urlopener.urlopen(urlString, "");
+        return App.urlopener.urlopen(
+            urlString, "", "addr-osmify-java/1.0 (GitHub: vmiklos/vmexam)");
     }
 
     /**

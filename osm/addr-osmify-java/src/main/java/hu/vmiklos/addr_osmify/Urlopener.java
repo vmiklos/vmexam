@@ -12,6 +12,9 @@ package hu.vmiklos.addr_osmify;
 public interface Urlopener
 {
     String urlopen(String urlString, String data) throws Exception;
+
+    String urlopen(String urlString, String data, String userAgent)
+        throws Exception;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

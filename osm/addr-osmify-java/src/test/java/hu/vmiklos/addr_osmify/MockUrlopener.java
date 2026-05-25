@@ -27,6 +27,12 @@ public class MockUrlopener implements Urlopener
 
     public String urlopen(String url, String data) throws Exception
     {
+        return urlopen(url, data, "");
+    }
+
+    public String urlopen(String url, String data, String userAgent)
+        throws Exception
+    {
         if (!data.isEmpty())
         {
             String path = URLEncoder.encode(url, "UTF-8");
