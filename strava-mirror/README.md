@@ -57,10 +57,36 @@ Use the `--html` flag to get a more detailed HTML output:
 strava-mirror --query countries --html
 ```
 
-Custom queries are also supported, e.g. how many activities you had in 2026:
+### Custom queries
+
+How many activities you had in 2026:
 
 ```
 strava-mirror --query custom |jq '[.[] | select(.start_date | startswith("2026"))] | length'
+```
+
+Filter for walks, sort by moving time (increasing, seconds):
+
+```
+strava-mirror --query custom |jq '[.[] | select(.sport_type == "Walk")] | sort_by(.moving_time)'
+```
+
+Filter for walks, sort by distance (increasing, meters):
+
+```
+strava-mirror --query custom |jq '[.[] | select(.sport_type == "Walk")] | sort_by(.distance)'
+```
+
+Filter for walks, sort by distance (increasing, meters):
+
+```
+strava-mirror --query custom |jq '[.[] | select(.sport_type == "Walk")] | sort_by(.distance)'
+```
+
+Filter for walks, sort by distance (elevation, meters):
+
+```
+strava-mirror --query custom |jq '[.[] | select(.sport_type == "Walk")] | sort_by(.total_elevation_gain)'
 ```
 
 ## Cron
