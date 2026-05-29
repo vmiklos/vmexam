@@ -37,6 +37,10 @@ The tool handles rate limiting, it'll sleep enough between requests as necessary
 activities, the initial mirroring can take several hours, in practice about 400 activities can be
 mirrored in an hour.
 
+The mirroring is incremental, only activities newer than the last local activity are fetched by
+default. Use `--full-history` if you want to fetch newly added older activities or updated metadata
+of existing activities.
+
 ## Querying
 
 You can query your local activities, e.g. to see which country each activity was in:

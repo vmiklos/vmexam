@@ -149,6 +149,7 @@ struct ActivitySummary {
     #[serde(with = "time::serde::rfc3339")]
     start_date: time::OffsetDateTime,
     start_latlng: Vec<f64>,
+    sport_type: String,
 }
 
 /// Information about an activity that is already mirrored.
@@ -320,6 +321,12 @@ struct MirrorActivityOptions<'a> {
     activities_dir: &'a vfs::VfsPath,
     cookie: &'a str,
     mirrored_activities: &'a MirroredActivities,
+    full_history: bool,
+}
+
+/// Checks if the metadata needs to be re-downloaded based on summary changes.
+fn should_redownload_meta(metadata: &ActivityMetadata, summary: &ActivitySummary) -> bool {
+    metadata.name.as_ref() != Some(&summary.name) || metadata.sport_type != summary.sport_type
 }
 
 /// Mirrors one activity if needed.
@@ -337,8 +344,19 @@ fn mirror_activity(
     year_dir.create_dir_all()?;
 
     let mirrored_activity = options.mirrored_activities.get(&summary.start_date);
+    let mut have_meta = mirrored_activity.is_some_and(|a| a.have_meta);
 
-    if mirrored_activity.is_none_or(|a| !a.have_meta) {
+    if have_meta && options.full_history {
+        let meta_path = year_dir.join(format!("{}.meta.json", base_name))?;
+        let mut meta_content = String::new();
+        meta_path.open_file()?.read_to_string(&mut meta_content)?;
+        let metadata: ActivityMetadata = serde_json::from_str(&meta_content)?;
+        if should_redownload_meta(&metadata, summary) {
+            have_meta = false;
+        }
+    }
+
+    if !have_meta {
         let url = format!("https://www.strava.com/api/v3/activities/{}", id);
         info!("Mirroring activity, name is '{}'", summary.name);
         let mut headers = HashMap::new();
@@ -721,6 +739,7 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
         activities_dir: &activities_dir,
         cookie: &cookie,
         mirrored_activities: &mirrored_activities,
+        full_history: args.full_history,
     };
     let mut page = 1;
     loop {

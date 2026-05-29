@@ -3,6 +3,7 @@
         "name": "myactivity2",
         "id": 2,
         "start_date": "2025-04-10T07:44:48Z",
-        "start_latlng": [47.0, 19.0]
+        "start_latlng": [47.0, 19.0],
+        "sport_type": "Ride"
     }
 ]

@@ -1174,7 +1174,7 @@ fn test_mirror_activity_no_latlng() {
         "https://www.strava.com/api/v3/athlete/activities?page=1&per_page=200".to_string(),
         NetworkResponse {
             headers: HashMap::new(),
-            body: b"[{\"name\": \"manual\", \"id\": 1, \"start_date\": \"2025-04-09T07:44:48Z\", \"start_latlng\": []}]"
+            body: b"[{\"name\": \"manual\", \"id\": 1, \"start_date\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [], \"sport_type\": \"Ride\"}]"
                 .to_vec(),
         },
     );
@@ -1231,6 +1231,96 @@ fn test_mirror_activity_no_latlng() {
 }
 
 #[test]
+fn test_mirror_activity_full_history_change() {
+    // Given an activity mirrored already, but with a different name:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    activities_dir.create_dir_all().unwrap();
+    let timestamp_str_1 = "2025-04-09T07-44-48Z";
+    let base_name_1 = format!("{}_1", timestamp_str_1);
+    let meta_path_1 = activities_dir
+        .join(format!("{}.meta.json", base_name_1))
+        .unwrap();
+    // Local name is "old name".
+    let activity1_content = r#"{"id": 1, "name": "old name", "start_date": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time": 3600, "distance": 1000.0, "total_elevation_gain": 100.0}"#;
+    meta_path_1
+        .create_file()
+        .unwrap()
+        .write_all(activity1_content.as_bytes())
+        .unwrap();
+
+    let mut responses = HashMap::new();
+    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/oauth/token".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: token_body,
+        },
+    );
+    // Summary name is "new name".
+    responses.insert(
+        "https://www.strava.com/api/v3/athlete/activities?page=1&per_page=200".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"[{\"name\": \"new name\", \"id\": 1, \"start_date\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\"}]"
+                .to_vec(),
+        },
+    );
+    responses.insert(
+        "https://www.strava.com/api/v3/athlete/activities?page=2&per_page=200".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"[]".to_vec(),
+        },
+    );
+    // This is the re-download request:
+    responses.insert(
+        "https://www.strava.com/api/v3/activities/1".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"{\"name\": \"new name\"}".to_vec(),
+        },
+    );
+    let mut data_headers = HashMap::new();
+    data_headers.insert(
+        "content-disposition".to_string(),
+        "attachment; filename=\"activity.fit\"".to_string(),
+    );
+    responses.insert(
+        "https://www.strava.com/activities/1/export_original".to_string(),
+        NetworkResponse {
+            headers: data_headers,
+            body: b"fitdata".to_vec(),
+        },
+    );
+
+    let network = Rc::new(TestNetwork { responses });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    setup_config(&fs);
+
+    // When mirroring activities with --full-history:
+    let args = vec!["strava-mirror".to_string(), "--full-history".to_string()];
+    run(args, &ctx).unwrap();
+
+    // Then the local file is updated:
+    let mut updated_content = String::new();
+    meta_path_1
+        .open_file()
+        .unwrap()
+        .read_to_string(&mut updated_content)
+        .unwrap();
+    assert!(updated_content.contains("new name"));
+}
+
+#[test]
 fn test_query_custom() {
     // Given an activity mirrored already:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
@@ -1269,4 +1359,42 @@ fn test_query_custom() {
     run(args, &ctx).unwrap();
 
     // Then no failure occurs and output was printed (stdout is not captured here, but run() returns Ok).
+}
+
+#[test]
+fn test_should_redownload_meta() {
+    let now = time::macros::datetime!(2025-04-09 07:44:48 UTC);
+    let mut metadata = ActivityMetadata {
+        id: 1,
+        name: Some("old name".to_string()),
+        start_latlng: Some(vec![47.0, 19.0]),
+        start_date: now,
+        sport_type: "Ride".to_string(),
+        moving_time: 3600,
+        distance: 1000.0,
+        total_elevation_gain: 100.0,
+    };
+    let mut summary = ActivitySummary {
+        id: 1,
+        name: "old name".to_string(),
+        start_date: now,
+        start_latlng: vec![47.0, 19.0],
+        sport_type: "Ride".to_string(),
+    };
+
+    // No change
+    assert!(!should_redownload_meta(&metadata, &summary));
+
+    // Name change
+    summary.name = "new name".to_string();
+    assert!(should_redownload_meta(&metadata, &summary));
+    summary.name = "old name".to_string();
+
+    // Sport type change
+    summary.sport_type = "Run".to_string();
+    assert!(should_redownload_meta(&metadata, &summary));
+
+    // Metadata name is None (e.g. from a partial local file)
+    metadata.name = None;
+    assert!(should_redownload_meta(&metadata, &summary));
 }
