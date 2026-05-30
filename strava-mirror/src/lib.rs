@@ -604,6 +604,7 @@ fn query_countries_html(ctx: &Context) -> anyhow::Result<()> {
                 title { "sport-stats" }
             }
             body {
+                h1 { "Countries" }
                 p {
                     (total_activities)
                     " activities in "
