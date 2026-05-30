@@ -601,7 +601,7 @@ fn query_countries_html(ctx: &Context) -> anyhow::Result<()> {
         html lang="en-US" {
             head {
                 meta charset="UTF-8";
-                title { "strava-stats" }
+                title { "sport-stats" }
             }
             body {
                 p {
