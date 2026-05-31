@@ -516,6 +516,58 @@ fn query_custom(ctx: &Context) -> anyhow::Result<()> {
     Ok(())
 }
 
+/// Queries the top 10 longest walks.
+fn query_top_walks_by_time(ctx: &Context) -> anyhow::Result<()> {
+    let local_activities = get_local_activities(ctx)?;
+    let mut activities: Vec<ActivityMetadata> = local_activities
+        .into_iter()
+        .map(|(_, m)| m)
+        .filter(|m| m.sport_type == "Walk")
+        .collect();
+    activities.sort_by_key(|m| std::cmp::Reverse(m.moving_time));
+    let top_10 = &activities[..std::cmp::min(10, activities.len())];
+
+    let format = time::format_description::parse(ACTIVITY_TIMESTAMP_FORMAT)?;
+    let markup = maud::html! {
+        (maud::DOCTYPE)
+        html lang="en-US" {
+            head {
+                meta charset="UTF-8";
+                title { "top-walks-by-time" }
+            }
+            body {
+                h1 { "Top walks by time" }
+                table border="1" {
+                    thead {
+                        tr {
+                            th { "Sport type" }
+                            th { "Start date" }
+                            th { "Title" }
+                            th { "Moving time" }
+                            th { "Distance" }
+                            th { "Elevation" }
+                        }
+                    }
+                    tbody {
+                        @for activity in top_10 {
+                            tr {
+                                td { (activity.sport_type) }
+                                td { (activity.start_date.format(&format)?) }
+                                td { (activity.name.as_deref().unwrap_or("")) }
+                                td { (activity.moving_time) }
+                                td { (activity.distance) }
+                                td { (activity.total_elevation_gain) }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+    println!("{}", markup.into_string());
+    Ok(())
+}
+
 /// Queries the country of an activity based on its start location.
 fn query_countries(ctx: &Context) -> anyhow::Result<()> {
     let countries = get_countries(ctx)?;
@@ -673,7 +725,7 @@ pub struct Args {
     #[arg(short, long)]
     pub quiet: bool,
 
-    /// Query stats from local activities. Valid values: 'countries', 'custom'.
+    /// Query stats from local activities. Valid values: 'countries', 'custom', 'top-walks-by-time'.
     #[arg(long, value_name = "KIND")]
     pub query: Option<String>,
 
@@ -712,6 +764,9 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
         }
         if query == "custom" {
             return query_custom(ctx);
+        }
+        if query == "top-walks-by-time" {
+            return query_top_walks_by_time(ctx);
         }
         return Err(anyhow::anyhow!("unknown query: {}", query));
     }

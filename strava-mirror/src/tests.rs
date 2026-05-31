@@ -1362,6 +1362,69 @@ fn test_query_custom() {
 }
 
 #[test]
+fn test_query_top_walks_by_time() {
+    // Given three activities (2 walks, 1 ride):
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    activities_dir.create_dir_all().unwrap();
+
+    // 1. Long walk
+    let meta_path_1 = activities_dir
+        .join("2025-01-01T10-00-00Z_1.meta.json")
+        .unwrap();
+    let content_1 = r#"{"id": 1, "name": "long walk", "start_date": "2025-01-01T10:00:00Z", "sport_type": "Walk", "moving_time": 10000, "distance": 10000.0, "total_elevation_gain": 500.0}"#;
+    meta_path_1
+        .create_file()
+        .unwrap()
+        .write_all(content_1.as_bytes())
+        .unwrap();
+
+    // 2. Short walk
+    let meta_path_2 = activities_dir
+        .join("2025-01-02T10-00-00Z_2.meta.json")
+        .unwrap();
+    let content_2 = r#"{"id": 2, "name": "short walk", "start_date": "2025-01-02T10:00:00Z", "sport_type": "Walk", "moving_time": 5000, "distance": 5000.0, "total_elevation_gain": 200.0}"#;
+    meta_path_2
+        .create_file()
+        .unwrap()
+        .write_all(content_2.as_bytes())
+        .unwrap();
+
+    // 3. Long ride (should be ignored)
+    let meta_path_3 = activities_dir
+        .join("2025-01-03T10-00-00Z_3.meta.json")
+        .unwrap();
+    let content_3 = r#"{"id": 3, "name": "long ride", "start_date": "2025-01-03T10:00:00Z", "sport_type": "Ride", "moving_time": 20000, "distance": 50000.0, "total_elevation_gain": 1000.0}"#;
+    meta_path_3
+        .create_file()
+        .unwrap()
+        .write_all(content_3.as_bytes())
+        .unwrap();
+
+    let network = Rc::new(TestNetwork {
+        responses: HashMap::new(),
+    });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+
+    // When querying top walks by time:
+    let args = vec![
+        "strava-mirror".to_string(),
+        "--query".to_string(),
+        "top-walks-by-time".to_string(),
+    ];
+    run(args, &ctx).unwrap();
+
+    // Then no failure occurs.
+}
+
+#[test]
 fn test_should_redownload_meta() {
     let now = time::macros::datetime!(2025-04-09 07:44:48 UTC);
     let mut metadata = ActivityMetadata {

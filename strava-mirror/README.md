@@ -61,6 +61,12 @@ Use the `--html` flag to get a more detailed HTML output:
 strava-mirror --query countries --html
 ```
 
+The other stat available is top walks by time:
+
+```
+strava-mirror --query top-walks-by-time
+```
+
 ### Custom queries
 
 How many activities you had in 2026:
