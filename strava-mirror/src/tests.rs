@@ -1425,6 +1425,54 @@ fn test_query_top_walks_by_time() {
 }
 
 #[test]
+fn test_query_all() {
+    // Given some activities:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    activities_dir.create_dir_all().unwrap();
+
+    // 1. Walk in Hungary
+    let meta_path_1 = activities_dir
+        .join("2025-01-01T10-00-00Z_1.meta.json")
+        .unwrap();
+    let content_1 = r#"{"id": 1, "name": "hungarian walk", "start_date": "2025-01-01T10:00:00Z", "start_latlng": [47.0, 19.0], "sport_type": "Walk", "moving_time": 10000, "distance": 10000.0, "total_elevation_gain": 500.0}"#;
+    meta_path_1
+        .create_file()
+        .unwrap()
+        .write_all(content_1.as_bytes())
+        .unwrap();
+
+    let mut responses = HashMap::new();
+    responses.insert(
+        "https://nominatim.openstreetmap.org/reverse?lat=47&lon=19&format=json".to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: b"{\"address\": {\"country\": \"Hungary\"}}".to_vec(),
+        },
+    );
+    let network = Rc::new(TestNetwork { responses });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+    setup_config(&fs);
+
+    // When querying all:
+    let args = vec![
+        "strava-mirror".to_string(),
+        "--query".to_string(),
+        "all".to_string(),
+    ];
+    run(args, &ctx).unwrap();
+
+    // Then no failure occurs.
+}
+
+#[test]
 fn test_should_redownload_meta() {
     let now = time::macros::datetime!(2025-04-09 07:44:48 UTC);
     let mut metadata = ActivityMetadata {

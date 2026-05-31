@@ -393,7 +393,7 @@ struct NominatimAddress {
 }
 
 /// One .meta.json file in the mirrored activity list.
-#[derive(serde::Deserialize, serde::Serialize)]
+#[derive(serde::Deserialize, serde::Serialize, Clone)]
 struct ActivityMetadata {
     id: u64,
     name: Option<String>,
@@ -406,6 +406,7 @@ struct ActivityMetadata {
     total_elevation_gain: f64,
 }
 
+#[derive(Clone)]
 struct QueriedActivity {
     country: String,
     metadata: ActivityMetadata,
@@ -519,6 +520,15 @@ fn query_custom(ctx: &Context) -> anyhow::Result<()> {
 /// Queries the top 10 longest walks.
 fn query_top_walks_by_time(ctx: &Context) -> anyhow::Result<()> {
     let local_activities = get_local_activities(ctx)?;
+    let markup = get_top_walks_by_time_content(local_activities)?;
+    println!("{}", wrap_in_page(markup).into_string());
+    Ok(())
+}
+
+/// Produces the HTML content for the top 10 longest walks.
+fn get_top_walks_by_time_content(
+    local_activities: Vec<(String, ActivityMetadata)>,
+) -> anyhow::Result<maud::Markup> {
     let mut activities: Vec<ActivityMetadata> = local_activities
         .into_iter()
         .map(|(_, m)| m)
@@ -529,43 +539,33 @@ fn query_top_walks_by_time(ctx: &Context) -> anyhow::Result<()> {
 
     let format = time::format_description::parse(ACTIVITY_TIMESTAMP_FORMAT)?;
     let markup = maud::html! {
-        (maud::DOCTYPE)
-        html lang="en-US" {
-            head {
-                meta charset="UTF-8";
-                title { "top-walks-by-time" }
+        h1 { "Top walks by time" }
+        table border="1" {
+            thead {
+                tr {
+                    th { "Sport type" }
+                    th { "Start date" }
+                    th { "Title" }
+                    th { "Moving time" }
+                    th { "Distance" }
+                    th { "Elevation" }
+                }
             }
-            body {
-                h1 { "Top walks by time" }
-                table border="1" {
-                    thead {
-                        tr {
-                            th { "Sport type" }
-                            th { "Start date" }
-                            th { "Title" }
-                            th { "Moving time" }
-                            th { "Distance" }
-                            th { "Elevation" }
-                        }
-                    }
-                    tbody {
-                        @for activity in top_10 {
-                            tr {
-                                td { (activity.sport_type) }
-                                td { (activity.start_date.format(&format)?) }
-                                td { (activity.name.as_deref().unwrap_or("")) }
-                                td { (activity.moving_time) }
-                                td { (activity.distance) }
-                                td { (activity.total_elevation_gain) }
-                            }
-                        }
+            tbody {
+                @for activity in top_10 {
+                    tr {
+                        td { (activity.sport_type) }
+                        td { (activity.start_date.format(&format)?) }
+                        td { (activity.name.as_deref().unwrap_or("")) }
+                        td { (activity.moving_time) }
+                        td { (activity.distance) }
+                        td { (activity.total_elevation_gain) }
                     }
                 }
             }
         }
     };
-    println!("{}", markup.into_string());
-    Ok(())
+    Ok(markup)
 }
 
 /// Queries the country of an activity based on its start location.
@@ -610,6 +610,16 @@ struct CountryItem {
 /// Summarizes countries of activities based on their start location in HTML format.
 fn query_countries_html(ctx: &Context) -> anyhow::Result<()> {
     let activities_map = get_countries(ctx)?;
+    let markup = get_countries_html_content(activities_map)?;
+    println!("{}", wrap_in_page(markup).into_string());
+
+    Ok(())
+}
+
+/// Produces the HTML content for country statistics.
+fn get_countries_html_content(
+    activities_map: HashMap<String, QueriedActivity>,
+) -> anyhow::Result<maud::Markup> {
     let mut country_activities: HashMap<String, Vec<QueriedActivity>> = HashMap::new();
 
     for (_filename, activity) in activities_map {
@@ -649,6 +659,40 @@ fn query_countries_html(ctx: &Context) -> anyhow::Result<()> {
     }
 
     let markup = maud::html! {
+        h1 { "Countries" }
+        p {
+            (total_activities)
+            " activities in "
+            (total_countries)
+            " countries."
+        }
+        @for country_item in country_items {
+            details {
+                summary {
+                    (country_item.name)
+                    ": "
+                    (country_item.count)
+                }
+                ul {
+                    @for item in country_item.activities {
+                        li {
+                            (item.timestamp)
+                            ": "
+                            a href=(item.url) {
+                                (item.name)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+    Ok(markup)
+}
+
+/// Wraps content in a full HTML page.
+fn wrap_in_page(content: maud::Markup) -> maud::Markup {
+    maud::html! {
         (maud::DOCTYPE)
         html lang="en-US" {
             head {
@@ -656,33 +700,7 @@ fn query_countries_html(ctx: &Context) -> anyhow::Result<()> {
                 title { "sport-stats" }
             }
             body {
-                h1 { "Countries" }
-                p {
-                    (total_activities)
-                    " activities in "
-                    (total_countries)
-                    " countries."
-                }
-                @for country_item in country_items {
-                    details {
-                        summary {
-                            (country_item.name)
-                            ": "
-                            (country_item.count)
-                        }
-                        ul {
-                            @for item in country_item.activities {
-                                li {
-                                    (item.timestamp)
-                                    ": "
-                                    a href=(item.url) {
-                                        (item.name)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                (content)
                 hr;
                 p {
                     "Generated by "
@@ -692,9 +710,25 @@ fn query_countries_html(ctx: &Context) -> anyhow::Result<()> {
                 }
             }
         }
-    };
-    println!("{}", markup.into_string());
+    }
+}
 
+/// Queries all statistics.
+fn query_all(ctx: &Context) -> anyhow::Result<()> {
+    let activities_map = get_countries(ctx)?;
+    let countries_content = get_countries_html_content(activities_map.clone())?;
+
+    let local_activities: Vec<(String, ActivityMetadata)> = activities_map
+        .into_iter()
+        .map(|(f, a)| (f, a.metadata))
+        .collect();
+    let top_walks_content = get_top_walks_by_time_content(local_activities)?;
+
+    let combined_content = maud::html! {
+        (countries_content)
+        (top_walks_content)
+    };
+    println!("{}", wrap_in_page(combined_content).into_string());
     Ok(())
 }
 
@@ -725,7 +759,7 @@ pub struct Args {
     #[arg(short, long)]
     pub quiet: bool,
 
-    /// Query stats from local activities. Valid values: 'countries', 'custom', 'top-walks-by-time'.
+    /// Query stats from local activities. Valid values: 'countries', 'custom', 'top-walks-by-time', 'all'.
     #[arg(long, value_name = "KIND")]
     pub query: Option<String>,
 
@@ -767,6 +801,9 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
         }
         if query == "top-walks-by-time" {
             return query_top_walks_by_time(ctx);
+        }
+        if query == "all" {
+            return query_all(ctx);
         }
         return Err(anyhow::anyhow!("unknown query: {}", query));
     }

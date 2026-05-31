@@ -67,6 +67,12 @@ The other stat available is top walks by time:
 strava-mirror --query top-walks-by-time
 ```
 
+To include all stats in HTML form:
+
+```
+strava-mirror --query all
+```
+
 ### Custom queries
 
 How many activities you had in 2026:
