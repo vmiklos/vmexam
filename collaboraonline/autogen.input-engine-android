@@ -1,0 +1,5 @@
+--with-android-ndk=$HOME/Android/Sdk/ndk/28.2.13676358
+--with-android-sdk=$HOME/Android/Sdk
+--with-distro=CPAndroidAarch64
+--with-android-package-name=com.collabora.libreoffice.gerrit
+--with-lang=en-US

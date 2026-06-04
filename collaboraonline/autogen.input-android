@@ -1,0 +1,15 @@
+--enable-androidapp
+--with-lo-builddir=$HOME/git/collaboraonline/online-android/engine
+--with-lo-builddir=$HOME/git/collaboraonline/online-android/engine
+--with-poco-includes=/opt/android-poco/install/include
+--with-poco-libs=/opt/android-poco/install/arm64-v8a/lib
+--with-zstd-includes=/opt/android-zstd/lib
+--with-zstd-libs=/opt/android-zstd/install/arm64-v8a/lib
+--enable-silent-rules
+--with-app-name=Collabora Office
+--with-vendor=Collabora
+--with-info-url=https://www.collaboraoffice.com
+--with-android-abi=arm64-v8a
+--with-android-package-versioncode=1-1
+--enable-android-google-play
+--enable-experimental
