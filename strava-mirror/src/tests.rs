@@ -1473,6 +1473,13 @@ fn test_query_all() {
 }
 
 #[test]
+fn test_format_duration() {
+    assert_eq!(format_duration(3600), "1:00:00");
+    assert_eq!(format_duration(16864), "4:41:04");
+    assert_eq!(format_duration(59), "0:00:59");
+}
+
+#[test]
 fn test_should_redownload_meta() {
     let now = time::macros::datetime!(2025-04-09 07:44:48 UTC);
     let mut metadata = ActivityMetadata {

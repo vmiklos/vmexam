@@ -328,6 +328,14 @@ fn should_redownload_meta(metadata: &ActivityMetadata, summary: &ActivitySummary
     metadata.name.as_ref() != Some(&summary.name) || metadata.sport_type != summary.sport_type
 }
 
+/// Formats a duration in seconds as H:MM:SS.
+fn format_duration(seconds: u64) -> String {
+    let hours = seconds / 3600;
+    let minutes = (seconds % 3600) / 60;
+    let seconds = seconds % 60;
+    format!("{}:{:02}:{:02}", hours, minutes, seconds)
+}
+
 /// Mirrors one activity if needed.
 fn mirror_activity(
     ctx: &Context,
@@ -556,7 +564,7 @@ fn get_top_walks_by_time_content(
                         td { (activity.sport_type) }
                         td { (activity.start_date.format(&format)?) }
                         td { (activity.name.as_deref().unwrap_or("")) }
-                        td { (activity.moving_time) }
+                        td { (format_duration(activity.moving_time)) }
                         td { (activity.distance) }
                         td { (activity.total_elevation_gain) }
                     }
