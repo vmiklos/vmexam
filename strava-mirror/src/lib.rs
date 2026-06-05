@@ -25,6 +25,7 @@ use log::info;
 use std::println as info;
 
 const ACTIVITY_TIMESTAMP_FORMAT: &str = "[year]-[month]-[day]T[hour]-[minute]-[second]Z";
+const DISPLAY_TIMESTAMP_FORMAT: &str = "[year]-[month]-[day] [hour]:[minute]:[second]";
 
 /// Network response.
 pub struct NetworkResponse {
@@ -126,9 +127,7 @@ fn jwt_to_cookie(ctx: &Context, jwt: &str) -> anyhow::Result<String> {
     let strava_remember_id = jwt_payload.sub;
     let exp_datetime = ctx.time.to_local_offset(jwt_payload.exp)?;
     let exp_formatted = exp_datetime
-        .format(time::macros::format_description!(
-            "[year]-[month]-[day] [hour]:[minute]:[second]"
-        ))
+        .format(&time::format_description::parse(DISPLAY_TIMESTAMP_FORMAT)?)
         .expect("OffsetDateTime::format() failed");
     info!("JWT expires at {}", exp_formatted);
     let now = ctx.time.now();
@@ -537,7 +536,7 @@ fn get_top_walks_by_time_content(
     activities.sort_by_key(|m| std::cmp::Reverse(m.moving_time));
     let top_10 = &activities[..std::cmp::min(10, activities.len())];
 
-    let format = time::format_description::parse(ACTIVITY_TIMESTAMP_FORMAT)?;
+    let format = time::format_description::parse(DISPLAY_TIMESTAMP_FORMAT)?;
     let markup = maud::html! {
         h1 { "Top walks by time" }
         table border="1" {
@@ -635,7 +634,7 @@ fn get_countries_html_content(
     let mut sorted_countries: Vec<_> = country_activities.into_iter().collect();
     sorted_countries.sort_by(|a, b| b.1.len().cmp(&a.1.len()).then_with(|| a.0.cmp(&b.0)));
 
-    let format = time::format_description::parse(ACTIVITY_TIMESTAMP_FORMAT)?;
+    let format = time::format_description::parse(DISPLAY_TIMESTAMP_FORMAT)?;
     let mut country_items = Vec::new();
     for (country, mut activities) in sorted_countries {
         activities.sort_by_key(|b| std::cmp::Reverse(b.metadata.start_date));
