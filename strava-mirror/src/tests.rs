@@ -1480,6 +1480,13 @@ fn test_format_duration() {
 }
 
 #[test]
+fn test_format_distance() {
+    assert_eq!(format_distance(15962.8), "15.96 km");
+    assert_eq!(format_distance(1000.0), "1.00 km");
+    assert_eq!(format_distance(50.0), "0.05 km");
+}
+
+#[test]
 fn test_should_redownload_meta() {
     let now = time::macros::datetime!(2025-04-09 07:44:48 UTC);
     let mut metadata = ActivityMetadata {

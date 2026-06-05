@@ -336,6 +336,11 @@ fn format_duration(seconds: u64) -> String {
     format!("{}:{:02}:{:02}", hours, minutes, seconds)
 }
 
+/// Formats a distance in meters as kilometers, rounded to 2 digits.
+fn format_distance(meters: f64) -> String {
+    format!("{:.2} km", meters / 1000.0)
+}
+
 /// Mirrors one activity if needed.
 fn mirror_activity(
     ctx: &Context,
@@ -565,9 +570,9 @@ fn get_top_walks_by_time_content(
                         td { (activity.start_date.format(&format)?) }
                         td { (activity.name.as_deref().unwrap_or("")) }
                         td { (format_duration(activity.moving_time)) }
-                        td { (activity.distance) }
+                        td { (format_distance(activity.distance)) }
                         td { (activity.total_elevation_gain) }
-                    }
+                        }
                 }
             }
         }
