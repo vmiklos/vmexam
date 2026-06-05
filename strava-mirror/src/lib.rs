@@ -341,6 +341,11 @@ fn format_distance(meters: f64) -> String {
     format!("{:.2} km", meters / 1000.0)
 }
 
+/// Formats an elevation in meters, rounded to integer.
+fn format_elevation(meters: f64) -> String {
+    format!("{:.0} m", meters)
+}
+
 /// Mirrors one activity if needed.
 fn mirror_activity(
     ctx: &Context,
@@ -571,8 +576,8 @@ fn get_top_walks_by_time_content(
                         td { (activity.name.as_deref().unwrap_or("")) }
                         td { (format_duration(activity.moving_time)) }
                         td { (format_distance(activity.distance)) }
-                        td { (activity.total_elevation_gain) }
-                        }
+                        td { (format_elevation(activity.total_elevation_gain)) }
+                    }
                 }
             }
         }

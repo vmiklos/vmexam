@@ -1487,6 +1487,13 @@ fn test_format_distance() {
 }
 
 #[test]
+fn test_format_elevation() {
+    assert_eq!(format_elevation(1038.1), "1038 m");
+    assert_eq!(format_elevation(100.9), "101 m");
+    assert_eq!(format_elevation(0.0), "0 m");
+}
+
+#[test]
 fn test_should_redownload_meta() {
     let now = time::macros::datetime!(2025-04-09 07:44:48 UTC);
     let mut metadata = ActivityMetadata {
