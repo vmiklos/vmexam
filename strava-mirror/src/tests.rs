@@ -1477,6 +1477,58 @@ fn test_query_top_walks_by_distance() {
 }
 
 #[test]
+fn test_query_top_walks_by_elevation() {
+    // Given three activities (2 walks, 1 ride):
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    activities_dir.create_dir_all().unwrap();
+
+    // 1. Walk with high elevation
+    let meta_path_1 = activities_dir
+        .join("2025-01-01T10-00-00Z_1.meta.json")
+        .unwrap();
+    let content_1 = r#"{"id": 1, "name": "mountain walk", "start_date": "2025-01-01T10:00:00Z", "sport_type": "Walk", "moving_time": 5000, "distance": 5000.0, "total_elevation_gain": 1000.0}"#;
+    meta_path_1
+        .create_file()
+        .unwrap()
+        .write_all(content_1.as_bytes())
+        .unwrap();
+
+    // 2. Walk with low elevation
+    let meta_path_2 = activities_dir
+        .join("2025-01-02T10-00-00Z_2.meta.json")
+        .unwrap();
+    let content_2 = r#"{"id": 2, "name": "flat walk", "start_date": "2025-01-02T10:00:00Z", "sport_type": "Walk", "moving_time": 10000, "distance": 10000.0, "total_elevation_gain": 10.0}"#;
+    meta_path_2
+        .create_file()
+        .unwrap()
+        .write_all(content_2.as_bytes())
+        .unwrap();
+
+    let network = Rc::new(TestNetwork {
+        responses: HashMap::new(),
+    });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        time,
+    };
+
+    // When querying top walks by elevation:
+    let args = vec![
+        "strava-mirror".to_string(),
+        "--query".to_string(),
+        "top-walks-by-elevation".to_string(),
+    ];
+    run(args, &ctx).unwrap();
+
+    // Then no failure occurs.
+}
+
+#[test]
 fn test_query_all() {
     // Given some activities:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
