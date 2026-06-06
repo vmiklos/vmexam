@@ -534,7 +534,7 @@ fn query_custom(ctx: &Context) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Queries the top 10 longest walks.
+/// Queries the top 10 longest walks by time.
 fn query_top_walks_by_time(ctx: &Context) -> anyhow::Result<()> {
     let local_activities = get_local_activities(ctx)?;
     let markup = get_top_walks_by_time_content(local_activities)?;
@@ -542,21 +542,52 @@ fn query_top_walks_by_time(ctx: &Context) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Produces the HTML content for the top 10 longest walks.
+/// Produces the HTML content for the top 10 longest walks by time.
 fn get_top_walks_by_time_content(
     local_activities: Vec<(String, ActivityMetadata)>,
 ) -> anyhow::Result<maud::Markup> {
+    get_top_walks_content(local_activities, "Top walks by time", |m| {
+        std::cmp::Reverse(m.moving_time)
+    })
+}
+
+/// Queries the top 10 longest walks by distance.
+fn query_top_walks_by_distance(ctx: &Context) -> anyhow::Result<()> {
+    let local_activities = get_local_activities(ctx)?;
+    let markup = get_top_walks_by_distance_content(local_activities)?;
+    println!("{}", wrap_in_page(markup).into_string());
+    Ok(())
+}
+
+/// Produces the HTML content for the top 10 longest walks by distance.
+fn get_top_walks_by_distance_content(
+    local_activities: Vec<(String, ActivityMetadata)>,
+) -> anyhow::Result<maud::Markup> {
+    get_top_walks_content(local_activities, "Top walks by distance", |m| {
+        std::cmp::Reverse(m.distance as u64)
+    })
+}
+
+/// Produces the HTML content for the top 10 longest walks based on a custom sort key.
+fn get_top_walks_content<K>(
+    local_activities: Vec<(String, ActivityMetadata)>,
+    title: &str,
+    mut sort_key: impl FnMut(&ActivityMetadata) -> K,
+) -> anyhow::Result<maud::Markup>
+where
+    K: Ord,
+{
     let mut activities: Vec<ActivityMetadata> = local_activities
         .into_iter()
         .map(|(_, m)| m)
         .filter(|m| m.sport_type == "Walk")
         .collect();
-    activities.sort_by_key(|m| std::cmp::Reverse(m.moving_time));
+    activities.sort_by_key(|m| sort_key(m));
     let top_10 = &activities[..std::cmp::min(10, activities.len())];
 
     let format = time::format_description::parse(DISPLAY_TIMESTAMP_FORMAT)?;
     let markup = maud::html! {
-        h1 { "Top walks by time" }
+        h1 { (title) }
         table border="1" {
             thead {
                 tr {
@@ -743,11 +774,13 @@ fn query_all(ctx: &Context) -> anyhow::Result<()> {
         .into_iter()
         .map(|(f, a)| (f, a.metadata))
         .collect();
-    let top_walks_content = get_top_walks_by_time_content(local_activities)?;
+    let top_walks_time_content = get_top_walks_by_time_content(local_activities.clone())?;
+    let top_walks_distance_content = get_top_walks_by_distance_content(local_activities)?;
 
     let combined_content = maud::html! {
         (countries_content)
-        (top_walks_content)
+        (top_walks_time_content)
+        (top_walks_distance_content)
     };
     println!("{}", wrap_in_page(combined_content).into_string());
     Ok(())
@@ -780,7 +813,7 @@ pub struct Args {
     #[arg(short, long)]
     pub quiet: bool,
 
-    /// Query stats from local activities. Valid values: 'countries', 'custom', 'top-walks-by-time', 'all'.
+    /// Query stats from local activities. Valid values: 'countries', 'custom', 'top-walks-by-time', 'top-walks-by-distance', 'all'.
     #[arg(long, value_name = "KIND")]
     pub query: Option<String>,
 
@@ -822,6 +855,9 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
         }
         if query == "top-walks-by-time" {
             return query_top_walks_by_time(ctx);
+        }
+        if query == "top-walks-by-distance" {
+            return query_top_walks_by_distance(ctx);
         }
         if query == "all" {
             return query_all(ctx);
