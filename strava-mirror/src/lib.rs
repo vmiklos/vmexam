@@ -573,7 +573,11 @@ fn get_top_walks_by_time_content(
                     tr {
                         td { (activity.sport_type) }
                         td { (activity.start_date.format(&format)?) }
-                        td { (activity.name.as_deref().unwrap_or("")) }
+                        td {
+                            a href=(format!("https://www.strava.com/activities/{}", activity.id)) {
+                                (activity.name.as_deref().unwrap_or(""))
+                            }
+                        }
                         td { (format_duration(activity.moving_time)) }
                         td { (format_distance(activity.distance)) }
                         td { (format_elevation(activity.total_elevation_gain)) }
