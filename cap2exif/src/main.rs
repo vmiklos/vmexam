@@ -48,15 +48,17 @@ fn rename() -> anyhow::Result<()> {
             continue;
         };
         // E.g. '2025:07:14 22:27:39'.
-        let exif_format =
-            time::format_description::parse("[year]:[month]:[day] [hour]:[minute]:[second]")?;
+        let exif_format = time::format_description::parse_borrowed::<3>(
+            "[year]:[month]:[day] [hour]:[minute]:[second]",
+        )?;
         let Ok(parsed) = time::PrimitiveDateTime::parse(&date_time, &exif_format) else {
             println!("WARNING: failed to parse {date_time:?} as a date time in {old_file_name:?}");
             continue;
         };
         // E.g. '20250725_092556.jpg'.
-        let fs_format =
-            time::format_description::parse("./[year][month][day]_[hour][minute][second].jpg")?;
+        let fs_format = time::format_description::parse_borrowed::<3>(
+            "./[year][month][day]_[hour][minute][second].jpg",
+        )?;
         let new_file_name: std::ffi::OsString = parsed.format(&fs_format)?.into();
         if old_file_name != new_file_name {
             println!("rename: {old_file_name:?} -> {new_file_name:?}");
