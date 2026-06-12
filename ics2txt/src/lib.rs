@@ -47,7 +47,7 @@ fn decode_date_time(property: &ical::property::Property) -> anyhow::Result<Strin
         && val == "DATE"
     {
         // Date format: YYYYMMDD
-        let description = time::format_description::parse("[year][month][day]")?;
+        let description = time::format_description::parse_borrowed::<1>("[year][month][day]")?;
         let date = time::Date::parse(value, &description)?;
         let format = time::format_description::well_known::Rfc2822;
         let time = time::Time::MIDNIGHT;
