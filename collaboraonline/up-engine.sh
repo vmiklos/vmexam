@@ -14,7 +14,7 @@ time (
     make tags
     # distro/foo/bar -> bar
     (cd instdir && rm -rf user && ln -s $HOME/.config/collaboraofficedev/${BRANCH##*/}/user)
-    sed -i 's|^UserInstallation=.*|UserInstallation=$ORIGIN/..|' engine/instdir/program/bootstraprc
+    sed -i 's|^UserInstallation=.*|UserInstallation=$ORIGIN/..|' instdir/program/bootstraprc
     make check
     make vim-ide-integration
 ) 2>&1 |tee log
