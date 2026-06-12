@@ -126,8 +126,9 @@ fn jwt_to_cookie(ctx: &Context, jwt: &str) -> anyhow::Result<String> {
     let jwt_payload: Jwt = serde_json::from_slice(&payload_bytes)?;
     let strava_remember_id = jwt_payload.sub;
     let exp_datetime = ctx.time.to_local_offset(jwt_payload.exp)?;
+    let format = time::format_description::parse_borrowed::<1>(DISPLAY_TIMESTAMP_FORMAT)?;
     let exp_formatted = exp_datetime
-        .format(&time::format_description::parse(DISPLAY_TIMESTAMP_FORMAT)?)
+        .format(&format)
         .expect("OffsetDateTime::format() failed");
     info!("JWT expires at {}", exp_formatted);
     let now = ctx.time.now();
@@ -167,7 +168,7 @@ fn get_mirrored_activities(activities_dir: &vfs::VfsPath) -> anyhow::Result<Mirr
         return Ok(mirrored_activities);
     }
 
-    let format = time::format_description::parse(ACTIVITY_TIMESTAMP_FORMAT)?;
+    let format = time::format_description::parse_borrowed::<1>(ACTIVITY_TIMESTAMP_FORMAT)?;
 
     for year_dir in activities_dir.read_dir()? {
         if year_dir.is_file()? {
@@ -353,7 +354,7 @@ fn mirror_activity(
     summary: &ActivitySummary,
 ) -> anyhow::Result<()> {
     let year = summary.start_date.year();
-    let format = time::format_description::parse(ACTIVITY_TIMESTAMP_FORMAT)?;
+    let format = time::format_description::parse_borrowed::<1>(ACTIVITY_TIMESTAMP_FORMAT)?;
     let timestamp = summary.start_date.format(&format)?;
     let id = summary.id;
     let base_name = format!("{}_{}", timestamp, id);
@@ -654,7 +655,7 @@ where
     activities.sort_by_key(|m| sort_key(m));
     let top_10 = &activities[..std::cmp::min(10, activities.len())];
 
-    let format = time::format_description::parse(DISPLAY_TIMESTAMP_FORMAT)?;
+    let format = time::format_description::parse_borrowed::<1>(DISPLAY_TIMESTAMP_FORMAT)?;
     let markup = maud::html! {
         h1 { (title) }
         table border="1" {
@@ -756,7 +757,7 @@ fn get_countries_html_content(
     let mut sorted_countries: Vec<_> = country_activities.into_iter().collect();
     sorted_countries.sort_by(|a, b| b.1.len().cmp(&a.1.len()).then_with(|| a.0.cmp(&b.0)));
 
-    let format = time::format_description::parse(DISPLAY_TIMESTAMP_FORMAT)?;
+    let format = time::format_description::parse_borrowed::<1>(DISPLAY_TIMESTAMP_FORMAT)?;
     let mut country_items = Vec::new();
     for (country, mut activities) in sorted_countries {
         activities.sort_by_key(|b| std::cmp::Reverse(b.metadata.start_date));
