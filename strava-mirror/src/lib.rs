@@ -602,6 +602,23 @@ fn get_top_rides_by_time_content(
     })
 }
 
+/// Queries the top 10 longest rides by distance.
+fn query_top_rides_by_distance(ctx: &Context) -> anyhow::Result<()> {
+    let local_activities = get_local_activities(ctx)?;
+    let markup = get_top_rides_by_distance_content(local_activities)?;
+    println!("{}", wrap_in_page(markup).into_string());
+    Ok(())
+}
+
+/// Produces the HTML content for the top 10 longest rides by distance.
+fn get_top_rides_by_distance_content(
+    local_activities: Vec<(String, ActivityMetadata)>,
+) -> anyhow::Result<maud::Markup> {
+    get_top_activities_content(local_activities, "Ride", "Top rides by distance", |m| {
+        std::cmp::Reverse(m.distance as u64)
+    })
+}
+
 /// Produces the HTML content for the top 10 longest activities based on a custom sort key.
 fn get_top_activities_content<K>(
     local_activities: Vec<(String, ActivityMetadata)>,
@@ -812,7 +829,8 @@ fn query_all(ctx: &Context) -> anyhow::Result<()> {
     let top_walks_time_content = get_top_walks_by_time_content(local_activities.clone())?;
     let top_walks_distance_content = get_top_walks_by_distance_content(local_activities.clone())?;
     let top_walks_elevation_content = get_top_walks_by_elevation_content(local_activities.clone())?;
-    let top_rides_time_content = get_top_rides_by_time_content(local_activities)?;
+    let top_rides_time_content = get_top_rides_by_time_content(local_activities.clone())?;
+    let top_rides_distance_content = get_top_rides_by_distance_content(local_activities)?;
 
     let combined_content = maud::html! {
         (countries_content)
@@ -820,6 +838,7 @@ fn query_all(ctx: &Context) -> anyhow::Result<()> {
         (top_walks_distance_content)
         (top_walks_elevation_content)
         (top_rides_time_content)
+        (top_rides_distance_content)
     };
     println!("{}", wrap_in_page(combined_content).into_string());
     Ok(())
@@ -852,7 +871,7 @@ pub struct Args {
     #[arg(short, long)]
     pub quiet: bool,
 
-    /// Query stats from local activities. Valid values: 'countries', 'custom', 'top-walks-by-time', 'top-walks-by-distance', 'top-walks-by-elevation', 'top-rides-by-time', 'all'.
+    /// Query stats from local activities. Valid values: 'countries', 'custom', 'top-walks-by-time', 'top-walks-by-distance', 'top-walks-by-elevation', 'top-rides-by-time', 'top-rides-by-distance', 'all'.
     #[arg(long, value_name = "KIND")]
     pub query: Option<String>,
 
@@ -903,6 +922,9 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
         }
         if query == "top-rides-by-time" {
             return query_top_rides_by_time(ctx);
+        }
+        if query == "top-rides-by-distance" {
+            return query_top_rides_by_distance(ctx);
         }
         if query == "all" {
             return query_all(ctx);
