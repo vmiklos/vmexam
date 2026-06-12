@@ -70,7 +70,8 @@ pub fn run(
 
     // Find out the timestamp prefix.
     let now = ctx.time.now();
-    let format = time::format_description::parse("[year]-[month]-[day] [hour]:[minute]:[second]")?;
+    let format_description = "[year]-[month]-[day] [hour]:[minute]:[second]";
+    let format = time::format_description::parse_borrowed::<1>(format_description)?;
     let timestamp = now.format(&format)?;
 
     // Log the specified key from the JSON.
