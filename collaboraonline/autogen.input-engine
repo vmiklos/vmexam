@@ -6,3 +6,5 @@
 --disable-gpgmepp
 # online.git cypress tests need this
 --enable-python=internal
+# match distro-configs/CPLinux-LOKit.conf
+--without-java
