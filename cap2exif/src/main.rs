@@ -48,7 +48,7 @@ fn rename() -> anyhow::Result<()> {
             continue;
         };
         // E.g. '2025:07:14 22:27:39'.
-        let exif_format = time::format_description::parse_borrowed::<3>(
+        let exif_format = time::format_description::parse_borrowed::<2>(
             "[year]:[month]:[day] [hour]:[minute]:[second]",
         )?;
         let Ok(parsed) = time::PrimitiveDateTime::parse(&date_time, &exif_format) else {
@@ -56,7 +56,7 @@ fn rename() -> anyhow::Result<()> {
             continue;
         };
         // E.g. '20250725_092556.jpg'.
-        let fs_format = time::format_description::parse_borrowed::<3>(
+        let fs_format = time::format_description::parse_borrowed::<2>(
             "./[year][month][day]_[hour][minute][second].jpg",
         )?;
         let new_file_name: std::ffi::OsString = parsed.format(&fs_format)?.into();
