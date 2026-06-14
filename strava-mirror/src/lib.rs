@@ -819,6 +819,7 @@ fn wrap_in_page(content: maud::Markup) -> maud::Markup {
         html lang="en-US" {
             head {
                 meta charset="UTF-8";
+                meta name="viewport" content="width=device-width, initial-scale=1";
                 title { "sport-stats" }
             }
             body {
