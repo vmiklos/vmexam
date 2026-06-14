@@ -211,7 +211,7 @@ impl Filters {
             None => {
                 // Default to the current month.
                 let now = time.now();
-                let format = time::format_description::parse("[year]-[month]")?;
+                let format = time::format_description::parse_borrowed::<2>("[year]-[month]")?;
                 let n = &now.format(&format)?;
                 let i = args.ignore_case;
                 let t = args.transliterate;
