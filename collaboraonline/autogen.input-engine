@@ -2,7 +2,5 @@
 --enable-werror
 # online.git is not compatible with system nss
 --without-system-nss
-# match distro-configs/CPLinux-LOKit.conf
---enable-mpl-subset
 # online.git cypress tests need this
 --enable-python=internal
