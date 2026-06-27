@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-anyhow = "1.0.98"
-clap = "4.5.40"
-glob = "0.3.1"
-serde = { version = "1.0.219", features = ["derive"] }
-serde_json = "1.0.140"
-time = { version = "0.3.41", features = ["local-offset", "serde-well-known"] }
-toml = "0.8.23"
+anyhow = "1.0.103"
+clap = "4.6.1"
+glob = "0.3.3"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.150"
+time = { version = "0.3.51", features = ["local-offset", "serde-well-known"] }
+toml = "1.1.2"
