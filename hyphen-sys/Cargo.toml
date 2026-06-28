@@ -5,7 +5,7 @@ edition = "2024"
 build = "build.rs"
 
 [dependencies]
-libc = "0.2.173"
+libc = "0.2.186"
 
 [build-dependencies]
-bindgen = "0.72.0"
+bindgen = "0.72.1"
