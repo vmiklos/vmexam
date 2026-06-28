@@ -66,3 +66,9 @@ caption string "%{7;0}[%c] mymachine %-w%{0;7}%n %t%{-}%+w"
 ## Fedora 42 -> Fedora 43
 
 - <https://docs.fedoraproject.org/en-US/quick-docs/upgrading-fedora-offline/> for the package upgrades
+
+## Fedora 43 -> Fedora 44
+
+- <https://docs.fedoraproject.org/en-US/quick-docs/upgrading-fedora-offline/> for the package upgrades
+- <https://bugzilla.redhat.com/show_bug.cgi?id=2434810> matrix upgrade fails, commented with a
+  workaround
