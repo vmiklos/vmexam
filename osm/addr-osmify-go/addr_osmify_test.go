@@ -21,8 +21,8 @@ type URLRoute struct {
 	ResultPath string
 }
 
-func MockUrlopen(t *testing.T, routes []URLRoute) func(string, string) (string, error) {
-	return func(urlString string, data string) (string, error) {
+func MockUrlopen(t *testing.T, routes []URLRoute) func(string, string, string) (string, error) {
+	return func(urlString string, data string, userAgent string) (string, error) {
 		for _, route := range routes {
 			if urlString != route.URL {
 				continue
@@ -164,7 +164,7 @@ func TestNoargs(t *testing.T) {
 func TestNominatimUrlopen(t *testing.T) {
 	OldUrlopen := Urlopen
 	defer func() { Urlopen = OldUrlopen }()
-	Urlopen = func(urlString string, data string) (string, error) {
+	Urlopen = func(urlString string, data string, userAgent string) (string, error) {
 		return "", fmt.Errorf("lookup nominatim.openstreetmap.org on 192.168.0.1:53: no such host")
 	}
 	want := ": no such host\n"
@@ -206,12 +206,12 @@ func TestOverpassUrlopen(t *testing.T) {
 	}
 	routes := []URLRoute{route}
 	mockURLOpen := MockUrlopen(t, routes)
-	Urlopen = func(urlString string, data string) (string, error) {
+	Urlopen = func(urlString string, data string, userAgent string) (string, error) {
 		if urlString == "http://overpass-api.de/api/interpreter" {
 			return "", fmt.Errorf("lookup overpass-api.de on 192.168.0.1:53: no such host")
 		}
 
-		return mockURLOpen(urlString, data)
+		return mockURLOpen(urlString, data, userAgent)
 	}
 
 	want := ": no such host\n"

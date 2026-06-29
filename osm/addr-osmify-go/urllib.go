@@ -10,12 +10,22 @@ import (
 	"net/http"
 )
 
-func urlopen(url string, data string) (string, error) {
+func urlopen(url string, data string, userAgent string) (string, error) {
 	// notest
 	if len(data) == 0 {
-		resp, err := http.Get(url)
+		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
-			return "", fmt.Errorf("http.Get: %s", err)
+			return "", fmt.Errorf("http.NewRequest: %s", err)
+		}
+
+		if len(userAgent) > 0 {
+			req.Header.Set("User-Agent", userAgent)
+		}
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			return "", fmt.Errorf("client.Do: %s", err)
 		}
 
 		defer resp.Body.Close()
@@ -31,6 +41,10 @@ func urlopen(url string, data string) (string, error) {
 	req, err := http.NewRequest("POST", url, bytes.NewBufferString(data))
 	if err != nil {
 		return "", fmt.Errorf("http.NewRequest: %s", err)
+	}
+
+	if len(userAgent) > 0 {
+		req.Header.Set("User-Agent", userAgent)
 	}
 
 	client := &http.Client{}

@@ -16,7 +16,7 @@ import java.nio.file.Paths
  * Test urlopen(), using mocking.
  */
 class MockUrlopener internal constructor(var urlopenSuffix: String) : Urlopener {
-    override fun urlopen(urlString: String, data: String): String {
+    override fun urlopen(urlString: String, data: String, userAgent: String): String {
         if (!data.isEmpty()) {
             var path = URLEncoder.encode(urlString, "UTF-8")
             path = "mock/$path$urlopenSuffix.overpassql"

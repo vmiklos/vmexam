@@ -17,9 +17,12 @@ import java.nio.charset.Charset
  * Default urlopen(), using HttpURLConnection.
  */
 class DefaultUrlopener : Urlopener {
-    override fun urlopen(urlString: String, data: String): String {
+    override fun urlopen(urlString: String, data: String, userAgent: String): String {
         val url = URL(urlString)
         val connection = url.openConnection() as HttpURLConnection
+        if (!userAgent.isEmpty()) {
+            connection.setRequestProperty("User-Agent", userAgent)
+        }
         val charset: Charset? = null
         if (data.isEmpty()) {
             val writer = StringWriter()

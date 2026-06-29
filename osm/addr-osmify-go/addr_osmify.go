@@ -54,7 +54,7 @@ func queryNominatim(query string) (*[]NominatimResult, error) {
 	params.Add("q", query)
 	params.Add("format", "json")
 	nominatimURL += params.Encode()
-	resp, err := Urlopen(nominatimURL, "")
+	resp, err := Urlopen(nominatimURL, "", "addr-osmify-go/1.0 (GitHub: vmiklos/vmexam)")
 	if err != nil {
 		return nil, fmt.Errorf("urlopen: %s", err)
 	}
@@ -69,7 +69,7 @@ func queryNominatim(query string) (*[]NominatimResult, error) {
 
 func queryTurbo(query string) (*TurboResult, error) {
 	turboURL := "http://overpass-api.de/api/interpreter"
-	resp, err := Urlopen(turboURL, query)
+	resp, err := Urlopen(turboURL, query, "addr-osmify-go/1.0 (GitHub: vmiklos/vmexam)")
 	if err != nil {
 		return nil, fmt.Errorf("urlopen: %s", err)
 	}

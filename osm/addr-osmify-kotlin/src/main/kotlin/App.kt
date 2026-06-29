@@ -42,7 +42,8 @@ class App(args: Array<String>, out: OutputStream) {
         private fun queryTurbo(query: String): String {
             return urlopener.urlopen(
                 "http://overpass-api.de/api/interpreter",
-                query
+                query,
+                "addr-osmify-kotlin/1.0 (GitHub: vmiklos/vmexam)"
             )
         }
 
@@ -53,7 +54,9 @@ class App(args: Array<String>, out: OutputStream) {
             var urlString = "https://nominatim.openstreetmap.org/search.php"
             urlString += "?q=" + URLEncoder.encode(query, "UTF-8")
             urlString += "&format=json"
-            return urlopener.urlopen(urlString, "")
+            return urlopener.urlopen(
+                urlString, "", "addr-osmify-kotlin/1.0 (GitHub: vmiklos/vmexam)"
+            )
         }
 
         /**
