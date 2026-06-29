@@ -1,3 +1,3 @@
 module vmiklos.hu/addr-osmify
 
-go 1.24
+go 1.25
