@@ -637,6 +637,37 @@ fn get_top_rides_by_elevation_content(
     })
 }
 
+/// Queries the longest ride by distance in each year.
+fn query_longest_rides_by_year(ctx: &Context) -> anyhow::Result<()> {
+    let local_activities = get_local_activities(ctx)?;
+    let markup = get_longest_rides_by_year_content(local_activities)?;
+    println!("{}", wrap_in_page(markup).into_string());
+    Ok(())
+}
+
+/// Produces the HTML content for the longest ride by distance in each year.
+fn get_longest_rides_by_year_content(
+    local_activities: Vec<(String, ActivityMetadata)>,
+) -> anyhow::Result<maud::Markup> {
+    let mut by_year: HashMap<i32, ActivityMetadata> = HashMap::new();
+    for (_, m) in local_activities {
+        if m.sport_type != "Ride" {
+            continue;
+        }
+        by_year
+            .entry(m.start_date.year())
+            .and_modify(|best| {
+                if m.distance > best.distance {
+                    *best = m.clone();
+                }
+            })
+            .or_insert(m);
+    }
+    let mut activities: Vec<ActivityMetadata> = by_year.into_values().collect();
+    activities.sort_by_key(|m| std::cmp::Reverse(m.start_date.year()));
+    render_activities_table(&activities, "Longest rides by year")
+}
+
 /// Produces the HTML content for the top 10 longest activities based on a custom sort key.
 fn get_top_activities_content<K>(
     local_activities: Vec<(String, ActivityMetadata)>,
@@ -654,7 +685,14 @@ where
         .collect();
     activities.sort_by_key(|m| sort_key(m));
     let top_10 = &activities[..std::cmp::min(10, activities.len())];
+    render_activities_table(top_10, title)
+}
 
+/// Renders a list of activities as an HTML table with the given title.
+fn render_activities_table(
+    activities: &[ActivityMetadata],
+    title: &str,
+) -> anyhow::Result<maud::Markup> {
     let format = time::format_description::parse_borrowed::<1>(DISPLAY_TIMESTAMP_FORMAT)?;
     let markup = maud::html! {
         h1 { (title) }
@@ -670,7 +708,7 @@ where
                 }
             }
             tbody {
-                @for activity in top_10 {
+                @for activity in activities {
                     tr {
                         td { (activity.sport_type) }
                         td { (activity.start_date.format(&format)?) }
@@ -850,7 +888,8 @@ fn query_all(ctx: &Context) -> anyhow::Result<()> {
     let top_walks_elevation_content = get_top_walks_by_elevation_content(local_activities.clone())?;
     let top_rides_time_content = get_top_rides_by_time_content(local_activities.clone())?;
     let top_rides_distance_content = get_top_rides_by_distance_content(local_activities.clone())?;
-    let top_rides_elevation_content = get_top_rides_by_elevation_content(local_activities)?;
+    let top_rides_elevation_content = get_top_rides_by_elevation_content(local_activities.clone())?;
+    let longest_rides_by_year_content = get_longest_rides_by_year_content(local_activities)?;
 
     let combined_content = maud::html! {
         (countries_content)
@@ -860,6 +899,7 @@ fn query_all(ctx: &Context) -> anyhow::Result<()> {
         (top_rides_time_content)
         (top_rides_distance_content)
         (top_rides_elevation_content)
+        (longest_rides_by_year_content)
     };
     println!("{}", wrap_in_page(combined_content).into_string());
     Ok(())
@@ -892,7 +932,7 @@ pub struct Args {
     #[arg(short, long)]
     pub quiet: bool,
 
-    /// Query stats from local activities. Valid values: 'countries', 'custom', 'top-walks-by-time', 'top-walks-by-distance', 'top-walks-by-elevation', 'top-rides-by-time', 'top-rides-by-distance', 'top-rides-by-elevation', 'all'.
+    /// Query stats from local activities. Valid values: 'countries', 'custom', 'top-walks-by-time', 'top-walks-by-distance', 'top-walks-by-elevation', 'top-rides-by-time', 'top-rides-by-distance', 'top-rides-by-elevation', 'longest-rides-by-year', 'all'.
     #[arg(long, value_name = "KIND")]
     pub query: Option<String>,
 
@@ -949,6 +989,9 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
         }
         if query == "top-rides-by-elevation" {
             return query_top_rides_by_elevation(ctx);
+        }
+        if query == "longest-rides-by-year" {
+            return query_longest_rides_by_year(ctx);
         }
         if query == "all" {
             return query_all(ctx);

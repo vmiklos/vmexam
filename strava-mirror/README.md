@@ -46,22 +46,10 @@ of existing activities.
 You can query your local activities, e.g. to see which country each activity was in:
 
 ```
-strava-mirror --query countries
-```
-
-Use the `--summary` flag to only see the country counts:
-
-```
-strava-mirror --query countries --summary
-```
-
-Use the `--html` flag to get a more detailed HTML output:
-
-```
 strava-mirror --query countries --html
 ```
 
-The other stat available is top walks by time or by distance:
+Several other less creative stats are available, e.g.:
 
 ```
 strava-mirror --query top-walks-by-time
@@ -79,30 +67,6 @@ How many activities you had in 2026:
 
 ```
 strava-mirror --query custom |jq '[.[] | select(.start_date | startswith("2026"))] | length'
-```
-
-Filter for walks, sort by moving time (increasing, seconds):
-
-```
-strava-mirror --query custom |jq '[.[] | select(.sport_type == "Walk")] | sort_by(.moving_time)'
-```
-
-Filter for walks, sort by distance (increasing, meters):
-
-```
-strava-mirror --query custom |jq '[.[] | select(.sport_type == "Walk")] | sort_by(.distance)'
-```
-
-Filter for walks, sort by distance (increasing, meters):
-
-```
-strava-mirror --query custom |jq '[.[] | select(.sport_type == "Walk")] | sort_by(.distance)'
-```
-
-Filter for walks, sort by distance (elevation, meters):
-
-```
-strava-mirror --query custom |jq '[.[] | select(.sport_type == "Walk")] | sort_by(.total_elevation_gain)'
 ```
 
 ## Cron
