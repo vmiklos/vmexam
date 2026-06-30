@@ -7,4 +7,4 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.103"
-calc = { version = "0.5.0", default-features = false }
+meval = "0.2.0"
