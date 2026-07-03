@@ -66,9 +66,6 @@ pub struct Context {
 /// Contents of the config file.
 #[derive(serde::Deserialize)]
 struct Config {
-    client_id: String,
-    client_secret: String,
-    refresh_token: String,
     jwt: String,
 }
 
@@ -81,30 +78,6 @@ fn read_config(ctx: &Context) -> anyhow::Result<Config> {
         .read_to_string(&mut config_content)?;
     let config: Config = toml::from_str(&config_content)?;
     Ok(config)
-}
-
-/// Response for a /oauth/token request.
-#[derive(serde::Deserialize)]
-struct TokenResponse {
-    access_token: String,
-}
-
-/// Gets an access token from a refresh token.
-fn get_access_token(ctx: &Context, config: &Config) -> anyhow::Result<String> {
-    let url = "https://www.strava.com/oauth/token";
-    let params = [
-        ("client_id", &config.client_id),
-        ("client_secret", &config.client_secret),
-        ("refresh_token", &config.refresh_token),
-        ("grant_type", &"refresh_token".to_string()),
-    ];
-
-    let response = ctx
-        .network
-        .post(url, &serde_urlencoded::to_string(params)?)?;
-
-    let token_response: TokenResponse = serde_json::from_slice(&response.body)?;
-    Ok(token_response.access_token)
 }
 
 /// Contents of the JWT payload.
@@ -285,7 +258,6 @@ fn handle_rate_limit(ctx: &Context, headers: &HashMap<String, String>) {
 /// Lists activities: only minimal info that is cheap even for all activities.
 fn list_activities(
     ctx: &Context,
-    _access_token: &str,
     page: u32,
     _after: Option<i64>,
     cookie: &str,
@@ -1002,7 +974,6 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
     let home = &ctx.fs;
 
     let config = read_config(ctx)?;
-    let access_token = get_access_token(ctx, &config)?;
 
     let activities_dir = home.join(".local/share/strava-mirror/activities")?;
 
@@ -1026,8 +997,7 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
     };
     let mut page = 1;
     loop {
-        let activities: Vec<ActivitiesItemResponse> =
-            list_activities(ctx, &access_token, page, after, &cookie)?;
+        let activities: Vec<ActivitiesItemResponse> = list_activities(ctx, page, after, &cookie)?;
         if activities.is_empty() {
             break;
         }

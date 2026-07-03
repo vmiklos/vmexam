@@ -122,33 +122,6 @@ fn test_no_activities() {
 }
 
 #[test]
-fn test_get_access_token_error() {
-    // Given the oauth token request fails:
-    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
-    let responses = HashMap::new();
-    let network = Rc::new(TestNetwork { responses });
-    let time = Rc::new(TestTime::default());
-    let ctx = Context {
-        fs: fs.clone(),
-        network,
-        time,
-    };
-    setup_config(&fs);
-
-    // When mirroring activities:
-    let args = vec!["strava-mirror".to_string()];
-    let ret = run(args, &ctx);
-
-    // Then make sure there is a failure:
-    assert!(ret.is_err());
-    let err = ret.unwrap_err().to_string();
-    assert_eq!(
-        err,
-        "Unexpected POST request to https://www.strava.com/oauth/token"
-    );
-}
-
-#[test]
 fn test_jwt_to_cookie_error() {
     // Given a config with an invalid JWT:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
@@ -170,10 +143,7 @@ fn test_jwt_to_cookie_error() {
     };
     let config_dir = fs.join(".config").unwrap();
     config_dir.create_dir_all().unwrap();
-    let config_content = r#"client_id = "42"
-client_secret = "s"
-refresh_token = "r"
-jwt = "invalid""#;
+    let config_content = r#"jwt = "invalid""#;
     config_dir
         .join("strava-mirrorrc")
         .unwrap()

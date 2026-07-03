@@ -12,9 +12,7 @@ cargo install --git https://github.com/vmiklos/vmexam strava-mirror
 
 ## Usage
 
-See <https://developers.strava.com/docs/authentication/>, generate a refresh token using
-<https://github.com/pR0Ps/strava-tokengen>. The original data is not available via the API, so get
-your JWT value using:
+The original data is not available via the API, so get your JWT value using:
 
 - Go to strava.com in your web browser (e.g. Firefox), log in
 - Open dev-tools (F12)
@@ -24,18 +22,11 @@ your JWT value using:
 The configuration file is `~/.config/strava-mirrorrc`:
 
 ```
-client_id = "..."
-client_secret = "..."
-refresh_token = "..."
 jwt = "..."
 ```
 
 Once `strava-mirror` is completed, you can find your activities under
 `~/.local/share/strava-mirror/activities/`.
-
-The tool handles rate limiting, it'll sleep enough between requests as necessary. If you have many
-activities, the initial mirroring can take several hours, in practice about 400 activities can be
-mirrored in an hour.
 
 The mirroring is incremental, only activities newer than the last local activity are fetched by
 default. Use `--full-history` if you want to fetch newly added older activities or updated metadata
@@ -61,25 +52,14 @@ To include all stats in HTML form:
 strava-mirror --query all
 ```
 
-### Custom queries
-
-How many activities you had in 2026:
-
-```
-strava-mirror --query custom |jq '[.[] | select(.start_date | startswith("2026"))] | length'
-```
-
 ## Cron
 
 If you want to automate downloading your activities, there is a `--quiet` option to omit the INFO
 log lines, which are only interesting in the interactive case.
 
-## Rework to not use the API.
+## Rework to not use the API
 
-The API broke on 2026-06-30. Minimal activity listing & download works now, except:
+The API broke on 2026-06-30. Mirroring using just the JWT mostly works now, except:
 
-- the .meta.json content is worse than it was
 - pagination is broken, only the last 20 activities are downloaded when missing locally
 - latlng is not provided, need to extract it from the .fit data, probably
-- config needs updating to only require the JWT
-- doc needs updating
