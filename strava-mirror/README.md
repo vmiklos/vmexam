@@ -78,7 +78,6 @@ log lines, which are only interesting in the interactive case.
 
 The API broke on 2026-06-30. Minimal activity listing & download works now, except:
 
-- tests are broken
 - the .meta.json content is worse than it was
 - pagination is broken, only the last 20 activities are downloaded when missing locally
 - latlng is not provided, need to extract it from the .fit data, probably

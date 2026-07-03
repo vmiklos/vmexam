@@ -413,7 +413,7 @@ struct ActivityMetadata {
     name: Option<String>,
     start_latlng: Option<Vec<f64>>,
     #[serde(with = "time::serde::rfc3339")]
-    start_date: time::OffsetDateTime,
+    start_time: time::OffsetDateTime,
     sport_type: String,
     moving_time: u64,
     distance: f64,
@@ -526,7 +526,7 @@ fn query_custom(ctx: &Context) -> anyhow::Result<()> {
     let local_activities = get_local_activities(ctx)?;
     let mut activities: Vec<ActivityMetadata> =
         local_activities.into_iter().map(|(_, m)| m).collect();
-    activities.sort_by_key(|m| m.start_date);
+    activities.sort_by_key(|m| m.start_time);
     println!("{}", serde_json::to_string_pretty(&activities)?);
     Ok(())
 }
@@ -643,15 +643,16 @@ fn query_longest_rides_by_year(ctx: &Context) -> anyhow::Result<()> {
 
 /// Produces the HTML content for the longest ride by distance in each year.
 fn get_longest_rides_by_year_content(
-    local_activities: Vec<(String, ActivityMetadata)>,
+    mut local_activities: Vec<(String, ActivityMetadata)>,
 ) -> anyhow::Result<maud::Markup> {
     let mut by_year: HashMap<i32, ActivityMetadata> = HashMap::new();
+    local_activities.sort_by_key(|m| std::cmp::Reverse(m.0.to_string()));
     for (_, m) in local_activities {
         if m.sport_type != "Ride" {
             continue;
         }
         by_year
-            .entry(m.start_date.year())
+            .entry(m.start_time.year())
             .and_modify(|best| {
                 if m.distance > best.distance {
                     *best = m.clone();
@@ -660,7 +661,7 @@ fn get_longest_rides_by_year_content(
             .or_insert(m);
     }
     let mut activities: Vec<ActivityMetadata> = by_year.into_values().collect();
-    activities.sort_by_key(|m| std::cmp::Reverse(m.start_date.year()));
+    activities.sort_by_key(|m| std::cmp::Reverse(m.start_time.year()));
     render_activities_table(&activities, "Longest rides by year")
 }
 
@@ -707,7 +708,7 @@ fn render_activities_table(
                 @for activity in activities {
                     tr {
                         td { (activity.sport_type) }
-                        td { (activity.start_date.format(&format)?) }
+                        td { (activity.start_time.format(&format)?) }
                         td {
                             a href=(format!("https://www.strava.com/activities/{}", activity.id)) {
                                 (activity.name.as_deref().unwrap_or(""))
@@ -794,11 +795,11 @@ fn get_countries_html_content(
     let format = time::format_description::parse_borrowed::<1>(DISPLAY_TIMESTAMP_FORMAT)?;
     let mut country_items = Vec::new();
     for (country, mut activities) in sorted_countries {
-        activities.sort_by_key(|b| std::cmp::Reverse(b.metadata.start_date));
+        activities.sort_by_key(|b| std::cmp::Reverse(b.metadata.start_time));
         let count = activities.len();
         let mut list_items = Vec::new();
         for activity in activities {
-            let timestamp = activity.metadata.start_date.format(&format)?;
+            let timestamp = activity.metadata.start_time.format(&format)?;
             let url = format!("https://www.strava.com/activities/{}", activity.metadata.id);
             let name = activity.metadata.name.context("no name")?;
             list_items.push(ActivityItem {
