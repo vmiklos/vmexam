@@ -310,7 +310,7 @@ fn test_list_activities_after() {
     let meta_path_1 = activities_dir
         .join(format!("{}.meta.json", base_name_1))
         .unwrap();
-    let activity1_content = r#"{"id": 1, "start_time": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time": 3600, "distance": 1000.0, "total_elevation_gain": 100.0}"#;
+    let activity1_content = r#"{"id": 1, "start_time": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time_raw": 3600, "distance_raw": 1000.0, "elevation_gain_raw": 100.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -330,7 +330,6 @@ fn test_list_activities_after() {
             body: token_body,
         },
     );
-    let after_ts = time::macros::datetime!(2025-04-09 07:44:48 UTC).unix_timestamp();
     let activities_url =
         format!("https://www.strava.com/athlete/training_activities?new_activity_only=false",);
     let activities_body = std::fs::read("src/fixtures/activities-2.json").unwrap();
@@ -341,22 +340,11 @@ fn test_list_activities_after() {
             body: activities_body,
         },
     );
-    let activities_url_p2 = format!(
-        "https://www.strava.com/api/v3/athlete/activities?page=2&per_page=200&after={}",
-        after_ts
-    );
-    responses.insert(
-        activities_url_p2,
-        NetworkResponse {
-            headers: HashMap::new(),
-            body: b"[]".to_vec(),
-        },
-    );
     responses.insert(
         "https://www.strava.com/api/v3/activities/2".to_string(),
         NetworkResponse {
             headers: HashMap::new(),
-            body: b"{\"id\": 2, \"name\": \"myactivity2\"}".to_vec(),
+            body: b"{\"id\": 2, \"name\": \"myactivity2\", \"moving_time_raw\": 3600, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}".to_vec(),
         },
     );
     let mut data_headers = HashMap::new();
@@ -574,7 +562,7 @@ fn test_query_countries() {
     meta_path
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 1, \"start_time\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\", \"moving_time\": 3600, \"distance\": 1000.0, \"total_elevation_gain\": 100.0}")
+        .write_all(b"{\"id\": 1, \"start_time\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
 
     let mut responses = HashMap::new();
@@ -707,7 +695,7 @@ fn test_query_countries_summary() {
     meta_path1
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 1, \"start_time\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\", \"moving_time\": 3600, \"distance\": 1000.0, \"total_elevation_gain\": 100.0}")
+        .write_all(b"{\"id\": 1, \"start_time\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
 
     // Activity 2 in Austria (48.0, 16.0)
@@ -717,7 +705,7 @@ fn test_query_countries_summary() {
     meta_path2
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 2, \"start_time\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [48.0, 16.0], \"sport_type\": \"Ride\", \"moving_time\": 3600, \"distance\": 1000.0, \"total_elevation_gain\": 100.0}")
+        .write_all(b"{\"id\": 2, \"start_time\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [48.0, 16.0], \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
 
     // Pre-existing cache for Hungary
@@ -839,9 +827,9 @@ fn test_get_activity_country_special_cases() {
         start_latlng: None,
         start_time: time::macros::datetime!(2025-04-09 07:44:48 UTC),
         sport_type: "Ride".to_string(),
-        moving_time: 3600,
-        distance: 1000.0,
-        total_elevation_gain: 100.0,
+        moving_time_raw: 3600,
+        distance_raw: 1000.0,
+        elevation_gain_raw: 100.0,
     };
     let ret = get_activity_country(&ctx, metadata_no_latlng, &mut cache).unwrap();
     assert!(ret.is_none());
@@ -853,9 +841,9 @@ fn test_get_activity_country_special_cases() {
         start_latlng: Some(vec![]),
         start_time: time::macros::datetime!(2025-04-09 07:44:48 UTC),
         sport_type: "Ride".to_string(),
-        moving_time: 3600,
-        distance: 1000.0,
-        total_elevation_gain: 100.0,
+        moving_time_raw: 3600,
+        distance_raw: 1000.0,
+        elevation_gain_raw: 100.0,
     };
     let ret = get_activity_country(&ctx, metadata_empty_latlng, &mut cache).unwrap();
     assert!(ret.is_none());
@@ -939,7 +927,7 @@ fn test_query_countries_html() {
     meta_path_at
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 1, \"name\": \"AT\", \"start_time\": \"2025-01-01T00:00:00Z\", \"start_latlng\": [48.0, 16.0], \"sport_type\": \"Ride\", \"moving_time\": 3600, \"distance\": 1000.0, \"total_elevation_gain\": 100.0}")
+        .write_all(b"{\"id\": 1, \"name\": \"AT\", \"start_time\": \"2025-01-01T00:00:00Z\", \"start_latlng\": [48.0, 16.0], \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
 
     // 2. Activities in Hungary (most activities, should come first)
@@ -949,7 +937,7 @@ fn test_query_countries_html() {
     meta_path_hu1
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 2, \"name\": \"HU1\", \"start_time\": \"2025-02-01T00:00:00Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\", \"moving_time\": 3600, \"distance\": 1000.0, \"total_elevation_gain\": 100.0}")
+        .write_all(b"{\"id\": 2, \"name\": \"HU1\", \"start_time\": \"2025-02-01T00:00:00Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
     let meta_path_hu2 = activities_dir
         .join("2025-02-02T00-00-00Z_3.meta.json")
@@ -957,7 +945,7 @@ fn test_query_countries_html() {
     meta_path_hu2
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 3, \"name\": \"HU2\", \"start_time\": \"2025-02-02T00:00:00Z\", \"start_latlng\": [47.1, 19.1], \"sport_type\": \"Ride\", \"moving_time\": 3600, \"distance\": 1000.0, \"total_elevation_gain\": 100.0}")
+        .write_all(b"{\"id\": 3, \"name\": \"HU2\", \"start_time\": \"2025-02-02T00:00:00Z\", \"start_latlng\": [47.1, 19.1], \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
 
     // 3. Activity in Germany (same count as AT, should come after AT by name)
@@ -967,7 +955,7 @@ fn test_query_countries_html() {
     meta_path_de
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 4, \"name\": \"DE\", \"start_time\": \"2025-03-01T00:00:00Z\", \"start_latlng\": [52.0, 13.0], \"sport_type\": \"Ride\", \"moving_time\": 3600, \"distance\": 1000.0, \"total_elevation_gain\": 100.0}")
+        .write_all(b"{\"id\": 4, \"name\": \"DE\", \"start_time\": \"2025-03-01T00:00:00Z\", \"start_latlng\": [52.0, 13.0], \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
 
     let mut responses = HashMap::new();
@@ -1074,7 +1062,7 @@ fn test_run_full_history() {
     let meta_path_1 = activities_dir
         .join(format!("{}.meta.json", base_name_1))
         .unwrap();
-    let activity1_content = r#"{"id": 1, "start_time": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time": 3600, "distance": 1000.0, "total_elevation_gain": 100.0}"#;
+    let activity1_content = r#"{"id": 1, "start_time": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time_raw": 3600, "distance_raw": 1000.0, "elevation_gain_raw": 100.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -1134,7 +1122,7 @@ fn test_mirror_activity_full_history_change() {
         .join(format!("{}.meta.json", base_name_1))
         .unwrap();
     // Local name is "old name".
-    let activity1_content = r#"{"id": 1, "name": "old name", "start_time": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time": 3600, "distance": 1000.0, "total_elevation_gain": 100.0}"#;
+    let activity1_content = r#"{"id": 1, "name": "old name", "start_time": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time_raw": 3600, "distance_raw": 1000.0, "elevation_gain_raw": 100.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -1155,7 +1143,7 @@ fn test_mirror_activity_full_history_change() {
         "https://www.strava.com/athlete/training_activities?new_activity_only=false".to_string(),
         NetworkResponse {
             headers: HashMap::new(),
-            body: b"{\"models\":[{\"name\": \"new name\", \"id\": 1, \"start_time\": \"2025-04-09T07:44:48Z\", \"sport_type\": \"Ride\"}]}"
+            body: b"{\"models\":[{\"name\": \"new name\", \"id\": 1, \"start_time\": \"2025-04-09T07:44:48Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}]}"
                 .to_vec(),
         },
     );
@@ -1216,7 +1204,7 @@ fn test_query_custom() {
     let meta_path_1 = activities_dir
         .join(format!("{}.meta.json", base_name_1))
         .unwrap();
-    let activity1_content = r#"{"id": 1, "name": "myactivity", "start_time": "2025-04-09T07:44:48Z", "start_latlng": [47.0, 19.0], "sport_type": "Ride", "moving_time": 3600, "distance": 1000.0, "total_elevation_gain": 100.0}"#;
+    let activity1_content = r#"{"id": 1, "name": "myactivity", "start_time": "2025-04-09T07:44:48Z", "start_latlng": [47.0, 19.0], "sport_type": "Ride", "moving_time_raw": 3600, "distance_raw": 1000.0, "elevation_gain_raw": 100.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -1257,7 +1245,7 @@ fn test_query_top_walks_by_time() {
     let meta_path_1 = activities_dir
         .join("2025-01-01T10-00-00Z_1.meta.json")
         .unwrap();
-    let content_1 = r#"{"id": 1, "name": "long walk", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Walk", "moving_time": 10000, "distance": 10000.0, "total_elevation_gain": 500.0}"#;
+    let content_1 = r#"{"id": 1, "name": "long walk", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Walk", "moving_time_raw": 10000, "distance_raw": 10000.0, "elevation_gain_raw": 500.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -1268,7 +1256,7 @@ fn test_query_top_walks_by_time() {
     let meta_path_2 = activities_dir
         .join("2025-01-02T10-00-00Z_2.meta.json")
         .unwrap();
-    let content_2 = r#"{"id": 2, "name": "short walk", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Walk", "moving_time": 5000, "distance": 5000.0, "total_elevation_gain": 200.0}"#;
+    let content_2 = r#"{"id": 2, "name": "short walk", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Walk", "moving_time_raw": 5000, "distance_raw": 5000.0, "elevation_gain_raw": 200.0}"#;
     meta_path_2
         .create_file()
         .unwrap()
@@ -1279,7 +1267,7 @@ fn test_query_top_walks_by_time() {
     let meta_path_3 = activities_dir
         .join("2025-01-03T10-00-00Z_3.meta.json")
         .unwrap();
-    let content_3 = r#"{"id": 3, "name": "long ride", "start_time": "2025-01-03T10:00:00Z", "sport_type": "Ride", "moving_time": 20000, "distance": 50000.0, "total_elevation_gain": 1000.0}"#;
+    let content_3 = r#"{"id": 3, "name": "long ride", "start_time": "2025-01-03T10:00:00Z", "sport_type": "Ride", "moving_time_raw": 20000, "distance_raw": 50000.0, "elevation_gain_raw": 1000.0}"#;
     meta_path_3
         .create_file()
         .unwrap()
@@ -1320,7 +1308,7 @@ fn test_query_top_walks_by_distance() {
     let meta_path_1 = activities_dir
         .join("2025-01-01T10-00-00Z_1.meta.json")
         .unwrap();
-    let content_1 = r#"{"id": 1, "name": "long time walk", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Walk", "moving_time": 10000, "distance": 5000.0, "total_elevation_gain": 500.0}"#;
+    let content_1 = r#"{"id": 1, "name": "long time walk", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Walk", "moving_time_raw": 10000, "distance_raw": 5000.0, "elevation_gain_raw": 500.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -1331,7 +1319,7 @@ fn test_query_top_walks_by_distance() {
     let meta_path_2 = activities_dir
         .join("2025-01-02T10-00-00Z_2.meta.json")
         .unwrap();
-    let content_2 = r#"{"id": 2, "name": "long distance walk", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Walk", "moving_time": 5000, "distance": 10000.0, "total_elevation_gain": 200.0}"#;
+    let content_2 = r#"{"id": 2, "name": "long distance walk", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Walk", "moving_time_raw": 5000, "distance_raw": 10000.0, "elevation_gain_raw": 200.0}"#;
     meta_path_2
         .create_file()
         .unwrap()
@@ -1372,7 +1360,7 @@ fn test_query_top_walks_by_elevation() {
     let meta_path_1 = activities_dir
         .join("2025-01-01T10-00-00Z_1.meta.json")
         .unwrap();
-    let content_1 = r#"{"id": 1, "name": "mountain walk", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Walk", "moving_time": 5000, "distance": 5000.0, "total_elevation_gain": 1000.0}"#;
+    let content_1 = r#"{"id": 1, "name": "mountain walk", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Walk", "moving_time_raw": 5000, "distance_raw": 5000.0, "elevation_gain_raw": 1000.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -1383,7 +1371,7 @@ fn test_query_top_walks_by_elevation() {
     let meta_path_2 = activities_dir
         .join("2025-01-02T10-00-00Z_2.meta.json")
         .unwrap();
-    let content_2 = r#"{"id": 2, "name": "flat walk", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Walk", "moving_time": 10000, "distance": 10000.0, "total_elevation_gain": 10.0}"#;
+    let content_2 = r#"{"id": 2, "name": "flat walk", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Walk", "moving_time_raw": 10000, "distance_raw": 10000.0, "elevation_gain_raw": 10.0}"#;
     meta_path_2
         .create_file()
         .unwrap()
@@ -1424,7 +1412,7 @@ fn test_query_top_rides_by_time() {
     let meta_path_1 = activities_dir
         .join("2025-01-01T10-00-00Z_1.meta.json")
         .unwrap();
-    let content_1 = r#"{"id": 1, "name": "long ride", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Ride", "moving_time": 10000, "distance": 50000.0, "total_elevation_gain": 500.0}"#;
+    let content_1 = r#"{"id": 1, "name": "long ride", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Ride", "moving_time_raw": 10000, "distance_raw": 50000.0, "elevation_gain_raw": 500.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -1435,7 +1423,7 @@ fn test_query_top_rides_by_time() {
     let meta_path_2 = activities_dir
         .join("2025-01-02T10-00-00Z_2.meta.json")
         .unwrap();
-    let content_2 = r#"{"id": 2, "name": "short ride", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Ride", "moving_time": 5000, "distance": 25000.0, "total_elevation_gain": 200.0}"#;
+    let content_2 = r#"{"id": 2, "name": "short ride", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Ride", "moving_time_raw": 5000, "distance_raw": 25000.0, "elevation_gain_raw": 200.0}"#;
     meta_path_2
         .create_file()
         .unwrap()
@@ -1476,7 +1464,7 @@ fn test_query_top_rides_by_distance() {
     let meta_path_1 = activities_dir
         .join("2025-01-01T10-00-00Z_1.meta.json")
         .unwrap();
-    let content_1 = r#"{"id": 1, "name": "long time ride", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Ride", "moving_time": 10000, "distance": 20000.0, "total_elevation_gain": 500.0}"#;
+    let content_1 = r#"{"id": 1, "name": "long time ride", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Ride", "moving_time_raw": 10000, "distance_raw": 20000.0, "elevation_gain_raw": 500.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -1487,7 +1475,7 @@ fn test_query_top_rides_by_distance() {
     let meta_path_2 = activities_dir
         .join("2025-01-02T10-00-00Z_2.meta.json")
         .unwrap();
-    let content_2 = r#"{"id": 2, "name": "long distance ride", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Ride", "moving_time": 5000, "distance": 50000.0, "total_elevation_gain": 200.0}"#;
+    let content_2 = r#"{"id": 2, "name": "long distance ride", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Ride", "moving_time_raw": 5000, "distance_raw": 50000.0, "elevation_gain_raw": 200.0}"#;
     meta_path_2
         .create_file()
         .unwrap()
@@ -1528,7 +1516,7 @@ fn test_query_top_rides_by_elevation() {
     let meta_path_1 = activities_dir
         .join("2025-01-01T10-00-00Z_1.meta.json")
         .unwrap();
-    let content_1 = r#"{"id": 1, "name": "long ride", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Ride", "moving_time": 10000, "distance": 50000.0, "total_elevation_gain": 500.0}"#;
+    let content_1 = r#"{"id": 1, "name": "long ride", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Ride", "moving_time_raw": 10000, "distance_raw": 50000.0, "elevation_gain_raw": 500.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -1539,7 +1527,7 @@ fn test_query_top_rides_by_elevation() {
     let meta_path_2 = activities_dir
         .join("2025-01-02T10-00-00Z_2.meta.json")
         .unwrap();
-    let content_2 = r#"{"id": 2, "name": "mountain ride", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Ride", "moving_time": 5000, "distance": 25000.0, "total_elevation_gain": 2000.0}"#;
+    let content_2 = r#"{"id": 2, "name": "mountain ride", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Ride", "moving_time_raw": 5000, "distance_raw": 25000.0, "elevation_gain_raw": 2000.0}"#;
     meta_path_2
         .create_file()
         .unwrap()
@@ -1584,7 +1572,7 @@ fn test_query_longest_rides_by_year() {
     let meta_path_1 = activities_dir_2024
         .join("2024-01-01T10-00-00Z_1.meta.json")
         .unwrap();
-    let content_1 = r#"{"id": 1, "name": "short 2024 ride", "start_time": "2024-01-01T10:00:00Z", "sport_type": "Ride", "moving_time": 5000, "distance": 25000.0, "total_elevation_gain": 500.0}"#;
+    let content_1 = r#"{"id": 1, "name": "short 2024 ride", "start_time": "2024-01-01T10:00:00Z", "sport_type": "Ride", "moving_time_raw": 5000, "distance_raw": 25000.0, "elevation_gain_raw": 500.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -1595,7 +1583,7 @@ fn test_query_longest_rides_by_year() {
     let meta_path_2 = activities_dir_2025
         .join("2025-01-01T10-00-00Z_2.meta.json")
         .unwrap();
-    let content_2 = r#"{"id": 2, "name": "short 2025 ride", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Ride", "moving_time": 5000, "distance": 30000.0, "total_elevation_gain": 500.0}"#;
+    let content_2 = r#"{"id": 2, "name": "short 2025 ride", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Ride", "moving_time_raw": 5000, "distance_raw": 30000.0, "elevation_gain_raw": 500.0}"#;
     meta_path_2
         .create_file()
         .unwrap()
@@ -1606,7 +1594,7 @@ fn test_query_longest_rides_by_year() {
     let meta_path_3 = activities_dir_2025
         .join("2025-01-02T10-00-00Z_3.meta.json")
         .unwrap();
-    let content_3 = r#"{"id": 3, "name": "long 2025 ride", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Ride", "moving_time": 10000, "distance": 60000.0, "total_elevation_gain": 500.0}"#;
+    let content_3 = r#"{"id": 3, "name": "long 2025 ride", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Ride", "moving_time_raw": 10000, "distance_raw": 60000.0, "elevation_gain_raw": 500.0}"#;
     meta_path_3
         .create_file()
         .unwrap()
@@ -1616,7 +1604,7 @@ fn test_query_longest_rides_by_year() {
     let meta_path_4 = activities_dir_2025
         .join("2025-01-03T10-00-00Z_4.meta.json")
         .unwrap();
-    let content_4 = r#"{"id": 4, "name": "shortest 2025 ride", "start_time": "2025-01-03T10:00:00Z", "sport_type": "Ride", "moving_time": 10000, "distance": 20000.0, "total_elevation_gain": 500.0}"#;
+    let content_4 = r#"{"id": 4, "name": "shortest 2025 ride", "start_time": "2025-01-03T10:00:00Z", "sport_type": "Ride", "moving_time_raw": 10000, "distance_raw": 20000.0, "elevation_gain_raw": 500.0}"#;
     meta_path_4
         .create_file()
         .unwrap()
@@ -1657,7 +1645,7 @@ fn test_query_all() {
     let meta_path_1 = activities_dir
         .join("2025-01-01T10-00-00Z_1.meta.json")
         .unwrap();
-    let content_1 = r#"{"id": 1, "name": "hungarian walk", "start_time": "2025-01-01T10:00:00Z", "start_latlng": [47.0, 19.0], "sport_type": "Walk", "moving_time": 10000, "distance": 10000.0, "total_elevation_gain": 500.0}"#;
+    let content_1 = r#"{"id": 1, "name": "hungarian walk", "start_time": "2025-01-01T10:00:00Z", "start_latlng": [47.0, 19.0], "sport_type": "Walk", "moving_time_raw": 10000, "distance_raw": 10000.0, "elevation_gain_raw": 500.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -1722,15 +1710,18 @@ fn test_should_redownload_meta() {
         start_latlng: Some(vec![47.0, 19.0]),
         start_time: now,
         sport_type: "Ride".to_string(),
-        moving_time: 3600,
-        distance: 1000.0,
-        total_elevation_gain: 100.0,
+        moving_time_raw: 3600,
+        distance_raw: 1000.0,
+        elevation_gain_raw: 100.0,
     };
     let mut summary = ActivitiesItemResponse {
         id: 1,
         name: "old name".to_string(),
         start_time: now,
         sport_type: "Ride".to_string(),
+        moving_time_raw: 3600,
+        distance_raw: 1000.0,
+        elevation_gain_raw: 100.0,
     };
 
     // No change

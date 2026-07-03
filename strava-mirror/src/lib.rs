@@ -149,6 +149,23 @@ struct ActivitiesItemResponse {
     #[serde(with = "time::serde::iso8601")]
     start_time: time::OffsetDateTime,
     sport_type: String,
+    moving_time_raw: u64,
+    distance_raw: f64,
+    elevation_gain_raw: f64,
+}
+
+/// One .meta.json file in the mirrored activity list.
+#[derive(serde::Deserialize, serde::Serialize, Clone)]
+struct ActivityMetadata {
+    id: u64,
+    name: Option<String>,
+    start_latlng: Option<Vec<f64>>,
+    #[serde(with = "time::serde::iso8601")]
+    start_time: time::OffsetDateTime,
+    sport_type: String,
+    moving_time_raw: u64,
+    distance_raw: f64,
+    elevation_gain_raw: f64,
 }
 
 /// Type of the /athlete/training_activities response.
@@ -406,20 +423,6 @@ struct NominatimAddress {
     country: String,
 }
 
-/// One .meta.json file in the mirrored activity list.
-#[derive(serde::Deserialize, serde::Serialize, Clone)]
-struct ActivityMetadata {
-    id: u64,
-    name: Option<String>,
-    start_latlng: Option<Vec<f64>>,
-    #[serde(with = "time::serde::rfc3339")]
-    start_time: time::OffsetDateTime,
-    sport_type: String,
-    moving_time: u64,
-    distance: f64,
-    total_elevation_gain: f64,
-}
-
 #[derive(Clone)]
 struct QueriedActivity {
     country: String,
@@ -544,7 +547,7 @@ fn get_top_walks_by_time_content(
     local_activities: Vec<(String, ActivityMetadata)>,
 ) -> anyhow::Result<maud::Markup> {
     get_top_activities_content(local_activities, "Walk", "Top walks by time", |m| {
-        std::cmp::Reverse(m.moving_time)
+        std::cmp::Reverse(m.moving_time_raw)
     })
 }
 
@@ -561,7 +564,7 @@ fn get_top_walks_by_distance_content(
     local_activities: Vec<(String, ActivityMetadata)>,
 ) -> anyhow::Result<maud::Markup> {
     get_top_activities_content(local_activities, "Walk", "Top walks by distance", |m| {
-        std::cmp::Reverse(m.distance as u64)
+        std::cmp::Reverse(m.distance_raw as u64)
     })
 }
 
@@ -578,7 +581,7 @@ fn get_top_walks_by_elevation_content(
     local_activities: Vec<(String, ActivityMetadata)>,
 ) -> anyhow::Result<maud::Markup> {
     get_top_activities_content(local_activities, "Walk", "Top walks by elevation", |m| {
-        std::cmp::Reverse(m.total_elevation_gain as u64)
+        std::cmp::Reverse(m.elevation_gain_raw as u64)
     })
 }
 
@@ -595,7 +598,7 @@ fn get_top_rides_by_time_content(
     local_activities: Vec<(String, ActivityMetadata)>,
 ) -> anyhow::Result<maud::Markup> {
     get_top_activities_content(local_activities, "Ride", "Top rides by time", |m| {
-        std::cmp::Reverse(m.moving_time)
+        std::cmp::Reverse(m.moving_time_raw)
     })
 }
 
@@ -612,7 +615,7 @@ fn get_top_rides_by_distance_content(
     local_activities: Vec<(String, ActivityMetadata)>,
 ) -> anyhow::Result<maud::Markup> {
     get_top_activities_content(local_activities, "Ride", "Top rides by distance", |m| {
-        std::cmp::Reverse(m.distance as u64)
+        std::cmp::Reverse(m.distance_raw as u64)
     })
 }
 
@@ -629,7 +632,7 @@ fn get_top_rides_by_elevation_content(
     local_activities: Vec<(String, ActivityMetadata)>,
 ) -> anyhow::Result<maud::Markup> {
     get_top_activities_content(local_activities, "Ride", "Top rides by elevation", |m| {
-        std::cmp::Reverse(m.total_elevation_gain as u64)
+        std::cmp::Reverse(m.elevation_gain_raw as u64)
     })
 }
 
@@ -654,7 +657,7 @@ fn get_longest_rides_by_year_content(
         by_year
             .entry(m.start_time.year())
             .and_modify(|best| {
-                if m.distance > best.distance {
+                if m.distance_raw > best.distance_raw {
                     *best = m.clone();
                 }
             })
@@ -714,9 +717,9 @@ fn render_activities_table(
                                 (activity.name.as_deref().unwrap_or(""))
                             }
                         }
-                        td { (format_duration(activity.moving_time)) }
-                        td { (format_distance(activity.distance)) }
-                        td { (format_elevation(activity.total_elevation_gain)) }
+                        td { (format_duration(activity.moving_time_raw)) }
+                        td { (format_distance(activity.distance_raw)) }
+                        td { (format_elevation(activity.elevation_gain_raw)) }
                     }
                 }
             }
