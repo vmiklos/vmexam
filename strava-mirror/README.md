@@ -73,3 +73,14 @@ strava-mirror --query custom |jq '[.[] | select(.start_date | startswith("2026")
 
 If you want to automate downloading your activities, there is a `--quiet` option to omit the INFO
 log lines, which are only interesting in the interactive case.
+
+## Rework to not use the API.
+
+The API broke on 2026-06-30. Minimal activity listing & download works now, except:
+
+- tests are broken
+- the .meta.json content is worse than it was
+- pagination is broken, only the last 20 activities are downloaded when missing locally
+- latlng is not provided, need to extract it from the .fit data, probably
+- config needs updating to only require the JWT
+- doc needs updating

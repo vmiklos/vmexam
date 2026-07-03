@@ -143,13 +143,18 @@ fn jwt_to_cookie(ctx: &Context, jwt: &str) -> anyhow::Result<String> {
 
 /// One item in the /api/v3/athlete/activities response list.
 #[derive(serde::Deserialize, serde::Serialize)]
-struct ActivitySummary {
+struct ActivitiesItemResponse {
     id: u64,
     name: String,
-    #[serde(with = "time::serde::rfc3339")]
-    start_date: time::OffsetDateTime,
-    start_latlng: Vec<f64>,
+    #[serde(with = "time::serde::iso8601")]
+    start_time: time::OffsetDateTime,
     sport_type: String,
+}
+
+/// Type of the /athlete/training_activities response.
+#[derive(serde::Deserialize)]
+struct ActivitiesResponse {
+    models: Vec<ActivitiesItemResponse>,
 }
 
 /// Information about an activity that is already mirrored.
@@ -263,27 +268,28 @@ fn handle_rate_limit(ctx: &Context, headers: &HashMap<String, String>) {
 /// Lists activities: only minimal info that is cheap even for all activities.
 fn list_activities(
     ctx: &Context,
-    access_token: &str,
+    _access_token: &str,
     page: u32,
-    after: Option<i64>,
-) -> anyhow::Result<Vec<ActivitySummary>> {
-    let mut url = format!(
-        "https://www.strava.com/api/v3/athlete/activities?page={}&per_page=200",
-        page
-    );
-    if let Some(after) = after {
-        url = format!("{}&after={}", url, after);
+    _after: Option<i64>,
+    cookie: &str,
+) -> anyhow::Result<Vec<ActivitiesItemResponse>> {
+    let url = "https://www.strava.com/athlete/training_activities?new_activity_only=false";
+    if page > 1 {
+        // TODO fetch older activities, too
+        return Ok(Vec::new());
     }
     let mut headers = HashMap::new();
+    headers.insert("Cookie".to_string(), cookie.to_string());
     headers.insert(
-        "Authorization".to_string(),
-        format!("Bearer {}", access_token),
+        "Accept".to_string(),
+        "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript"
+            .to_string(),
     );
-    let response = ctx.network.get(&url, &headers)?;
+    headers.insert("X-Requested-With".to_string(), "XMLHttpRequest".to_string());
+    let response = ctx.network.get(url, &headers)?;
     handle_rate_limit(ctx, &response.headers);
-
-    let activities: Vec<ActivitySummary> = serde_json::from_slice(&response.body)?;
-    Ok(activities)
+    let activities_r: ActivitiesResponse = serde_json::from_slice(&response.body)?;
+    Ok(activities_r.models)
 }
 
 /// Mirrors the original data of one activity.
@@ -317,7 +323,6 @@ fn mirror_activity_data(
 
 /// Options for mirror_activity.
 struct MirrorActivityOptions<'a> {
-    access_token: &'a str,
     activities_dir: &'a vfs::VfsPath,
     cookie: &'a str,
     mirrored_activities: &'a MirroredActivities,
@@ -325,7 +330,7 @@ struct MirrorActivityOptions<'a> {
 }
 
 /// Checks if the metadata needs to be re-downloaded based on summary changes.
-fn should_redownload_meta(metadata: &ActivityMetadata, summary: &ActivitySummary) -> bool {
+fn should_redownload_meta(metadata: &ActivityMetadata, summary: &ActivitiesItemResponse) -> bool {
     metadata.name.as_ref() != Some(&summary.name) || metadata.sport_type != summary.sport_type
 }
 
@@ -351,17 +356,17 @@ fn format_elevation(meters: f64) -> String {
 fn mirror_activity(
     ctx: &Context,
     options: &MirrorActivityOptions,
-    summary: &ActivitySummary,
+    summary: &ActivitiesItemResponse,
 ) -> anyhow::Result<()> {
-    let year = summary.start_date.year();
+    let year = summary.start_time.year();
     let format = time::format_description::parse_borrowed::<1>(ACTIVITY_TIMESTAMP_FORMAT)?;
-    let timestamp = summary.start_date.format(&format)?;
+    let timestamp = summary.start_time.format(&format)?;
     let id = summary.id;
     let base_name = format!("{}_{}", timestamp, id);
     let year_dir = options.activities_dir.join(year.to_string())?;
     year_dir.create_dir_all()?;
 
-    let mirrored_activity = options.mirrored_activities.get(&summary.start_date);
+    let mirrored_activity = options.mirrored_activities.get(&summary.start_time);
     let mut have_meta = mirrored_activity.is_some_and(|a| a.have_meta);
 
     if have_meta && options.full_history {
@@ -375,24 +380,15 @@ fn mirror_activity(
     }
 
     if !have_meta {
-        let url = format!("https://www.strava.com/api/v3/activities/{}", id);
         info!("Mirroring activity, name is '{}'", summary.name);
-        let mut headers = HashMap::new();
-        headers.insert(
-            "Authorization".to_string(),
-            format!("Bearer {}", options.access_token),
-        );
-        let response = ctx.network.get(&url, &headers)?;
-        handle_rate_limit(ctx, &response.headers);
-
-        let activity_json: serde_json::Value = serde_json::from_slice(&response.body)?;
         let meta_path = year_dir.join(format!("{}.meta.json", base_name))?;
+        // TODO try to write all fields we have, not just the summary
         meta_path
             .create_file()?
-            .write_all(serde_json::to_string_pretty(&activity_json)?.as_bytes())?;
+            .write_all(serde_json::to_string_pretty(&summary)?.as_bytes())?;
     }
 
-    if mirrored_activity.is_none_or(|a| !a.have_data) && !summary.start_latlng.is_empty() {
+    if mirrored_activity.is_none_or(|a| !a.have_data) {
         // Also download the actual activity.
         mirror_activity_data(ctx, id, &base_name, &year_dir, options.cookie)?;
     }
@@ -1019,7 +1015,6 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
 
     let cookie = jwt_to_cookie(ctx, &config.jwt)?;
     let options = MirrorActivityOptions {
-        access_token: &access_token,
         activities_dir: &activities_dir,
         cookie: &cookie,
         mirrored_activities: &mirrored_activities,
@@ -1027,7 +1022,8 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
     };
     let mut page = 1;
     loop {
-        let activities: Vec<ActivitySummary> = list_activities(ctx, &access_token, page, after)?;
+        let activities: Vec<ActivitiesItemResponse> =
+            list_activities(ctx, &access_token, page, after, &cookie)?;
         if activities.is_empty() {
             break;
         }
