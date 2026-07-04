@@ -421,7 +421,8 @@ fn get_local_activities(ctx: &Context) -> anyhow::Result<Vec<(String, ActivityMe
 
             let mut meta_content = String::new();
             entry.open_file()?.read_to_string(&mut meta_content)?;
-            let metadata: ActivityMetadata = serde_json::from_str(&meta_content)?;
+            let metadata: ActivityMetadata = serde_json::from_str(&meta_content)
+                .context(format!("failed to parse {}", filename))?;
             activities.push((filename, metadata));
         }
     }
