@@ -6,6 +6,7 @@
             "start_time": "2025-04-09T07:44:48Z",
             "sport_type": "Ride",
             "moving_time_raw": 3600,
+            "elapsed_time_raw": 4000,
             "distance_raw": 1000.0,
             "elevation_gain_raw": 100.0
         }

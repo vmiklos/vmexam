@@ -121,6 +121,7 @@ struct ActivitiesItemResponse {
     start_time: time::OffsetDateTime,
     sport_type: String,
     moving_time_raw: u64,
+    elapsed_time_raw: u64,
     distance_raw: f64,
     elevation_gain_raw: f64,
 }
@@ -135,6 +136,7 @@ struct ActivityMetadata {
     start_time: time::OffsetDateTime,
     sport_type: String,
     moving_time_raw: u64,
+    elapsed_time_raw: u64,
     distance_raw: f64,
     elevation_gain_raw: f64,
 }
