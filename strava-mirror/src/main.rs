@@ -43,21 +43,6 @@ impl strava_mirror::Network for RealNetwork {
         let body = response.bytes()?;
         Ok(strava_mirror::NetworkResponse { headers, body })
     }
-
-    fn post(&self, url: &str, body: &str) -> anyhow::Result<strava_mirror::NetworkResponse> {
-        info!("POST '{}'", url);
-        let mut response = isahc::post(url, body)?;
-        let status = response.status();
-        if !status.is_success() {
-            return Err(anyhow::anyhow!("status is not success: {status}"));
-        }
-        let mut headers = HashMap::new();
-        for (key, value) in response.headers() {
-            headers.insert(key.to_string(), value.to_str()?.to_string());
-        }
-        let body = response.bytes()?;
-        Ok(strava_mirror::NetworkResponse { headers, body })
-    }
 }
 
 /// Real time implementation, using the time crate.

@@ -39,8 +39,6 @@ pub struct NetworkResponse {
 pub trait Network {
     /// GET request.
     fn get(&self, url: &str, headers: &HashMap<String, String>) -> anyhow::Result<NetworkResponse>;
-    /// POST request.
-    fn post(&self, url: &str, body: &str) -> anyhow::Result<NetworkResponse>;
 }
 
 /// Time interface.

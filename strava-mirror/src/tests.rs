@@ -29,16 +29,6 @@ impl Network for TestNetwork {
             body: response.body.clone(),
         });
     }
-
-    fn post(&self, url: &str, _body: &str) -> anyhow::Result<NetworkResponse> {
-        if let Some(response) = self.responses.get(url) {
-            return Ok(NetworkResponse {
-                headers: response.headers.clone(),
-                body: response.body.clone(),
-            });
-        }
-        Err(anyhow::anyhow!("Unexpected POST request to {}", url))
-    }
 }
 
 struct TestTime {
