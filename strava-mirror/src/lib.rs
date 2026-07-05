@@ -144,7 +144,8 @@ struct ActivityMetadata {
 /// Type of the /athlete/training_activities response.
 #[derive(serde::Deserialize)]
 struct ActivitiesResponse {
-    models: Vec<ActivitiesItemResponse>,
+    /// ActivitiesItemResponse and some more.
+    models: Vec<serde_json::Value>,
 }
 
 /// Information about an activity that is already mirrored.
@@ -255,13 +256,13 @@ fn handle_rate_limit(ctx: &Context, headers: &HashMap<String, String>) {
     }
 }
 
-/// Lists activities: only minimal info that is cheap even for all activities.
+/// Lists activities: list of ActivitiesItemResponse and some more.
 fn list_activities(
     ctx: &Context,
     page: u32,
     _after: Option<i64>,
     cookie: &str,
-) -> anyhow::Result<Vec<ActivitiesItemResponse>> {
+) -> anyhow::Result<Vec<serde_json::Value>> {
     let url = "https://www.strava.com/athlete/training_activities?new_activity_only=false";
     if page > 1 {
         // TODO fetch older activities, too
@@ -345,8 +346,9 @@ fn format_elevation(meters: f64) -> String {
 fn mirror_activity(
     ctx: &Context,
     options: &MirrorActivityOptions,
-    summary: &ActivitiesItemResponse,
+    summary_unparsed: &serde_json::Value,
 ) -> anyhow::Result<()> {
+    let summary: ActivitiesItemResponse = serde_json::from_value(summary_unparsed.clone())?;
     let year = summary.start_time.year();
     let format = time::format_description::parse_borrowed::<1>(ACTIVITY_TIMESTAMP_FORMAT)?;
     let timestamp = summary.start_time.format(&format)?;
@@ -363,7 +365,7 @@ fn mirror_activity(
         let mut meta_content = String::new();
         meta_path.open_file()?.read_to_string(&mut meta_content)?;
         let metadata: ActivityMetadata = serde_json::from_str(&meta_content)?;
-        if should_redownload_meta(&metadata, summary) {
+        if should_redownload_meta(&metadata, &summary) {
             have_meta = false;
         }
     }
@@ -371,10 +373,9 @@ fn mirror_activity(
     if !have_meta {
         info!("Mirroring activity, name is '{}'", summary.name);
         let meta_path = year_dir.join(format!("{}.meta.json", base_name))?;
-        // TODO try to write all fields we have, not just the summary
         meta_path
             .create_file()?
-            .write_all(serde_json::to_string_pretty(&summary)?.as_bytes())?;
+            .write_all(serde_json::to_string_pretty(&summary_unparsed)?.as_bytes())?;
     }
 
     if mirrored_activity.is_none_or(|a| !a.have_data) {
@@ -998,7 +999,7 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
     };
     let mut page = 1;
     loop {
-        let activities: Vec<ActivitiesItemResponse> = list_activities(ctx, page, after, &cookie)?;
+        let activities: Vec<serde_json::Value> = list_activities(ctx, page, after, &cookie)?;
         if activities.is_empty() {
             break;
         }
