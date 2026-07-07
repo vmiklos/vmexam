@@ -10,3 +10,6 @@ CXX=clang++
 --enable-python=internal
 # match distro-configs/CPLinux-LOKit.conf
 --without-java
+# avoid loplugin:implicitboolconversion
+--disable-sdremote
+--disable-sdremote-bluetooth
