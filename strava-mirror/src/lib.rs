@@ -454,19 +454,17 @@ fn get_activity_lat_lon(ctx: &Context, filename: &str) -> anyhow::Result<(String
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let real_data_path = home_dir.join(data_path.as_str().trim_start_matches('/'));
     let real_data_path = real_data_path.to_str().context("to_str() failed")?;
-    let output = ctx.process.command_output(
-        "gpsbabel",
-        &[
-            "-i",
-            "garmin_fit",
-            "-f",
-            real_data_path,
-            "-o",
-            "geojson",
-            "-F",
-            "-",
-        ],
-    )?;
+    let args = [
+        "-i",
+        "garmin_fit",
+        "-f",
+        real_data_path,
+        "-o",
+        "geojson",
+        "-F",
+        "-",
+    ];
+    let output = ctx.process.command_output("gpsbabel", &args)?;
 
     let json: serde_json::Value = serde_json::from_str(&output)?;
     let point = json["features"][0]["geometry"]["coordinates"][0]

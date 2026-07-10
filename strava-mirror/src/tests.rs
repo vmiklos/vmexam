@@ -32,19 +32,17 @@ impl Network for TestNetwork {
 }
 
 struct TestProcess {
-    /// Joined cmdline, output.
-    command_outputs: std::cell::RefCell<std::collections::VecDeque<(String, String)>>,
+    /// Maps a joined cmdline to its output.
+    outputs: HashMap<String, String>,
 }
 
 impl TestProcess {
-    fn new(command_outputs: &[(&str, &str)]) -> Self {
-        let command_outputs = command_outputs
+    fn new(outputs: &[(&str, &str)]) -> Self {
+        let outputs = outputs
             .iter()
             .map(|(k, v)| (k.to_string(), v.to_string()))
             .collect();
-        TestProcess {
-            command_outputs: std::cell::RefCell::new(command_outputs),
-        }
+        TestProcess { outputs }
     }
 }
 
@@ -56,10 +54,7 @@ impl Process for TestProcess {
             "debug, TestProcess::command_output: cmdline is '{}'",
             cmdline
         );
-        let mut command_outputs = self.command_outputs.borrow_mut();
-        let command_output = command_outputs.pop_front().unwrap();
-        assert_eq!(command_output.0, cmdline);
-        Ok(command_output.1)
+        Ok(self.outputs.get(&cmdline).unwrap().clone())
     }
 }
 
@@ -561,8 +556,10 @@ fn test_query_countries() {
     meta_path
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 1, \"start_time\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
+        .write_all(b"{\"id\": 1, \"start_time\": \"2025-04-09T07:44:48Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
+    let data_path = activities_dir.join(format!("{}.fit", base_name)).unwrap();
+    data_path.create_file().unwrap();
 
     let mut responses = HashMap::new();
     responses.insert(
@@ -573,11 +570,16 @@ fn test_query_countries() {
         },
     );
     let network = Rc::new(TestNetwork { responses });
+    let cmdline = "-i garmin_fit -f /home/vmiklos/.local/share/strava-mirror/activities/2025/2025-04-09T07-44-48Z_1.fit -o geojson -F -";
+    // GeoJSON coordinates are [longitude, latitude, elevation], so this is lat=47, lon=19.
+    let geojson = r#"{"features": [{"geometry": {"coordinates": [[19.0, 47.0, 149.4]]}}]}"#;
+    let command_outputs = [(cmdline, geojson)];
+    let process = Rc::new(TestProcess::new(&command_outputs));
     let time = Rc::new(TestTime::default());
     let ctx = Context {
         fs: fs.clone(),
         network,
-        process: Rc::new(TestProcess::new(&[])),
+        process,
         time,
     };
     setup_config(&fs);
@@ -735,7 +737,10 @@ fn test_query_countries_summary() {
     let network = Rc::new(TestNetwork { responses });
     let home_dir = home::home_dir().unwrap();
     let home_path = home_dir.to_string_lossy();
-    let cmdline = format!("-i garmin_fit -f {}/.local/share/strava-mirror/activities/2025/2025-04-09T07-44-48Z_2.fit -o geojson -F -", home_path);
+    let cmdline = format!(
+        "-i garmin_fit -f {}/.local/share/strava-mirror/activities/2025/2025-04-09T07-44-48Z_2.fit -o geojson -F -",
+        home_path
+    );
     let geojson = r#"{"features": [{"geometry": {"coordinates": [[16.0, 48.0, 1.2]]}}]}"#;
     let command_outputs = [(cmdline.as_str(), geojson)];
     let process = Rc::new(TestProcess::new(&command_outputs));
@@ -832,6 +837,27 @@ fn test_get_activity_country_special_cases() {
     fit_path.create_file().unwrap();
     let ret = get_local_activities(&ctx).unwrap();
     assert!(ret.is_empty());
+
+    // 2. Missing .fit file: get_activity_lat_lon() fails, so the activity is skipped.
+    let metadata = ActivityMetadata {
+        id: 1,
+        name: Some("no fit".to_string()),
+        start_time: time::macros::datetime!(2025-01-01 10:00:00 UTC),
+        sport_type: "Ride".to_string(),
+        moving_time_raw: 3600,
+        elapsed_time_raw: 4000,
+        distance_raw: 1000.0,
+        elevation_gain_raw: 100.0,
+    };
+    let mut cache = HashMap::new();
+    let ret = get_activity_country(
+        &ctx,
+        "2025/2025-01-01T10-00-00Z_1.meta.json",
+        metadata,
+        &mut cache,
+    )
+    .unwrap();
+    assert!(ret.is_none());
 }
 
 #[test]
@@ -914,7 +940,7 @@ fn test_query_countries_html() {
     meta_path_at
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 1, \"name\": \"AT\", \"start_time\": \"2025-01-01T00:00:00Z\", \"start_latlng\": [48.0, 16.0], \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
+        .write_all(b"{\"id\": 1, \"name\": \"AT\", \"start_time\": \"2025-01-01T00:00:00Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
 
     // 2. Activities in Hungary (most activities, should come first)
@@ -924,7 +950,7 @@ fn test_query_countries_html() {
     meta_path_hu1
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 2, \"name\": \"HU1\", \"start_time\": \"2025-02-01T00:00:00Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
+        .write_all(b"{\"id\": 2, \"name\": \"HU1\", \"start_time\": \"2025-02-01T00:00:00Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
     let meta_path_hu2 = activities_dir
         .join("2025-02-02T00-00-00Z_3.meta.json")
@@ -932,7 +958,7 @@ fn test_query_countries_html() {
     meta_path_hu2
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 3, \"name\": \"HU2\", \"start_time\": \"2025-02-02T00:00:00Z\", \"start_latlng\": [47.1, 19.1], \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
+        .write_all(b"{\"id\": 3, \"name\": \"HU2\", \"start_time\": \"2025-02-02T00:00:00Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
 
     // 3. Activity in Germany (same count as AT, should come after AT by name)
@@ -942,8 +968,22 @@ fn test_query_countries_html() {
     meta_path_de
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 4, \"name\": \"DE\", \"start_time\": \"2025-03-01T00:00:00Z\", \"start_latlng\": [52.0, 13.0], \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
+        .write_all(b"{\"id\": 4, \"name\": \"DE\", \"start_time\": \"2025-03-01T00:00:00Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
+
+    // Each activity has a matching .fit file, gpsbabel provides its coordinates below.
+    for base_name in [
+        "2025-01-01T00-00-00Z_1",
+        "2025-02-01T00-00-00Z_2",
+        "2025-02-02T00-00-00Z_3",
+        "2025-03-01T00-00-00Z_4",
+    ] {
+        activities_dir
+            .join(format!("{}.fit", base_name))
+            .unwrap()
+            .create_file()
+            .unwrap();
+    }
 
     let mut responses = HashMap::new();
     responses.insert(
@@ -975,11 +1015,36 @@ fn test_query_countries_html() {
         },
     );
     let network = Rc::new(TestNetwork { responses });
+    // GeoJSON coordinates are [longitude, latitude, elevation].
+    let base = "-i garmin_fit -f /home/vmiklos/.local/share/strava-mirror/activities/2025";
+    let command_outputs = [
+        (
+            format!("{base}/2025-01-01T00-00-00Z_1.fit -o geojson -F -"),
+            r#"{"features": [{"geometry": {"coordinates": [[16.0, 48.0, 149.4]]}}]}"#.to_string(),
+        ),
+        (
+            format!("{base}/2025-02-01T00-00-00Z_2.fit -o geojson -F -"),
+            r#"{"features": [{"geometry": {"coordinates": [[19.0, 47.0, 149.4]]}}]}"#.to_string(),
+        ),
+        (
+            format!("{base}/2025-02-02T00-00-00Z_3.fit -o geojson -F -"),
+            r#"{"features": [{"geometry": {"coordinates": [[19.1, 47.1, 149.4]]}}]}"#.to_string(),
+        ),
+        (
+            format!("{base}/2025-03-01T00-00-00Z_4.fit -o geojson -F -"),
+            r#"{"features": [{"geometry": {"coordinates": [[13.0, 52.0, 149.4]]}}]}"#.to_string(),
+        ),
+    ];
+    let command_outputs: Vec<(&str, &str)> = command_outputs
+        .iter()
+        .map(|(k, v)| (k.as_str(), v.as_str()))
+        .collect();
+    let process = Rc::new(TestProcess::new(&command_outputs));
     let time = Rc::new(TestTime::default());
     let ctx = Context {
         fs: fs.clone(),
         network,
-        process: Rc::new(TestProcess::new(&[])),
+        process,
         time,
     };
     setup_config(&fs);
@@ -1195,7 +1260,7 @@ fn test_query_custom() {
     let meta_path_1 = activities_dir
         .join(format!("{}.meta.json", base_name_1))
         .unwrap();
-    let activity1_content = r#"{"id": 1, "name": "myactivity", "start_time": "2025-04-09T07:44:48Z", "start_latlng": [47.0, 19.0], "sport_type": "Ride", "moving_time_raw": 3600, "elapsed_time_raw": 4000, "distance_raw": 1000.0, "elevation_gain_raw": 100.0}"#;
+    let activity1_content = r#"{"id": 1, "name": "myactivity", "start_time": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time_raw": 3600, "elapsed_time_raw": 4000, "distance_raw": 1000.0, "elevation_gain_raw": 100.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -1613,7 +1678,7 @@ fn test_query_longest_rides_by_year() {
     let meta_path_5 = activities_dir_2025
         .join("2025-01-01T10-00-00Z_5.meta.json")
         .unwrap();
-    let content_5 = r#"{"id": 5, "name": "hungarian walk", "start_time": "2025-01-01T10:00:00Z", "start_latlng": [47.0, 19.0], "sport_type": "Walk", "moving_time_raw": 10000, "elapsed_time_raw": 10400, "distance_raw": 10000.0, "elevation_gain_raw": 500.0}"#;
+    let content_5 = r#"{"id": 5, "name": "hungarian walk", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Walk", "moving_time_raw": 10000, "elapsed_time_raw": 10400, "distance_raw": 10000.0, "elevation_gain_raw": 500.0}"#;
     meta_path_5
         .create_file()
         .unwrap()
@@ -1655,11 +1720,16 @@ fn test_query_all() {
     let meta_path_1 = activities_dir
         .join("2025-01-01T10-00-00Z_1.meta.json")
         .unwrap();
-    let content_1 = r#"{"id": 1, "name": "hungarian walk", "start_time": "2025-01-01T10:00:00Z", "start_latlng": [47.0, 19.0], "sport_type": "Walk", "moving_time_raw": 10000, "elapsed_time_raw": 10400, "distance_raw": 10000.0, "elevation_gain_raw": 500.0}"#;
+    let content_1 = r#"{"id": 1, "name": "hungarian walk", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Walk", "moving_time_raw": 10000, "elapsed_time_raw": 10400, "distance_raw": 10000.0, "elevation_gain_raw": 500.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
         .write_all(content_1.as_bytes())
+        .unwrap();
+    activities_dir
+        .join("2025-01-01T10-00-00Z_1.fit")
+        .unwrap()
+        .create_file()
         .unwrap();
 
     let mut responses = HashMap::new();
@@ -1671,11 +1741,16 @@ fn test_query_all() {
         },
     );
     let network = Rc::new(TestNetwork { responses });
+    let cmdline = "-i garmin_fit -f /home/vmiklos/.local/share/strava-mirror/activities/2025/2025-01-01T10-00-00Z_1.fit -o geojson -F -";
+    // GeoJSON coordinates are [longitude, latitude, elevation], so this is lat=47, lon=19.
+    let geojson = r#"{"features": [{"geometry": {"coordinates": [[19.0, 47.0, 149.4]]}}]}"#;
+    let command_outputs = [(cmdline, geojson)];
+    let process = Rc::new(TestProcess::new(&command_outputs));
     let time = Rc::new(TestTime::default());
     let ctx = Context {
         fs: fs.clone(),
         network,
-        process: Rc::new(TestProcess::new(&[])),
+        process,
         time,
     };
     setup_config(&fs);
@@ -1689,6 +1764,28 @@ fn test_query_all() {
     run(args, &ctx).unwrap();
 
     // Then no failure occurs.
+}
+
+#[test]
+fn test_get_activity_lat_lon_no_data() {
+    // Given an activity whose matching .fit file does not exist:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let network = Rc::new(TestNetwork {
+        responses: HashMap::new(),
+    });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        process: Rc::new(TestProcess::new(&[])),
+        time,
+    };
+
+    // When getting its coordinates:
+    let ret = get_activity_lat_lon(&ctx, "2025/2025-01-01T10-00-00Z_1.meta.json");
+
+    // Then an error is returned:
+    assert!(ret.is_err());
 }
 
 #[test]
