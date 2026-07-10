@@ -31,6 +31,38 @@ impl Network for TestNetwork {
     }
 }
 
+struct TestProcess {
+    /// Joined cmdline, output.
+    command_outputs: std::cell::RefCell<std::collections::VecDeque<(String, String)>>,
+}
+
+impl TestProcess {
+    fn new(command_outputs: &[(&str, &str)]) -> Self {
+        let command_outputs = command_outputs
+            .iter()
+            .map(|(k, v)| (k.to_string(), v.to_string()))
+            .collect();
+        TestProcess {
+            command_outputs: std::cell::RefCell::new(command_outputs),
+        }
+    }
+}
+
+impl Process for TestProcess {
+    fn command_output(&self, command: &str, args: &[&str]) -> anyhow::Result<String> {
+        assert_eq!(command, "gpsbabel");
+        let cmdline = args.join(" ");
+        println!(
+            "debug, TestProcess::command_output: cmdline is '{}'",
+            cmdline
+        );
+        let mut command_outputs = self.command_outputs.borrow_mut();
+        let command_output = command_outputs.pop_front().unwrap();
+        assert_eq!(command_output.0, cmdline);
+        Ok(command_output.1)
+    }
+}
+
 struct TestTime {
     now: time::OffsetDateTime,
     sleep_called: std::cell::Cell<bool>,
@@ -99,6 +131,7 @@ fn test_no_activities() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
     setup_config(&fs);
@@ -129,6 +162,7 @@ fn test_jwt_to_cookie_error() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
     let config_dir = fs.join(".config").unwrap();
@@ -175,6 +209,7 @@ fn test_jwt_to_cookie_expired() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
     setup_config(&fs);
@@ -227,6 +262,7 @@ fn test_mirror_activity() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
     setup_config(&fs);
@@ -324,6 +360,7 @@ fn test_list_activities_after() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
     setup_config(&fs);
@@ -431,6 +468,7 @@ fn test_mirror_activity_only_data() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
     setup_config(&fs);
@@ -494,6 +532,7 @@ fn test_mirror_activity_already_mirrored() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
     setup_config(&fs);
@@ -538,6 +577,7 @@ fn test_query_countries() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
     setup_config(&fs);
@@ -552,7 +592,7 @@ fn test_query_countries() {
 
     // Then make sure the cache is created:
     let cache_path = fs
-        .join(".local/share/strava-mirror/nominatim-cache.json")
+        .join(".local/share/strava-mirror/countries-cache.json")
         .unwrap();
     assert!(cache_path.exists().unwrap());
 }
@@ -655,7 +695,7 @@ fn test_query_countries_summary() {
     meta_path1
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 1, \"start_time\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [47.0, 19.0], \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
+        .write_all(b"{\"id\": 1, \"start_time\": \"2025-04-09T07:44:48Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
 
     // Activity 2 in Austria (48.0, 16.0)
@@ -665,18 +705,22 @@ fn test_query_countries_summary() {
     meta_path2
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 2, \"start_time\": \"2025-04-09T07:44:48Z\", \"start_latlng\": [48.0, 16.0], \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
+        .write_all(b"{\"id\": 2, \"start_time\": \"2025-04-09T07:44:48Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
+    let data_path2 = activities_dir
+        .join(format!("{}_2.fit", timestamp_str))
+        .unwrap();
+    data_path2.create_file().unwrap();
 
     // Pre-existing cache for Hungary
     let cache_path = fs
-        .join(".local/share/strava-mirror/nominatim-cache.json")
+        .join(".local/share/strava-mirror/countries-cache.json")
         .unwrap();
     cache_path.parent().create_dir_all().unwrap();
     cache_path
         .create_file()
         .unwrap()
-        .write_all(b"{\"lat=47&lon=19\": \"Hungary\"}")
+        .write_all(b"{\"2025-04-09T07-44-48Z_1\": \"Hungary\"}")
         .unwrap();
 
     let mut responses = HashMap::new();
@@ -689,10 +733,17 @@ fn test_query_countries_summary() {
         },
     );
     let network = Rc::new(TestNetwork { responses });
+    let home_dir = home::home_dir().unwrap();
+    let home_path = home_dir.to_string_lossy();
+    let cmdline = format!("-i garmin_fit -f {}/.local/share/strava-mirror/activities/2025/2025-04-09T07-44-48Z_2.fit -o geojson -F -", home_path);
+    let geojson = r#"{"features": [{"geometry": {"coordinates": [[16.0, 48.0, 1.2]]}}]}"#;
+    let command_outputs = [(cmdline.as_str(), geojson)];
+    let process = Rc::new(TestProcess::new(&command_outputs));
     let time = Rc::new(TestTime::default());
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process,
         time,
     };
     setup_config(&fs);
@@ -726,6 +777,7 @@ fn test_run_unknown_query() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
     setup_config(&fs);
@@ -750,6 +802,7 @@ fn test_get_countries_no_activities() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
 
@@ -770,45 +823,15 @@ fn test_get_activity_country_special_cases() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
-    let mut cache = HashMap::new();
 
     // 1. File without .meta.json suffix: get_local_activities ignores it.
     let fit_path = year_dir.join("activity.fit").unwrap();
     fit_path.create_file().unwrap();
     let ret = get_local_activities(&ctx).unwrap();
     assert!(ret.is_empty());
-
-    // 2. Metadata without start_latlng
-    let metadata_no_latlng = ActivityMetadata {
-        id: 1,
-        name: None,
-        start_latlng: None,
-        start_time: time::macros::datetime!(2025-04-09 07:44:48 UTC),
-        sport_type: "Ride".to_string(),
-        moving_time_raw: 3600,
-        elapsed_time_raw: 4000,
-        distance_raw: 1000.0,
-        elevation_gain_raw: 100.0,
-    };
-    let ret = get_activity_country(&ctx, metadata_no_latlng, &mut cache).unwrap();
-    assert!(ret.is_none());
-
-    // 3. Metadata with empty start_latlng
-    let metadata_empty_latlng = ActivityMetadata {
-        id: 1,
-        name: None,
-        start_latlng: Some(vec![]),
-        start_time: time::macros::datetime!(2025-04-09 07:44:48 UTC),
-        sport_type: "Ride".to_string(),
-        moving_time_raw: 3600,
-        elapsed_time_raw: 4000,
-        distance_raw: 1000.0,
-        elevation_gain_raw: 100.0,
-    };
-    let ret = get_activity_country(&ctx, metadata_empty_latlng, &mut cache).unwrap();
-    assert!(ret.is_none());
 }
 
 #[test]
@@ -830,6 +853,7 @@ fn test_get_countries_ignore_file() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
 
@@ -862,6 +886,7 @@ fn test_run_quiet() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
     setup_config(&fs);
@@ -954,6 +979,7 @@ fn test_query_countries_html() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
     setup_config(&fs);
@@ -999,6 +1025,7 @@ fn test_rate_limit_sleep() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time: time.clone(),
     };
     setup_config(&fs);
@@ -1059,6 +1086,7 @@ fn test_run_full_history() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
     setup_config(&fs);
@@ -1135,6 +1163,7 @@ fn test_mirror_activity_full_history_change() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
     setup_config(&fs);
@@ -1180,6 +1209,7 @@ fn test_query_custom() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
 
@@ -1243,6 +1273,7 @@ fn test_query_top_walks_by_time() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
 
@@ -1295,6 +1326,7 @@ fn test_query_top_walks_by_distance() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
 
@@ -1347,6 +1379,7 @@ fn test_query_top_walks_by_elevation() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
 
@@ -1399,6 +1432,7 @@ fn test_query_top_rides_by_time() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
 
@@ -1451,6 +1485,7 @@ fn test_query_top_rides_by_distance() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
 
@@ -1503,6 +1538,7 @@ fn test_query_top_rides_by_elevation() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
 
@@ -1573,6 +1609,17 @@ fn test_query_longest_rides_by_year() {
         .write_all(content_4.as_bytes())
         .unwrap();
 
+    // 5. A non-Ride.
+    let meta_path_5 = activities_dir_2025
+        .join("2025-01-01T10-00-00Z_5.meta.json")
+        .unwrap();
+    let content_5 = r#"{"id": 5, "name": "hungarian walk", "start_time": "2025-01-01T10:00:00Z", "start_latlng": [47.0, 19.0], "sport_type": "Walk", "moving_time_raw": 10000, "elapsed_time_raw": 10400, "distance_raw": 10000.0, "elevation_gain_raw": 500.0}"#;
+    meta_path_5
+        .create_file()
+        .unwrap()
+        .write_all(content_5.as_bytes())
+        .unwrap();
+
     let network = Rc::new(TestNetwork {
         responses: HashMap::new(),
     });
@@ -1580,6 +1627,7 @@ fn test_query_longest_rides_by_year() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
 
@@ -1627,6 +1675,7 @@ fn test_query_all() {
     let ctx = Context {
         fs: fs.clone(),
         network,
+        process: Rc::new(TestProcess::new(&[])),
         time,
     };
     setup_config(&fs);
@@ -1669,7 +1718,6 @@ fn test_should_redownload_meta() {
     let mut metadata = ActivityMetadata {
         id: 1,
         name: Some("old name".to_string()),
-        start_latlng: Some(vec![47.0, 19.0]),
         start_time: now,
         sport_type: "Ride".to_string(),
         moving_time_raw: 3600,

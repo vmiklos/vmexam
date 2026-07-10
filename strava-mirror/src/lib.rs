@@ -472,9 +472,6 @@ fn get_activity_lat_lon(ctx: &Context, filename: &str) -> anyhow::Result<(String
     let point = json["features"][0]["geometry"]["coordinates"][0]
         .as_array()
         .context("no first coordinate")?;
-    if point.len() < 2 {
-        return Err(anyhow::anyhow!("first coordinate has fewer than 2 items"));
-    }
     let lon = point[0].as_f64().context("longitude is not a float")?;
     let lat = point[1].as_f64().context("latitude is not a float")?;
     Ok((lat.to_string(), lon.to_string()))
