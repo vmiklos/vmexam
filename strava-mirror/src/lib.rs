@@ -139,7 +139,7 @@ struct ActivitiesItemResponse {
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
 struct ActivityMetadata {
     id: u64,
-    name: Option<String>,
+    name: String,
     #[serde(with = "time::serde::iso8601")]
     start_time: time::OffsetDateTime,
     sport_type: String,
@@ -329,7 +329,7 @@ struct MirrorActivityOptions<'a> {
 
 /// Checks if the metadata needs to be re-downloaded based on summary changes.
 fn should_redownload_meta(metadata: &ActivityMetadata, summary: &ActivitiesItemResponse) -> bool {
-    metadata.name.as_ref() != Some(&summary.name) || metadata.sport_type != summary.sport_type
+    metadata.name != summary.name || metadata.sport_type != summary.sport_type
 }
 
 /// Formats a duration in seconds as H:MM:SS.
@@ -729,7 +729,7 @@ fn render_activities_table(
                         td { (activity.start_time.format(&format)?) }
                         td {
                             a href=(format!("https://www.strava.com/activities/{}", activity.id)) {
-                                (activity.name.as_deref().unwrap_or(""))
+                                (activity.name)
                             }
                         }
                         td { (format_duration(activity.moving_time_raw)) }
@@ -819,7 +819,7 @@ fn get_countries_html_content(
         for activity in activities {
             let timestamp = activity.metadata.start_time.format(&format)?;
             let url = format!("https://www.strava.com/activities/{}", activity.metadata.id);
-            let name = activity.metadata.name.context("no name")?;
+            let name = activity.metadata.name;
             list_items.push(ActivityItem {
                 timestamp,
                 url,

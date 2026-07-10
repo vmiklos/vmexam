@@ -556,7 +556,7 @@ fn test_query_countries() {
     meta_path
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 1, \"start_time\": \"2025-04-09T07:44:48Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
+        .write_all(b"{\"id\": 1, \"name\": \"ride 1\", \"start_time\": \"2025-04-09T07:44:48Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
     let data_path = activities_dir.join(format!("{}.fit", base_name)).unwrap();
     data_path.create_file().unwrap();
@@ -697,7 +697,7 @@ fn test_query_countries_summary() {
     meta_path1
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 1, \"start_time\": \"2025-04-09T07:44:48Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
+        .write_all(b"{\"id\": 1, \"name\": \"ride 1\", \"start_time\": \"2025-04-09T07:44:48Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
 
     // Activity 2 in Austria (48.0, 16.0)
@@ -707,7 +707,7 @@ fn test_query_countries_summary() {
     meta_path2
         .create_file()
         .unwrap()
-        .write_all(b"{\"id\": 2, \"start_time\": \"2025-04-09T07:44:48Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
+        .write_all(b"{\"id\": 2, \"name\": \"ride 2\", \"start_time\": \"2025-04-09T07:44:48Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
         .unwrap();
     let data_path2 = activities_dir
         .join(format!("{}_2.fit", timestamp_str))
@@ -841,7 +841,7 @@ fn test_get_activity_country_special_cases() {
     // 2. Missing .fit file: get_activity_lat_lon() fails, so the activity is skipped.
     let metadata = ActivityMetadata {
         id: 1,
-        name: Some("no fit".to_string()),
+        name: "no fit".to_string(),
         start_time: time::macros::datetime!(2025-01-01 10:00:00 UTC),
         sport_type: "Ride".to_string(),
         moving_time_raw: 3600,
@@ -1812,9 +1812,9 @@ fn test_format_elevation() {
 #[test]
 fn test_should_redownload_meta() {
     let now = time::macros::datetime!(2025-04-09 07:44:48 UTC);
-    let mut metadata = ActivityMetadata {
+    let metadata = ActivityMetadata {
         id: 1,
-        name: Some("old name".to_string()),
+        name: "old name".to_string(),
         start_time: now,
         sport_type: "Ride".to_string(),
         moving_time_raw: 3600,
@@ -1843,9 +1843,5 @@ fn test_should_redownload_meta() {
 
     // Sport type change
     summary.sport_type = "Run".to_string();
-    assert!(should_redownload_meta(&metadata, &summary));
-
-    // Metadata name is None (e.g. from a partial local file)
-    metadata.name = None;
     assert!(should_redownload_meta(&metadata, &summary));
 }
