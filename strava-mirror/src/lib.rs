@@ -131,7 +131,6 @@ struct ActivitiesItemResponse {
 struct ActivityMetadata {
     id: u64,
     name: Option<String>,
-    start_latlng: Option<Vec<f64>>,
     #[serde(with = "time::serde::iso8601")]
     start_time: time::OffsetDateTime,
     sport_type: String,
@@ -426,41 +425,76 @@ fn get_local_activities(ctx: &Context) -> anyhow::Result<Vec<(String, ActivityMe
             entry.open_file()?.read_to_string(&mut meta_content)?;
             let metadata: ActivityMetadata = serde_json::from_str(&meta_content)
                 .context(format!("failed to parse {}", filename))?;
-            activities.push((filename, metadata));
+            let path = format!("{}/{}", year_dir.filename(), filename);
+            activities.push((path, metadata));
         }
     }
     Ok(activities)
 }
 
+/// Gets the coordinates of an activity from a .fit file.
+fn get_activity_lat_lon(ctx: &Context, filename: &str) -> anyhow::Result<(String, String)> {
+    let home = &ctx.fs;
+    let activities_dir = home.join(".local/share/strava-mirror/activities")?;
+    let base_name = filename.strip_suffix(".meta.json").context("bad suffix")?;
+    let data_path = activities_dir.join(format!("{base_name}.fit"))?;
+    if !data_path.exists()? {
+        return Err(anyhow::anyhow!("no data file: {data_path:?}"));
+    }
+
+    let home_dir = home::home_dir().context("home_dir() failed")?;
+    let real_data_path = home_dir.join(data_path.as_str().trim_start_matches('/'));
+    let output = std::process::Command::new("gpsbabel")
+        .args(["-i", "garmin_fit", "-f"])
+        .arg(&real_data_path)
+        .args(["-o", "geojson", "-F", "-"])
+        .output()?;
+    if !output.status.success() {
+        return Err(anyhow::anyhow!(
+            "gpsbabel failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        ));
+    }
+
+    let json: serde_json::Value = serde_json::from_slice(&output.stdout)?;
+    let point = json["features"][0]["geometry"]["coordinates"][0]
+        .as_array()
+        .context("no first coordinate")?;
+    if point.len() < 2 {
+        return Err(anyhow::anyhow!("first coordinate has fewer than 2 items"));
+    }
+    let lon = point[0].as_f64().context("longitude is not a float")?;
+    let lat = point[1].as_f64().context("latitude is not a float")?;
+    Ok((lat.to_string(), lon.to_string()))
+}
+
 /// Gets the country of one activity from its metadata.
 fn get_activity_country(
     ctx: &Context,
+    filename: &str,
     metadata: ActivityMetadata,
     cache: &mut HashMap<String, String>,
 ) -> anyhow::Result<Option<QueriedActivity>> {
-    let Some(ref start_latlng) = metadata.start_latlng else {
-        return Ok(None);
-    };
-    if start_latlng.len() < 2 {
-        return Ok(None);
-    }
-
-    let lat = start_latlng[0];
-    let lon = start_latlng[1];
-    let query = format!("lat={}&lon={}", lat, lon);
-    let country = if let Some(country) = cache.get(&query) {
+    let format = time::format_description::parse_borrowed::<1>(ACTIVITY_TIMESTAMP_FORMAT)?;
+    let timestamp = metadata.start_time.format(&format)?;
+    let id = metadata.id;
+    let cache_key = format!("{}_{}", timestamp, id);
+    let country = if let Some(country) = cache.get(&cache_key) {
         country.to_string()
     } else {
+        let Ok((lat, lon)) = get_activity_lat_lon(ctx, filename) else {
+            return Ok(None);
+        };
         let url = format!(
-            "https://nominatim.openstreetmap.org/reverse?{}&format=json",
-            query
+            "https://nominatim.openstreetmap.org/reverse?lat={}&lon={}&format=json",
+            lat, lon,
         );
         let mut headers = HashMap::new();
         headers.insert("Accept-Language".to_string(), "en-US".to_string());
         let response = ctx.network.get(&url, &headers)?;
         let nominatim_response: NominatimResponse = serde_json::from_slice(&response.body)?;
         let country = nominatim_response.address.country;
-        cache.insert(query, country.clone());
+        cache.insert(cache_key, country.clone());
         ctx.time.sleep(std::time::Duration::from_secs(1));
         country
     };
@@ -473,7 +507,7 @@ fn get_countries(ctx: &Context) -> anyhow::Result<HashMap<String, QueriedActivit
     let mut countries = HashMap::new();
     let home = &ctx.fs;
 
-    let cache_path = home.join(".local/share/strava-mirror/nominatim-cache.json")?;
+    let cache_path = home.join(".local/share/strava-mirror/countries-cache.json")?;
     let mut cache: HashMap<String, String> = if cache_path.exists()? {
         let mut cache_content = String::new();
         cache_path.open_file()?.read_to_string(&mut cache_content)?;
@@ -484,7 +518,7 @@ fn get_countries(ctx: &Context) -> anyhow::Result<HashMap<String, QueriedActivit
 
     let local_activities = get_local_activities(ctx)?;
     for (filename, metadata) in local_activities {
-        if let Some(activity) = get_activity_country(ctx, metadata, &mut cache)? {
+        if let Some(activity) = get_activity_country(ctx, &filename, metadata, &mut cache)? {
             countries.insert(filename, activity);
         }
     }
