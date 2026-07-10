@@ -1,0 +1,11 @@
+CC=ccache gcc
+CXX=ccache g++
+CFLAGS=-g -O2 $CFLAGS
+CXXFLAGS=-g -O2 $CXXFLAGS
+--prefix=$PWD/install
+--enable-debug
+--enable-silent-rules
+--enable-experimental
+--enable-cypress
+--with-lo-path=$HOME/git/collaboraonline/online-symbols/engine/instdir
+--with-lokit-path=$HOME/git/collaboraonline/online-symbols/engine/include
