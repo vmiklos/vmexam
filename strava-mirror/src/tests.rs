@@ -101,6 +101,16 @@ fn setup_config(fs: &vfs::VfsPath) {
         .unwrap();
 }
 
+/// Builds the gpsbabel cmdline get_activity_lat_lon() runs for a given activity base name.
+fn gpsbabel_cmdline(base_name: &str) -> String {
+    let home_dir = home::home_dir().unwrap();
+    format!(
+        "-i garmin_fit -f {}/.local/share/strava-mirror/activities/2025/{}.fit -o geojson -F -",
+        home_dir.to_str().unwrap(),
+        base_name
+    )
+}
+
 #[test]
 fn test_no_activities() {
     // Given no activities:
@@ -570,10 +580,10 @@ fn test_query_countries() {
         },
     );
     let network = Rc::new(TestNetwork { responses });
-    let cmdline = "-i garmin_fit -f /home/vmiklos/.local/share/strava-mirror/activities/2025/2025-04-09T07-44-48Z_1.fit -o geojson -F -";
+    let cmdline = gpsbabel_cmdline("2025-04-09T07-44-48Z_1");
     // GeoJSON coordinates are [longitude, latitude, elevation], so this is lat=47, lon=19.
     let geojson = r#"{"features": [{"geometry": {"coordinates": [[19.0, 47.0, 149.4]]}}]}"#;
-    let command_outputs = [(cmdline, geojson)];
+    let command_outputs = [(cmdline.as_str(), geojson)];
     let process = Rc::new(TestProcess::new(&command_outputs));
     let time = Rc::new(TestTime::default());
     let ctx = Context {
@@ -735,12 +745,7 @@ fn test_query_countries_summary() {
         },
     );
     let network = Rc::new(TestNetwork { responses });
-    let home_dir = home::home_dir().unwrap();
-    let home_path = home_dir.to_string_lossy();
-    let cmdline = format!(
-        "-i garmin_fit -f {}/.local/share/strava-mirror/activities/2025/2025-04-09T07-44-48Z_2.fit -o geojson -F -",
-        home_path
-    );
+    let cmdline = gpsbabel_cmdline("2025-04-09T07-44-48Z_2");
     let geojson = r#"{"features": [{"geometry": {"coordinates": [[16.0, 48.0, 1.2]]}}]}"#;
     let command_outputs = [(cmdline.as_str(), geojson)];
     let process = Rc::new(TestProcess::new(&command_outputs));
@@ -1016,22 +1021,21 @@ fn test_query_countries_html() {
     );
     let network = Rc::new(TestNetwork { responses });
     // GeoJSON coordinates are [longitude, latitude, elevation].
-    let base = "-i garmin_fit -f /home/vmiklos/.local/share/strava-mirror/activities/2025";
     let command_outputs = [
         (
-            format!("{base}/2025-01-01T00-00-00Z_1.fit -o geojson -F -"),
+            gpsbabel_cmdline("2025-01-01T00-00-00Z_1"),
             r#"{"features": [{"geometry": {"coordinates": [[16.0, 48.0, 149.4]]}}]}"#.to_string(),
         ),
         (
-            format!("{base}/2025-02-01T00-00-00Z_2.fit -o geojson -F -"),
+            gpsbabel_cmdline("2025-02-01T00-00-00Z_2"),
             r#"{"features": [{"geometry": {"coordinates": [[19.0, 47.0, 149.4]]}}]}"#.to_string(),
         ),
         (
-            format!("{base}/2025-02-02T00-00-00Z_3.fit -o geojson -F -"),
+            gpsbabel_cmdline("2025-02-02T00-00-00Z_3"),
             r#"{"features": [{"geometry": {"coordinates": [[19.1, 47.1, 149.4]]}}]}"#.to_string(),
         ),
         (
-            format!("{base}/2025-03-01T00-00-00Z_4.fit -o geojson -F -"),
+            gpsbabel_cmdline("2025-03-01T00-00-00Z_4"),
             r#"{"features": [{"geometry": {"coordinates": [[13.0, 52.0, 149.4]]}}]}"#.to_string(),
         ),
     ];
@@ -1741,10 +1745,10 @@ fn test_query_all() {
         },
     );
     let network = Rc::new(TestNetwork { responses });
-    let cmdline = "-i garmin_fit -f /home/vmiklos/.local/share/strava-mirror/activities/2025/2025-01-01T10-00-00Z_1.fit -o geojson -F -";
+    let cmdline = gpsbabel_cmdline("2025-01-01T10-00-00Z_1");
     // GeoJSON coordinates are [longitude, latitude, elevation], so this is lat=47, lon=19.
     let geojson = r#"{"features": [{"geometry": {"coordinates": [[19.0, 47.0, 149.4]]}}]}"#;
-    let command_outputs = [(cmdline, geojson)];
+    let command_outputs = [(cmdline.as_str(), geojson)];
     let process = Rc::new(TestProcess::new(&command_outputs));
     let time = Rc::new(TestTime::default());
     let ctx = Context {
