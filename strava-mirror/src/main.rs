@@ -45,6 +45,22 @@ impl strava_mirror::Network for RealNetwork {
     }
 }
 
+/// Real process implementation, using std::process.
+struct RealProcess {}
+
+impl strava_mirror::Process for RealProcess {
+    fn command_output(&self, command: &str, args: &[&str]) -> anyhow::Result<String> {
+        let output = std::process::Command::new(command).args(args).output()?;
+        if !output.status.success() {
+            return Err(anyhow::anyhow!(
+                "{command} failed: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ));
+        }
+        Ok(String::from_utf8(output.stdout)?)
+    }
+}
+
 /// Real time implementation, using the time crate.
 struct RealTime {}
 
@@ -69,8 +85,14 @@ fn main() -> anyhow::Result<()> {
     let home = home::home_dir().context("home_dir() failed")?;
     let fs: vfs::VfsPath = vfs::PhysicalFS::new(home).into();
     let network = Rc::new(RealNetwork {});
+    let process = Rc::new(RealProcess {});
     let time = Rc::new(RealTime {});
-    let ctx = strava_mirror::Context { fs, network, time };
+    let ctx = strava_mirror::Context {
+        fs,
+        network,
+        process,
+        time,
+    };
 
     strava_mirror::run(std::env::args().collect(), &ctx)
 }

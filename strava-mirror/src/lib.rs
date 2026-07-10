@@ -41,6 +41,13 @@ pub trait Network {
     fn get(&self, url: &str, headers: &HashMap<String, String>) -> anyhow::Result<NetworkResponse>;
 }
 
+/// Process interface.
+pub trait Process {
+    /// Executes the command as a child process, waiting for it to finish and
+    /// collecting all of its output.
+    fn command_output(&self, command: &str, args: &[&str]) -> anyhow::Result<String>;
+}
+
 /// Time interface.
 pub trait Time {
     /// Returns the current time in local time.
@@ -57,6 +64,8 @@ pub struct Context {
     pub fs: vfs::VfsPath,
     /// The network to use.
     pub network: Rc<dyn Network>,
+    /// The process runner to use.
+    pub process: Rc<dyn Process>,
     /// The time to use.
     pub time: Rc<dyn Time>,
 }
@@ -444,19 +453,22 @@ fn get_activity_lat_lon(ctx: &Context, filename: &str) -> anyhow::Result<(String
 
     let home_dir = home::home_dir().context("home_dir() failed")?;
     let real_data_path = home_dir.join(data_path.as_str().trim_start_matches('/'));
-    let output = std::process::Command::new("gpsbabel")
-        .args(["-i", "garmin_fit", "-f"])
-        .arg(&real_data_path)
-        .args(["-o", "geojson", "-F", "-"])
-        .output()?;
-    if !output.status.success() {
-        return Err(anyhow::anyhow!(
-            "gpsbabel failed: {}",
-            String::from_utf8_lossy(&output.stderr)
-        ));
-    }
+    let real_data_path = real_data_path.to_str().context("to_str() failed")?;
+    let output = ctx.process.command_output(
+        "gpsbabel",
+        &[
+            "-i",
+            "garmin_fit",
+            "-f",
+            real_data_path,
+            "-o",
+            "geojson",
+            "-F",
+            "-",
+        ],
+    )?;
 
-    let json: serde_json::Value = serde_json::from_slice(&output.stdout)?;
+    let json: serde_json::Value = serde_json::from_str(&output)?;
     let point = json["features"][0]["geometry"]["coordinates"][0]
         .as_array()
         .context("no first coordinate")?;
