@@ -121,20 +121,6 @@ fn jwt_to_cookie(ctx: &Context, jwt: &str) -> anyhow::Result<String> {
     ))
 }
 
-/// One item in the /api/v3/athlete/activities response list.
-#[derive(serde::Deserialize, serde::Serialize)]
-struct ActivitiesItemResponse {
-    id: u64,
-    name: String,
-    #[serde(with = "time::serde::iso8601")]
-    start_time: time::OffsetDateTime,
-    sport_type: String,
-    moving_time_raw: u64,
-    elapsed_time_raw: u64,
-    distance_raw: f64,
-    elevation_gain_raw: f64,
-}
-
 /// One .meta.json file in the mirrored activity list.
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
 struct ActivityMetadata {
@@ -152,7 +138,7 @@ struct ActivityMetadata {
 /// Type of the /athlete/training_activities response.
 #[derive(serde::Deserialize)]
 struct ActivitiesResponse {
-    /// ActivitiesItemResponse and some more.
+    /// ActivityMetadata and some more.
     models: Vec<serde_json::Value>,
 }
 
@@ -264,7 +250,7 @@ fn handle_rate_limit(ctx: &Context, headers: &HashMap<String, String>) {
     }
 }
 
-/// Lists activities: list of ActivitiesItemResponse and some more.
+/// Lists activities: list of ActivityMetadata and some more.
 fn list_activities(
     ctx: &Context,
     page: u32,
@@ -328,7 +314,7 @@ struct MirrorActivityOptions<'a> {
 }
 
 /// Checks if the metadata needs to be re-downloaded based on summary changes.
-fn should_redownload_meta(metadata: &ActivityMetadata, summary: &ActivitiesItemResponse) -> bool {
+fn should_redownload_meta(metadata: &ActivityMetadata, summary: &ActivityMetadata) -> bool {
     metadata.name != summary.name || metadata.sport_type != summary.sport_type
 }
 
@@ -356,7 +342,7 @@ fn mirror_activity(
     options: &MirrorActivityOptions,
     summary_unparsed: &serde_json::Value,
 ) -> anyhow::Result<()> {
-    let summary: ActivitiesItemResponse = serde_json::from_value(summary_unparsed.clone())?;
+    let summary: ActivityMetadata = serde_json::from_value(summary_unparsed.clone())?;
     let year = summary.start_time.year();
     let format = time::format_description::parse_borrowed::<1>(ACTIVITY_TIMESTAMP_FORMAT)?;
     let timestamp = summary.start_time.format(&format)?;

@@ -1826,7 +1826,7 @@ fn test_should_redownload_meta() {
         distance_raw: 1000.0,
         elevation_gain_raw: 100.0,
     };
-    let mut summary = ActivitiesItemResponse {
+    let mut summary = ActivityMetadata {
         id: 1,
         name: "old name".to_string(),
         start_time: now,
