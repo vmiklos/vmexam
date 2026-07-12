@@ -116,16 +116,9 @@ fn test_no_activities() {
     // Given no activities:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
     let mut responses = HashMap::new();
-    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
     responses.insert(
-        "https://www.strava.com/oauth/token".to_string(),
-        NetworkResponse {
-            headers: HashMap::new(),
-            body: token_body,
-        },
-    );
-    responses.insert(
-        "https://www.strava.com/athlete/training_activities?new_activity_only=false".to_string(),
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=1"
+            .to_string(),
         NetworkResponse {
             headers: HashMap::new(),
             body: b"{\"models\":[]}".to_vec(),
@@ -153,15 +146,7 @@ fn test_no_activities() {
 fn test_jwt_to_cookie_error() {
     // Given a config with an invalid JWT:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
-    let mut responses = HashMap::new();
-    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
-    responses.insert(
-        "https://www.strava.com/oauth/token".to_string(),
-        NetworkResponse {
-            headers: HashMap::new(),
-            body: token_body,
-        },
-    );
+    let responses = HashMap::new();
     let network = Rc::new(TestNetwork { responses });
     let time = Rc::new(TestTime::default());
     let ctx = Context {
@@ -195,15 +180,7 @@ fn test_jwt_to_cookie_error() {
 fn test_jwt_to_cookie_expired() {
     // Given a config with an expired JWT:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
-    let mut responses = HashMap::new();
-    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
-    responses.insert(
-        "https://www.strava.com/oauth/token".to_string(),
-        NetworkResponse {
-            headers: HashMap::new(),
-            body: token_body,
-        },
-    );
+    let responses = HashMap::new();
     let network = Rc::new(TestNetwork { responses });
     // Config's JWT expires on 2026-05-07, so set "now" to 2026-05-09.
     let now = time::macros::datetime!(2026-05-09 12:00:00 UTC);
@@ -234,20 +211,22 @@ fn test_mirror_activity() {
     // Given a single activity configured:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
     let mut responses = HashMap::new();
-    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
+    let activities_1_body = std::fs::read("src/fixtures/activities-1.json").unwrap();
     responses.insert(
-        "https://www.strava.com/oauth/token".to_string(),
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=1"
+            .to_string(),
         NetworkResponse {
             headers: HashMap::new(),
-            body: token_body,
+            body: activities_1_body,
         },
     );
-    let activities_body = std::fs::read("src/fixtures/activities-1.json").unwrap();
+    let activities_0_body = std::fs::read("src/fixtures/activities-0.json").unwrap();
     responses.insert(
-        "https://www.strava.com/athlete/training_activities?new_activity_only=false".to_string(),
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=2"
+            .to_string(),
         NetworkResponse {
             headers: HashMap::new(),
-            body: activities_body,
+            body: activities_0_body,
         },
     );
     let mut data_headers = HashMap::new();
@@ -323,16 +302,9 @@ fn test_list_activities_after() {
         .create_file()
         .unwrap();
     let mut responses = HashMap::new();
-    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
-    responses.insert(
-        "https://www.strava.com/oauth/token".to_string(),
-        NetworkResponse {
-            headers: HashMap::new(),
-            body: token_body,
-        },
+    let activities_url = format!(
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=1",
     );
-    let activities_url =
-        format!("https://www.strava.com/athlete/training_activities?new_activity_only=false",);
     let activities_body = std::fs::read("src/fixtures/activities-2.json").unwrap();
     responses.insert(
         activities_url,
@@ -439,20 +411,22 @@ fn test_mirror_activity_only_data() {
     meta_path.create_file().unwrap().write_all(b"{}").unwrap();
 
     let mut responses = HashMap::new();
-    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
+    let activities_1_body = std::fs::read("src/fixtures/activities-1.json").unwrap();
     responses.insert(
-        "https://www.strava.com/oauth/token".to_string(),
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=1"
+            .to_string(),
         NetworkResponse {
             headers: HashMap::new(),
-            body: token_body,
+            body: activities_1_body,
         },
     );
-    let activities_body = std::fs::read("src/fixtures/activities-1.json").unwrap();
+    let activities_0_body = std::fs::read("src/fixtures/activities-0.json").unwrap();
     responses.insert(
-        "https://www.strava.com/athlete/training_activities?new_activity_only=false".to_string(),
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=2"
+            .to_string(),
         NetworkResponse {
             headers: HashMap::new(),
-            body: activities_body,
+            body: activities_0_body,
         },
     );
     // Notice that api/v3/activities/1 is NOT in the responses, so if we try to download it, we fail.
@@ -493,6 +467,68 @@ fn test_mirror_activity_only_data() {
 }
 
 #[test]
+fn test_mirror_activity_skip_data() {
+    // Given an activity where the data is already mirrored, but the meta is not:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    activities_dir.create_dir_all().unwrap();
+    let timestamp_str = "2025-04-09T07-44-48Z";
+    let base_name = format!("{}_1", timestamp_str);
+    let data_path = activities_dir.join(format!("{}.fit", base_name)).unwrap();
+    data_path
+        .create_file()
+        .unwrap()
+        .write_all(b"fitdata")
+        .unwrap();
+
+    let mut responses = HashMap::new();
+    let activities_1_body = std::fs::read("src/fixtures/activities-1.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=1"
+            .to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: activities_1_body,
+        },
+    );
+    let activities_0_body = std::fs::read("src/fixtures/activities-0.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=2"
+            .to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: activities_0_body,
+        },
+    );
+    // Notice that export_original is NOT in the responses, so if we try to download the data
+    // again, we fail.
+    let network = Rc::new(TestNetwork { responses });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        process: Rc::new(TestProcess::new(&[])),
+        time,
+    };
+    setup_config(&fs);
+
+    // When mirroring activities:
+    let args = vec!["strava-mirror".to_string()];
+    run(args, &ctx).unwrap();
+
+    // Then make sure the meta file is created (and the data download was skipped):
+    assert!(
+        activities_dir
+            .join(format!("{}.meta.json", base_name))
+            .unwrap()
+            .exists()
+            .unwrap()
+    );
+}
+
+#[test]
 fn test_mirror_activity_already_mirrored() {
     // Given an activity where both meta and data are already mirrored:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
@@ -513,16 +549,9 @@ fn test_mirror_activity_already_mirrored() {
         .unwrap();
 
     let mut responses = HashMap::new();
-    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
-    responses.insert(
-        "https://www.strava.com/oauth/token".to_string(),
-        NetworkResponse {
-            headers: HashMap::new(),
-            body: token_body,
-        },
+    let activities_url = format!(
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=1",
     );
-    let activities_url =
-        format!("https://www.strava.com/athlete/training_activities?new_activity_only=false",);
     let activities_body = std::fs::read("src/fixtures/activities-1.json").unwrap();
     responses.insert(
         activities_url,
@@ -531,7 +560,7 @@ fn test_mirror_activity_already_mirrored() {
             body: activities_body,
         },
     );
-    // Notice that neither api/v3/activities/1 nor export_original is in the responses.
+    // Notice that export_original is not in the responses.
     let network = Rc::new(TestNetwork { responses });
     let time = Rc::new(TestTime::default());
     let ctx = Context {
@@ -897,16 +926,9 @@ fn test_run_quiet() {
     // Given no activities and quiet mode:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
     let mut responses = HashMap::new();
-    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
     responses.insert(
-        "https://www.strava.com/oauth/token".to_string(),
-        NetworkResponse {
-            headers: HashMap::new(),
-            body: token_body,
-        },
-    );
-    responses.insert(
-        "https://www.strava.com/athlete/training_activities?new_activity_only=false".to_string(),
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=1"
+            .to_string(),
         NetworkResponse {
             headers: HashMap::new(),
             body: b"{\"models\":[]}".to_vec(),
@@ -1068,19 +1090,12 @@ fn test_rate_limit_sleep() {
     // Given the 15-min rate limit is reached:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
     let mut responses = HashMap::new();
-    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
-    responses.insert(
-        "https://www.strava.com/oauth/token".to_string(),
-        NetworkResponse {
-            headers: HashMap::new(),
-            body: token_body,
-        },
-    );
     let mut rate_limit_headers = HashMap::new();
     rate_limit_headers.insert("x-ratelimit-limit".to_string(), "100,1000".to_string());
     rate_limit_headers.insert("x-ratelimit-usage".to_string(), "100,200".to_string());
     responses.insert(
-        "https://www.strava.com/athlete/training_activities?new_activity_only=false".to_string(),
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=1"
+            .to_string(),
         NetworkResponse {
             headers: rate_limit_headers,
             body: b"{\"models\":[]}".to_vec(),
@@ -1132,17 +1147,9 @@ fn test_run_full_history() {
         .create_file()
         .unwrap();
     let mut responses = HashMap::new();
-    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
-    responses.insert(
-        "https://www.strava.com/oauth/token".to_string(),
-        NetworkResponse {
-            headers: HashMap::new(),
-            body: token_body,
-        },
-    );
     // Note: NO &after= parameter in the URL.
     let activities_url =
-        "https://www.strava.com/athlete/training_activities?new_activity_only=false";
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=1";
     responses.insert(
         activities_url.to_string(),
         NetworkResponse {
@@ -1189,29 +1196,22 @@ fn test_mirror_activity_full_history_change() {
         .unwrap();
 
     let mut responses = HashMap::new();
-    let token_body = std::fs::read("src/fixtures/token.json").unwrap();
-    responses.insert(
-        "https://www.strava.com/oauth/token".to_string(),
-        NetworkResponse {
-            headers: HashMap::new(),
-            body: token_body,
-        },
-    );
     // Summary name is "new name".
     responses.insert(
-        "https://www.strava.com/athlete/training_activities?new_activity_only=false".to_string(),
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=1".to_string(),
         NetworkResponse {
             headers: HashMap::new(),
             body: b"{\"models\":[{\"name\": \"new name\", \"id\": 1, \"start_time\": \"2025-04-09T07:44:48Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}]}"
                 .to_vec(),
         },
     );
-    // This is the re-download request:
+    let activities_0_body = std::fs::read("src/fixtures/activities-0.json").unwrap();
     responses.insert(
-        "https://www.strava.com/api/v3/activities/1".to_string(),
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=2"
+            .to_string(),
         NetworkResponse {
             headers: HashMap::new(),
-            body: b"{\"name\": \"new name\"}".to_vec(),
+            body: activities_0_body,
         },
     );
     let mut data_headers = HashMap::new();

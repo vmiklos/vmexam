@@ -2,7 +2,9 @@
 
 Mirrors your Strava activities from <http://strava.com/> for backup purposes, incrementally.
 
-For now, it only fetches activities: metadata and the original data.
+Compared to [strava-backup](https://github.com/pR0Ps/strava-backup), this tool uses the same REST
+endpoints as the website, using just the JWT. The problem with the API is that it broke on
+2026-06-30 for the free tier.
 
 ## Installation
 
@@ -12,7 +14,7 @@ cargo install --git https://github.com/vmiklos/vmexam strava-mirror
 
 ## Usage
 
-The original data is not available via the API, so get your JWT value using:
+Get your JWT value using:
 
 - Go to strava.com in your web browser (e.g. Firefox), log in
 - Open dev-tools (F12)
@@ -56,9 +58,3 @@ strava-mirror --query all
 
 If you want to automate downloading your activities, there is a `--quiet` option to omit the INFO
 log lines, which are only interesting in the interactive case.
-
-## Rework to not use the API
-
-The API broke on 2026-06-30. Mirroring using just the JWT mostly works now, except:
-
-- pagination is broken, only the last 20 activities are downloaded when missing locally

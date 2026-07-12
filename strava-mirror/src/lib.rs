@@ -254,14 +254,12 @@ fn handle_rate_limit(ctx: &Context, headers: &HashMap<String, String>) {
 fn list_activities(
     ctx: &Context,
     page: u32,
-    _after: Option<i64>,
     cookie: &str,
 ) -> anyhow::Result<Vec<serde_json::Value>> {
-    let url = "https://www.strava.com/athlete/training_activities?new_activity_only=false";
-    if page > 1 {
-        // TODO fetch older activities, too
-        return Ok(Vec::new());
-    }
+    let url = format!(
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page={}",
+        page
+    );
     let mut headers = HashMap::new();
     headers.insert("Cookie".to_string(), cookie.to_string());
     headers.insert(
@@ -270,7 +268,7 @@ fn list_activities(
             .to_string(),
     );
     headers.insert("X-Requested-With".to_string(), "XMLHttpRequest".to_string());
-    let response = ctx.network.get(url, &headers)?;
+    let response = ctx.network.get(&url, &headers)?;
     handle_rate_limit(ctx, &response.headers);
     let activities_r: ActivitiesResponse = serde_json::from_slice(&response.body)?;
     Ok(activities_r.models)
@@ -1026,13 +1024,26 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
     };
     let mut page = 1;
     loop {
-        let activities: Vec<serde_json::Value> = list_activities(ctx, page, after, &cookie)?;
+        let activities: Vec<serde_json::Value> = list_activities(ctx, page, &cookie)?;
         if activities.is_empty() {
             break;
         }
 
+        let mut partial_page = false;
         for activity in activities {
+            if let Some(value) = after {
+                let activity: ActivityMetadata = serde_json::from_value(activity.clone())?;
+                if activity.start_time.unix_timestamp() <= value {
+                    partial_page = true;
+                    break;
+                }
+            }
+
             mirror_activity(ctx, &options, &activity)?;
+        }
+
+        if partial_page {
+            break;
         }
 
         page += 1;
