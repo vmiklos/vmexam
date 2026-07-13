@@ -313,13 +313,6 @@ fn test_list_activities_after() {
             body: activities_body,
         },
     );
-    responses.insert(
-        "https://www.strava.com/api/v3/activities/2".to_string(),
-        NetworkResponse {
-            headers: HashMap::new(),
-            body: b"{\"id\": 2, \"name\": \"myactivity2\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}".to_vec(),
-        },
-    );
     let mut data_headers = HashMap::new();
     data_headers.insert(
         "content-disposition".to_string(),
@@ -429,7 +422,6 @@ fn test_mirror_activity_only_data() {
             body: activities_0_body,
         },
     );
-    // Notice that api/v3/activities/1 is NOT in the responses, so if we try to download it, we fail.
     let mut data_headers = HashMap::new();
     data_headers.insert(
         "content-disposition".to_string(),
