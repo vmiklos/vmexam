@@ -4,6 +4,7 @@ CXXFLAGS=-g -O0 $CXXFLAGS
 --enable-debug
 --enable-silent-rules
 --enable-fuzzers
+--disable-lto
 --enable-coplugin
 --enable-experimental
 --enable-cypress
