@@ -27,13 +27,11 @@ struct Arguments {
 #[derive(serde::Deserialize)]
 struct Activity {
     name: String,
-    distance: f64,
-    total_elevation_gain: f64,
-    moving_time: f64,
-    average_speed: f64,
-    max_speed: f64,
-    elapsed_time: f64,
-    start_date: String,
+    distance_raw: f64,
+    elevation_gain_raw: f64,
+    moving_time_raw: u64,
+    elapsed_time_raw: u64,
+    start_time: String,
 }
 
 fn checked_run(first: &str, rest: &[&str]) -> anyhow::Result<()> {
@@ -70,7 +68,7 @@ fn format_duration(num_seconds: i64) -> String {
 
 /// Try to improve input_date by presenting a non-local date as a local one.
 fn improve_date(input_date: &str) -> anyhow::Result<String> {
-    let format = time::format_description::well_known::Rfc3339;
+    let format = time::format_description::well_known::Iso8601::DEFAULT;
     let mut date_time = time::OffsetDateTime::parse(input_date, &format)?;
     let local_offset = time::UtcOffset::current_local_offset()?;
     if date_time.offset() == local_offset {
@@ -90,29 +88,26 @@ fn extract_stats(args: &Arguments) -> anyhow::Result<(Vec<(String, String)>, Str
     stats.push(("Name".into(), activity.name.to_string()));
     stats.push((
         "Distance".into(),
-        format!("{:.2} km", activity.distance / 1000_f64),
+        format!("{:.2} km", activity.distance_raw / 1000_f64),
     ));
     stats.push((
         "Elevation gain".into(),
-        format!("{} m", activity.total_elevation_gain),
+        format!("{} m", activity.elevation_gain_raw),
     ));
+    let average_speed = activity.distance_raw / activity.moving_time_raw as f64;
     stats.push((
         "Average speed".into(),
-        format!("{:.2} km/h", activity.average_speed * 3.6_f64),
+        format!("{:.2} km/h", average_speed * 3.6_f64),
     ));
     stats.push((
         "Moving time".into(),
-        format_duration(activity.moving_time as i64),
-    ));
-    stats.push((
-        "Max speed".into(),
-        format!("{:.2} km/h", activity.max_speed * 3.6_f64),
+        format_duration(activity.moving_time_raw as i64),
     ));
     stats.push((
         "Elapsed time".into(),
-        format_duration(activity.elapsed_time as i64),
+        format_duration(activity.elapsed_time_raw as i64),
     ));
-    let mut start_date = activity.start_date.to_string();
+    let mut start_date = activity.start_time.to_string();
     if let Ok(improved) = improve_date(&start_date) {
         start_date = improved;
     }
