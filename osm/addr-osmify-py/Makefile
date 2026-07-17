@@ -1,6 +1,6 @@
 build: Makefile
-	mypy --python-version 3.11 --strict --no-error-summary addr_osmify.py
-	mypy --python-version 3.11 --strict --no-error-summary test_addr_osmify.py
+	mypy --python-version 3.13 --strict --no-error-summary addr_osmify.py
+	mypy --python-version 3.13 --strict --no-error-summary test_addr_osmify.py
 
 check: build check-unit check-format check-lint
 	@echo "make check: ok"

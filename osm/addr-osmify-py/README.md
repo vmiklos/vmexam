@@ -19,7 +19,7 @@ This implementation is written in Python:
 ## Install
 
 ```
-python3.11 -m venv addr-osmify-py-env
+python3.13 -m venv addr-osmify-py-env
 . addr-osmify-py-env/bin/activate
 pip install -r requirements.txt
 ```
