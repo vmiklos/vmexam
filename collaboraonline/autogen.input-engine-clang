@@ -2,10 +2,6 @@ CC=clang
 CXX=clang++
 --enable-dbgutil
 --enable-werror
-# online.git is not compatible with system nss
---without-system-nss
-# online.git cypress tests need this
---enable-python=internal
 # avoid loplugin:implicitboolconversion
 --disable-sdremote
 --disable-sdremote-bluetooth
