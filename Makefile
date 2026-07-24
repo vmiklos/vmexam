@@ -91,6 +91,8 @@ $(eval $(call RustPackage_RustPackage,git-review-link))
 
 $(eval $(call RustPackage_RustPackage,github-outdated))
 
+$(eval $(call RustPackage_RustPackage,gpx2osm))
+
 $(eval $(call RustPackage_RustPackage,hyphen))
 $(eval $(call RustPackage_use_test,hyphen))
 
