@@ -4,4 +4,3 @@ CXX=clang++
 --enable-werror
 # avoid loplugin:implicitboolconversion
 --disable-sdremote
---disable-sdremote-bluetooth
