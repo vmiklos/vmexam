@@ -769,7 +769,7 @@ struct CountryItem {
 /// Summarizes countries of activities based on their start location in HTML format.
 fn query_countries_html(ctx: &Context) -> anyhow::Result<()> {
     let activities_map = get_countries(ctx)?;
-    let markup = get_countries_html_content(activities_map)?;
+    let markup = get_countries_html_content(activities_map, ctx.time.as_ref())?;
     println!("{}", wrap_in_page(markup).into_string());
 
     Ok(())
@@ -778,6 +778,7 @@ fn query_countries_html(ctx: &Context) -> anyhow::Result<()> {
 /// Produces the HTML content for country statistics.
 fn get_countries_html_content(
     activities_map: HashMap<String, QueriedActivity>,
+    time: &dyn Time,
 ) -> anyhow::Result<maud::Markup> {
     let mut country_activities: HashMap<String, Vec<QueriedActivity>> = HashMap::new();
 
@@ -801,7 +802,8 @@ fn get_countries_html_content(
         let count = activities.len();
         let mut list_items = Vec::new();
         for activity in activities {
-            let timestamp = activity.metadata.start_time.format(&format)?;
+            let start_time = time.to_local_offset(activity.metadata.start_time.unix_timestamp())?;
+            let timestamp = start_time.format(&format)?;
             let url = format!("https://www.strava.com/activities/{}", activity.metadata.id);
             let name = activity.metadata.name;
             list_items.push(ActivityItem {
@@ -876,7 +878,7 @@ fn wrap_in_page(content: maud::Markup) -> maud::Markup {
 /// Queries all statistics.
 fn query_all(ctx: &Context) -> anyhow::Result<()> {
     let activities_map = get_countries(ctx)?;
-    let countries_content = get_countries_html_content(activities_map.clone())?;
+    let countries_content = get_countries_html_content(activities_map.clone(), ctx.time.as_ref())?;
 
     let local_activities: Vec<(String, ActivityMetadata)> = activities_map
         .into_iter()
