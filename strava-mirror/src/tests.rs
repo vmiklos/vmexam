@@ -631,87 +631,6 @@ fn test_query_countries() {
 }
 
 #[test]
-fn test_get_sleep_duration() {
-    let mut headers = HashMap::new();
-    let now = time::macros::datetime!(2026-05-03 10:05:30 UTC);
-
-    // No headers
-    assert!(get_sleep_duration(&headers, now).is_err());
-
-    // Limit provided but usage missing
-    headers.insert("x-ratelimit-limit".to_string(), "100,1000".to_string());
-    assert!(get_sleep_duration(&headers, now).is_err());
-    headers.clear();
-
-    // Headers provided but only one value (malformed)
-    headers.insert("x-ratelimit-limit".to_string(), "100".to_string());
-    headers.insert("x-ratelimit-usage".to_string(), "50".to_string());
-    assert!(get_sleep_duration(&headers, now).is_err());
-    headers.clear();
-
-    // 15-min limit is not a number
-    headers.insert("x-ratelimit-limit".to_string(), "foo,1000".to_string());
-    headers.insert("x-ratelimit-usage".to_string(), "100,200".to_string());
-    assert!(get_sleep_duration(&headers, now).is_err());
-    headers.clear();
-
-    // 15-min usage is not a number
-    headers.insert("x-ratelimit-limit".to_string(), "100,1000".to_string());
-    headers.insert("x-ratelimit-usage".to_string(), "foo,200".to_string());
-    assert!(get_sleep_duration(&headers, now).is_err(),);
-    headers.clear();
-
-    // Daily limit is not a number
-    headers.insert("x-ratelimit-limit".to_string(), "100,foo".to_string());
-    headers.insert("x-ratelimit-usage".to_string(), "50,100".to_string());
-    assert!(get_sleep_duration(&headers, now).is_err());
-    headers.clear();
-
-    // Daily usage is not a number
-    headers.insert("x-ratelimit-limit".to_string(), "100,1000".to_string());
-    headers.insert("x-ratelimit-usage".to_string(), "50,foo".to_string());
-    assert!(get_sleep_duration(&headers, now).is_err());
-    headers.clear();
-
-    // 15-min limit reached (with 10s buffer)
-    headers.insert("x-ratelimit-limit".to_string(), "100,1000".to_string());
-    headers.insert("x-ratelimit-usage".to_string(), "100,200".to_string());
-    // (15 - (5 % 15)) * 60 - 30 + 10 = 10 * 60 - 30 + 10 = 580
-    assert_eq!(
-        get_sleep_duration(&headers, now).unwrap(),
-        std::time::Duration::from_secs(580)
-    );
-
-    // x-readratelimit-limit is prioritized
-    headers.insert("x-readratelimit-limit".to_string(), "50,500".to_string());
-    headers.insert("x-readratelimit-usage".to_string(), "50,100".to_string());
-    // (15 - (5 % 15)) * 60 - 30 + 10 = 580
-    assert_eq!(
-        get_sleep_duration(&headers, now).unwrap(),
-        std::time::Duration::from_secs(580)
-    );
-    headers.clear();
-
-    // Daily limit reached (with 10s buffer)
-    headers.insert("x-ratelimit-limit".to_string(), "100,1000".to_string());
-    headers.insert("x-ratelimit-usage".to_string(), "50,1000".to_string());
-    // next midnight is 2026-05-04 00:00:00.
-    // From 10:05:30 to 00:00:00 is (24 - 10)h - 5m - 30s = 13h 54m 30s = 50070s
-    // 50070 + 10 = 50080
-    assert_eq!(
-        get_sleep_duration(&headers, now).unwrap(),
-        std::time::Duration::from_secs(50080)
-    );
-
-    // No limits reached
-    headers.insert("x-ratelimit-usage".to_string(), "50,200".to_string());
-    assert_eq!(
-        get_sleep_duration(&headers, now).unwrap(),
-        std::time::Duration::from_secs(0)
-    );
-}
-
-#[test]
 fn test_query_countries_summary() {
     // Given two activities in different countries and an existing cache:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
@@ -1079,17 +998,15 @@ fn test_query_countries_html() {
 
 #[test]
 fn test_rate_limit_sleep() {
-    // Given the 15-min rate limit is reached:
+    // Given a rate limit configured:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
     let mut responses = HashMap::new();
-    let mut rate_limit_headers = HashMap::new();
-    rate_limit_headers.insert("x-ratelimit-limit".to_string(), "100,1000".to_string());
-    rate_limit_headers.insert("x-ratelimit-usage".to_string(), "100,200".to_string());
+    let headers = HashMap::new();
     responses.insert(
         "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=1"
             .to_string(),
         NetworkResponse {
-            headers: rate_limit_headers,
+            headers,
             body: b"{\"models\":[]}".to_vec(),
         },
     );
