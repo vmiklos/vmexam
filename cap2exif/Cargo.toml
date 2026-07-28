@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-anyhow = "1.0.98"
-clap = "4.5.41"
+anyhow = "1.0.104"
+clap = "4.6.4"
 rexiv2 = "0.10.0"
-time = { version = "0.3.41", features = ["formatting", "parsing"] }
+time = { version = "0.3.54", features = ["formatting", "parsing"] }
