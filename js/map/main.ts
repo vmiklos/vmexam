@@ -11,6 +11,19 @@ interface DescriptionSupplier {
     description: string | null;
 }
 
+// Shows a progress indicator at the center of the screen, till the fetches are in progress.
+function createLoader(): Element {
+    const loader = document.createElement("div");
+    loader.className = "loader";
+    for (let i = 0; i < 3; i += 1) {
+        const loaderBox = document.createElement("span");
+        loaderBox.className = "loader-box";
+        loader.appendChild(loaderBox);
+    }
+    document.body.appendChild(loader);
+    return loader;
+}
+
 function onEachFeature(
     map: L.Map | null,
     feature: geojson.Feature<geojson.GeometryObject, DescriptionSupplier>,
@@ -42,51 +55,56 @@ document.addEventListener("DOMContentLoaded", async function () {
             '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors.',
     }).addTo(map);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    let activityURLs: string[] = [];
-    let activityURL = urlParams.get("activity");
-    if (activityURL != null) {
-        activityURLs = [activityURL];
-    } else {
-        activityURL = urlParams.get("a");
-        if (activityURL != null) {
-            activityURLs = [activityURL + ".json"];
-        }
-    }
-    if (activityURL == null) {
-        const collectionURL = urlParams.get("c") + ".json";
-        const response = await window.fetch(collectionURL);
-        const collection = await response.json();
-        document.title = collection.title;
-        for (const activity of collection.activities) {
-            activityURLs.push(activity + ".json");
-        }
-    }
+    const loader = createLoader();
     let bounds: L.LatLngBounds | null = null;
-    for (activityURL of activityURLs) {
-        const response = await window.fetch(activityURL);
-        const activity = await response.json();
-        if (activityURLs.length == 1) {
-            if (activity.features[0].properties) {
-                const properties = activity.features[0].properties;
-                if (properties.name != null) {
-                    document.title = properties.name;
-                }
-            }
-            const geoJSON = L.geoJSON(activity, {
-                onEachFeature: (feature, layer) => onEachFeature(map, feature, layer),
-            }).addTo(map);
-            bounds = geoJSON.getBounds();
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        let activityURLs: string[] = [];
+        let activityURL = urlParams.get("activity");
+        if (activityURL != null) {
+            activityURLs = [activityURL];
         } else {
-            const geoJSON = L.geoJSON(activity, {
-                onEachFeature: (feature, layer) => onEachFeature(null, feature, layer),
-            }).addTo(map);
-            if (bounds == null) {
+            activityURL = urlParams.get("a");
+            if (activityURL != null) {
+                activityURLs = [activityURL + ".json"];
+            }
+        }
+        if (activityURL == null) {
+            const collectionURL = urlParams.get("c") + ".json";
+            const response = await window.fetch(collectionURL);
+            const collection = await response.json();
+            document.title = collection.title;
+            for (const activity of collection.activities) {
+                activityURLs.push(activity + ".json");
+            }
+        }
+        for (activityURL of activityURLs) {
+            const response = await window.fetch(activityURL);
+            const activity = await response.json();
+            if (activityURLs.length == 1) {
+                if (activity.features[0].properties) {
+                    const properties = activity.features[0].properties;
+                    if (properties.name != null) {
+                        document.title = properties.name;
+                    }
+                }
+                const geoJSON = L.geoJSON(activity, {
+                    onEachFeature: (feature, layer) => onEachFeature(map, feature, layer),
+                }).addTo(map);
                 bounds = geoJSON.getBounds();
             } else {
-                bounds.extend(geoJSON.getBounds());
+                const geoJSON = L.geoJSON(activity, {
+                    onEachFeature: (feature, layer) => onEachFeature(null, feature, layer),
+                }).addTo(map);
+                if (bounds == null) {
+                    bounds = geoJSON.getBounds();
+                } else {
+                    bounds.extend(geoJSON.getBounds());
+                }
             }
         }
+    } finally {
+        loader.remove();
     }
     if (bounds == null) {
         return;
