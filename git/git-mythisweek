@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+# Copyright 2026 Miklos Vajna
+#
+# SPDX-License-Identifier: MIT
+#
+
+# This script runs git log for own commits from this week.
+
+since=$(date --date="Sunday last week" +%Y-%m-%d)
+git log --author=$USER --pretty=oneline --since=$since --reverse
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
