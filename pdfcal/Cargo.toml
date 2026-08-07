@@ -11,3 +11,5 @@ pdfium-render = "0.8.37"
 sys-locale = "0.3.2"
 tempfile = "3.24.0"
 time = "0.3.44"
+# zune-jpeg-0.5.15 is broken
+zune-jpeg="0.4.21"
