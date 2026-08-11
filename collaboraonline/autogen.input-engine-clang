@@ -2,5 +2,3 @@ CC=clang
 CXX=clang++
 --enable-dbgutil
 --enable-werror
-# avoid loplugin:implicitboolconversion
---disable-sdremote
