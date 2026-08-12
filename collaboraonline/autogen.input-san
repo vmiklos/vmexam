@@ -1,9 +1,3 @@
-CFLAGS=-g -O0 $CFLAGS
-CXXFLAGS=-g -O0 $CXXFLAGS
 --prefix=$PWD/install
---enable-debug
---enable-silent-rules
+--enable-developer
 --enable-experimental
---enable-cypress
---with-lo-path=$HOME/git/collaboraonline/online-san/engine/instdir
---with-lokit-path=$HOME/git/collaboraonline/online-san/engine/include
