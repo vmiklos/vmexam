@@ -74,6 +74,14 @@ sharing a git grep result via a link:
 
 <https://source.chromium.org/search?q=cpdf_annot::subtype::stamp&ss=chromium>
 
+## extract patterns effort (stroke pattern, fill pattern)
+
+- stroke pattern: cfb9b5eed006947caed0687798253c5b65c983ab (extract fill/stroke patterns as bitmaps,
+  2025-10-26) was the original commit
+- sd/qa/unit/data/pdf/pattern-stroke.pdf is a sample file
+- testing/resources/rectangles.in is a sample .in file
+- <https://pdfium-review.googlesource.com/c/pdfium/+/154910> for the stroke pattern part
+
 ## signature API:
 
 - <https://pdfium-review.googlesource.com/c/pdfium/+/70830> `Add FPDF_GetSignatureCount() API`
