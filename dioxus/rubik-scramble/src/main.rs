@@ -219,7 +219,16 @@ pub fn app() -> Element {
             },
         }
         div { "Scramble:" }
-        div { font_size: scramble_font_size, "{scramble}" }
+        div {
+            font_size: scramble_font_size,
+            for (i, token) in scramble().split_whitespace().enumerate() {
+                span {
+                    key: "{i}",
+                    span { class: "scramble-token", "{token}" }
+                    " "
+                }
+            }
+        }
         div {
             span { "Powered by " }
             a { href: "https://github.com/vmiklos/vmexam/tree/master/dioxus/rubik-scramble",

@@ -1,3 +1,8 @@
+/* Scramble tokens must not be split across lines, e.g. "R--". */
+.scramble-token {
+  white-space: nowrap;
+}
+
 /* Gear icon */
 .gear-button {
   position: fixed;
