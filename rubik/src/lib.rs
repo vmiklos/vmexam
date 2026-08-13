@@ -10,8 +10,6 @@
 
 //! Library, related to <https://en.wikipedia.org/wiki/Rubik%27s_Cube>.
 
-use rand::Rng as _;
-
 fn pick_side(index: u8, lang: &str, megaminx: bool) -> String {
     if lang == "hu" {
         match index {
@@ -57,6 +55,18 @@ fn pick_side(index: u8, lang: &str, megaminx: bool) -> String {
 /// * `wide` - allow wide turns, useful for 4x4, not relevant for 3x3.
 /// * `megaminx` - allow megaminx turns, 3 sides and 2 kind of turns
 pub fn shuffle(lang: &str, wide: bool, megaminx: bool) -> anyhow::Result<String> {
+    Ok(shuffle_with_rng(&mut rand::rng(), lang, wide, megaminx))
+}
+
+/// Produces a scramble, using the provided RNG.
+///
+/// Useful when a reproducible output is wanted, e.g. for testing.
+pub fn shuffle_with_rng(
+    rng: &mut impl rand::Rng,
+    lang: &str,
+    wide: bool,
+    megaminx: bool,
+) -> String {
     let mut ret: Vec<String> = Vec::new();
     let mut prev_side = "".to_string();
     let steps = if megaminx { 49 } else { 25 };
@@ -65,7 +75,7 @@ pub fn shuffle(lang: &str, wide: bool, megaminx: bool) -> anyhow::Result<String>
         loop {
             // Randomly pick one side of the cube.
             let sides = if megaminx { 4 } else { 7 };
-            side = pick_side(rand::rng().random_range(1..sides), lang, megaminx);
+            side = pick_side(rng.random_range(1..sides), lang, megaminx);
             if side != prev_side {
                 break;
             }
@@ -74,7 +84,7 @@ pub fn shuffle(lang: &str, wide: bool, megaminx: bool) -> anyhow::Result<String>
         prev_side = side.to_string();
         // Wide turn?
         let wide = if wide {
-            match rand::rng().random_range(1..4) {
+            match rng.random_range(1..4) {
                 1 => "",
                 2 => "w",
                 3 => {
@@ -90,7 +100,7 @@ pub fn shuffle(lang: &str, wide: bool, megaminx: bool) -> anyhow::Result<String>
         };
         // Randomly pick a direction.
         let direction = if megaminx {
-            match rand::rng().random_range(1..3) {
+            match rng.random_range(1..3) {
                 1 => {
                     if side == "U" {
                         ""
@@ -111,7 +121,7 @@ pub fn shuffle(lang: &str, wide: bool, megaminx: bool) -> anyhow::Result<String>
             }
             .to_string()
         } else {
-            match rand::rng().random_range(1..4) {
+            match rng.random_range(1..4) {
                 1 => "",
                 2 => "'",
                 3 => "2",
@@ -130,5 +140,5 @@ pub fn shuffle(lang: &str, wide: bool, megaminx: bool) -> anyhow::Result<String>
             ret.push("\n".into());
         }
     }
-    Ok(ret.join(""))
+    ret.join("")
 }

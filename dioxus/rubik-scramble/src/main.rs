@@ -13,6 +13,7 @@
 use dioxus::prelude::*;
 #[cfg(target_os = "android")]
 use preferences::Preferences as _;
+use rand::SeedableRng as _;
 
 const MAIN_CSS: Asset = asset!("/assets/main.css");
 
@@ -61,6 +62,20 @@ impl TryFrom<&str> for Scramble {
 }
 
 fn make_scramble(kind: Scramble) -> anyhow::Result<String> {
+    match get_seed() {
+        Some(seed) => {
+            // /?seed=<number> gives a reproducible scramble, for debugging.
+            let mut rng = rand::rngs::StdRng::seed_from_u64(seed);
+            make_scramble_with_rng(&mut rng, kind)
+        }
+        None => {
+            let mut rng = rand::rng();
+            make_scramble_with_rng(&mut rng, kind)
+        }
+    }
+}
+
+fn make_scramble_with_rng(rng: &mut impl rand::Rng, kind: Scramble) -> anyhow::Result<String> {
     if kind == Scramble::F2lSolved || kind == Scramble::OllSolved {
         // Generate a scramble that allows practicing solving the last layer.
         let table = kewb::fs::decode_table(TABLE)?;
@@ -88,7 +103,7 @@ fn make_scramble(kind: Scramble) -> anyhow::Result<String> {
     let lang = "en";
     let wide = kind == Scramble::Wide;
     let megaminx = kind == Scramble::Megaminx;
-    rubik::shuffle(lang, wide, megaminx)
+    Ok(rubik::shuffle_with_rng(rng, lang, wide, megaminx))
 }
 
 #[cfg(feature = "web")]
@@ -101,6 +116,21 @@ fn local_storage_set_item(key: &str, value: &str) {
 fn local_storage_get_item(key: &str) -> Option<String> {
     let storage = web_sys::window().unwrap().local_storage().unwrap().unwrap();
     storage.get(key).unwrap()
+}
+
+/// Reads the `seed` URL parameter, if any, e.g. `/?seed=42`.
+#[cfg(feature = "web")]
+fn get_seed() -> Option<u64> {
+    let window = web_sys::window()?;
+    let search = window.location().search().ok()?;
+    let pairs = web_sys::UrlSearchParams::new_with_str(&search).ok()?;
+    pairs.get("seed")?.parse().ok()
+}
+
+/// No URL parameters on non-web targets.
+#[cfg(not(feature = "web"))]
+fn get_seed() -> Option<u64> {
+    None
 }
 
 #[cfg(target_os = "android")]
