@@ -116,6 +116,15 @@ fn handle_string_property(
     Ok(())
 }
 
+/// A line without the ':' delimiter is not a property, clear those.
+fn clear_invalid_lines(input: &str) -> String {
+    let lines: Vec<&str> = input
+        .lines()
+        .map(|line| if line.contains(':') { line } else { "" })
+        .collect();
+    lines.join("\n")
+}
+
 fn our_main(
     argv: Vec<String>,
     stream: &mut dyn std::io::Write,
@@ -124,11 +133,13 @@ fn our_main(
     let mut args = argv.iter();
     args.next();
     let path = args.next().context("missing argument")?;
-    let buf = std::io::BufReader::new(std::fs::File::open(path)?);
-    let reader = ical::IcalParser::new(buf);
+    let input = std::fs::read_to_string(path).context("failed to read the input")?;
+    let input = clear_invalid_lines(&input);
+    let reader = ical::IcalParser::new(input.as_bytes());
     for calendar in reader {
         let calendar = calendar?;
 
+        handle_string_property("Method     ", calendar.get_property("METHOD"), stream)?;
         for event in calendar.events {
             handle_string_property("Summary    ", event.get_property("SUMMARY"), stream)?;
             handle_string_property("Description", event.get_property("DESCRIPTION"), stream)?;
