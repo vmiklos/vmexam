@@ -465,16 +465,6 @@ fn get_countries(ctx: &Context) -> anyhow::Result<HashMap<String, QueriedActivit
     Ok(countries)
 }
 
-/// Queries all local activity metadata.
-fn query_custom(ctx: &Context) -> anyhow::Result<()> {
-    let local_activities = get_local_activities(ctx)?;
-    let mut activities: Vec<ActivityMetadata> =
-        local_activities.into_iter().map(|(_, m)| m).collect();
-    activities.sort_by_key(|m| m.start_time);
-    println!("{}", serde_json::to_string_pretty(&activities)?);
-    Ok(())
-}
-
 /// Queries the top 10 longest walks by time.
 fn query_top_walks_by_time(ctx: &Context) -> anyhow::Result<()> {
     let local_activities = get_local_activities(ctx)?;
@@ -711,28 +701,10 @@ fn render_activities_table(
 
 /// Queries the country of an activity based on its start location.
 fn query_countries(ctx: &Context) -> anyhow::Result<()> {
-    let countries = get_countries(ctx)?;
-    let mut filenames: Vec<_> = countries.keys().collect();
-    filenames.sort();
-    for filename in filenames {
-        println!("{}: {}", filename, countries[filename].country);
-    }
-    Ok(())
-}
+    let activities_map = get_countries(ctx)?;
+    let markup = get_countries_html_content(activities_map, ctx.time.as_ref())?;
+    println!("{}", wrap_in_page(markup).into_string());
 
-/// Summarizes countries of activities based on their start location.
-fn query_countries_summary(ctx: &Context) -> anyhow::Result<()> {
-    let activities = get_countries(ctx)?;
-    let mut counts = HashMap::new();
-    for activity in activities.values() {
-        let count = counts.entry(activity.country.clone()).or_insert(0);
-        *count += 1;
-    }
-    let mut sorted_counts: Vec<_> = counts.into_iter().collect();
-    sorted_counts.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
-    for (country, count) in sorted_counts {
-        println!("{}: {}", country, count);
-    }
     Ok(())
 }
 
@@ -746,15 +718,6 @@ struct CountryItem {
     name: String,
     count: usize,
     activities: Vec<ActivityItem>,
-}
-
-/// Summarizes countries of activities based on their start location in HTML format.
-fn query_countries_html(ctx: &Context) -> anyhow::Result<()> {
-    let activities_map = get_countries(ctx)?;
-    let markup = get_countries_html_content(activities_map, ctx.time.as_ref())?;
-    println!("{}", wrap_in_page(markup).into_string());
-
-    Ok(())
 }
 
 /// Produces the HTML content for country statistics.
@@ -918,17 +881,9 @@ pub struct Args {
     #[arg(short, long)]
     pub quiet: bool,
 
-    /// Query stats from local activities. Valid values: 'countries', 'custom', 'top-walks-by-time', 'top-walks-by-distance', 'top-walks-by-elevation', 'top-rides-by-time', 'top-rides-by-distance', 'top-rides-by-elevation', 'longest-rides-by-year', 'total-distance-by-year', 'all'.
+    /// Query stats from local activities. Valid values: 'countries', 'top-walks-by-time', 'top-walks-by-distance', 'top-walks-by-elevation', 'top-rides-by-time', 'top-rides-by-distance', 'top-rides-by-elevation', 'longest-rides-by-year', 'total-distance-by-year', 'all'.
     #[arg(long, value_name = "KIND")]
     pub query: Option<String>,
-
-    /// Summarize query results.
-    #[arg(long)]
-    pub summary: bool,
-
-    /// Output query results as HTML.
-    #[arg(long)]
-    pub html: bool,
 
     /// Fetch all activities, don't stop at the newest mirrored one.
     #[arg(long)]
@@ -947,16 +902,7 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
 
     if let Some(query) = args.query {
         if query == "countries" {
-            if args.summary {
-                return query_countries_summary(ctx);
-            }
-            if args.html {
-                return query_countries_html(ctx);
-            }
             return query_countries(ctx);
-        }
-        if query == "custom" {
-            return query_custom(ctx);
         }
         if query == "top-walks-by-time" {
             return query_top_walks_by_time(ctx);

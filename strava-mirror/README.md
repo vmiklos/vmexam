@@ -39,7 +39,7 @@ of existing activities.
 You can query your local activities, e.g. to see which country each activity was in:
 
 ```
-strava-mirror --query countries --html
+strava-mirror --query countries
 ```
 
 Several other less creative stats are available, e.g.:

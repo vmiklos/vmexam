@@ -584,153 +584,6 @@ fn test_mirror_activity_already_mirrored() {
 }
 
 #[test]
-fn test_query_countries() {
-    // Given an activity with location data and a nominatim cache:
-    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
-    let activities_dir = fs
-        .join(".local/share/strava-mirror/activities/2025")
-        .unwrap();
-    activities_dir.create_dir_all().unwrap();
-    let timestamp_str = "2025-04-09T07-44-48Z";
-    let base_name = format!("{}_1", timestamp_str);
-    let meta_path = activities_dir
-        .join(format!("{}.meta.json", base_name))
-        .unwrap();
-    // 47.0, 19.0 is in Hungary.
-    meta_path
-        .create_file()
-        .unwrap()
-        .write_all(b"{\"id\": 1, \"name\": \"ride 1\", \"start_time\": \"2025-04-09T07:44:48Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
-        .unwrap();
-    let data_path = activities_dir.join(format!("{}.fit", base_name)).unwrap();
-    data_path.create_file().unwrap();
-
-    let mut responses = HashMap::new();
-    responses.insert(
-        "https://nominatim.openstreetmap.org/reverse?lat=47&lon=19&format=json".to_string(),
-        NetworkResponse {
-            headers: HashMap::new(),
-            body: b"{\"address\": {\"country\": \"Hungary\"}}".to_vec(),
-        },
-    );
-    let network = Rc::new(TestNetwork { responses });
-    let cmdline = gpsbabel_cmdline("2025-04-09T07-44-48Z_1");
-    // GeoJSON coordinates are [longitude, latitude, elevation], so this is lat=47, lon=19.
-    let geojson = r#"{"features": [{"geometry": {"coordinates": [[19.0, 47.0, 149.4]]}}]}"#;
-    let command_outputs = [(cmdline.as_str(), geojson)];
-    let process = Rc::new(TestProcess::new(&command_outputs));
-    let time = Rc::new(TestTime::default());
-    let ctx = Context {
-        fs: fs.clone(),
-        network,
-        process,
-        time,
-    };
-    setup_config(&fs);
-
-    // When querying countries:
-    let args = vec![
-        "strava-mirror".to_string(),
-        "--query".to_string(),
-        "countries".to_string(),
-    ];
-    run(args, &ctx).unwrap();
-
-    // Then make sure the cache is created:
-    let cache_path = fs
-        .join(".local/share/strava-mirror/countries-cache.json")
-        .unwrap();
-    assert!(cache_path.exists().unwrap());
-}
-
-#[test]
-fn test_query_countries_summary() {
-    // Given two activities in different countries and an existing cache:
-    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
-    let activities_dir = fs
-        .join(".local/share/strava-mirror/activities/2025")
-        .unwrap();
-    activities_dir.create_dir_all().unwrap();
-    let timestamp_str = "2025-04-09T07-44-48Z";
-
-    // Activity 1 in Hungary
-    let meta_path1 = activities_dir
-        .join(format!("{}_1.meta.json", timestamp_str))
-        .unwrap();
-    meta_path1
-        .create_file()
-        .unwrap()
-        .write_all(b"{\"id\": 1, \"name\": \"ride 1\", \"start_time\": \"2025-04-09T07:44:48Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
-        .unwrap();
-
-    // Activity 2 in Austria (48.0, 16.0)
-    let meta_path2 = activities_dir
-        .join(format!("{}_2.meta.json", timestamp_str))
-        .unwrap();
-    meta_path2
-        .create_file()
-        .unwrap()
-        .write_all(b"{\"id\": 2, \"name\": \"ride 2\", \"start_time\": \"2025-04-09T07:44:48Z\", \"sport_type\": \"Ride\", \"moving_time_raw\": 3600, \"elapsed_time_raw\": 4000, \"distance_raw\": 1000.0, \"elevation_gain_raw\": 100.0}")
-        .unwrap();
-    let data_path2 = activities_dir
-        .join(format!("{}_2.fit", timestamp_str))
-        .unwrap();
-    data_path2.create_file().unwrap();
-
-    // Pre-existing cache for Hungary
-    let cache_path = fs
-        .join(".local/share/strava-mirror/countries-cache.json")
-        .unwrap();
-    cache_path.parent().create_dir_all().unwrap();
-    cache_path
-        .create_file()
-        .unwrap()
-        .write_all(b"{\"2025-04-09T07-44-48Z_1\": \"Hungary\"}")
-        .unwrap();
-
-    let mut responses = HashMap::new();
-    // Only Austria needs to be fetched, Hungary is in cache.
-    responses.insert(
-        "https://nominatim.openstreetmap.org/reverse?lat=48&lon=16&format=json".to_string(),
-        NetworkResponse {
-            headers: HashMap::new(),
-            body: b"{\"address\": {\"country\": \"Austria\"}}".to_vec(),
-        },
-    );
-    let network = Rc::new(TestNetwork { responses });
-    let cmdline = gpsbabel_cmdline("2025-04-09T07-44-48Z_2");
-    let geojson = r#"{"features": [{"geometry": {"coordinates": [[16.0, 48.0, 1.2]]}}]}"#;
-    let command_outputs = [(cmdline.as_str(), geojson)];
-    let process = Rc::new(TestProcess::new(&command_outputs));
-    let time = Rc::new(TestTime::default());
-    let ctx = Context {
-        fs: fs.clone(),
-        network,
-        process,
-        time,
-    };
-    setup_config(&fs);
-
-    // When querying countries summary:
-    let args = vec![
-        "strava-mirror".to_string(),
-        "--query".to_string(),
-        "countries".to_string(),
-        "--summary".to_string(),
-    ];
-    run(args, &ctx).unwrap();
-
-    // Then make sure the cache is updated with Austria:
-    let mut cache_content = String::new();
-    cache_path
-        .open_file()
-        .unwrap()
-        .read_to_string(&mut cache_content)
-        .unwrap();
-    assert!(cache_content.contains("Austria"));
-}
-
-#[test]
 fn test_run_unknown_query() {
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
     let network = Rc::new(TestNetwork {
@@ -877,7 +730,7 @@ fn test_run_quiet() {
 }
 
 #[test]
-fn test_query_countries_html() {
+fn test_query_countries() {
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
     let activities_dir = fs
         .join(".local/share/strava-mirror/activities/2025")
@@ -937,13 +790,7 @@ fn test_query_countries_html() {
     }
 
     let mut responses = HashMap::new();
-    responses.insert(
-        "https://nominatim.openstreetmap.org/reverse?lat=48&lon=16&format=json".to_string(),
-        NetworkResponse {
-            headers: HashMap::new(),
-            body: b"{\"address\": {\"country\": \"Austria\"}}".to_vec(),
-        },
-    );
+    // Austria is served from cache, so no Nominatim request needed for it.
     responses.insert(
         "https://nominatim.openstreetmap.org/reverse?lat=47&lon=19&format=json".to_string(),
         NetworkResponse {
@@ -967,11 +814,8 @@ fn test_query_countries_html() {
     );
     let network = Rc::new(TestNetwork { responses });
     // GeoJSON coordinates are [longitude, latitude, elevation].
+    // Only need gpsbabel for non-cached activities (HU1, HU2, DE).
     let command_outputs = [
-        (
-            gpsbabel_cmdline("2025-01-01T00-00-00Z_1"),
-            r#"{"features": [{"geometry": {"coordinates": [[16.0, 48.0, 149.4]]}}]}"#.to_string(),
-        ),
         (
             gpsbabel_cmdline("2025-02-01T00-00-00Z_2"),
             r#"{"features": [{"geometry": {"coordinates": [[19.0, 47.0, 149.4]]}}]}"#.to_string(),
@@ -999,12 +843,22 @@ fn test_query_countries_html() {
     };
     setup_config(&fs);
 
-    // When querying countries as HTML:
+    // Pre-populate cache for the Austria activity, so the cache-hit path is exercised.
+    let cache_path = fs
+        .join(".local/share/strava-mirror/countries-cache.json")
+        .unwrap();
+    cache_path.parent().create_dir_all().unwrap();
+    cache_path
+        .create_file()
+        .unwrap()
+        .write_all(b"{\"2025-01-01T00-00-00Z_1\": \"Austria\"}")
+        .unwrap();
+
+    // When querying countries:
     let args = vec![
         "strava-mirror".to_string(),
         "--query".to_string(),
         "countries".to_string(),
-        "--html".to_string(),
     ];
     run(args, &ctx).unwrap();
 }
@@ -1171,48 +1025,6 @@ fn test_mirror_activity_full_history_change() {
         .read_to_string(&mut updated_content)
         .unwrap();
     assert!(updated_content.contains("new name"));
-}
-
-#[test]
-fn test_query_custom() {
-    // Given an activity mirrored already:
-    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
-    let activities_dir = fs
-        .join(".local/share/strava-mirror/activities/2025")
-        .unwrap();
-    activities_dir.create_dir_all().unwrap();
-    let timestamp_str_1 = "2025-04-09T07-44-48Z";
-    let base_name_1 = format!("{}_1", timestamp_str_1);
-    let meta_path_1 = activities_dir
-        .join(format!("{}.meta.json", base_name_1))
-        .unwrap();
-    let activity1_content = r#"{"id": 1, "name": "myactivity", "start_time": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time_raw": 3600, "elapsed_time_raw": 4000, "distance_raw": 1000.0, "elevation_gain_raw": 100.0}"#;
-    meta_path_1
-        .create_file()
-        .unwrap()
-        .write_all(activity1_content.as_bytes())
-        .unwrap();
-
-    let network = Rc::new(TestNetwork {
-        responses: HashMap::new(),
-    });
-    let time = Rc::new(TestTime::default());
-    let ctx = Context {
-        fs: fs.clone(),
-        network,
-        process: Rc::new(TestProcess::new(&[])),
-        time,
-    };
-
-    // When querying custom:
-    let args = vec![
-        "strava-mirror".to_string(),
-        "--query".to_string(),
-        "custom".to_string(),
-    ];
-    run(args, &ctx).unwrap();
-
-    // Then no failure occurs and output was printed (stdout is not captured here, but run() returns Ok).
 }
 
 #[test]
