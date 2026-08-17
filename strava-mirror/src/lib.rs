@@ -1039,6 +1039,8 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
         page += 1;
     }
 
+    get_countries(ctx)?;
+
     Ok(())
 }
 

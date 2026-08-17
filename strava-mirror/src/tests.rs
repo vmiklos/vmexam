@@ -54,7 +54,10 @@ impl Process for TestProcess {
             "debug, TestProcess::command_output: cmdline is '{}'",
             cmdline
         );
-        Ok(self.outputs.get(&cmdline).unwrap().clone())
+        self.outputs
+            .get(&cmdline)
+            .cloned()
+            .ok_or_else(|| anyhow::anyhow!("no mock output for: {}", cmdline))
     }
 }
 
@@ -290,7 +293,7 @@ fn test_list_activities_after() {
     let meta_path_1 = activities_dir
         .join(format!("{}.meta.json", base_name_1))
         .unwrap();
-    let activity1_content = r#"{"id": 1, "start_time": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time_raw": 3600, "elapsed_time_raw": 4000, "distance_raw": 1000.0, "elevation_gain_raw": 100.0}"#;
+    let activity1_content = r#"{"id": 1, "name": "activity1", "start_time": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time_raw": 3600, "elapsed_time_raw": 4000, "distance_raw": 1000.0, "elevation_gain_raw": 100.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
@@ -401,7 +404,12 @@ fn test_mirror_activity_only_data() {
     let meta_path = activities_dir
         .join(format!("{}.meta.json", base_name))
         .unwrap();
-    meta_path.create_file().unwrap().write_all(b"{}").unwrap();
+    let meta_content = r#"{"id": 1, "name": "myactivity", "start_time": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time_raw": 3600, "elapsed_time_raw": 4000, "distance_raw": 1000.0, "elevation_gain_raw": 100.0}"#;
+    meta_path
+        .create_file()
+        .unwrap()
+        .write_all(meta_content.as_bytes())
+        .unwrap();
 
     let mut responses = HashMap::new();
     let activities_1_body = std::fs::read("src/fixtures/activities-1.json").unwrap();
@@ -533,7 +541,12 @@ fn test_mirror_activity_already_mirrored() {
     let meta_path = activities_dir
         .join(format!("{}.meta.json", base_name))
         .unwrap();
-    meta_path.create_file().unwrap().write_all(b"{}").unwrap();
+    let meta_content = r#"{"id": 1, "name": "myactivity", "start_time": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time_raw": 3600, "elapsed_time_raw": 4000, "distance_raw": 1000.0, "elevation_gain_raw": 100.0}"#;
+    meta_path
+        .create_file()
+        .unwrap()
+        .write_all(meta_content.as_bytes())
+        .unwrap();
     activities_dir
         .join(format!("{}.fit", base_name))
         .unwrap()
@@ -1044,7 +1057,7 @@ fn test_run_full_history() {
     let meta_path_1 = activities_dir
         .join(format!("{}.meta.json", base_name_1))
         .unwrap();
-    let activity1_content = r#"{"id": 1, "start_time": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time_raw": 3600, "elapsed_time_raw": 4000, "distance_raw": 1000.0, "elevation_gain_raw": 100.0}"#;
+    let activity1_content = r#"{"id": 1, "name": "activity1", "start_time": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time_raw": 3600, "elapsed_time_raw": 4000, "distance_raw": 1000.0, "elevation_gain_raw": 100.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
