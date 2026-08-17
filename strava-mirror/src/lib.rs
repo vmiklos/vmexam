@@ -609,6 +609,46 @@ fn get_longest_rides_by_year_content(
     render_activities_table(&activities, "Longest rides by year")
 }
 
+/// Queries the total distance of all activities in each year.
+fn query_total_distance_by_year(ctx: &Context) -> anyhow::Result<()> {
+    let local_activities = get_local_activities(ctx)?;
+    let markup = get_total_distance_by_year_content(local_activities)?;
+    println!("{}", wrap_in_page(markup).into_string());
+    Ok(())
+}
+
+/// Produces the HTML content for the total distance of all activities in each year.
+fn get_total_distance_by_year_content(
+    local_activities: Vec<(String, ActivityMetadata)>,
+) -> anyhow::Result<maud::Markup> {
+    let mut by_year: HashMap<i32, f64> = HashMap::new();
+    for (_, m) in local_activities {
+        *by_year.entry(m.start_time.year()).or_insert(0.0) += m.distance_raw;
+    }
+    let mut totals: Vec<(i32, f64)> = by_year.into_iter().collect();
+    totals.sort_by_key(|(year, _)| std::cmp::Reverse(*year));
+    let markup = maud::html! {
+        h1 { "Total distance by year" }
+        table border="1" {
+            thead {
+                tr {
+                    th { "Year" }
+                    th { "Total distance" }
+                }
+            }
+            tbody {
+                @for (year, distance) in &totals {
+                    tr {
+                        td { (year) }
+                        td { (format_distance(*distance)) }
+                    }
+                }
+            }
+        }
+    };
+    Ok(markup)
+}
+
 /// Produces the HTML content for the top 10 longest activities based on a custom sort key.
 fn get_top_activities_content<K>(
     local_activities: Vec<(String, ActivityMetadata)>,
@@ -832,7 +872,9 @@ fn query_all(ctx: &Context) -> anyhow::Result<()> {
     let top_rides_time_content = get_top_rides_by_time_content(local_activities.clone())?;
     let top_rides_distance_content = get_top_rides_by_distance_content(local_activities.clone())?;
     let top_rides_elevation_content = get_top_rides_by_elevation_content(local_activities.clone())?;
-    let longest_rides_by_year_content = get_longest_rides_by_year_content(local_activities)?;
+    let longest_rides_by_year_content =
+        get_longest_rides_by_year_content(local_activities.clone())?;
+    let total_distance_by_year_content = get_total_distance_by_year_content(local_activities)?;
 
     let combined_content = maud::html! {
         (countries_content)
@@ -843,6 +885,7 @@ fn query_all(ctx: &Context) -> anyhow::Result<()> {
         (top_rides_distance_content)
         (top_rides_elevation_content)
         (longest_rides_by_year_content)
+        (total_distance_by_year_content)
     };
     println!("{}", wrap_in_page(combined_content).into_string());
     Ok(())
@@ -875,7 +918,7 @@ pub struct Args {
     #[arg(short, long)]
     pub quiet: bool,
 
-    /// Query stats from local activities. Valid values: 'countries', 'custom', 'top-walks-by-time', 'top-walks-by-distance', 'top-walks-by-elevation', 'top-rides-by-time', 'top-rides-by-distance', 'top-rides-by-elevation', 'longest-rides-by-year', 'all'.
+    /// Query stats from local activities. Valid values: 'countries', 'custom', 'top-walks-by-time', 'top-walks-by-distance', 'top-walks-by-elevation', 'top-rides-by-time', 'top-rides-by-distance', 'top-rides-by-elevation', 'longest-rides-by-year', 'total-distance-by-year', 'all'.
     #[arg(long, value_name = "KIND")]
     pub query: Option<String>,
 
@@ -935,6 +978,9 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
         }
         if query == "longest-rides-by-year" {
             return query_longest_rides_by_year(ctx);
+        }
+        if query == "total-distance-by-year" {
+            return query_total_distance_by_year(ctx);
         }
         if query == "all" {
             return query_all(ctx);
