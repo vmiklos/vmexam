@@ -436,8 +436,8 @@ fn get_activity_country(
 }
 
 /// Gets the country of activities based on their start location.
-fn get_countries(ctx: &Context) -> anyhow::Result<HashMap<String, QueriedActivity>> {
-    let mut countries = HashMap::new();
+fn get_countries(ctx: &Context) -> anyhow::Result<Vec<QueriedActivity>> {
+    let mut countries = Vec::new();
     let home = &ctx.fs;
 
     let cache_path = home.join(".local/share/strava-mirror/countries-cache.json")?;
@@ -452,7 +452,7 @@ fn get_countries(ctx: &Context) -> anyhow::Result<HashMap<String, QueriedActivit
     let local_activities = get_local_activities(ctx)?;
     for (filename, metadata) in local_activities {
         if let Some(activity) = get_activity_country(ctx, &filename, metadata, &mut cache)? {
-            countries.insert(filename, activity);
+            countries.push(activity);
         }
     }
 
@@ -467,7 +467,10 @@ fn get_countries(ctx: &Context) -> anyhow::Result<HashMap<String, QueriedActivit
 
 /// Queries the top 10 longest walks by time.
 fn query_top_walks_by_time(ctx: &Context) -> anyhow::Result<()> {
-    let local_activities = get_local_activities(ctx)?;
+    let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
+        .into_iter()
+        .map(|(_, m)| m)
+        .collect();
     let markup = get_top_walks_by_time_content(local_activities)?;
     println!("{}", wrap_in_page(markup).into_string());
     Ok(())
@@ -475,7 +478,7 @@ fn query_top_walks_by_time(ctx: &Context) -> anyhow::Result<()> {
 
 /// Produces the HTML content for the top 10 longest walks by time.
 fn get_top_walks_by_time_content(
-    local_activities: Vec<(String, ActivityMetadata)>,
+    local_activities: Vec<ActivityMetadata>,
 ) -> anyhow::Result<maud::Markup> {
     get_top_activities_content(local_activities, "Walk", "Top walks by time", |m| {
         std::cmp::Reverse(m.moving_time_raw)
@@ -484,7 +487,10 @@ fn get_top_walks_by_time_content(
 
 /// Queries the top 10 longest walks by distance.
 fn query_top_walks_by_distance(ctx: &Context) -> anyhow::Result<()> {
-    let local_activities = get_local_activities(ctx)?;
+    let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
+        .into_iter()
+        .map(|(_, m)| m)
+        .collect();
     let markup = get_top_walks_by_distance_content(local_activities)?;
     println!("{}", wrap_in_page(markup).into_string());
     Ok(())
@@ -492,7 +498,7 @@ fn query_top_walks_by_distance(ctx: &Context) -> anyhow::Result<()> {
 
 /// Produces the HTML content for the top 10 longest walks by distance.
 fn get_top_walks_by_distance_content(
-    local_activities: Vec<(String, ActivityMetadata)>,
+    local_activities: Vec<ActivityMetadata>,
 ) -> anyhow::Result<maud::Markup> {
     get_top_activities_content(local_activities, "Walk", "Top walks by distance", |m| {
         std::cmp::Reverse(m.distance_raw as u64)
@@ -501,7 +507,10 @@ fn get_top_walks_by_distance_content(
 
 /// Queries the top 10 longest walks by elevation.
 fn query_top_walks_by_elevation(ctx: &Context) -> anyhow::Result<()> {
-    let local_activities = get_local_activities(ctx)?;
+    let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
+        .into_iter()
+        .map(|(_, m)| m)
+        .collect();
     let markup = get_top_walks_by_elevation_content(local_activities)?;
     println!("{}", wrap_in_page(markup).into_string());
     Ok(())
@@ -509,7 +518,7 @@ fn query_top_walks_by_elevation(ctx: &Context) -> anyhow::Result<()> {
 
 /// Produces the HTML content for the top 10 longest walks by elevation.
 fn get_top_walks_by_elevation_content(
-    local_activities: Vec<(String, ActivityMetadata)>,
+    local_activities: Vec<ActivityMetadata>,
 ) -> anyhow::Result<maud::Markup> {
     get_top_activities_content(local_activities, "Walk", "Top walks by elevation", |m| {
         std::cmp::Reverse(m.elevation_gain_raw as u64)
@@ -518,7 +527,10 @@ fn get_top_walks_by_elevation_content(
 
 /// Queries the top 10 longest rides by time.
 fn query_top_rides_by_time(ctx: &Context) -> anyhow::Result<()> {
-    let local_activities = get_local_activities(ctx)?;
+    let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
+        .into_iter()
+        .map(|(_, m)| m)
+        .collect();
     let markup = get_top_rides_by_time_content(local_activities)?;
     println!("{}", wrap_in_page(markup).into_string());
     Ok(())
@@ -526,7 +538,7 @@ fn query_top_rides_by_time(ctx: &Context) -> anyhow::Result<()> {
 
 /// Produces the HTML content for the top 10 longest rides by time.
 fn get_top_rides_by_time_content(
-    local_activities: Vec<(String, ActivityMetadata)>,
+    local_activities: Vec<ActivityMetadata>,
 ) -> anyhow::Result<maud::Markup> {
     get_top_activities_content(local_activities, "Ride", "Top rides by time", |m| {
         std::cmp::Reverse(m.moving_time_raw)
@@ -535,7 +547,10 @@ fn get_top_rides_by_time_content(
 
 /// Queries the top 10 longest rides by distance.
 fn query_top_rides_by_distance(ctx: &Context) -> anyhow::Result<()> {
-    let local_activities = get_local_activities(ctx)?;
+    let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
+        .into_iter()
+        .map(|(_, m)| m)
+        .collect();
     let markup = get_top_rides_by_distance_content(local_activities)?;
     println!("{}", wrap_in_page(markup).into_string());
     Ok(())
@@ -543,7 +558,7 @@ fn query_top_rides_by_distance(ctx: &Context) -> anyhow::Result<()> {
 
 /// Produces the HTML content for the top 10 longest rides by distance.
 fn get_top_rides_by_distance_content(
-    local_activities: Vec<(String, ActivityMetadata)>,
+    local_activities: Vec<ActivityMetadata>,
 ) -> anyhow::Result<maud::Markup> {
     get_top_activities_content(local_activities, "Ride", "Top rides by distance", |m| {
         std::cmp::Reverse(m.distance_raw as u64)
@@ -552,7 +567,10 @@ fn get_top_rides_by_distance_content(
 
 /// Queries the top 10 longest rides by elevation.
 fn query_top_rides_by_elevation(ctx: &Context) -> anyhow::Result<()> {
-    let local_activities = get_local_activities(ctx)?;
+    let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
+        .into_iter()
+        .map(|(_, m)| m)
+        .collect();
     let markup = get_top_rides_by_elevation_content(local_activities)?;
     println!("{}", wrap_in_page(markup).into_string());
     Ok(())
@@ -560,7 +578,7 @@ fn query_top_rides_by_elevation(ctx: &Context) -> anyhow::Result<()> {
 
 /// Produces the HTML content for the top 10 longest rides by elevation.
 fn get_top_rides_by_elevation_content(
-    local_activities: Vec<(String, ActivityMetadata)>,
+    local_activities: Vec<ActivityMetadata>,
 ) -> anyhow::Result<maud::Markup> {
     get_top_activities_content(local_activities, "Ride", "Top rides by elevation", |m| {
         std::cmp::Reverse(m.elevation_gain_raw as u64)
@@ -569,7 +587,10 @@ fn get_top_rides_by_elevation_content(
 
 /// Queries the longest ride by distance in each year.
 fn query_longest_rides_by_year(ctx: &Context) -> anyhow::Result<()> {
-    let local_activities = get_local_activities(ctx)?;
+    let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
+        .into_iter()
+        .map(|(_, m)| m)
+        .collect();
     let markup = get_longest_rides_by_year_content(local_activities)?;
     println!("{}", wrap_in_page(markup).into_string());
     Ok(())
@@ -577,11 +598,11 @@ fn query_longest_rides_by_year(ctx: &Context) -> anyhow::Result<()> {
 
 /// Produces the HTML content for the longest ride by distance in each year.
 fn get_longest_rides_by_year_content(
-    mut local_activities: Vec<(String, ActivityMetadata)>,
+    mut local_activities: Vec<ActivityMetadata>,
 ) -> anyhow::Result<maud::Markup> {
     let mut by_year: HashMap<i32, ActivityMetadata> = HashMap::new();
-    local_activities.sort_by_key(|m| std::cmp::Reverse(m.0.to_string()));
-    for (_, m) in local_activities {
+    local_activities.sort_by_key(|m| std::cmp::Reverse(m.start_time));
+    for m in local_activities {
         if m.sport_type != "Ride" {
             continue;
         }
@@ -601,7 +622,10 @@ fn get_longest_rides_by_year_content(
 
 /// Queries the total distance of all activities in each year.
 fn query_total_distance_by_year(ctx: &Context) -> anyhow::Result<()> {
-    let local_activities = get_local_activities(ctx)?;
+    let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
+        .into_iter()
+        .map(|(_, m)| m)
+        .collect();
     let markup = get_total_distance_by_year_content(local_activities)?;
     println!("{}", wrap_in_page(markup).into_string());
     Ok(())
@@ -609,10 +633,10 @@ fn query_total_distance_by_year(ctx: &Context) -> anyhow::Result<()> {
 
 /// Produces the HTML content for the total distance of all activities in each year.
 fn get_total_distance_by_year_content(
-    local_activities: Vec<(String, ActivityMetadata)>,
+    local_activities: Vec<ActivityMetadata>,
 ) -> anyhow::Result<maud::Markup> {
     let mut by_year: HashMap<i32, f64> = HashMap::new();
-    for (_, m) in local_activities {
+    for m in local_activities {
         *by_year.entry(m.start_time.year()).or_insert(0.0) += m.distance_raw;
     }
     let mut totals: Vec<(i32, f64)> = by_year.into_iter().collect();
@@ -641,7 +665,7 @@ fn get_total_distance_by_year_content(
 
 /// Produces the HTML content for the top 10 longest activities based on a custom sort key.
 fn get_top_activities_content<K>(
-    local_activities: Vec<(String, ActivityMetadata)>,
+    local_activities: Vec<ActivityMetadata>,
     sport_type: &str,
     title: &str,
     mut sort_key: impl FnMut(&ActivityMetadata) -> K,
@@ -651,7 +675,6 @@ where
 {
     let mut activities: Vec<ActivityMetadata> = local_activities
         .into_iter()
-        .map(|(_, m)| m)
         .filter(|m| m.sport_type == sport_type)
         .collect();
     activities.sort_by_key(|m| sort_key(m));
@@ -722,12 +745,12 @@ struct CountryItem {
 
 /// Produces the HTML content for country statistics.
 fn get_countries_html_content(
-    activities_map: HashMap<String, QueriedActivity>,
+    activities: Vec<QueriedActivity>,
     time: &dyn Time,
 ) -> anyhow::Result<maud::Markup> {
     let mut country_activities: HashMap<String, Vec<QueriedActivity>> = HashMap::new();
 
-    for (_filename, activity) in activities_map {
+    for activity in activities {
         country_activities
             .entry(activity.country.to_string())
             .or_default()
@@ -822,13 +845,11 @@ fn wrap_in_page(content: maud::Markup) -> maud::Markup {
 
 /// Queries all statistics.
 fn query_all(ctx: &Context) -> anyhow::Result<()> {
-    let activities_map = get_countries(ctx)?;
-    let countries_content = get_countries_html_content(activities_map.clone(), ctx.time.as_ref())?;
+    let activities = get_countries(ctx)?;
+    let countries_content = get_countries_html_content(activities.clone(), ctx.time.as_ref())?;
 
-    let local_activities: Vec<(String, ActivityMetadata)> = activities_map
-        .into_iter()
-        .map(|(f, a)| (f, a.metadata))
-        .collect();
+    let local_activities: Vec<ActivityMetadata> =
+        activities.into_iter().map(|a| a.metadata).collect();
     let top_walks_time_content = get_top_walks_by_time_content(local_activities.clone())?;
     let top_walks_distance_content = get_top_walks_by_distance_content(local_activities.clone())?;
     let top_walks_elevation_content = get_top_walks_by_elevation_content(local_activities.clone())?;
