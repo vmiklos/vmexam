@@ -480,9 +480,13 @@ fn query_top_walks_by_time(ctx: &Context) -> anyhow::Result<()> {
 fn get_top_walks_by_time_content(
     local_activities: Vec<ActivityMetadata>,
 ) -> anyhow::Result<maud::Markup> {
-    get_top_activities_content(local_activities, "Walk", "Top walks by time", |m| {
-        std::cmp::Reverse(m.moving_time_raw)
-    })
+    get_top_activities_content(
+        local_activities,
+        "top-walks-by-time",
+        "Walk",
+        "Top walks by time",
+        |m| std::cmp::Reverse(m.moving_time_raw),
+    )
 }
 
 /// Queries the top 10 longest walks by distance.
@@ -500,9 +504,13 @@ fn query_top_walks_by_distance(ctx: &Context) -> anyhow::Result<()> {
 fn get_top_walks_by_distance_content(
     local_activities: Vec<ActivityMetadata>,
 ) -> anyhow::Result<maud::Markup> {
-    get_top_activities_content(local_activities, "Walk", "Top walks by distance", |m| {
-        std::cmp::Reverse(m.distance_raw as u64)
-    })
+    get_top_activities_content(
+        local_activities,
+        "top-walks-by-distance",
+        "Walk",
+        "Top walks by distance",
+        |m| std::cmp::Reverse(m.distance_raw as u64),
+    )
 }
 
 /// Queries the top 10 longest walks by elevation.
@@ -520,9 +528,13 @@ fn query_top_walks_by_elevation(ctx: &Context) -> anyhow::Result<()> {
 fn get_top_walks_by_elevation_content(
     local_activities: Vec<ActivityMetadata>,
 ) -> anyhow::Result<maud::Markup> {
-    get_top_activities_content(local_activities, "Walk", "Top walks by elevation", |m| {
-        std::cmp::Reverse(m.elevation_gain_raw as u64)
-    })
+    get_top_activities_content(
+        local_activities,
+        "top-walks-by-elevation",
+        "Walk",
+        "Top walks by elevation",
+        |m| std::cmp::Reverse(m.elevation_gain_raw as u64),
+    )
 }
 
 /// Queries the top 10 longest rides by time.
@@ -540,9 +552,13 @@ fn query_top_rides_by_time(ctx: &Context) -> anyhow::Result<()> {
 fn get_top_rides_by_time_content(
     local_activities: Vec<ActivityMetadata>,
 ) -> anyhow::Result<maud::Markup> {
-    get_top_activities_content(local_activities, "Ride", "Top rides by time", |m| {
-        std::cmp::Reverse(m.moving_time_raw)
-    })
+    get_top_activities_content(
+        local_activities,
+        "top-rides-by-time",
+        "Ride",
+        "Top rides by time",
+        |m| std::cmp::Reverse(m.moving_time_raw),
+    )
 }
 
 /// Queries the top 10 longest rides by distance.
@@ -560,9 +576,13 @@ fn query_top_rides_by_distance(ctx: &Context) -> anyhow::Result<()> {
 fn get_top_rides_by_distance_content(
     local_activities: Vec<ActivityMetadata>,
 ) -> anyhow::Result<maud::Markup> {
-    get_top_activities_content(local_activities, "Ride", "Top rides by distance", |m| {
-        std::cmp::Reverse(m.distance_raw as u64)
-    })
+    get_top_activities_content(
+        local_activities,
+        "top-rides-by-distance",
+        "Ride",
+        "Top rides by distance",
+        |m| std::cmp::Reverse(m.distance_raw as u64),
+    )
 }
 
 /// Queries the top 10 longest rides by elevation.
@@ -580,9 +600,13 @@ fn query_top_rides_by_elevation(ctx: &Context) -> anyhow::Result<()> {
 fn get_top_rides_by_elevation_content(
     local_activities: Vec<ActivityMetadata>,
 ) -> anyhow::Result<maud::Markup> {
-    get_top_activities_content(local_activities, "Ride", "Top rides by elevation", |m| {
-        std::cmp::Reverse(m.elevation_gain_raw as u64)
-    })
+    get_top_activities_content(
+        local_activities,
+        "top-rides-by-elevation",
+        "Ride",
+        "Top rides by elevation",
+        |m| std::cmp::Reverse(m.elevation_gain_raw as u64),
+    )
 }
 
 /// Queries the longest ride by distance in each year.
@@ -617,7 +641,11 @@ fn get_longest_rides_by_year_content(
     }
     let mut activities: Vec<ActivityMetadata> = by_year.into_values().collect();
     activities.sort_by_key(|m| std::cmp::Reverse(m.start_time.year()));
-    render_activities_table(&activities, "Longest rides by year")
+    render_activities_table(
+        &activities,
+        "longest-rides-by-year",
+        "Longest rides by year",
+    )
 }
 
 /// Queries the total distance of all activities in each year.
@@ -642,7 +670,7 @@ fn get_total_distance_by_year_content(
     let mut totals: Vec<(i32, f64)> = by_year.into_iter().collect();
     totals.sort_by_key(|(year, _)| std::cmp::Reverse(*year));
     let markup = maud::html! {
-        h1 { "Total distance by year" }
+        h1 id="total-distance-by-year" { "Total distance by year" }
         table border="1" {
             thead {
                 tr {
@@ -666,6 +694,7 @@ fn get_total_distance_by_year_content(
 /// Produces the HTML content for the top 10 longest activities based on a custom sort key.
 fn get_top_activities_content<K>(
     local_activities: Vec<ActivityMetadata>,
+    id: &str,
     sport_type: &str,
     title: &str,
     mut sort_key: impl FnMut(&ActivityMetadata) -> K,
@@ -679,17 +708,18 @@ where
         .collect();
     activities.sort_by_key(|m| sort_key(m));
     let top_10 = &activities[..std::cmp::min(10, activities.len())];
-    render_activities_table(top_10, title)
+    render_activities_table(top_10, id, title)
 }
 
 /// Renders a list of activities as an HTML table with the given title.
 fn render_activities_table(
     activities: &[ActivityMetadata],
+    id: &str,
     title: &str,
 ) -> anyhow::Result<maud::Markup> {
     let format = time::format_description::parse_borrowed::<1>(DISPLAY_TIMESTAMP_FORMAT)?;
     let markup = maud::html! {
-        h1 { (title) }
+        h1 id=(id) { (title) }
         table border="1" {
             thead {
                 tr {
@@ -788,7 +818,7 @@ fn get_countries_html_content(
     }
 
     let markup = maud::html! {
-        h1 { "Countries" }
+        h1 id="countries" { "Countries" }
         p {
             (total_activities)
             " activities in "
@@ -860,7 +890,33 @@ fn query_all(ctx: &Context) -> anyhow::Result<()> {
         get_longest_rides_by_year_content(local_activities.clone())?;
     let total_distance_by_year_content = get_total_distance_by_year_content(local_activities)?;
 
+    let sections = [
+        ("countries", "Countries"),
+        ("top-walks-by-time", "Top walks by time"),
+        ("top-walks-by-distance", "Top walks by distance"),
+        ("top-walks-by-elevation", "Top walks by elevation"),
+        ("top-rides-by-time", "Top rides by time"),
+        ("top-rides-by-distance", "Top rides by distance"),
+        ("top-rides-by-elevation", "Top rides by elevation"),
+        ("longest-rides-by-year", "Longest rides by year"),
+        ("total-distance-by-year", "Total distance by year"),
+    ];
+
+    let toc = maud::html! {
+        h1 id="table-of-contents" { "Table of contents" }
+        ul {
+            @for (id, title) in &sections {
+                li {
+                    a href=(format!("#{}", id)) {
+                        (title)
+                    }
+                }
+            }
+        }
+    };
+
     let combined_content = maud::html! {
+        (toc)
         (countries_content)
         (top_walks_time_content)
         (top_walks_distance_content)
