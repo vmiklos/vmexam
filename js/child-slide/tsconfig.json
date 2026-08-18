@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+	"sourceMap": true,
+	"strict": true,
+	"erasableSyntaxOnly": true,
+        "lib": [
+            "dom",
+            "es2021"
+        ],
+	"module": "es6",
+	"moduleResolution": "node"
+    }
+}

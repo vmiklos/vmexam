@@ -1,0 +1,16 @@
+{
+  "name": "child-slide",
+  "version": "1.0.0",
+  "description": "child-slide",
+  "author": "Miklos Vajna",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "24.4.0",
+    "eslint": "9.35.0",
+    "ts-loader": "9.5.4",
+    "typescript": "5.9.2",
+    "typescript-eslint": "8.44.0",
+    "webpack": "5.104.1",
+    "webpack-cli": "6.0.1"
+  }
+}
