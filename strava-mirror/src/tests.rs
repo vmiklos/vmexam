@@ -1525,6 +1525,74 @@ fn test_query_total_distance_by_year() {
 }
 
 #[test]
+fn test_query_activity_count_by_year() {
+    // Given two rides in one year and one ride in another year:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir_2024 = fs
+        .join(".local/share/strava-mirror/activities/2024")
+        .unwrap();
+    activities_dir_2024.create_dir_all().unwrap();
+    let activities_dir_2025 = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    activities_dir_2025.create_dir_all().unwrap();
+
+    // 1. Ride in 2024.
+    let meta_path_1 = activities_dir_2024
+        .join("2024-01-01T10-00-00Z_1.meta.json")
+        .unwrap();
+    let content_1 = r#"{"id": 1, "name": "2024 ride", "start_time": "2024-01-01T10:00:00Z", "sport_type": "Ride", "moving_time_raw": 5000, "elapsed_time_raw": 5400, "distance_raw": 25000.0, "elevation_gain_raw": 500.0}"#;
+    meta_path_1
+        .create_file()
+        .unwrap()
+        .write_all(content_1.as_bytes())
+        .unwrap();
+
+    // 2. Ride in 2025.
+    let meta_path_2 = activities_dir_2025
+        .join("2025-01-01T10-00-00Z_2.meta.json")
+        .unwrap();
+    let content_2 = r#"{"id": 2, "name": "2025 ride", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Ride", "moving_time_raw": 5000, "elapsed_time_raw": 5400, "distance_raw": 30000.0, "elevation_gain_raw": 500.0}"#;
+    meta_path_2
+        .create_file()
+        .unwrap()
+        .write_all(content_2.as_bytes())
+        .unwrap();
+
+    // 3. Walk in 2025, also counted.
+    let meta_path_3 = activities_dir_2025
+        .join("2025-01-02T10-00-00Z_3.meta.json")
+        .unwrap();
+    let content_3 = r#"{"id": 3, "name": "2025 walk", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Walk", "moving_time_raw": 10000, "elapsed_time_raw": 10400, "distance_raw": 10000.0, "elevation_gain_raw": 500.0}"#;
+    meta_path_3
+        .create_file()
+        .unwrap()
+        .write_all(content_3.as_bytes())
+        .unwrap();
+
+    let network = Rc::new(TestNetwork {
+        responses: HashMap::new(),
+    });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        process: Rc::new(TestProcess::new(&[])),
+        time,
+    };
+
+    // When querying the activity count by year:
+    let args = vec![
+        "strava-mirror".to_string(),
+        "--query".to_string(),
+        "activity-count-by-year".to_string(),
+    ];
+    run(args, &ctx).unwrap();
+
+    // Then no failure occurs.
+}
+
+#[test]
 fn test_query_all() {
     // Given some activities:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
