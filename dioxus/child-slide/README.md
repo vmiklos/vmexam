@@ -24,3 +24,7 @@ a UI that redirects to the video URL where the kid is closest to the selected ag
     }
 }
 ```
+
+## Development notes
+
+If you use `dx serve`, then place your .json in a directory named `public/`.
