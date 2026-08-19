@@ -1593,6 +1593,68 @@ fn test_query_activity_count_by_year() {
 }
 
 #[test]
+fn test_query_activity_type_breakdown() {
+    // Given a ride and a walk:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    activities_dir.create_dir_all().unwrap();
+
+    let meta_path_1 = activities_dir
+        .join("2025-01-01T10-00-00Z_1.meta.json")
+        .unwrap();
+    let content_1 = r#"{"id": 1, "name": "ride", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Ride", "moving_time_raw": 5000, "elapsed_time_raw": 5400, "distance_raw": 25000.0, "elevation_gain_raw": 500.0}"#;
+    meta_path_1
+        .create_file()
+        .unwrap()
+        .write_all(content_1.as_bytes())
+        .unwrap();
+
+    let meta_path_2 = activities_dir
+        .join("2025-01-02T10-00-00Z_2.meta.json")
+        .unwrap();
+    let content_2 = r#"{"id": 2, "name": "walk", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Walk", "moving_time_raw": 10000, "elapsed_time_raw": 10400, "distance_raw": 10000.0, "elevation_gain_raw": 500.0}"#;
+    meta_path_2
+        .create_file()
+        .unwrap()
+        .write_all(content_2.as_bytes())
+        .unwrap();
+
+    // 3. Later ride, becomes the latest Ride.
+    let meta_path_3 = activities_dir
+        .join("2025-06-01T10-00-00Z_3.meta.json")
+        .unwrap();
+    let content_3 = r#"{"id": 3, "name": "later ride", "start_time": "2025-06-01T10:00:00Z", "sport_type": "Ride", "moving_time_raw": 3000, "elapsed_time_raw": 3400, "distance_raw": 15000.0, "elevation_gain_raw": 200.0}"#;
+    meta_path_3
+        .create_file()
+        .unwrap()
+        .write_all(content_3.as_bytes())
+        .unwrap();
+
+    let network = Rc::new(TestNetwork {
+        responses: HashMap::new(),
+    });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        process: Rc::new(TestProcess::new(&[])),
+        time,
+    };
+
+    // When querying the activity type breakdown:
+    let args = vec![
+        "strava-mirror".to_string(),
+        "--query".to_string(),
+        "activity-type-breakdown".to_string(),
+    ];
+    run(args, &ctx).unwrap();
+
+    // Then no failure occurs.
+}
+
+#[test]
 fn test_query_all() {
     // Given some activities:
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());

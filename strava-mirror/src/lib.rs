@@ -702,6 +702,73 @@ fn query_activity_count_by_year(ctx: &Context) -> anyhow::Result<()> {
     Ok(())
 }
 
+/// Produces the HTML content for a breakdown of activities by sport type.
+fn get_activity_type_breakdown_content(
+    local_activities: Vec<ActivityMetadata>,
+) -> anyhow::Result<maud::Markup> {
+    let mut by_type: HashMap<String, i32> = HashMap::new();
+    let mut latest_by_type: HashMap<String, &ActivityMetadata> = HashMap::new();
+    for m in &local_activities {
+        *by_type.entry(m.sport_type.clone()).or_insert(0) += 1;
+        let dominated = latest_by_type
+            .get(&m.sport_type)
+            .is_none_or(|best| m.start_time > best.start_time);
+        if dominated {
+            latest_by_type.insert(m.sport_type.clone(), m);
+        }
+    }
+    let total = local_activities.len() as f64;
+    let mut rows: Vec<(String, i32)> = by_type.into_iter().collect();
+    rows.sort_by_key(|(sport, _)| sport.clone());
+    let markup = maud::html! {
+        h1 id="activity-type-breakdown" { "Activity type breakdown" }
+        table border="1" {
+            thead {
+                tr {
+                    th { "Type" }
+                    th { "Count" }
+                    th { "Percentage" }
+                    th { "Latest" }
+                }
+            }
+            tbody {
+                @for (sport, count) in &rows {
+                    tr {
+                        td { (sport) }
+                        td { (count) }
+                        td { (format!("{:.1}%", *count as f64 / total * 100.0)) }
+                        td {
+                            @if let Some(activity) = latest_by_type.get(sport) {
+                                a href=(format!("https://www.strava.com/activities/{}", activity.id)) {
+                                    (activity.name)
+                                }
+                            }
+                        }
+                    }
+                }
+                tr {
+                    td { b { "Total" } }
+                    td { b { (local_activities.len()) } }
+                    td { b { "100.0%" } }
+                    td {}
+                }
+            }
+        }
+    };
+    Ok(markup)
+}
+
+/// Queries the activity type breakdown.
+fn query_activity_type_breakdown(ctx: &Context) -> anyhow::Result<()> {
+    let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
+        .into_iter()
+        .map(|(_, m)| m)
+        .collect();
+    let markup = get_activity_type_breakdown_content(local_activities)?;
+    println!("{}", wrap_in_page(markup).into_string());
+    Ok(())
+}
+
 /// Produces the HTML content for the total distance of all activities in each year.
 fn get_total_distance_by_year_content(
     local_activities: Vec<ActivityMetadata>,
@@ -933,7 +1000,9 @@ fn query_all(ctx: &Context) -> anyhow::Result<()> {
         get_longest_rides_by_year_content(local_activities.clone())?;
     let total_distance_by_year_content =
         get_total_distance_by_year_content(local_activities.clone())?;
-    let activity_count_by_year_content = get_activity_count_by_year_content(local_activities)?;
+    let activity_count_by_year_content =
+        get_activity_count_by_year_content(local_activities.clone())?;
+    let activity_type_breakdown_content = get_activity_type_breakdown_content(local_activities)?;
 
     let sections = [
         ("countries", "Countries"),
@@ -946,6 +1015,7 @@ fn query_all(ctx: &Context) -> anyhow::Result<()> {
         ("longest-rides-by-year", "Longest rides by year"),
         ("total-distance-by-year", "Total distance by year"),
         ("activity-count-by-year", "Activity count by year"),
+        ("activity-type-breakdown", "Activity type breakdown"),
     ];
 
     let toc = maud::html! {
@@ -973,6 +1043,7 @@ fn query_all(ctx: &Context) -> anyhow::Result<()> {
         (longest_rides_by_year_content)
         (total_distance_by_year_content)
         (activity_count_by_year_content)
+        (activity_type_breakdown_content)
     };
     println!("{}", wrap_in_page(combined_content).into_string());
     Ok(())
@@ -1054,6 +1125,9 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
         }
         if query == "activity-count-by-year" {
             return query_activity_count_by_year(ctx);
+        }
+        if query == "activity-type-breakdown" {
+            return query_activity_type_breakdown(ctx);
         }
         if query == "all" {
             return query_all(ctx);
