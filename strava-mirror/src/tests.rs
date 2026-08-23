@@ -138,8 +138,9 @@ fn test_no_activities() {
     setup_config(&fs);
 
     // When mirroring activities:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec!["strava-mirror".to_string()];
-    let ret = run(args, &ctx);
+    let ret = run(args, &mut buf, &ctx);
 
     // Then make sure there is no failure:
     assert!(ret.is_ok());
@@ -170,8 +171,9 @@ fn test_jwt_to_cookie_error() {
         .unwrap();
 
     // When mirroring activities:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec!["strava-mirror".to_string()];
-    let ret = run(args, &ctx);
+    let ret = run(args, &mut buf, &ctx);
 
     // Then make sure there is a failure:
     assert!(ret.is_err());
@@ -200,8 +202,9 @@ fn test_jwt_to_cookie_expired() {
     setup_config(&fs);
 
     // When mirroring activities:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec!["strava-mirror".to_string()];
-    let ret = run(args, &ctx);
+    let ret = run(args, &mut buf, &ctx);
 
     // Then make sure there is a failure:
     assert!(ret.is_err());
@@ -255,8 +258,9 @@ fn test_mirror_activity() {
     setup_config(&fs);
 
     // When mirroring activities:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec!["strava-mirror".to_string()];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then make sure the 2 expeced files are created:
     let activities_dir = fs
@@ -339,8 +343,9 @@ fn test_list_activities_after() {
     setup_config(&fs);
 
     // When doing incremental mirroring to get the second activity:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec!["strava-mirror".to_string()];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then make sure at the end we have the second activity mirrroed, too:
     let timestamp_str_2 = "2025-04-10T07-44-48Z";
@@ -453,8 +458,9 @@ fn test_mirror_activity_only_data() {
     setup_config(&fs);
 
     // When mirroring activities:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec!["strava-mirror".to_string()];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then make sure the data file is created:
     assert!(
@@ -515,8 +521,9 @@ fn test_mirror_activity_skip_data() {
     setup_config(&fs);
 
     // When mirroring activities:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec!["strava-mirror".to_string()];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then make sure the meta file is created (and the data download was skipped):
     assert!(
@@ -577,8 +584,9 @@ fn test_mirror_activity_already_mirrored() {
     setup_config(&fs);
 
     // When mirroring activities:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec!["strava-mirror".to_string()];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then nothing should be downloaded (verified by lack of unexpected network requests).
 }
@@ -598,12 +606,13 @@ fn test_run_unknown_query() {
     };
     setup_config(&fs);
 
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec![
         "strava-mirror".to_string(),
         "--query".to_string(),
         "unknown".to_string(),
     ];
-    let ret = run(args, &ctx);
+    let ret = run(args, &mut buf, &ctx);
     assert!(ret.is_err());
     assert_eq!(ret.unwrap_err().to_string(), "unknown query: unknown");
 }
@@ -722,8 +731,9 @@ fn test_run_quiet() {
     setup_config(&fs);
 
     // When mirroring activities with --quiet:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec!["strava-mirror".to_string(), "--quiet".to_string()];
-    let ret = run(args, &ctx);
+    let ret = run(args, &mut buf, &ctx);
 
     // Then make sure there is no failure:
     assert!(ret.is_ok());
@@ -757,8 +767,9 @@ fn test_rate_limit_sleep() {
     setup_config(&fs);
 
     // When mirroring activities:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec!["strava-mirror".to_string()];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then make sure sleep was called:
     assert!(time.sleep_called.get());
@@ -810,8 +821,9 @@ fn test_run_full_history() {
     setup_config(&fs);
 
     // When mirroring activities with --full-history:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec!["strava-mirror".to_string(), "--full-history".to_string()];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then no panic occurs (meaning the URL matched the one without &after=).
 }
@@ -880,8 +892,9 @@ fn test_mirror_activity_full_history_change() {
     setup_config(&fs);
 
     // When mirroring activities with --full-history:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec!["strava-mirror".to_string(), "--full-history".to_string()];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then the local file is updated:
     let mut updated_content = String::new();

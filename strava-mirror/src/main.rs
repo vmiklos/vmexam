@@ -94,5 +94,5 @@ fn main() -> anyhow::Result<()> {
         time,
     };
 
-    strava_mirror::run(std::env::args().collect(), &ctx)
+    strava_mirror::run(std::env::args().collect(), &mut std::io::stdout(), &ctx)
 }

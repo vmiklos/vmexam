@@ -138,13 +138,16 @@ fn render_activities_table(
 }
 
 /// Queries the top 10 longest walks by time.
-pub(crate) fn query_top_walks_by_time(ctx: &Context) -> anyhow::Result<()> {
+pub(crate) fn query_top_walks_by_time(
+    ctx: &Context,
+    stdout: &mut dyn std::io::Write,
+) -> anyhow::Result<()> {
     let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
         .into_iter()
         .map(|(_, m)| m)
         .collect();
     let markup = get_top_walks_by_time_content(local_activities)?;
-    println!("{}", wrap_in_page(markup).into_string());
+    writeln!(stdout, "{}", wrap_in_page(markup).into_string())?;
     Ok(())
 }
 
@@ -162,13 +165,16 @@ fn get_top_walks_by_time_content(
 }
 
 /// Queries the top 10 longest walks by distance.
-pub(crate) fn query_top_walks_by_distance(ctx: &Context) -> anyhow::Result<()> {
+pub(crate) fn query_top_walks_by_distance(
+    ctx: &Context,
+    stdout: &mut dyn std::io::Write,
+) -> anyhow::Result<()> {
     let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
         .into_iter()
         .map(|(_, m)| m)
         .collect();
     let markup = get_top_walks_by_distance_content(local_activities)?;
-    println!("{}", wrap_in_page(markup).into_string());
+    writeln!(stdout, "{}", wrap_in_page(markup).into_string())?;
     Ok(())
 }
 
@@ -186,13 +192,16 @@ fn get_top_walks_by_distance_content(
 }
 
 /// Queries the top 10 longest walks by elevation.
-pub(crate) fn query_top_walks_by_elevation(ctx: &Context) -> anyhow::Result<()> {
+pub(crate) fn query_top_walks_by_elevation(
+    ctx: &Context,
+    stdout: &mut dyn std::io::Write,
+) -> anyhow::Result<()> {
     let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
         .into_iter()
         .map(|(_, m)| m)
         .collect();
     let markup = get_top_walks_by_elevation_content(local_activities)?;
-    println!("{}", wrap_in_page(markup).into_string());
+    writeln!(stdout, "{}", wrap_in_page(markup).into_string())?;
     Ok(())
 }
 
@@ -210,13 +219,16 @@ fn get_top_walks_by_elevation_content(
 }
 
 /// Queries the top 10 longest rides by time.
-pub(crate) fn query_top_rides_by_time(ctx: &Context) -> anyhow::Result<()> {
+pub(crate) fn query_top_rides_by_time(
+    ctx: &Context,
+    stdout: &mut dyn std::io::Write,
+) -> anyhow::Result<()> {
     let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
         .into_iter()
         .map(|(_, m)| m)
         .collect();
     let markup = get_top_rides_by_time_content(local_activities)?;
-    println!("{}", wrap_in_page(markup).into_string());
+    writeln!(stdout, "{}", wrap_in_page(markup).into_string())?;
     Ok(())
 }
 
@@ -234,13 +246,16 @@ fn get_top_rides_by_time_content(
 }
 
 /// Queries the top 10 longest rides by distance.
-pub(crate) fn query_top_rides_by_distance(ctx: &Context) -> anyhow::Result<()> {
+pub(crate) fn query_top_rides_by_distance(
+    ctx: &Context,
+    stdout: &mut dyn std::io::Write,
+) -> anyhow::Result<()> {
     let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
         .into_iter()
         .map(|(_, m)| m)
         .collect();
     let markup = get_top_rides_by_distance_content(local_activities)?;
-    println!("{}", wrap_in_page(markup).into_string());
+    writeln!(stdout, "{}", wrap_in_page(markup).into_string())?;
     Ok(())
 }
 
@@ -258,13 +273,16 @@ fn get_top_rides_by_distance_content(
 }
 
 /// Queries the top 10 longest rides by elevation.
-pub(crate) fn query_top_rides_by_elevation(ctx: &Context) -> anyhow::Result<()> {
+pub(crate) fn query_top_rides_by_elevation(
+    ctx: &Context,
+    stdout: &mut dyn std::io::Write,
+) -> anyhow::Result<()> {
     let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
         .into_iter()
         .map(|(_, m)| m)
         .collect();
     let markup = get_top_rides_by_elevation_content(local_activities)?;
-    println!("{}", wrap_in_page(markup).into_string());
+    writeln!(stdout, "{}", wrap_in_page(markup).into_string())?;
     Ok(())
 }
 
@@ -282,13 +300,16 @@ fn get_top_rides_by_elevation_content(
 }
 
 /// Queries the longest ride by distance in each year.
-pub(crate) fn query_longest_rides_by_year(ctx: &Context) -> anyhow::Result<()> {
+pub(crate) fn query_longest_rides_by_year(
+    ctx: &Context,
+    stdout: &mut dyn std::io::Write,
+) -> anyhow::Result<()> {
     let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
         .into_iter()
         .map(|(_, m)| m)
         .collect();
     let markup = get_longest_rides_by_year_content(local_activities)?;
-    println!("{}", wrap_in_page(markup).into_string());
+    writeln!(stdout, "{}", wrap_in_page(markup).into_string())?;
     Ok(())
 }
 
@@ -321,13 +342,16 @@ fn get_longest_rides_by_year_content(
 }
 
 /// Queries the total distance of all activities in each year.
-pub(crate) fn query_total_distance_by_year(ctx: &Context) -> anyhow::Result<()> {
+pub(crate) fn query_total_distance_by_year(
+    ctx: &Context,
+    stdout: &mut dyn std::io::Write,
+) -> anyhow::Result<()> {
     let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
         .into_iter()
         .map(|(_, m)| m)
         .collect();
     let markup = get_total_distance_by_year_content(local_activities)?;
-    println!("{}", wrap_in_page(markup).into_string());
+    writeln!(stdout, "{}", wrap_in_page(markup).into_string())?;
     Ok(())
 }
 
@@ -364,13 +388,16 @@ fn get_total_distance_by_year_content(
 }
 
 /// Queries the activity count in each year.
-pub(crate) fn query_activity_count_by_year(ctx: &Context) -> anyhow::Result<()> {
+pub(crate) fn query_activity_count_by_year(
+    ctx: &Context,
+    stdout: &mut dyn std::io::Write,
+) -> anyhow::Result<()> {
     let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
         .into_iter()
         .map(|(_, m)| m)
         .collect();
     let markup = get_activity_count_by_year_content(local_activities)?;
-    println!("{}", wrap_in_page(markup).into_string());
+    writeln!(stdout, "{}", wrap_in_page(markup).into_string())?;
     Ok(())
 }
 
@@ -407,13 +434,16 @@ fn get_activity_count_by_year_content(
 }
 
 /// Queries the activity type breakdown.
-pub(crate) fn query_activity_type_breakdown(ctx: &Context) -> anyhow::Result<()> {
+pub(crate) fn query_activity_type_breakdown(
+    ctx: &Context,
+    stdout: &mut dyn std::io::Write,
+) -> anyhow::Result<()> {
     let local_activities: Vec<ActivityMetadata> = get_local_activities(ctx)?
         .into_iter()
         .map(|(_, m)| m)
         .collect();
     let markup = get_activity_type_breakdown_content(local_activities)?;
-    println!("{}", wrap_in_page(markup).into_string());
+    writeln!(stdout, "{}", wrap_in_page(markup).into_string())?;
     Ok(())
 }
 
@@ -550,16 +580,19 @@ fn get_countries_html_content(
 }
 
 /// Queries the country of an activity based on its start location.
-pub(crate) fn query_countries(ctx: &Context) -> anyhow::Result<()> {
+pub(crate) fn query_countries(
+    ctx: &Context,
+    stdout: &mut dyn std::io::Write,
+) -> anyhow::Result<()> {
     let activities_map = get_countries(ctx)?;
     let markup = get_countries_html_content(activities_map, ctx.time.as_ref())?;
-    println!("{}", wrap_in_page(markup).into_string());
+    writeln!(stdout, "{}", wrap_in_page(markup).into_string())?;
 
     Ok(())
 }
 
 /// Queries all statistics.
-pub(crate) fn query_all(ctx: &Context) -> anyhow::Result<()> {
+pub(crate) fn query_all(ctx: &Context, stdout: &mut dyn std::io::Write) -> anyhow::Result<()> {
     let activities = get_countries(ctx)?;
     let countries_content = get_countries_html_content(activities.clone(), ctx.time.as_ref())?;
 
@@ -620,7 +653,7 @@ pub(crate) fn query_all(ctx: &Context) -> anyhow::Result<()> {
         (activity_count_by_year_content)
         (activity_type_breakdown_content)
     };
-    println!("{}", wrap_in_page(combined_content).into_string());
+    writeln!(stdout, "{}", wrap_in_page(combined_content).into_string())?;
     Ok(())
 }
 

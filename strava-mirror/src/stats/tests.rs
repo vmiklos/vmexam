@@ -163,12 +163,13 @@ fn test_query_countries() {
         .unwrap();
 
     // When querying countries:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec![
         "strava-mirror".to_string(),
         "--query".to_string(),
         "countries".to_string(),
     ];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 }
 
 #[test]
@@ -225,14 +226,32 @@ fn test_query_top_walks_by_time() {
     };
 
     // When querying top walks by time:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec![
         "strava-mirror".to_string(),
         "--query".to_string(),
         "top-walks-by-time".to_string(),
     ];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
-    // Then no failure occurs.
+    // Then the result has a table with 2 non-header rows: long walk first, short walk second.
+    let html = String::from_utf8(buf.into_inner()).unwrap();
+    let document = scraper::Html::parse_document(&html);
+    let row_selector = scraper::Selector::parse("tbody tr").unwrap();
+    let link_selector = scraper::Selector::parse("td:nth-child(3) a").unwrap();
+    let rows = document.select(&row_selector);
+    let names: Vec<String> = rows
+        .map(|row| {
+            row.select(&link_selector)
+                .next()
+                .unwrap()
+                .text()
+                .next()
+                .unwrap()
+                .to_string()
+        })
+        .collect();
+    assert_eq!(names, ["long walk", "short walk"]);
 }
 
 #[test]
@@ -278,12 +297,13 @@ fn test_query_top_walks_by_distance() {
     };
 
     // When querying top walks by distance:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec![
         "strava-mirror".to_string(),
         "--query".to_string(),
         "top-walks-by-distance".to_string(),
     ];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then no failure occurs.
 }
@@ -331,12 +351,13 @@ fn test_query_top_walks_by_elevation() {
     };
 
     // When querying top walks by elevation:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec![
         "strava-mirror".to_string(),
         "--query".to_string(),
         "top-walks-by-elevation".to_string(),
     ];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then no failure occurs.
 }
@@ -384,12 +405,13 @@ fn test_query_top_rides_by_time() {
     };
 
     // When querying top rides by time:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec![
         "strava-mirror".to_string(),
         "--query".to_string(),
         "top-rides-by-time".to_string(),
     ];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then no failure occurs.
 }
@@ -437,12 +459,13 @@ fn test_query_top_rides_by_distance() {
     };
 
     // When querying top rides by distance:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec![
         "strava-mirror".to_string(),
         "--query".to_string(),
         "top-rides-by-distance".to_string(),
     ];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then no failure occurs.
 }
@@ -490,12 +513,13 @@ fn test_query_top_rides_by_elevation() {
     };
 
     // When querying top rides by elevation:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec![
         "strava-mirror".to_string(),
         "--query".to_string(),
         "top-rides-by-elevation".to_string(),
     ];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then no failure occurs.
 }
@@ -579,12 +603,13 @@ fn test_query_longest_rides_by_year() {
     };
 
     // When querying the longest ride by year:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec![
         "strava-mirror".to_string(),
         "--query".to_string(),
         "longest-rides-by-year".to_string(),
     ];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then no failure occurs.
 }
@@ -658,12 +683,13 @@ fn test_query_total_distance_by_year() {
     };
 
     // When querying the total distance by year:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec![
         "strava-mirror".to_string(),
         "--query".to_string(),
         "total-distance-by-year".to_string(),
     ];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then no failure occurs.
 }
@@ -726,12 +752,13 @@ fn test_query_activity_count_by_year() {
     };
 
     // When querying the activity count by year:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec![
         "strava-mirror".to_string(),
         "--query".to_string(),
         "activity-count-by-year".to_string(),
     ];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then no failure occurs.
 }
@@ -788,12 +815,13 @@ fn test_query_activity_type_breakdown() {
     };
 
     // When querying the activity type breakdown:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec![
         "strava-mirror".to_string(),
         "--query".to_string(),
         "activity-type-breakdown".to_string(),
     ];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then no failure occurs.
 }
@@ -847,12 +875,13 @@ fn test_query_all() {
     setup_config(&fs);
 
     // When querying all:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec![
         "strava-mirror".to_string(),
         "--query".to_string(),
         "all".to_string(),
     ];
-    run(args, &ctx).unwrap();
+    run(args, &mut buf, &ctx).unwrap();
 
     // Then no failure occurs.
 }

@@ -488,7 +488,11 @@ pub struct Args {
 }
 
 /// Mirrors your Strava activities.
-pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
+pub fn run(
+    args: Vec<String>,
+    stdout: &mut dyn std::io::Write,
+    ctx: &Context,
+) -> anyhow::Result<()> {
     let args = Args::parse_from(args);
     let log_level = if args.quiet {
         log::LevelFilter::Error
@@ -499,40 +503,40 @@ pub fn run(args: Vec<String>, ctx: &Context) -> anyhow::Result<()> {
 
     if let Some(query) = args.query {
         if query == "countries" {
-            return stats::query_countries(ctx);
+            return stats::query_countries(ctx, stdout);
         }
         if query == "top-walks-by-time" {
-            return stats::query_top_walks_by_time(ctx);
+            return stats::query_top_walks_by_time(ctx, stdout);
         }
         if query == "top-walks-by-distance" {
-            return stats::query_top_walks_by_distance(ctx);
+            return stats::query_top_walks_by_distance(ctx, stdout);
         }
         if query == "top-walks-by-elevation" {
-            return stats::query_top_walks_by_elevation(ctx);
+            return stats::query_top_walks_by_elevation(ctx, stdout);
         }
         if query == "top-rides-by-time" {
-            return stats::query_top_rides_by_time(ctx);
+            return stats::query_top_rides_by_time(ctx, stdout);
         }
         if query == "top-rides-by-distance" {
-            return stats::query_top_rides_by_distance(ctx);
+            return stats::query_top_rides_by_distance(ctx, stdout);
         }
         if query == "top-rides-by-elevation" {
-            return stats::query_top_rides_by_elevation(ctx);
+            return stats::query_top_rides_by_elevation(ctx, stdout);
         }
         if query == "longest-rides-by-year" {
-            return stats::query_longest_rides_by_year(ctx);
+            return stats::query_longest_rides_by_year(ctx, stdout);
         }
         if query == "total-distance-by-year" {
-            return stats::query_total_distance_by_year(ctx);
+            return stats::query_total_distance_by_year(ctx, stdout);
         }
         if query == "activity-count-by-year" {
-            return stats::query_activity_count_by_year(ctx);
+            return stats::query_activity_count_by_year(ctx, stdout);
         }
         if query == "activity-type-breakdown" {
-            return stats::query_activity_type_breakdown(ctx);
+            return stats::query_activity_type_breakdown(ctx, stdout);
         }
         if query == "all" {
-            return stats::query_all(ctx);
+            return stats::query_all(ctx, stdout);
         }
         return Err(anyhow::anyhow!("unknown query: {}", query));
     }
