@@ -10,6 +10,8 @@
 
 //! Library, related to <https://en.wikipedia.org/wiki/Rubik%27s_Cube>.
 
+use rand::RngExt;
+
 fn pick_side(index: u8, lang: &str, megaminx: bool) -> String {
     if lang == "hu" {
         match index {
