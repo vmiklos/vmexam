@@ -330,29 +330,29 @@ fn test_query_top_walks_by_distance() {
 
 #[test]
 fn test_query_top_walks_by_elevation() {
-    // Given three activities (2 walks, 1 ride):
+    // Given two activities (2 walks):
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
     let activities_dir = fs
         .join(".local/share/strava-mirror/activities/2025")
         .unwrap();
     activities_dir.create_dir_all().unwrap();
 
-    // 1. Walk with high elevation
+    // 1. Walk with low elevation
     let meta_path_1 = activities_dir
         .join("2025-01-01T10-00-00Z_1.meta.json")
         .unwrap();
-    let content_1 = r#"{"id": 1, "name": "mountain walk", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Walk", "moving_time_raw": 5000, "elapsed_time_raw": 5400, "distance_raw": 5000.0, "elevation_gain_raw": 1000.0}"#;
+    let content_1 = r#"{"id": 1, "name": "flat walk", "start_time": "2025-01-01T10:00:00Z", "sport_type": "Walk", "moving_time_raw": 10000, "elapsed_time_raw": 10400, "distance_raw": 10000.0, "elevation_gain_raw": 10.0}"#;
     meta_path_1
         .create_file()
         .unwrap()
         .write_all(content_1.as_bytes())
         .unwrap();
 
-    // 2. Walk with low elevation
+    // 2. Walk with high elevation
     let meta_path_2 = activities_dir
         .join("2025-01-02T10-00-00Z_2.meta.json")
         .unwrap();
-    let content_2 = r#"{"id": 2, "name": "flat walk", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Walk", "moving_time_raw": 10000, "elapsed_time_raw": 10400, "distance_raw": 10000.0, "elevation_gain_raw": 10.0}"#;
+    let content_2 = r#"{"id": 2, "name": "mountain walk", "start_time": "2025-01-02T10:00:00Z", "sport_type": "Walk", "moving_time_raw": 5000, "elapsed_time_raw": 5400, "distance_raw": 5000.0, "elevation_gain_raw": 1000.0}"#;
     meta_path_2
         .create_file()
         .unwrap()
@@ -379,7 +379,23 @@ fn test_query_top_walks_by_elevation() {
     ];
     run(args, &mut buf, &ctx).unwrap();
 
-    // Then no failure occurs.
+    // Then the result has a table with 2 non-header rows: mountain first, flat second.
+    let document = parse_html(buf);
+    let row_selector = scraper::Selector::parse("tbody tr").unwrap();
+    let link_selector = scraper::Selector::parse("td:nth-child(3) a").unwrap();
+    let rows = document.select(&row_selector);
+    let names: Vec<String> = rows
+        .map(|row| {
+            row.select(&link_selector)
+                .next()
+                .unwrap()
+                .text()
+                .next()
+                .unwrap()
+                .to_string()
+        })
+        .collect();
+    assert_eq!(names, ["mountain walk", "flat walk"]);
 }
 
 #[test]
