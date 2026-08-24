@@ -21,6 +21,27 @@ fn parse_html(buf: std::io::Cursor<Vec<u8>>) -> scraper::Html {
     scraper::Html::parse_document(&html)
 }
 
+fn query_selectors(
+    document: &scraper::Html,
+    row_selector: &str,
+    cell_selector: &str,
+) -> Vec<String> {
+    let row_sel = scraper::Selector::parse(row_selector).unwrap();
+    let cell_sel = scraper::Selector::parse(cell_selector).unwrap();
+    document
+        .select(&row_sel)
+        .map(|row| {
+            row.select(&cell_sel)
+                .next()
+                .unwrap()
+                .text()
+                .next()
+                .unwrap()
+                .to_string()
+        })
+        .collect()
+}
+
 #[test]
 fn test_format_duration() {
     assert_eq!(super::format_duration(3600), "1:00:00");
@@ -241,20 +262,7 @@ fn test_query_top_walks_by_time() {
 
     // Then the result has a table with 2 non-header rows: long walk first, short walk second.
     let document = parse_html(buf);
-    let row_selector = scraper::Selector::parse("tbody tr").unwrap();
-    let link_selector = scraper::Selector::parse("td:nth-child(3) a").unwrap();
-    let rows = document.select(&row_selector);
-    let names: Vec<String> = rows
-        .map(|row| {
-            row.select(&link_selector)
-                .next()
-                .unwrap()
-                .text()
-                .next()
-                .unwrap()
-                .to_string()
-        })
-        .collect();
+    let names = query_selectors(&document, "tbody tr", "td:nth-child(3) a");
     assert_eq!(names, ["long walk", "short walk"]);
 }
 
@@ -311,20 +319,7 @@ fn test_query_top_walks_by_distance() {
 
     // Then the result has a table with 2 non-header rows: long distance first, short distance second.
     let document = parse_html(buf);
-    let row_selector = scraper::Selector::parse("tbody tr").unwrap();
-    let link_selector = scraper::Selector::parse("td:nth-child(3) a").unwrap();
-    let rows = document.select(&row_selector);
-    let names: Vec<String> = rows
-        .map(|row| {
-            row.select(&link_selector)
-                .next()
-                .unwrap()
-                .text()
-                .next()
-                .unwrap()
-                .to_string()
-        })
-        .collect();
+    let names = query_selectors(&document, "tbody tr", "td:nth-child(3) a");
     assert_eq!(names, ["long distance walk", "short distance walk"]);
 }
 
@@ -381,20 +376,7 @@ fn test_query_top_walks_by_elevation() {
 
     // Then the result has a table with 2 non-header rows: mountain first, flat second.
     let document = parse_html(buf);
-    let row_selector = scraper::Selector::parse("tbody tr").unwrap();
-    let link_selector = scraper::Selector::parse("td:nth-child(3) a").unwrap();
-    let rows = document.select(&row_selector);
-    let names: Vec<String> = rows
-        .map(|row| {
-            row.select(&link_selector)
-                .next()
-                .unwrap()
-                .text()
-                .next()
-                .unwrap()
-                .to_string()
-        })
-        .collect();
+    let names = query_selectors(&document, "tbody tr", "td:nth-child(3) a");
     assert_eq!(names, ["mountain walk", "flat walk"]);
 }
 
@@ -451,20 +433,7 @@ fn test_query_top_rides_by_time() {
 
     // Then the result has a table with 2 non-header rows: long ride first, short ride second.
     let document = parse_html(buf);
-    let row_selector = scraper::Selector::parse("tbody tr").unwrap();
-    let link_selector = scraper::Selector::parse("td:nth-child(3) a").unwrap();
-    let rows = document.select(&row_selector);
-    let names: Vec<String> = rows
-        .map(|row| {
-            row.select(&link_selector)
-                .next()
-                .unwrap()
-                .text()
-                .next()
-                .unwrap()
-                .to_string()
-        })
-        .collect();
+    let names = query_selectors(&document, "tbody tr", "td:nth-child(3) a");
     assert_eq!(names, ["long ride", "short ride"]);
 }
 
