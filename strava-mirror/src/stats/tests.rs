@@ -721,7 +721,10 @@ fn test_query_total_distance_by_year() {
     ];
     run(args, &mut buf, &ctx).unwrap();
 
-    // Then no failure occurs.
+    // Then the result has a table with 2 non-header rows: 2025 first, then 2024.
+    let document = parse_html(buf);
+    let names = query_selectors(&document, "tbody tr", "td:first-child");
+    assert_eq!(names, ["2025", "2024"]);
 }
 
 #[test]
