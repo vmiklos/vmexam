@@ -439,7 +439,7 @@ fn test_query_top_rides_by_time() {
 
 #[test]
 fn test_query_top_rides_by_distance() {
-    // Given three activities (1 walk, 2 rides):
+    // Given two activities (2 rides):
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
     let activities_dir = fs
         .join(".local/share/strava-mirror/activities/2025")
@@ -488,12 +488,15 @@ fn test_query_top_rides_by_distance() {
     ];
     run(args, &mut buf, &ctx).unwrap();
 
-    // Then no failure occurs.
+    // Then the result has a table with 2 non-header rows: long distance first, short distance second.
+    let document = parse_html(buf);
+    let names = query_selectors(&document, "tbody tr", "td:nth-child(3) a");
+    assert_eq!(names, ["long distance ride", "long time ride"]);
 }
 
 #[test]
 fn test_query_top_rides_by_elevation() {
-    // Given three activities (1 walk, 2 rides):
+    // Given two activities (2 rides):
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
     let activities_dir = fs
         .join(".local/share/strava-mirror/activities/2025")
