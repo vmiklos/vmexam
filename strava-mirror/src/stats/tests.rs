@@ -638,7 +638,10 @@ fn test_query_longest_rides_by_year() {
     ];
     run(args, &mut buf, &ctx).unwrap();
 
-    // Then no failure occurs.
+    // Then the result has a table with 2 non-header rows: 2025 first, then 2024.
+    let document = parse_html(buf);
+    let names = query_selectors(&document, "tbody tr", "td:nth-child(3) a");
+    assert_eq!(names, ["long 2025 ride", "short 2024 ride"]);
 }
 
 #[test]
