@@ -545,7 +545,10 @@ fn test_query_top_rides_by_elevation() {
     ];
     run(args, &mut buf, &ctx).unwrap();
 
-    // Then no failure occurs.
+    // Then the result has a table with 2 non-header rows: mountain first, flat second.
+    let document = parse_html(buf);
+    let names = query_selectors(&document, "tbody tr", "td:nth-child(3) a");
+    assert_eq!(names, ["mountain ride", "long ride"]);
 }
 
 #[test]
