@@ -801,13 +801,14 @@ fn test_query_activity_count_by_year() {
 
 #[test]
 fn test_query_activity_type_breakdown() {
-    // Given a ride and a walk:
+    // Given three activities (2 rides, 1 walk):
     let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
     let activities_dir = fs
         .join(".local/share/strava-mirror/activities/2025")
         .unwrap();
     activities_dir.create_dir_all().unwrap();
 
+    // 1. Ride
     let meta_path_1 = activities_dir
         .join("2025-01-01T10-00-00Z_1.meta.json")
         .unwrap();
@@ -818,6 +819,7 @@ fn test_query_activity_type_breakdown() {
         .write_all(content_1.as_bytes())
         .unwrap();
 
+    // 2. Walk
     let meta_path_2 = activities_dir
         .join("2025-01-02T10-00-00Z_2.meta.json")
         .unwrap();
@@ -859,7 +861,10 @@ fn test_query_activity_type_breakdown() {
     ];
     run(args, &mut buf, &ctx).unwrap();
 
-    // Then no failure occurs.
+    // Then the result has a table with 2 non-header rows: Ride first, Walk second.
+    let document = parse_html(buf);
+    let names = query_selectors(&document, "tbody tr:not(:last-child)", "td:first-child");
+    assert_eq!(names, ["Ride", "Walk"]);
 }
 
 #[test]
