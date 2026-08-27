@@ -478,7 +478,7 @@ pub struct Args {
     #[arg(short, long)]
     pub quiet: bool,
 
-    /// Query stats from local activities. Valid values: 'countries', 'top-walks-by-time', 'top-walks-by-distance', 'top-walks-by-elevation', 'top-rides-by-time', 'top-rides-by-distance', 'top-rides-by-elevation', 'longest-rides-by-year', 'total-distance-by-year', 'all'.
+    /// Query stats from local activities. Valid values: 'countries', 'top-walks-by-time', 'top-walks-by-distance', 'top-walks-by-elevation', 'top-rides-by-time', 'top-rides-by-distance', 'top-rides-by-elevation', 'longest-rides-by-year', 'total-distance-by-year', 'activity-count-by-year', 'activity-type-breakdown', 'all'.
     #[arg(long, value_name = "KIND")]
     pub query: Option<String>,
 
