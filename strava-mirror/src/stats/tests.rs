@@ -924,5 +924,9 @@ fn test_query_all() {
     ];
     run(args, &mut buf, &ctx).unwrap();
 
-    // Then no failure occurs.
+    // Then the result has 12 headings (1 table of contents + 11 sections).
+    let document = parse_html(buf);
+    let h1_selector = scraper::Selector::parse("h1").unwrap();
+    let headings: Vec<_> = document.select(&h1_selector).collect();
+    assert_eq!(headings.len(), 12);
 }
