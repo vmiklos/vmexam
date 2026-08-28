@@ -800,7 +800,6 @@ fn test_run_full_history() {
         .create_file()
         .unwrap();
     let mut responses = HashMap::new();
-    // Note: NO &after= parameter in the URL.
     let activities_url =
         "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=1";
     responses.insert(
@@ -820,12 +819,13 @@ fn test_run_full_history() {
     };
     setup_config(&fs);
 
-    // When mirroring activities with --full-history:
+    // When mirroring activities with --full-history, so not stopping once we see activity1:
     let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
     let args = vec!["strava-mirror".to_string(), "--full-history".to_string()];
     run(args, &mut buf, &ctx).unwrap();
 
-    // Then no panic occurs (meaning the URL matched the one without &after=).
+    // Then the test still finishes (meaning run() stops when it reaches the last activity on the
+    // server).
 }
 
 #[test]
