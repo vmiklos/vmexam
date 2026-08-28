@@ -196,6 +196,15 @@ fn test_query_countries() {
         "countries".to_string(),
     ];
     run(args, &mut buf, &ctx).unwrap();
+
+    // Then the result lists Hungary first (2 activities), then Austria and Germany (1 each, by name).
+    let document = parse_html(buf);
+    let summary_selector = scraper::Selector::parse("summary").unwrap();
+    let summaries: Vec<String> = document
+        .select(&summary_selector)
+        .map(|el| el.text().collect::<String>())
+        .collect();
+    assert_eq!(summaries, ["Hungary: 2", "Austria: 1", "Germany: 1"]);
 }
 
 #[test]
