@@ -1,3 +1,0 @@
-LDFLAGS = -lGeoIP
-
-all: foo
