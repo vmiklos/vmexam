@@ -1,0 +1,9 @@
+--with-distro=CODAWindows
+--host=x86_64-pc-cygwin
+--with-strawberry-perl-portable=C:\Users\vmikl\co\spp
+--with-external-tar=C:\Users\vmikl\co\co-externaltar
+--without-lang
+--disable-mergelibs
+--enable-pch
+--enable-dbgutil
+--enable-werror
