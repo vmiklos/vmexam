@@ -116,6 +116,18 @@ fn inverse() -> anyhow::Result<()> {
     Ok(())
 }
 
+fn caption_matches(meta: &rexiv2::Metadata, caption: &str) -> bool {
+    let user_comment_matches = meta
+        .get_tag_string("Exif.Photo.UserComment")
+        .ok()
+        .is_some_and(|value| value == caption);
+    let title_matches = meta
+        .get_tag_multiple_strings("Xmp.dc.title")
+        .ok()
+        .is_some_and(|values| values.iter().any(|value| value == caption));
+    user_comment_matches && title_matches
+}
+
 fn main() -> anyhow::Result<()> {
     let argv: Vec<String> = std::env::args().collect();
     let args = Arguments::parse(&argv)?;
@@ -145,6 +157,10 @@ fn main() -> anyhow::Result<()> {
             continue;
         };
         let meta = rexiv2::Metadata::new_from_path(path)?;
+        if caption_matches(&meta, caption) {
+            // Tags are already set here, so no need to rewrite the file.
+            continue;
+        }
         meta.set_tag_string("Exif.Photo.UserComment", caption)?;
         meta.set_tag_string("Xmp.dc.title", caption)?;
         meta.save_to_file(path)?;
