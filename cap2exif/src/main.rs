@@ -14,6 +14,7 @@ use anyhow::Context as _;
 
 struct Arguments {
     rename: bool,
+    inverse: bool,
 }
 
 impl Arguments {
@@ -23,11 +24,22 @@ impl Arguments {
             .long("rename")
             .action(clap::ArgAction::SetTrue)
             .help("Rename files based on exif date, instead of writing exif.");
-        let args = [rename];
+        let inverse = clap::Arg::new("inverse")
+            .short('i')
+            .long("inverse")
+            .action(clap::ArgAction::SetTrue)
+            .help("Read exif from images and generate captions.txt.");
+        let args = [rename, inverse];
         let app = clap::Command::new("cap2exif");
         let matches = app.args(&args).try_get_matches_from(argv)?;
         let rename = *matches.get_one::<bool>("rename").context("no rename arg")?;
-        Ok(Arguments { rename })
+        let inverse = *matches
+            .get_one::<bool>("inverse")
+            .context("no inverse arg")?;
+        if rename && inverse {
+            anyhow::bail!("--rename and --inverse are mutually exclusive");
+        }
+        Ok(Arguments { rename, inverse })
     }
 }
 
@@ -69,6 +81,41 @@ fn rename() -> anyhow::Result<()> {
     Ok(())
 }
 
+fn inverse() -> anyhow::Result<()> {
+    let mut lines: Vec<String> = Vec::new();
+    for entry in std::fs::read_dir(".")? {
+        let entry = entry?;
+        let path = entry.path();
+        let Some(extension) = path.extension() else {
+            continue;
+        };
+        if extension != "jpg" && extension != "JPG" {
+            continue;
+        }
+        let file_name = path.to_str().context("non-utf8 filename")?;
+        let file_name = file_name.strip_prefix("./").unwrap_or(file_name);
+        let meta = rexiv2::Metadata::new_from_path(file_name)?;
+        let caption = meta
+            .get_tag_multiple_strings("Xmp.dc.title")
+            .ok()
+            .and_then(|titles| titles.into_iter().next())
+            .filter(|s| !s.is_empty())
+            .or_else(|| {
+                meta.get_tag_string("Exif.Photo.UserComment")
+                    .ok()
+                    .filter(|s| !s.is_empty())
+            });
+        let line = match caption {
+            Some(caption) => format!("{file_name}\t{caption}\n"),
+            None => format!("{file_name}\t\n"),
+        };
+        lines.push(line);
+    }
+    lines.sort();
+    std::fs::write("captions.txt", lines.concat())?;
+    Ok(())
+}
+
 fn main() -> anyhow::Result<()> {
     let argv: Vec<String> = std::env::args().collect();
     let args = Arguments::parse(&argv)?;
@@ -77,6 +124,10 @@ fn main() -> anyhow::Result<()> {
 
     if args.rename {
         return rename();
+    }
+
+    if args.inverse {
+        return inverse();
     }
 
     let content = std::fs::read_to_string("captions.txt").context("can't open captions.txt")?;

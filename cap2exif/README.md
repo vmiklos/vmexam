@@ -33,3 +33,10 @@ Then it'll set captions so that tools like [Geeqie](https://www.geeqie.org/) or
 
 When the `-r` option is used, the tool names images (.jpg or .JPG extension) based on exif data, so
 that multiple DSC0001.jpg can be placed into a single directory, without manual renaming.
+
+### Generating captions.txt from exif metadata
+
+When the `-i` option is used, the tool reads the captions from the images in the current directory
+(.jpg or .JPG extension) and writes a `captions.txt` from that. For each image the `Xmp.dc.title`
+tag is used if present, otherwise the `Exif.Photo.UserComment` tag. If neither is present, then just
+the filename is emitted, without a caption.
