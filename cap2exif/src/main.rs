@@ -15,6 +15,7 @@ use anyhow::Context as _;
 struct Arguments {
     rename: bool,
     inverse: bool,
+    dry_run: bool,
 }
 
 impl Arguments {
@@ -29,21 +30,36 @@ impl Arguments {
             .long("inverse")
             .action(clap::ArgAction::SetTrue)
             .help("Read exif from images and generate captions.txt.");
-        let args = [rename, inverse];
+        let dry_run = clap::Arg::new("dry_run")
+            .short('n')
+            .long("dry-run")
+            .action(clap::ArgAction::SetTrue)
+            .help("Print what would be renamed, without renaming.");
+        let args = [rename, inverse, dry_run];
         let app = clap::Command::new("cap2exif");
         let matches = app.args(&args).try_get_matches_from(argv)?;
         let rename = *matches.get_one::<bool>("rename").context("no rename arg")?;
         let inverse = *matches
             .get_one::<bool>("inverse")
             .context("no inverse arg")?;
+        let dry_run = *matches
+            .get_one::<bool>("dry_run")
+            .context("no dry_run arg")?;
         if rename && inverse {
             anyhow::bail!("--rename and --inverse are mutually exclusive");
         }
-        Ok(Arguments { rename, inverse })
+        if dry_run && !rename {
+            anyhow::bail!("--dry-run only works together with --rename");
+        }
+        Ok(Arguments {
+            rename,
+            inverse,
+            dry_run,
+        })
     }
 }
 
-fn rename() -> anyhow::Result<()> {
+fn rename(dry_run: bool) -> anyhow::Result<()> {
     for entry in std::fs::read_dir(".")? {
         let entry = entry?;
         let old_path = entry.path();
@@ -74,7 +90,9 @@ fn rename() -> anyhow::Result<()> {
         let new_file_name: std::ffi::OsString = parsed.format(&fs_format)?.into();
         if old_file_name != new_file_name {
             println!("rename: {old_file_name:?} -> {new_file_name:?}");
-            std::fs::rename(old_file_name, new_file_name)?;
+            if !dry_run {
+                std::fs::rename(old_file_name, new_file_name)?;
+            }
         }
     }
 
@@ -135,7 +153,7 @@ fn main() -> anyhow::Result<()> {
     rexiv2::initialize()?;
 
     if args.rename {
-        return rename();
+        return rename(args.dry_run);
     }
 
     if args.inverse {
