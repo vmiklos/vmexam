@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 
 # Dependencies:
 # zypper in ccache
@@ -8,7 +8,33 @@
 # zypper in poco-devel
 # zypper in python3-polib
 
+# Log both everything to ./log as well.
+
+# Build engine/.
 time (
+    set -e
+    cd engine
+    BRANCH=$(git symbolic-ref HEAD|sed 's|refs/heads/||')
+    git pull -r
+    if [ "$BRANCH" == main -a -e Makefile ]; then
+        make distclean
+    fi
+    ./autogen.sh
+    make check gb_SUPPRESS_TESTS=y || make check gb_SUPPRESS_TESTS=y
+    make tags
+    # distro/foo/bar -> bar
+    (cd instdir && rm -rf user && ln -s $HOME/.config/collaboraofficedev/${BRANCH##*/}/user)
+    sed -i 's|^UserInstallation=.*|UserInstallation=$ORIGIN/..|' instdir/program/bootstraprc
+    make check
+    make vim-ide-integration
+)
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+# Build the rest.
+time (
+    set -e
     if [ -e Makefile ]; then
         make distclean
     fi
@@ -24,8 +50,9 @@ time (
     # make -C cypress_test check-desktop
     # make -C cypress_test check-mobile
     # make -C cypress_test check-multi
-) 2>&1 |tee log
-
-exit ${PIPESTATUS[0]}
+)
+if [ $? -ne 0 ]; then
+    exit 2
+fi
 
 # vim:set shiftwidth=4 expandtab:
