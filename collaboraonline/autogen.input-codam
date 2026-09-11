@@ -1,0 +1,6 @@
+--enable-macosapp
+--enable-experimental
+--with-app-name=Collabora Office
+--with-app-package-name=com.collabora.office
+--with-vendor=Collabora Productivity Limited
+--with-lo-path=engine/instdir/CollaboraOffice.app

@@ -1,0 +1,8 @@
+PKG_CONFIG=/opt/homebrew/bin/pkg-config
+GNUMAKE=gmake
+--with-distro=CPMacOS-LOKit
+--disable-mergelibs
+--enable-debug
+--enable-werror
+--enable-symbols
+--without-lang

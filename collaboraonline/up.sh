@@ -10,6 +10,14 @@
 
 # Log both everything to ./log as well.
 
+if [ "$(uname -s)" == "Darwin" ]; then
+    set -e
+    make -C engine
+    make
+    xcodebuild -project macos/coda/coda.xcodeproj -scheme coda -configuration Release build ARCHS=$(uname -m) CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+    exit 0
+fi
+
 SAN=
 case "$CC $CFLAGS $CXXFLAGS" in
     *-fsanitize*) SAN=1 ;;
