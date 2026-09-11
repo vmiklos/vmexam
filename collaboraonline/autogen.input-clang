@@ -2,5 +2,6 @@ CC=ccache clang
 CXX=ccache clang++
 --prefix=$PWD/install
 --enable-developer
+--enable-qtapp
 --enable-experimental
 --enable-coplugin

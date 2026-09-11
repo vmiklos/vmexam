@@ -2,4 +2,5 @@ CC=ccache gcc
 CXX=ccache g++
 --prefix=$PWD/install
 --enable-developer
+--enable-qtapp
 --enable-experimental
