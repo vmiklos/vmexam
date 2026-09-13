@@ -42,6 +42,23 @@ interface Option
 
 const options: Option[] = [
     {
+        // test data: 1f471a24efef039fdfff161f910142fdc6bb58dd
+        id : 'cool-commit',
+        prefix : 'https://gerrit.collaboraoffice.com/plugins/gitiles/online/+/',
+        placeholder : 'Git commit hash',
+        note :
+            'This can be useful when viewing commit messages on mobile where running git-show from the cmdline is not easy.',
+    },
+    {
+        // test data: Idc7ce9c2c659e619f748c6cc62d7e29032cd9a86
+        id : 'cool-change',
+        prefix :
+            'https://gerrit.collaboraoffice.com/q/',
+        placeholder : 'Gerrit change ID',
+        note :
+            'This can be useful when viewing commit messages on mobile where running git-log from the cmdline is not easy.',
+    },
+    {
         id : 'lo-core-commit',
         prefix : 'https://git.libreoffice.org/core/commit/',
         placeholder : 'Git commit hash',
@@ -63,22 +80,6 @@ const options: Option[] = [
         placeholder : 'Git author name',
         note :
             'The purpose of this page is to allow contributors to find badness before others do, not to put blame on them.',
-    },
-    {
-        id : 'cool-commit',
-        prefix : 'https://github.com/CollaboraOnline/online/commit/',
-        placeholder : 'Git commit hash',
-        note :
-            'This can be useful when viewing commit messages on mobile where running git-show from the cmdline is not easy.',
-    },
-    {
-        // test data: I16172a4d3148390896e3d475b7810598d94ceb27
-        id : 'cool-change',
-        prefix :
-            'https://github.com/search?type=commits&q=repo%3Acollaboraonline%2Fonline+',
-        placeholder : 'Gerrit change ID',
-        note :
-            'This can be useful when viewing commit messages on mobile where running git-log from the cmdline is not easy.',
     },
     {
         // test data: cfb1d155-499d-3205-8283-ce84c39dbb14@redhat.com
