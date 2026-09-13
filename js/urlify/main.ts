@@ -6,21 +6,21 @@
 
 function jumpButtonOnClick()
 {
-    const prefixElement = document.getElementById('prefix') as HTMLInputElement;
-    const prefix = prefixElement.value;
+    const urlElement = document.getElementById('url') as HTMLInputElement;
+    const template = urlElement.value;
     const suffixElement = document.getElementById('suffix') as HTMLInputElement;
     const suffix = suffixElement.value;
-    const url = prefix + encodeURI(suffix);
+    const url = template.replace('{0}', encodeURI(suffix));
     document.location.href = url;
 }
 
 function linkButtonOnClick()
 {
-    const prefixElement = document.getElementById('prefix') as HTMLInputElement;
-    const prefix = prefixElement.value;
+    const urlElement = document.getElementById('url') as HTMLInputElement;
+    const template = urlElement.value;
     const suffixElement = document.getElementById('suffix') as HTMLInputElement;
     const suffix = suffixElement.value;
-    const url = prefix + encodeURI(suffix);
+    const url = template.replace('{0}', encodeURI(suffix));
     suffixElement.value = url;
 }
 
@@ -35,7 +35,7 @@ function createOption(id: string): HTMLElement
 interface Option
 {
     id: string;
-    prefix: string;
+    url: string;
     placeholder: string;
     note: string;
 }
@@ -44,7 +44,7 @@ const options: Option[] = [
     {
         // test data: 1f471a24efef039fdfff161f910142fdc6bb58dd
         id : 'cool-commit',
-        prefix : 'https://gerrit.collaboraoffice.com/plugins/gitiles/online/+/',
+        url : 'https://gerrit.collaboraoffice.com/plugins/gitiles/online/+/{0}^!/',
         placeholder : 'Git commit hash',
         note :
             'This can be useful when viewing commit messages on mobile where running git-show from the cmdline is not easy.',
@@ -52,15 +52,15 @@ const options: Option[] = [
     {
         // test data: Idc7ce9c2c659e619f748c6cc62d7e29032cd9a86
         id : 'cool-change',
-        prefix :
-            'https://gerrit.collaboraoffice.com/q/',
+        url :
+            'https://gerrit.collaboraoffice.com/q/{0}',
         placeholder : 'Gerrit change ID',
         note :
             'This can be useful when viewing commit messages on mobile where running git-log from the cmdline is not easy.',
     },
     {
         id : 'lo-core-commit',
-        prefix : 'https://git.libreoffice.org/core/commit/',
+        url : 'https://git.libreoffice.org/core/commit/{0}',
         placeholder : 'Git commit hash',
         note :
             'This can be useful when viewing commit messages on mobile where running git-show from the cmdline is not easy.',
@@ -68,15 +68,15 @@ const options: Option[] = [
     {
         // test data: I5e494a0714e398221bee00744d7e25c419a41df7
         id : 'lo-core-change',
-        prefix : 'https://gerrit.libreoffice.org/q/',
+        url : 'https://gerrit.libreoffice.org/q/{0}',
         placeholder : 'Gerrit change ID',
         note :
             'This can be useful when viewing commit messages on mobile where running git-log from the cmdline is not easy.',
     },
     {
         id : 'lo-regression',
-        prefix :
-            'https://bugs.documentfoundation.org/buglist.cgi?f1=cf_regressionby&o1=equals&query_format=advanced&resolution=---&v1=',
+        url :
+            'https://bugs.documentfoundation.org/buglist.cgi?f1=cf_regressionby&o1=equals&query_format=advanced&resolution=---&v1={0}',
         placeholder : 'Git author name',
         note :
             'The purpose of this page is to allow contributors to find badness before others do, not to put blame on them.',
@@ -84,7 +84,7 @@ const options: Option[] = [
     {
         // test data: cfb1d155-499d-3205-8283-ce84c39dbb14@redhat.com
         id : 'mail-archive',
-        prefix : 'https://www.mail-archive.com/search?l=mid&q=',
+        url : 'https://www.mail-archive.com/search?l=mid&q={0}',
         placeholder : 'Message-Id',
         note :
             'Turns an email Message-Id header into a URL for many public mailing lists.',
@@ -97,8 +97,8 @@ function selectOnChange()
     const selectedIndex = selectElement.selectedIndex;
     const option = options[selectedIndex];
 
-    const prefixElement = document.getElementById('prefix') as HTMLInputElement;
-    prefixElement.value = option.prefix;
+    const urlElement = document.getElementById('url') as HTMLInputElement;
+    urlElement.value = option.url;
     const suffixElement = document.getElementById('suffix') as HTMLInputElement;
     suffixElement.placeholder = option.placeholder;
     const noteElement = document.getElementById('note') as HTMLInputElement;
@@ -120,12 +120,12 @@ document.addEventListener("DOMContentLoaded", function() {
     input.appendChild(selectElement);
     input.appendChild(document.createElement('br'));
 
-    const prefixInput = document.createElement('input');
-    prefixInput.id = 'prefix';
-    prefixInput.type = 'text';
-    prefixInput.value = options[0].prefix;
-    prefixInput.style.width = '50%';
-    input.appendChild(prefixInput);
+    const urlInput = document.createElement('input');
+    urlInput.id = 'url';
+    urlInput.type = 'text';
+    urlInput.value = options[0].url;
+    urlInput.style.width = '50%';
+    input.appendChild(urlInput);
 
     input.appendChild(document.createElement('br'));
     const suffixInput = document.createElement('input');
