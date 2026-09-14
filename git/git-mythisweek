@@ -6,8 +6,27 @@
 #
 
 # This script runs git log for own commits from this week.
+#
+# Usage: git mythisweek [branch]
+#
+# If no branch is given, lists commits in the remote tracking branch's
+# upstream (e.g. origin/main).
 
 since=$(date --date="Sunday last week" +%Y-%m-%d)
-git log --author=$USER --pretty=oneline --since=$since --reverse
+
+if [ $# -ge 1 ]; then
+    branch="$1"
+else
+    current=$(git rev-parse --abbrev-ref HEAD)
+    remote=$(git config --get "branch.$current.remote")
+    merge=$(git config --get "branch.$current.merge" | sed 's|refs/heads/||')
+    if [ -z "$remote" ] || [ -z "$merge" ]; then
+        echo "error: could not determine upstream branch" >&2
+        exit 1
+    fi
+    branch="$remote/$merge"
+fi
+
+git log --author=$USER --pretty=oneline --since=$since --reverse "$branch"
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
