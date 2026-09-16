@@ -9,6 +9,7 @@
 # zypper in python3-polib
 
 # Log both everything to ./log as well.
+exec > >(tee log) 2>&1
 
 if [ "$(uname -s)" == "Darwin" ]; then
     set -e
