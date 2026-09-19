@@ -59,7 +59,7 @@ class Callback : public clang::ast_matchers::MatchFinder::MatchCallback
                                                  aFixIt.RemoveRange,
                                                  aFixIt.CodeToInsert);
         llvm::Error aError =
-            m_rReplacements[aReplacement.getFilePath()].add(aReplacement);
+            m_rReplacements[aReplacement.getFilePath().str()].add(aReplacement);
         if (aError)
             llvm::errs() << "Replacing failed in " << aReplacement.getFilePath()
                          << "! " << llvm::toString(std::move(aError)) << "\n";
@@ -82,12 +82,20 @@ llvm::cl::opt<std::string>
     aExportFixes("export-fixes",
                  llvm::cl::desc("YAML file to store suggested fixes in."),
                  llvm::cl::value_desc("filename"), llvm::cl::cat(aCategory));
-}
+} // namespace
 
 int main(int argc, const char** argv)
 {
     llvm::sys::PrintStackTraceOnErrorSignal(argv[0]);
-    clang::tooling::CommonOptionsParser aOptionsParser(argc, argv, aCategory);
+    llvm::Expected<clang::tooling::CommonOptionsParser> aExpectedOptionsParser =
+        clang::tooling::CommonOptionsParser::create(argc, argv, aCategory);
+    if (!aExpectedOptionsParser)
+    {
+        llvm::errs() << aExpectedOptionsParser.takeError();
+        return 1;
+    }
+    clang::tooling::CommonOptionsParser& aOptionsParser =
+        aExpectedOptionsParser.get();
     clang::tooling::RefactoringTool aTool(aOptionsParser.getCompilations(),
                                           aOptionsParser.getSourcePathList());
     clang::ast_matchers::MatchFinder aFinder;
@@ -99,7 +107,7 @@ int main(int argc, const char** argv)
     if (!aExportFixes.empty())
     {
         std::error_code aEC;
-        llvm::raw_fd_ostream aOS(aExportFixes, aEC, llvm::sys::fs::F_None);
+        llvm::raw_fd_ostream aOS(aExportFixes, aEC, llvm::sys::fs::OF_None);
         if (aEC)
         {
             llvm::errs() << "Error opening output file: " << aEC.message()
