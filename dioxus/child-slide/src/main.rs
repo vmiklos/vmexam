@@ -12,8 +12,34 @@
 
 use dioxus::prelude::*;
 use std::collections::{HashMap, HashSet};
+use wasm_bindgen::JsCast;
+use wasm_bindgen_futures::JsFuture;
 
 type CollectionData = HashMap<String, HashMap<String, f64>>;
+
+async fn fetch_data(url: &str) -> Result<CollectionData, String> {
+    let window = web_sys::window().ok_or("no window")?;
+    let promise = window.fetch_with_str(url);
+    let resp_value = JsFuture::from(promise)
+        .await
+        .map_err(|e| format!("fetch error for {url}: {e:?}"))?;
+    let resp: web_sys::Response = resp_value
+        .dyn_into()
+        .map_err(|e| format!("response type error for {url}: {e:?}"))?;
+    if !resp.ok() {
+        return Err(format!("HTTP error for {url}: {}", resp.status()));
+    }
+    let text_promise = resp
+        .text()
+        .map_err(|e| format!("response.text() error for {url}: {e:?}"))?;
+    let text_value = JsFuture::from(text_promise)
+        .await
+        .map_err(|e| format!("response text error for {url}: {e:?}"))?;
+    let text = text_value
+        .as_string()
+        .ok_or_else(|| format!("non-string response text for {url}"))?;
+    serde_json::from_str(&text).map_err(|e| format!("JSON parse error for {url}: {e}"))
+}
 
 fn find_min_max(data: &CollectionData, kid: &str) -> (f64, f64) {
     let mut min = f64::INFINITY;
@@ -68,15 +94,7 @@ pub fn app() -> Element {
                     let url = web_sys::Url::new_with_base(&relative, &base)
                         .unwrap()
                         .href();
-                    let resp = match reqwest::get(&url).await {
-                        Ok(r) => r,
-                        Err(e) => {
-                            return Err(format!("Fetch error for {url}: {e}"));
-                        }
-                    };
-                    resp.json::<CollectionData>()
-                        .await
-                        .map_err(|e| format!("JSON parse error for {url}: {e}"))
+                    fetch_data(&url).await
                 }
                 None => Err("Missing token".to_string()),
             }
