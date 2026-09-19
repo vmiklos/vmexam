@@ -92,7 +92,7 @@ fn read_config(ctx: &Context) -> anyhow::Result<Config> {
 /// Contents of the JWT payload.
 #[derive(serde::Deserialize)]
 struct Jwt {
-    sub: i64,
+    sub: String,
     exp: i64,
 }
 
