@@ -42,7 +42,11 @@ void spinnerContextInit(struct SpinnerContext* context)
 {
     context->query = NULL;
     pthread_mutex_init(&context->mutex, NULL);
-    pthread_cond_init(&context->conditionVariable, NULL);
+    pthread_condattr_t condAttr;
+    pthread_condattr_init(&condAttr);
+    pthread_condattr_setclock(&condAttr, CLOCK_MONOTONIC);
+    pthread_cond_init(&context->conditionVariable, &condAttr);
+    pthread_condattr_destroy(&condAttr);
     context->result = NULL;
     context->error = NULL;
     context->processed = false;
@@ -458,7 +462,7 @@ void* worker(void* context)
 void wait_for(struct SpinnerContext* spinnerContext, int sleep)
 {
     struct timespec abstime;
-    clock_gettime(CLOCK_REALTIME, &abstime);
+    clock_gettime(CLOCK_MONOTONIC, &abstime);
     // Larger values would require a while loop during normalize.
     assert(sleep < 1000);
     const int milliToNano = 1000000;
