@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.99"
-clap = "4.5.47"
-nix = { version = "0.30.1", features = ["mount", "sched", "user"] }
+anyhow = "1.0.104"
+clap = "4.6.7"
+nix = { version = "0.31.3", features = ["mount", "sched", "user"] }
