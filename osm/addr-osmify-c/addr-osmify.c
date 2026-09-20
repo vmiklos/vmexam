@@ -452,8 +452,8 @@ void* worker(void* context)
 
     pthread_mutex_lock(&spinnerContext->mutex);
     spinnerContext->processed = true;
-    pthread_mutex_unlock(&spinnerContext->mutex);
     pthread_cond_signal(&spinnerContext->conditionVariable);
+    pthread_mutex_unlock(&spinnerContext->mutex);
 
     return NULL;
 }
