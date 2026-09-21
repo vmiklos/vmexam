@@ -17,6 +17,7 @@ serde_urlencoded = "0.7"
 simplelog = "0.12.2"
 time = { version = "0.3", features = ["formatting", "parsing", "macros", "serde", "local-offset"] }
 toml = "0.8"
+toml_edit = "0.22"
 vfs = "0.12"
 
 [dev-dependencies]

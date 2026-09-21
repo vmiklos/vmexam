@@ -485,6 +485,10 @@ pub struct Args {
     /// Fetch all activities, don't stop at the newest mirrored one.
     #[arg(long)]
     pub full_history: bool,
+
+    /// Write the given JWT to the config file and exit.
+    #[arg(long, value_name = "JWT")]
+    pub set_jwt: Option<String>,
 }
 
 /// Mirrors your Strava activities.
@@ -539,6 +543,23 @@ pub fn run(
             return stats::query_all(ctx, stdout);
         }
         return Err(anyhow::anyhow!("unknown query: {}", query));
+    }
+
+    if let Some(jwt) = args.set_jwt {
+        let config_path = ctx.fs.join(".config/strava-mirrorrc")?;
+        let mut config_content = String::new();
+        if config_path.exists()? {
+            config_path
+                .open_file()?
+                .read_to_string(&mut config_content)?;
+        }
+        let mut config: toml_edit::DocumentMut = config_content.parse()?;
+        config["jwt"] = toml_edit::value(jwt);
+        ctx.fs.join(".config")?.create_dir_all()?;
+        config_path
+            .create_file()?
+            .write_all(config.to_string().as_bytes())?;
+        return Ok(());
     }
 
     let home = &ctx.fs;

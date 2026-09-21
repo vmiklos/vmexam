@@ -942,3 +942,85 @@ fn test_should_redownload_meta() {
     summary.sport_type = "Run".to_string();
     assert!(should_redownload_meta(&metadata, &summary));
 }
+
+#[test]
+fn test_run_set_jwt() {
+    // Given a config with a comment and an old JWT:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let config_dir = fs.join(".config").unwrap();
+    config_dir.create_dir_all().unwrap();
+    config_dir
+        .join("strava-mirrorrc")
+        .unwrap()
+        .create_file()
+        .unwrap()
+        .write_all(b"# signed in as 42\njwt = \"old.jwt.value\"\n")
+        .unwrap();
+    let network = Rc::new(TestNetwork {
+        responses: HashMap::new(),
+    });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        process: Rc::new(TestProcess::new(&[])),
+        time,
+    };
+
+    // When setting a new JWT:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
+    let args = vec![
+        "strava-mirror".to_string(),
+        "--set-jwt".to_string(),
+        "new.jwt.value".to_string(),
+    ];
+    run(args, &mut buf, &ctx).unwrap();
+
+    // Then the config still has the comment, only the JWT is updated:
+    let config_path = fs.join(".config/strava-mirrorrc").unwrap();
+    let mut config_content = String::new();
+    config_path
+        .open_file()
+        .unwrap()
+        .read_to_string(&mut config_content)
+        .unwrap();
+    assert_eq!(
+        config_content,
+        "# signed in as 42\njwt = \"new.jwt.value\"\n"
+    );
+}
+
+#[test]
+fn test_run_set_jwt_no_config() {
+    // Given no config file yet:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let network = Rc::new(TestNetwork {
+        responses: HashMap::new(),
+    });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        process: Rc::new(TestProcess::new(&[])),
+        time,
+    };
+
+    // When setting a new JWT:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
+    let args = vec![
+        "strava-mirror".to_string(),
+        "--set-jwt".to_string(),
+        "new.jwt.value".to_string(),
+    ];
+    run(args, &mut buf, &ctx).unwrap();
+
+    // Then the config file is created with the new JWT:
+    let config_path = fs.join(".config/strava-mirrorrc").unwrap();
+    let mut config_content = String::new();
+    config_path
+        .open_file()
+        .unwrap()
+        .read_to_string(&mut config_content)
+        .unwrap();
+    assert_eq!(config_content, "jwt = \"new.jwt.value\"\n");
+}

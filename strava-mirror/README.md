@@ -21,10 +21,10 @@ Get your JWT value using:
 - Go to Storage -> Cookies -> strava.com
 - Look for a key named `strava_remember_token`
 
-The configuration file is `~/.config/strava-mirrorrc`:
+The configuration file is `~/.config/strava-mirrorrc`, to set your JWT value:
 
 ```
-jwt = "..."
+strava-mirror --set-jwt ...
 ```
 
 Once `strava-mirror` is completed, you can find your activities under
