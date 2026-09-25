@@ -14,6 +14,7 @@ use anyhow::Context as _;
 
 struct Arguments {
     exif_to_filename: bool,
+    filename_to_exif: bool,
     inverse: bool,
     dry_run: bool,
 }
@@ -24,6 +25,10 @@ impl Arguments {
             .long("exif-to-filename")
             .action(clap::ArgAction::SetTrue)
             .help("Rename files based on exif date, instead of writing exif.");
+        let filename_to_exif = clap::Arg::new("filename_to_exif")
+            .long("filename-to-exif")
+            .action(clap::ArgAction::SetTrue)
+            .help("Set exif date based on the filename, if it's missing.");
         let inverse = clap::Arg::new("inverse")
             .short('i')
             .long("inverse")
@@ -33,27 +38,39 @@ impl Arguments {
             .short('n')
             .long("dry-run")
             .action(clap::ArgAction::SetTrue)
-            .help("Print what would be renamed, without renaming.");
-        let args = [exif_to_filename, inverse, dry_run];
+            .help("Print what would be done, without modifying files.");
+        let args = [exif_to_filename, filename_to_exif, inverse, dry_run];
         let app = clap::Command::new("cap2exif");
         let matches = app.args(&args).try_get_matches_from(argv)?;
         let exif_to_filename = *matches
             .get_one::<bool>("exif_to_filename")
             .context("no exif_to_filename arg")?;
+        let filename_to_exif = *matches
+            .get_one::<bool>("filename_to_exif")
+            .context("no filename_to_exif arg")?;
         let inverse = *matches
             .get_one::<bool>("inverse")
             .context("no inverse arg")?;
         let dry_run = *matches
             .get_one::<bool>("dry_run")
             .context("no dry_run arg")?;
-        if exif_to_filename && inverse {
-            anyhow::bail!("--exif-to-filename and --inverse are mutually exclusive");
+        let mode_count = [exif_to_filename, filename_to_exif, inverse]
+            .into_iter()
+            .filter(|&mode| mode)
+            .count();
+        if mode_count > 1 {
+            anyhow::bail!(
+                "only one of --exif-to-filename, --filename-to-exif or --inverse can be used"
+            );
         }
-        if dry_run && !exif_to_filename {
-            anyhow::bail!("--dry-run only works together with --exif-to-filename");
+        if dry_run && !exif_to_filename && !filename_to_exif {
+            anyhow::bail!(
+                "--dry-run only works together with --exif-to-filename or --filename-to-exif"
+            );
         }
         Ok(Arguments {
             exif_to_filename,
+            filename_to_exif,
             inverse,
             dry_run,
         })
@@ -93,6 +110,65 @@ fn exif_to_filename(dry_run: bool) -> anyhow::Result<()> {
             println!("rename: {old_file_name:?} -> {new_file_name:?}");
             if !dry_run {
                 std::fs::rename(old_file_name, new_file_name)?;
+            }
+        }
+    }
+
+    Ok(())
+}
+
+fn filename_to_exif(dry_run: bool) -> anyhow::Result<()> {
+    let fs_format =
+        time::format_description::parse_borrowed::<2>("[year][month][day]_[hour][minute][second]")?;
+    let exif_format = time::format_description::parse_borrowed::<2>(
+        "[year]:[month]:[day] [hour]:[minute]:[second]",
+    )?;
+    for entry in std::fs::read_dir(".")? {
+        let entry = entry?;
+        let path = entry.path();
+        let Some(extension) = path.extension() else {
+            continue;
+        };
+        if extension != "jpg" && extension != "JPG" {
+            continue;
+        }
+        let file_name = path.to_str().context("non-utf8 filename")?;
+        let file_name = file_name.strip_prefix("./").unwrap_or(file_name);
+        let Some(file_stem) = path.file_stem().and_then(|s| s.to_str()) else {
+            continue;
+        };
+        // E.g. 'IMG_20170802_075657', without the optional prefix: '20170802_075657'.
+        let date_part = match file_stem.split_once('_') {
+            Some((prefix, rest))
+                if prefix.len() == 3 && prefix.bytes().all(|b| b.is_ascii_alphabetic()) =>
+            {
+                rest
+            }
+            _ => file_stem,
+        };
+        if date_part.len() != 15 {
+            continue;
+        }
+        let Ok(parsed) = time::PrimitiveDateTime::parse(date_part, &fs_format) else {
+            println!("WARNING: failed to parse {date_part:?} as a date time in {file_name:?}");
+            continue;
+        };
+        let exif_value = parsed.format(&exif_format)?;
+        let meta = rexiv2::Metadata::new_from_path(file_name)?;
+        let mut changed = false;
+        if meta.get_tag_string("Exif.Image.DateTime").is_err() {
+            meta.set_tag_string("Exif.Image.DateTime", &exif_value)?;
+            changed = true;
+        }
+        if meta.get_tag_string("Exif.Photo.DateTimeOriginal").is_err() {
+            meta.set_tag_string("Exif.Photo.DateTimeOriginal", &exif_value)?;
+            changed = true;
+        }
+        if changed {
+            println!("update: {file_name:?}");
+            if !dry_run {
+                // E.g. '2025:07:14 22:27:39'.
+                meta.save_to_file(file_name)?;
             }
         }
     }
@@ -155,6 +231,10 @@ fn main() -> anyhow::Result<()> {
 
     if args.exif_to_filename {
         return exif_to_filename(args.dry_run);
+    }
+
+    if args.filename_to_exif {
+        return filename_to_exif(args.dry_run);
     }
 
     if args.inverse {

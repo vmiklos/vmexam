@@ -36,6 +36,14 @@ exif data, so that multiple DSC0001.jpg can be placed into a single directory, w
 renaming. Combined with the `-n` option it just prints what would be renamed, without actually
 renaming.
 
+### Writing exif metadata based on the filename
+
+When the `--filename-to-exif` option is used, the tool looks at images (.jpg or .JPG extension) with
+filenames like `IMG_20170802_075657.jpg` or `20170802_075657.jpg` (an optional 3-letter prefix like
+`IMG_` or `PXL_` followed by a `yyyymmdd_hhmmss` timestamp) and sets the exif date of the image from
+the filename, if the exif date is missing. Combined with the `-n` option it just prints what would be
+updated, without modifying files.
+
 ### Generating captions.txt from exif metadata
 
 When the `-i` option is used, the tool reads the captions from the images in the current directory
