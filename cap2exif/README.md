@@ -31,8 +31,10 @@ Then it'll set captions so that tools like [Geeqie](https://www.geeqie.org/) or
 
 ### Renaming files
 
-When the `-r` option is used, the tool names images (.jpg or .JPG extension) based on exif data, so
-that multiple DSC0001.jpg can be placed into a single directory, without manual renaming.
+When the `--exif-to-filename` option is used, the tool names images (.jpg or .JPG extension) based on
+exif data, so that multiple DSC0001.jpg can be placed into a single directory, without manual
+renaming. Combined with the `-n` option it just prints what would be renamed, without actually
+renaming.
 
 ### Generating captions.txt from exif metadata
 

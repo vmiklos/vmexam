@@ -13,16 +13,15 @@
 use anyhow::Context as _;
 
 struct Arguments {
-    rename: bool,
+    exif_to_filename: bool,
     inverse: bool,
     dry_run: bool,
 }
 
 impl Arguments {
     fn parse(argv: &[String]) -> anyhow::Result<Self> {
-        let rename = clap::Arg::new("rename")
-            .short('r')
-            .long("rename")
+        let exif_to_filename = clap::Arg::new("exif_to_filename")
+            .long("exif-to-filename")
             .action(clap::ArgAction::SetTrue)
             .help("Rename files based on exif date, instead of writing exif.");
         let inverse = clap::Arg::new("inverse")
@@ -35,31 +34,33 @@ impl Arguments {
             .long("dry-run")
             .action(clap::ArgAction::SetTrue)
             .help("Print what would be renamed, without renaming.");
-        let args = [rename, inverse, dry_run];
+        let args = [exif_to_filename, inverse, dry_run];
         let app = clap::Command::new("cap2exif");
         let matches = app.args(&args).try_get_matches_from(argv)?;
-        let rename = *matches.get_one::<bool>("rename").context("no rename arg")?;
+        let exif_to_filename = *matches
+            .get_one::<bool>("exif_to_filename")
+            .context("no exif_to_filename arg")?;
         let inverse = *matches
             .get_one::<bool>("inverse")
             .context("no inverse arg")?;
         let dry_run = *matches
             .get_one::<bool>("dry_run")
             .context("no dry_run arg")?;
-        if rename && inverse {
-            anyhow::bail!("--rename and --inverse are mutually exclusive");
+        if exif_to_filename && inverse {
+            anyhow::bail!("--exif-to-filename and --inverse are mutually exclusive");
         }
-        if dry_run && !rename {
-            anyhow::bail!("--dry-run only works together with --rename");
+        if dry_run && !exif_to_filename {
+            anyhow::bail!("--dry-run only works together with --exif-to-filename");
         }
         Ok(Arguments {
-            rename,
+            exif_to_filename,
             inverse,
             dry_run,
         })
     }
 }
 
-fn rename(dry_run: bool) -> anyhow::Result<()> {
+fn exif_to_filename(dry_run: bool) -> anyhow::Result<()> {
     for entry in std::fs::read_dir(".")? {
         let entry = entry?;
         let old_path = entry.path();
@@ -152,8 +153,8 @@ fn main() -> anyhow::Result<()> {
 
     rexiv2::initialize()?;
 
-    if args.rename {
-        return rename(args.dry_run);
+    if args.exif_to_filename {
+        return exif_to_filename(args.dry_run);
     }
 
     if args.inverse {
