@@ -27,7 +27,8 @@ cap2exif
 ```
 
 Then it'll set captions so that tools like [Geeqie](https://www.geeqie.org/) or
-[Memories](https://github.com/pulsejet/memories) can show those captions.
+[Memories](https://github.com/pulsejet/memories) can show those captions. Combined with the `-n`
+option it just prints what would be updated, without modifying files.
 
 ### Renaming files
 

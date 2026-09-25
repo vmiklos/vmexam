@@ -63,10 +63,8 @@ impl Arguments {
                 "only one of --exif-to-filename, --filename-to-exif or --inverse can be used"
             );
         }
-        if dry_run && !exif_to_filename && !filename_to_exif {
-            anyhow::bail!(
-                "--dry-run only works together with --exif-to-filename or --filename-to-exif"
-            );
+        if dry_run && inverse {
+            anyhow::bail!("--dry-run does not work together with --inverse");
         }
         Ok(Arguments {
             exif_to_filename,
@@ -262,7 +260,10 @@ fn main() -> anyhow::Result<()> {
         }
         meta.set_tag_string("Exif.Photo.UserComment", caption)?;
         meta.set_tag_string("Xmp.dc.title", caption)?;
-        meta.save_to_file(path)?;
+        println!("update: {path:?} ({caption:?})");
+        if !args.dry_run {
+            meta.save_to_file(path)?;
+        }
     }
 
     Ok(())
