@@ -158,10 +158,10 @@ fn make_month_calendar<'a>(
     let cal_pdf_path = tempfile_to_path(&cal_pdf)?;
     ps2pdf(args.debug, &cal_ps_path, &cal_pdf_path)?;
     let cal_doc = pdfium.load_pdf_from_file(&cal_pdf_path, None)?;
-    let mut cal_object = cal_doc
-        .pages()
-        .get(0)?
-        .objects()
+    let cal_pages = cal_doc.pages();
+    let mut cal_page = cal_pages.get(0)?;
+    let mut cal_object = cal_page
+        .objects_mut()
         .copy_into_x_object_form_object(document)?;
     cal_object.move_to_page(page)?;
 

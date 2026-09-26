@@ -4,12 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-anyhow = "1.0.100"
-clap = "4.5.53"
-image = "0.25.9"
-pdfium-render = "0.8.37"
+anyhow = "1.0.104"
+clap = "4.6.7"
+image = "0.25.10"
+pdfium-render = "0.9.4"
 sys-locale = "0.3.2"
-tempfile = "3.24.0"
-time = "0.3.44"
-# zune-jpeg-0.5.15 is broken
-zune-jpeg="0.4.21"
+tempfile = "3.27.0"
+time = "0.3.55"
