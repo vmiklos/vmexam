@@ -11,7 +11,6 @@
 //! Converts OSMTracker GPX files to JOSM OSM files.
 
 use anyhow::Context as _;
-use clap::Parser as _;
 use serde::Serialize as _;
 
 /// A single waypoint from the GPX input.
@@ -64,16 +63,6 @@ struct Osm {
     nodes: Vec<Node>,
 }
 
-/// Converts OSMTracker GPX files to JOSM OSM files.
-#[derive(clap::Parser)]
-struct Arguments {
-    /// Path of the input GPX file.
-    input: std::path::PathBuf,
-
-    /// Path of the output OSM file.
-    output: std::path::PathBuf,
-}
-
 /// Turns the parsed GPX waypoints into an OSM document.
 fn gpx2osm(gpx: &Gpx) -> anyhow::Result<String> {
     let nodes = gpx
@@ -111,13 +100,37 @@ fn gpx2osm(gpx: &Gpx) -> anyhow::Result<String> {
 }
 
 fn main() -> anyhow::Result<()> {
-    let arguments = Arguments::parse();
+    let args: Vec<String> = std::env::args().collect();
+    let app = clap::Command::new("gpx2osm")
+        .about("Converts OSMTracker GPX files to JOSM OSM files.")
+        .arg(
+            clap::Arg::new("input")
+                .required(true)
+                .help("Path of the input GPX file."),
+        )
+        .arg(
+            clap::Arg::new("output")
+                .required(true)
+                .help("Path of the output OSM file."),
+        );
+    // Mirror what the derive-style API did: report --help and usage errors
+    // via clap itself instead of letting anyhow turn them into failures.
+    let matches = match app.try_get_matches_from(args) {
+        Ok(matches) => matches,
+        Err(e) => e.exit(),
+    };
+    let input_path = matches
+        .get_one::<String>("input")
+        .context("missing input file")?;
+    let output_path = matches
+        .get_one::<String>("output")
+        .context("missing output file")?;
 
-    let input = std::fs::read_to_string(&arguments.input).context("failed to read input file")?;
+    let input = std::fs::read_to_string(input_path).context("failed to read input file")?;
     let gpx: Gpx = quick_xml::de::from_str(&input).context("failed to parse GPX input")?;
 
     let output = gpx2osm(&gpx)?;
-    std::fs::write(&arguments.output, output).context("failed to write output file")?;
+    std::fs::write(output_path, output).context("failed to write output file")?;
 
     Ok(())
 }
