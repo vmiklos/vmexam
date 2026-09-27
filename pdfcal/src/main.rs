@@ -242,17 +242,15 @@ fn make_month_image(
         // Relative offset, inside the image bounding box.
         let image_offset_x = (image_bb_width - image_width) / 2.0;
         let image_offset_y = -(image_bb_height - image_height) / 2.0 - margin;
-        if odd {
-            image_object.translate(
-                a4_size.width() / 2.0 + image_offset_x,
-                a4_size.height() + image_offset_y,
-            )?;
+        let page_offset_y = if odd {
+            a4_size.height()
         } else {
-            image_object.translate(
-                a4_size.width() / 2.0 + image_offset_x,
-                a4_size.height() / 2.0 + image_offset_y,
-            )?;
-        }
+            a4_size.height() / 2.0
+        };
+        image_object.translate(
+            a4_size.width() / 2.0 + image_offset_x,
+            page_offset_y + image_offset_y,
+        )?;
     }
     if args.debug {
         println!("done");
