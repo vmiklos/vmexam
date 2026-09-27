@@ -13,6 +13,7 @@
 use anyhow::Context as _;
 use pdfium_render::prelude::PdfColor;
 use pdfium_render::prelude::PdfDocument;
+use pdfium_render::prelude::PdfMatrix;
 use pdfium_render::prelude::PdfPage;
 use pdfium_render::prelude::PdfPageObjectCommon as _;
 use pdfium_render::prelude::PdfPageObjectsCommon as _;
@@ -123,7 +124,7 @@ fn make_month_calendar<'a>(
     pdfium: &'a Pdfium,
     document: &mut PdfDocument<'a>,
     page: &mut PdfPage<'a>,
-    odd: bool,
+    matrix: PdfMatrix,
     month: &str,
 ) -> anyhow::Result<()> {
     let now = time::OffsetDateTime::now_utc();
@@ -155,15 +156,7 @@ fn make_month_calendar<'a>(
         .objects_mut()
         .copy_into_x_object_form_object(document)?;
     cal_object.move_to_page(page)?;
-
-    let a4_size = PdfPagePaperSize::a4();
-    cal_object.rotate_clockwise_degrees(90.0)?;
-    cal_object.scale(0.5, 0.5)?;
-    if odd {
-        cal_object.translate(PdfPoints::new(0.0), a4_size.height())?;
-    } else {
-        cal_object.translate(PdfPoints::new(0.0), a4_size.height() / 2.0)?;
-    }
+    cal_object.apply_matrix(matrix)?;
 
     Ok(())
 }
@@ -171,7 +164,7 @@ fn make_month_calendar<'a>(
 fn make_month_image(
     args: &Arguments,
     page: &mut PdfPage,
-    odd: bool,
+    matrix: PdfMatrix,
     month: &str,
 ) -> anyhow::Result<()> {
     if args.debug {
@@ -182,8 +175,7 @@ fn make_month_image(
     let image = image::ImageReader::open(&image_path)
         .context(format!("failed to open {image_path}"))?
         .decode()?;
-    let a4_size = PdfPagePaperSize::a4();
-    let landscape_size = a4_size.landscape();
+    let landscape_size = PdfPagePaperSize::a4().landscape();
     // Larger top margin for the binding, no bottom margin since the calendar has one already.
     let margin_side = PdfPoints::from_mm(20.0);
     let margin_top = PdfPoints::from_mm(30.0);
@@ -203,14 +195,7 @@ fn make_month_image(
         Some(image_width),
         Some(image_height),
     )?;
-    image_object.rotate_clockwise_degrees(90.0)?;
-    image_object.scale(0.5, 0.5)?;
-    let offset_x = a4_size.width() / 2.0;
-    if odd {
-        image_object.translate(offset_x, a4_size.height())?;
-    } else {
-        image_object.translate(offset_x, a4_size.height() / 2.0)?;
-    }
+    image_object.apply_matrix(matrix)?;
     if args.debug {
         println!("done");
     }
@@ -223,10 +208,9 @@ fn main() -> anyhow::Result<()> {
     let args = Arguments::parse(&argv)?;
     let pdfium = Pdfium::default();
 
+    let a4_size = PdfPagePaperSize::a4();
     let mut output_pdf = pdfium.create_new_pdf()?;
-    let mut page = output_pdf
-        .pages_mut()
-        .create_page_at_end(PdfPagePaperSize::a4())?;
+    let mut page = output_pdf.pages_mut().create_page_at_end(a4_size)?;
     create_grid(&args, &mut page)?;
 
     for month in 1..13 {
@@ -237,10 +221,19 @@ fn main() -> anyhow::Result<()> {
         // lower half contains the second calendar and the second image.
         let odd = month % 2 == 1;
         if odd && month > 1 {
-            page = output_pdf
-                .pages_mut()
-                .create_page_at_end(PdfPagePaperSize::a4())?;
+            page = output_pdf.pages_mut().create_page_at_end(a4_size)?;
         }
+
+        let offset_y = if odd {
+            a4_size.height()
+        } else {
+            a4_size.height() / 2.0
+        };
+        let calendar_matrix = PdfMatrix::IDENTITY
+            .rotate_clockwise_degrees(90.0)?
+            .scale(0.5, 0.5)?
+            .translate(PdfPoints::new(0.0), offset_y)?;
+        let image_matrix = calendar_matrix.translate(a4_size.width() / 2.0, PdfPoints::new(0.0))?;
 
         // Handle the calendar part.
         make_month_calendar(
@@ -248,12 +241,12 @@ fn main() -> anyhow::Result<()> {
             &pdfium,
             &mut output_pdf,
             &mut page,
-            odd,
+            calendar_matrix,
             &month_string,
         )?;
 
         // Handle the image part.
-        make_month_image(&args, &mut page, odd, &month_string)?;
+        make_month_image(&args, &mut page, image_matrix, &month_string)?;
 
         if let Some(limit) = args.limit
             && month == limit
