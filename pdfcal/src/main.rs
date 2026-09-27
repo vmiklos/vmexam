@@ -200,38 +200,29 @@ fn make_month_image(
     // For a4, no bottom.
     let margin = PdfPoints::from_mm(15.0);
     let a4_size = PdfPagePaperSize::a4();
-    let image_bb_width = if args.a4 {
-        a4_size.width() - margin * 2.0
+    // The bounding box of the image, and the ratio to scale the image by. In
+    // a4 mode the image is not rotated below, so the bounding box is in the
+    // image's own orientation, otherwise it is swapped.
+    let (image_bb_width, image_bb_height, pixel_ratio) = if args.a4 {
+        (
+            a4_size.width() - margin * 2.0,
+            a4_size.height() / 2.0 - margin,
+            image.height() as f32 / image.width() as f32,
+        )
     } else {
-        a4_size.width() / 2.0 - margin
+        (
+            a4_size.width() / 2.0 - margin,
+            a4_size.height() / 2.0 - margin * 2.0,
+            image.width() as f32 / image.height() as f32,
+        )
     };
-    let image_bb_height = if args.a4 {
-        a4_size.height() / 2.0 - margin
-    } else {
-        a4_size.height() / 2.0 - margin * 2.0
-    };
-    let pixel_ratio = if args.a4 {
-        image.height() as f32 / image.width() as f32
-    } else {
-        image.width() as f32 / image.height() as f32
-    };
+    // Scale the image down to fit the bounding box, keeping the aspect ratio.
     let image_width = PdfPoints::new(
         image_bb_width
             .value
             .min(image_bb_height.value / pixel_ratio),
     );
     let image_height = image_width * pixel_ratio;
-    // Relative offset, inside the image bounding box.
-    let image_offset_x = if args.a4 {
-        margin + (image_bb_width - image_width) / 2.0
-    } else {
-        (image_bb_width - image_width) / 2.0
-    };
-    let image_offset_y = if args.a4 {
-        (image_bb_height - image_height) / 2.0
-    } else {
-        -(image_bb_height - image_height) / 2.0 - margin
-    };
     let mut image_object = page.objects_mut().create_image_object(
         PdfPoints::new(0.0),
         PdfPoints::new(0.0),
@@ -239,22 +230,29 @@ fn make_month_image(
         None,
         None,
     )?;
-    if !args.a4 {
-        image_object.rotate_clockwise_degrees(90.0)?;
-    }
-    image_object.scale(image_width.value, image_height.value)?;
     if args.a4 {
-        image_object.translate(image_offset_x, a4_size.height() / 2.0 + image_offset_y)?;
-    } else if odd {
+        image_object.scale(image_width.value, image_height.value)?;
         image_object.translate(
-            a4_size.width() / 2.0 + image_offset_x,
-            a4_size.height() + image_offset_y,
+            margin + (image_bb_width - image_width) / 2.0,
+            a4_size.height() / 2.0 + (image_bb_height - image_height) / 2.0,
         )?;
     } else {
-        image_object.translate(
-            a4_size.width() / 2.0 + image_offset_x,
-            a4_size.height() / 2.0 + image_offset_y,
-        )?;
+        image_object.rotate_clockwise_degrees(90.0)?;
+        image_object.scale(image_width.value, image_height.value)?;
+        // Relative offset, inside the image bounding box.
+        let image_offset_x = (image_bb_width - image_width) / 2.0;
+        let image_offset_y = -(image_bb_height - image_height) / 2.0 - margin;
+        if odd {
+            image_object.translate(
+                a4_size.width() / 2.0 + image_offset_x,
+                a4_size.height() + image_offset_y,
+            )?;
+        } else {
+            image_object.translate(
+                a4_size.width() / 2.0 + image_offset_x,
+                a4_size.height() / 2.0 + image_offset_y,
+            )?;
+        }
     }
     if args.debug {
         println!("done");
