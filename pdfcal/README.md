@@ -33,8 +33,12 @@ Place images in images/ as 01.jpg, 02.jpg, ..., then run:
 pdfcal
 ```
 
-and the result will be produced as out.pdf. The file is quite large as it doesn't scale down input
-photo images. A print optimized version can be produced by running:
+and the result will be produced as out.pdf. It contains 2 months on each A4 page. The page is
+rotated clockwise, and the two columns represent 2 months. Each month has an image in the upper
+half and the calendar is the lower half.
+
+The file is quite large as it doesn't scale down input photo images. A print optimized version can
+be produced by running:
 
 ```
 gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/printer -dNOPAUSE -dQUIET -dBATCH -sOutputFile=out.printer.pdf out.pdf
@@ -61,8 +65,3 @@ heif-convert foo.heic foo.jpg
 ```
 
 can do a conversion, then pdfcal can consume the image.
-
-### Custom fill/fit
-
-If your image aspect ratio is not sqrt(2) : 1, and you want to customize how whitespace is added
-around the image, simply provide that aspect ratio in your images, e.g. 3576x2536 pixels is fine.
