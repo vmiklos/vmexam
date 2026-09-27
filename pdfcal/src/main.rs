@@ -15,6 +15,7 @@ use pdfium_render::prelude::PdfColor;
 use pdfium_render::prelude::PdfDocument;
 use pdfium_render::prelude::PdfMatrix;
 use pdfium_render::prelude::PdfPage;
+use pdfium_render::prelude::PdfPageImageObject;
 use pdfium_render::prelude::PdfPageObjectCommon as _;
 use pdfium_render::prelude::PdfPageObjectsCommon as _;
 use pdfium_render::prelude::PdfPagePaperSize;
@@ -161,9 +162,10 @@ fn make_month_calendar<'a>(
     Ok(())
 }
 
-fn make_month_image(
+fn make_month_image<'a>(
     args: &Arguments,
-    page: &mut PdfPage,
+    document: &PdfDocument<'a>,
+    page: &mut PdfPage<'a>,
     matrix: PdfMatrix,
     month: &str,
 ) -> anyhow::Result<()> {
@@ -172,29 +174,31 @@ fn make_month_image(
         std::io::stdout().flush()?;
     }
     let image_path = format!("images/{month}.jpg");
-    let image = image::ImageReader::open(&image_path)
-        .context(format!("failed to open {image_path}"))?
-        .decode()?;
+    // The JPEG is added to the PDF as-is, pdfium only wraps it in a stream
+    // object, so it is not decoded and re-compressed at all.
+    let mut image_object = PdfPageImageObject::new_from_jpeg_file(document, &image_path)
+        .context(format!("failed to load {image_path}"))?;
     let landscape_size = PdfPagePaperSize::a4().landscape();
     // Larger top margin for the binding, no bottom margin since the calendar has one already.
     let margin_side = PdfPoints::from_mm(20.0);
     let margin_top = PdfPoints::from_mm(30.0);
     let image_bb_width = landscape_size.width() - margin_side * 2.0;
     let image_bb_height = landscape_size.height() - margin_top;
-    let pixel_ratio = image.width() as f32 / image.height() as f32;
+    // The size of the object is 1x1 point before it gets scaled, the image
+    // itself is not affected by that.
+    let pixel_ratio = image_object.width()? as f32 / image_object.height()? as f32;
     let image_width = PdfPoints::new(
         image_bb_width
             .value
             .min(image_bb_height.value * pixel_ratio),
     );
     let image_height = image_width / pixel_ratio;
-    let mut image_object = page.objects_mut().create_image_object(
+    image_object.scale(image_width.value, image_height.value)?;
+    image_object.translate(
         margin_side + (image_bb_width - image_width) / 2.0,
         PdfPoints::new(0.0),
-        &image,
-        Some(image_width),
-        Some(image_height),
     )?;
+    let mut image_object = page.objects_mut().add_image_object(image_object)?;
     image_object.apply_matrix(matrix)?;
     if args.debug {
         println!("done");
@@ -246,7 +250,7 @@ fn main() -> anyhow::Result<()> {
         )?;
 
         // Handle the image part.
-        make_month_image(&args, &mut page, image_matrix, &month_string)?;
+        make_month_image(&args, &output_pdf, &mut page, image_matrix, &month_string)?;
 
         if let Some(limit) = args.limit
             && month == limit
