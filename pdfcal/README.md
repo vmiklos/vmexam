@@ -44,8 +44,6 @@ be produced by running:
 gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/printer -dNOPAUSE -dQUIET -dBATCH -sOutputFile=out.printer.pdf out.pdf
 ```
 
-You can use the `--a4` flag to produce 12 A4 pages, instead of 6 A4 pages.
-
 ## Workarounds
 
 ### Bad JPEG

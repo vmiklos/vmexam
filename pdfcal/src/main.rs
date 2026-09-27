@@ -70,7 +70,6 @@ fn ps2pdf(debug: bool, ps: &str, pdf: &str) -> anyhow::Result<()> {
 struct Arguments {
     debug: bool,
     limit: Option<u16>,
-    a4: bool,
 }
 
 impl Arguments {
@@ -80,40 +79,32 @@ impl Arguments {
             .long("debug")
             .action(clap::ArgAction::SetTrue)
             .help("Add debug output to the PDF, disabled by default");
-        let a4_arg = clap::Arg::new("a4")
-            .short('a')
-            .long("a4")
-            .action(clap::ArgAction::SetTrue)
-            .help("Use A4 (and not A5) as size for one month, disabled by default");
         let limit_arg = clap::Arg::new("limit")
             .short('l')
             .long("limit")
             .value_parser(clap::value_parser!(u16))
             .required(false)
             .help("Limit the output to the first <limit> months, disabled by default");
-        let args = [debug_arg, limit_arg, a4_arg];
+        let args = [debug_arg, limit_arg];
         let app = clap::Command::new("pdfcal");
         let matches = app.args(&args).try_get_matches_from(argv)?;
         let debug = *matches.get_one::<bool>("debug").context("no debug arg")?;
         let limit = matches.get_one::<u16>("limit").cloned();
-        let a4 = *matches.get_one::<bool>("a4").context("no a4 arg")?;
-        Ok(Arguments { debug, limit, a4 })
+        Ok(Arguments { debug, limit })
     }
 }
 
 fn create_grid(args: &Arguments, page: &mut PdfPage) -> anyhow::Result<()> {
     if args.debug {
         let a4_size = PdfPagePaperSize::a4();
-        if !args.a4 {
-            page.objects_mut().create_path_object_line(
-                a4_size.width() / 2.0,
-                PdfPoints::new(0.0),
-                a4_size.width() / 2.0,
-                a4_size.height(),
-                PdfColor::new(255, 0, 0, 255),
-                PdfPoints::new(3.0),
-            )?;
-        }
+        page.objects_mut().create_path_object_line(
+            a4_size.width() / 2.0,
+            PdfPoints::new(0.0),
+            a4_size.width() / 2.0,
+            a4_size.height(),
+            PdfColor::new(255, 0, 0, 255),
+            PdfPoints::new(3.0),
+        )?;
         page.objects_mut().create_path_object_line(
             PdfPoints::new(0.0),
             a4_size.height() / 2.0,
@@ -166,17 +157,12 @@ fn make_month_calendar<'a>(
     cal_object.move_to_page(page)?;
 
     let a4_size = PdfPagePaperSize::a4();
-    if args.a4 {
-        let a4_to_a5 = a4_size.width().value / a4_size.height().value;
-        cal_object.scale(a4_to_a5, a4_to_a5)?;
+    cal_object.rotate_clockwise_degrees(90.0)?;
+    cal_object.scale(0.5, 0.5)?;
+    if odd {
+        cal_object.translate(PdfPoints::new(0.0), a4_size.height())?;
     } else {
-        cal_object.rotate_clockwise_degrees(90.0)?;
-        cal_object.scale(0.5, 0.5)?;
-        if odd {
-            cal_object.translate(PdfPoints::new(0.0), a4_size.height())?;
-        } else {
-            cal_object.translate(PdfPoints::new(0.0), a4_size.height() / 2.0)?;
-        }
+        cal_object.translate(PdfPoints::new(0.0), a4_size.height() / 2.0)?;
     }
 
     Ok(())
@@ -197,25 +183,14 @@ fn make_month_image(
         .context(format!("failed to open {image_path}"))?
         .decode()?;
     // Top/right/bottom margin, no left (that is provided by pcal).
-    // For a4, no bottom.
     let margin = PdfPoints::from_mm(15.0);
     let a4_size = PdfPagePaperSize::a4();
-    // The bounding box of the image, and the ratio to scale the image by. In
-    // a4 mode the image is not rotated below, so the bounding box is in the
-    // image's own orientation, otherwise it is swapped.
-    let (image_bb_width, image_bb_height, pixel_ratio) = if args.a4 {
-        (
-            a4_size.width() - margin * 2.0,
-            a4_size.height() / 2.0 - margin,
-            image.height() as f32 / image.width() as f32,
-        )
-    } else {
-        (
-            a4_size.width() / 2.0 - margin,
-            a4_size.height() / 2.0 - margin * 2.0,
-            image.width() as f32 / image.height() as f32,
-        )
-    };
+    // The bounding box of the image, and the ratio to scale the image by. The
+    // image is rotated below, so the bounding box is swapped compared to the
+    // image's own orientation.
+    let image_bb_width = a4_size.width() / 2.0 - margin;
+    let image_bb_height = a4_size.height() / 2.0 - margin * 2.0;
+    let pixel_ratio = image.width() as f32 / image.height() as f32;
     // Scale the image down to fit the bounding box, keeping the aspect ratio.
     let image_width = PdfPoints::new(
         image_bb_width
@@ -230,28 +205,20 @@ fn make_month_image(
         None,
         None,
     )?;
-    if args.a4 {
-        image_object.scale(image_width.value, image_height.value)?;
-        image_object.translate(
-            margin + (image_bb_width - image_width) / 2.0,
-            a4_size.height() / 2.0 + (image_bb_height - image_height) / 2.0,
-        )?;
+    image_object.rotate_clockwise_degrees(90.0)?;
+    image_object.scale(image_width.value, image_height.value)?;
+    // Relative offset, inside the image bounding box.
+    let image_offset_x = (image_bb_width - image_width) / 2.0;
+    let image_offset_y = -(image_bb_height - image_height) / 2.0 - margin;
+    let page_offset_y = if odd {
+        a4_size.height()
     } else {
-        image_object.rotate_clockwise_degrees(90.0)?;
-        image_object.scale(image_width.value, image_height.value)?;
-        // Relative offset, inside the image bounding box.
-        let image_offset_x = (image_bb_width - image_width) / 2.0;
-        let image_offset_y = -(image_bb_height - image_height) / 2.0 - margin;
-        let page_offset_y = if odd {
-            a4_size.height()
-        } else {
-            a4_size.height() / 2.0
-        };
-        image_object.translate(
-            a4_size.width() / 2.0 + image_offset_x,
-            page_offset_y + image_offset_y,
-        )?;
-    }
+        a4_size.height() / 2.0
+    };
+    image_object.translate(
+        a4_size.width() / 2.0 + image_offset_x,
+        page_offset_y + image_offset_y,
+    )?;
     if args.debug {
         println!("done");
     }
@@ -277,8 +244,7 @@ fn main() -> anyhow::Result<()> {
         // Portrait A4 page: upper half contains first calendar and the first image,
         // lower half contains the second calendar and the second image.
         let odd = month % 2 == 1;
-        let a4 = args.a4;
-        if (odd || a4) && month > 1 {
+        if odd && month > 1 {
             page = output_pdf
                 .pages_mut()
                 .create_page_at_end(PdfPagePaperSize::a4())?;
