@@ -184,9 +184,11 @@ fn make_month_image(
         .decode()?;
     let a4_size = PdfPagePaperSize::a4();
     let landscape_size = a4_size.landscape();
-    let margin = PdfPoints::from_mm(30.0);
-    let image_bb_width = landscape_size.width() - margin * 2.0;
-    let image_bb_height = landscape_size.height() - margin * 2.0;
+    // Larger top margin for the binding, no bottom margin since the calendar has one already.
+    let margin_side = PdfPoints::from_mm(20.0);
+    let margin_top = PdfPoints::from_mm(30.0);
+    let image_bb_width = landscape_size.width() - margin_side * 2.0;
+    let image_bb_height = landscape_size.height() - margin_top;
     let pixel_ratio = image.width() as f32 / image.height() as f32;
     let image_width = PdfPoints::new(
         image_bb_width
@@ -195,8 +197,8 @@ fn make_month_image(
     );
     let image_height = image_width / pixel_ratio;
     let mut image_object = page.objects_mut().create_image_object(
-        margin + (image_bb_width - image_width) / 2.0,
-        margin + (image_bb_height - image_height) / 2.0,
+        margin_side + (image_bb_width - image_width) / 2.0,
+        PdfPoints::new(0.0),
         &image,
         Some(image_width),
         Some(image_height),
