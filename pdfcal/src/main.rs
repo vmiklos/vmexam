@@ -182,43 +182,33 @@ fn make_month_image(
     let image = image::ImageReader::open(&image_path)
         .context(format!("failed to open {image_path}"))?
         .decode()?;
-    // Top/right/bottom margin, no left (that is provided by pcal).
-    let margin = PdfPoints::from_mm(15.0);
     let a4_size = PdfPagePaperSize::a4();
-    // The bounding box of the image, and the ratio to scale the image by. The
-    // image is rotated below, so the bounding box is swapped compared to the
-    // image's own orientation.
-    let image_bb_width = a4_size.width() / 2.0 - margin;
-    let image_bb_height = a4_size.height() / 2.0 - margin * 2.0;
+    let landscape_size = a4_size.landscape();
+    let margin = PdfPoints::from_mm(30.0);
+    let image_bb_width = landscape_size.width() - margin * 2.0;
+    let image_bb_height = landscape_size.height() - margin * 2.0;
     let pixel_ratio = image.width() as f32 / image.height() as f32;
-    // Scale the image down to fit the bounding box, keeping the aspect ratio.
     let image_width = PdfPoints::new(
         image_bb_width
             .value
-            .min(image_bb_height.value / pixel_ratio),
+            .min(image_bb_height.value * pixel_ratio),
     );
-    let image_height = image_width * pixel_ratio;
+    let image_height = image_width / pixel_ratio;
     let mut image_object = page.objects_mut().create_image_object(
-        PdfPoints::new(0.0),
-        PdfPoints::new(0.0),
+        margin + (image_bb_width - image_width) / 2.0,
+        margin + (image_bb_height - image_height) / 2.0,
         &image,
-        None,
-        None,
+        Some(image_width),
+        Some(image_height),
     )?;
     image_object.rotate_clockwise_degrees(90.0)?;
-    image_object.scale(image_width.value, image_height.value)?;
-    // Relative offset, inside the image bounding box.
-    let image_offset_x = (image_bb_width - image_width) / 2.0;
-    let image_offset_y = -(image_bb_height - image_height) / 2.0 - margin;
-    let page_offset_y = if odd {
-        a4_size.height()
+    image_object.scale(0.5, 0.5)?;
+    let offset_x = a4_size.width() / 2.0;
+    if odd {
+        image_object.translate(offset_x, a4_size.height())?;
     } else {
-        a4_size.height() / 2.0
-    };
-    image_object.translate(
-        a4_size.width() / 2.0 + image_offset_x,
-        page_offset_y + image_offset_y,
-    )?;
+        image_object.translate(offset_x, a4_size.height() / 2.0)?;
+    }
     if args.debug {
         println!("done");
     }
