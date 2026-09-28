@@ -84,7 +84,7 @@ impl Arguments {
         let limit_arg = clap::Arg::new("limit")
             .short('l')
             .long("limit")
-            .value_parser(clap::value_parser!(u16))
+            .value_parser(clap::value_parser!(u16).range(1..=12))
             .required(false)
             .help("Limit the output to the first <limit> months, disabled by default");
         let args = [debug_arg, limit_arg];
