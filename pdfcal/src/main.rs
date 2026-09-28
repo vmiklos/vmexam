@@ -226,6 +226,7 @@ fn main() -> anyhow::Result<()> {
         let odd = month % 2 == 1;
         if odd && month > 1 {
             page = output_pdf.pages_mut().create_page_at_end(a4_size)?;
+            create_grid(&args, &mut page)?;
         }
 
         let offset_y = if odd {
