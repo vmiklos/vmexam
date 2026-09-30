@@ -32,35 +32,16 @@ fn tempfile_to_path(tempfile: &tempfile::NamedTempFile) -> anyhow::Result<String
         .to_string())
 }
 
-/// Invokes 'pcal' with given arguments.
-fn pcal(debug: bool, args: &[String]) -> anyhow::Result<()> {
+/// Invokes the given external program with the given arguments, failing on a non-zero exit code.
+fn run(debug: bool, program: &str, args: &[&str]) -> anyhow::Result<()> {
     if debug {
-        print!("pcal {}...", args.join(" "));
+        print!("{program} {}...", args.join(" "));
         std::io::stdout().flush()?;
     }
-    let exit_status = std::process::Command::new("pcal").args(args).status()?;
+    let exit_status = std::process::Command::new(program).args(args).status()?;
     let exit_code = exit_status.code().context("code() failed")?;
     if exit_code != 0 {
-        return Err(anyhow::anyhow!("pcal failed"));
-    }
-    if debug {
-        println!("done");
-    }
-
-    Ok(())
-}
-
-/// Invokes 'ps2pdf' with given arguments.
-fn ps2pdf(debug: bool, ps: &str, pdf: &str) -> anyhow::Result<()> {
-    let args = [ps, pdf];
-    if debug {
-        print!("ps2pdf {}...", args.join(" "));
-        std::io::stdout().flush()?;
-    }
-    let exit_status = std::process::Command::new("ps2pdf").args(args).status()?;
-    let exit_code = exit_status.code().context("code() failed")?;
-    if exit_code != 0 {
-        return Err(anyhow::anyhow!("ps2pdf failed"));
+        return Err(anyhow::anyhow!("{program} failed"));
     }
     if debug {
         println!("done");
@@ -136,20 +117,15 @@ fn make_month_calendar<'a>(
     let lang = locale.split('-').next().context("split() failed")?;
     let cal_ps = tempfile::Builder::new().suffix(".ps").tempfile()?;
     let cal_ps_path = tempfile_to_path(&cal_ps)?;
-    pcal(
+    let config = format!("calendar_{lang}.txt");
+    run(
         args.debug,
-        &[
-            "-o".to_string(),
-            cal_ps_path.to_string(),
-            "-f".to_string(),
-            format!("calendar_{lang}.txt"),
-            month.to_string(),
-            next_year,
-        ],
+        "pcal",
+        &["-o", &cal_ps_path, "-f", &config, month, &next_year],
     )?;
     let cal_pdf = tempfile::Builder::new().suffix(".pdf").tempfile()?;
     let cal_pdf_path = tempfile_to_path(&cal_pdf)?;
-    ps2pdf(args.debug, &cal_ps_path, &cal_pdf_path)?;
+    run(args.debug, "ps2pdf", &[&cal_ps_path, &cal_pdf_path])?;
     let cal_doc = pdfium.load_pdf_from_file(&cal_pdf_path, None)?;
     let cal_pages = cal_doc.pages();
     let mut cal_page = cal_pages.get(0)?;
