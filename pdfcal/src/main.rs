@@ -21,21 +21,18 @@ use pdfium_render::prelude::PdfPageObjectsCommon as _;
 use pdfium_render::prelude::PdfPagePaperSize;
 use pdfium_render::prelude::PdfPoints;
 use pdfium_render::prelude::Pdfium;
+use std::ffi::OsStr;
 use std::io::Write as _;
 
-/// Converts a tempfile to a path that external commands can access.
-fn tempfile_to_path(tempfile: &tempfile::NamedTempFile) -> anyhow::Result<String> {
-    Ok(tempfile
-        .path()
-        .to_str()
-        .context("to_str() failed")?
-        .to_string())
-}
-
 /// Invokes the given external program with the given arguments, failing on a non-zero exit code.
-fn run(debug: bool, program: &str, args: &[&str]) -> anyhow::Result<()> {
+fn run(debug: bool, program: &str, args: &[&OsStr]) -> anyhow::Result<()> {
     if debug {
-        print!("{program} {}...", args.join(" "));
+        let args_joined = args
+            .iter()
+            .map(|a| a.to_string_lossy())
+            .collect::<Vec<_>>()
+            .join(" ");
+        print!("{program} {args_joined}...");
         std::io::stdout().flush()?;
     }
     let exit_status = std::process::Command::new(program).args(args).status()?;
@@ -116,17 +113,26 @@ fn make_month_calendar<'a>(
         .context("no locale")?;
     let lang = locale.split('-').next().context("split() failed")?;
     let cal_ps = tempfile::Builder::new().suffix(".ps").tempfile()?;
-    let cal_ps_path = tempfile_to_path(&cal_ps)?;
     let config = format!("calendar_{lang}.txt");
     run(
         args.debug,
         "pcal",
-        &["-o", &cal_ps_path, "-f", &config, month, &next_year],
+        &[
+            OsStr::new("-o"),
+            cal_ps.path().as_os_str(),
+            OsStr::new("-f"),
+            OsStr::new(&config),
+            OsStr::new(month),
+            OsStr::new(&next_year),
+        ],
     )?;
     let cal_pdf = tempfile::Builder::new().suffix(".pdf").tempfile()?;
-    let cal_pdf_path = tempfile_to_path(&cal_pdf)?;
-    run(args.debug, "ps2pdf", &[&cal_ps_path, &cal_pdf_path])?;
-    let cal_doc = pdfium.load_pdf_from_file(&cal_pdf_path, None)?;
+    run(
+        args.debug,
+        "ps2pdf",
+        &[cal_ps.path().as_os_str(), cal_pdf.path().as_os_str()],
+    )?;
+    let cal_doc = pdfium.load_pdf_from_file(cal_pdf.path(), None)?;
     let cal_pages = cal_doc.pages();
     let mut cal_page = cal_pages.get(0)?;
     let mut cal_object = cal_page
