@@ -1,7 +1,0 @@
-= Title
-
-== First slide
-
-* Let's see:
-+
-image:test.eps[width="100%"]
