@@ -109,9 +109,13 @@ fn make_month_calendar<'a>(
     let now = time::OffsetDateTime::now_utc();
     let next_year = (now.year() + 1).to_string();
     let locale = sys_locale::get_locales()
-        .find(|i| i != "C")
+        .find(|i| !i.starts_with("C") && !i.starts_with("POSIX"))
         .context("no locale")?;
-    let lang = locale.split('-').next().context("split() failed")?;
+    let lang = locale
+        .split(['-', '_'])
+        .next()
+        .context("split() failed")?
+        .to_lowercase();
     let cal_ps = tempfile::Builder::new().suffix(".ps").tempfile()?;
     let config = format!("calendar_{lang}.txt");
     run(
