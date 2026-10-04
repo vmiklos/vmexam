@@ -51,6 +51,7 @@ struct Arguments {
     debug: bool,
     limit: Option<u16>,
     output: String,
+    year: i32,
 }
 
 impl Arguments {
@@ -72,7 +73,13 @@ impl Arguments {
             .value_parser(clap::value_parser!(String))
             .default_value("out.pdf")
             .help("Output PDF file path (default: out.pdf)");
-        let args = [debug_arg, limit_arg, output_arg];
+        let default_year = time::OffsetDateTime::now_utc().year() + 1;
+        let year_arg = clap::Arg::new("year")
+            .short('y')
+            .long("year")
+            .value_parser(clap::value_parser!(i32))
+            .help("Year to generate calendars for (default: next year)");
+        let args = [debug_arg, limit_arg, output_arg, year_arg];
         let app = clap::Command::new("pdfcal");
         let matches = app.args(&args).try_get_matches_from(argv)?;
         let debug = *matches.get_one::<bool>("debug").context("no debug arg")?;
@@ -81,10 +88,15 @@ impl Arguments {
             .get_one::<String>("output")
             .context("no output arg")?
             .clone();
+        let year = matches
+            .get_one::<i32>("year")
+            .copied()
+            .unwrap_or(default_year);
         Ok(Arguments {
             debug,
             limit,
             output,
+            year,
         })
     }
 }
@@ -121,8 +133,7 @@ fn make_month_calendar<'a>(
     matrix: PdfMatrix,
     month: &str,
 ) -> anyhow::Result<()> {
-    let now = time::OffsetDateTime::now_utc();
-    let next_year = (now.year() + 1).to_string();
+    let year_str = args.year.to_string();
     let locale = sys_locale::get_locales()
         .find(|i| !i.starts_with("C") && !i.starts_with("POSIX"))
         .context("no locale")?;
@@ -142,7 +153,7 @@ fn make_month_calendar<'a>(
             OsStr::new("-f"),
             OsStr::new(&config),
             OsStr::new(month),
-            OsStr::new(&next_year),
+            OsStr::new(&year_str),
         ],
     )?;
     let cal_pdf = tempfile::Builder::new().suffix(".pdf").tempfile()?;
