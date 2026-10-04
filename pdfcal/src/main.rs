@@ -50,6 +50,7 @@ fn run(debug: bool, program: &str, args: &[&OsStr]) -> anyhow::Result<()> {
 struct Arguments {
     debug: bool,
     limit: Option<u16>,
+    output: String,
 }
 
 impl Arguments {
@@ -65,12 +66,26 @@ impl Arguments {
             .value_parser(clap::value_parser!(u16).range(1..=12))
             .required(false)
             .help("Limit the output to the first <limit> months, disabled by default");
-        let args = [debug_arg, limit_arg];
+        let output_arg = clap::Arg::new("output")
+            .short('o')
+            .long("output")
+            .value_parser(clap::value_parser!(String))
+            .default_value("out.pdf")
+            .help("Output PDF file path (default: out.pdf)");
+        let args = [debug_arg, limit_arg, output_arg];
         let app = clap::Command::new("pdfcal");
         let matches = app.args(&args).try_get_matches_from(argv)?;
         let debug = *matches.get_one::<bool>("debug").context("no debug arg")?;
         let limit = matches.get_one::<u16>("limit").cloned();
-        Ok(Arguments { debug, limit })
+        let output = matches
+            .get_one::<String>("output")
+            .context("no output arg")?
+            .clone();
+        Ok(Arguments {
+            debug,
+            limit,
+            output,
+        })
     }
 }
 
@@ -246,5 +261,5 @@ fn main() -> anyhow::Result<()> {
         }
     }
 
-    Ok(output_pdf.save_to_file("out.pdf")?)
+    Ok(output_pdf.save_to_file(&args.output)?)
 }
