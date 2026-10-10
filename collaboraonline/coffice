@@ -1,0 +1,10 @@
+#!/bin/bash -e
+#
+# Copyright 2026 Miklos Vajna
+#
+# SPDX-License-Identifier: MIT
+#
+
+flatpak run --filesystem=host com.collaboraoffice.Office "$@"
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab:
