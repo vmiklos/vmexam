@@ -89,6 +89,9 @@ $(eval $(call RustPackage_RustPackage,git-ls-projects))
 
 $(eval $(call RustPackage_RustPackage,git-review-link))
 
+$(eval $(call RustPackage_RustPackage,git-tzstats))
+$(eval $(call RustPackage_use_test,git-tzstats))
+
 $(eval $(call RustPackage_RustPackage,github-outdated))
 
 $(eval $(call RustPackage_RustPackage,gpx2osm))
