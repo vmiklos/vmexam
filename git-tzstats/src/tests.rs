@@ -209,6 +209,26 @@ fn test_travel_after_dst_grace() {
 }
 
 #[test]
+fn test_travel_not_finished() {
+    let mut ctx = TestContext::new();
+    let output = format_output(&[
+        ("Alice", "2026-01-02T09:00:00+01:00"),
+        ("Alice", "2026-11-09T14:15:21Z"),
+        ("Alice", "2026-11-10T07:40:44Z"),
+    ]);
+    ctx.set_command_outputs(&[("log --pretty=format:%an%x1f%aI%x1e", &output)]);
+    ctx.set_env_args(&[]);
+    let time = TestTime::new("Europe/London");
+
+    main(&ctx, &time).unwrap();
+
+    assert_eq!(
+        ctx.buf_string(),
+        "Alice traveled to +0000 on 2026-11-09 and has not returned yet.\n"
+    );
+}
+
+#[test]
 fn test_invalid_date() {
     let mut ctx = TestContext::new();
     let output = format_output(&[("Alice", "not-a-date")]);

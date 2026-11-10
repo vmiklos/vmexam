@@ -171,6 +171,13 @@ fn process_author(
             });
         }
     }
+    if let Some(travel) = travel {
+        ctx.print(&format!(
+            "{author} traveled to {} on {} and has not returned yet.\n",
+            format_offset(travel.offset),
+            format_date(travel.start)
+        ));
+    }
     Ok(())
 }
 
