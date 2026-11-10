@@ -10,6 +10,7 @@ test coverage:
 - darcs-git: a darcs-like wrapper around git
 - distribute-money: calculates transactions within a group to balance their expenses and settle all
   outstanding balances
+- git tzstats: infer travel data from commit timezones
 - ics2txt: .ics file printer for mutt
 - nextcloud-open: open certain files in your browser, based on your local nextcloud sync tree
 - pushping: can run a command and send its exit status to a Matrix channel

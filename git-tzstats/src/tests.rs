@@ -209,6 +209,25 @@ fn test_travel_after_dst_grace() {
 }
 
 #[test]
+fn test_invalid_date() {
+    let mut ctx = TestContext::new();
+    let output = format_output(&[("Alice", "not-a-date")]);
+    ctx.set_command_outputs(&[("log --pretty=format:%an%x1f%aI%x1e", &output)]);
+    ctx.set_env_args(&[]);
+    let time = TestTime::new("Europe/London");
+
+    let result = main(&ctx, &time);
+
+    assert!(result.is_err());
+    assert!(
+        result
+            .unwrap_err()
+            .to_string()
+            .contains("failed to parse author date")
+    );
+}
+
+#[test]
 fn test_multiple_authors() {
     let mut ctx = TestContext::new();
     let output = format_output(&[
