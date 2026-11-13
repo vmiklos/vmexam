@@ -1,0 +1,141 @@
+#!/usr/bin/env python3
+"""Lists the Gerrit changes where the git user.email (or --attention) is in the attention set,
+or with --reviewed, the changes that user reviewed."""
+
+import argparse
+import datetime
+import json
+import subprocess
+import sys
+import urllib.parse
+import urllib.request
+
+PAGE_SIZE = 100
+# Same order as the weekly status report, which lists the main project first.
+PROJECTS = ["online", "core", "external", "help", "translations", "dictionaries"]
+
+
+def git_config(key):
+    """Returns the value of a git config key, or an empty string."""
+    result = subprocess.run(["git", "config", key], capture_output=True, text=True)
+    return result.stdout.strip()
+
+
+def get_email():
+    """Returns the email address from 'git config user.email'."""
+    email = git_config("user.email")
+    if not email:
+        sys.exit("error: 'git config user.email' is not set")
+    return email
+
+
+def get_gerrit():
+    """Returns the Gerrit web URL, based on the remote of the current branch, e.g.
+    https://gerrit.collaboraoffice.com for ssh://cogerrit/online."""
+    branch = subprocess.run(["git", "branch", "--show-current"], capture_output=True, text=True).stdout.strip()
+    remote = git_config(f"branch.{branch}.remote") if branch else ""
+    url = git_config(f"remote.{remote}.url") if remote else ""
+    if not url:
+        sys.exit("error: the current branch has no remote with an URL")
+    if "://" in url:
+        parsed = urllib.parse.urlsplit(url)
+        scheme, host = parsed.scheme, parsed.hostname
+    else:
+        # scp-like syntax: [user@]host:path
+        scheme, host = "ssh", url.split(":", 1)[0].rsplit("@", 1)[-1]
+    if scheme in ("http", "https"):
+        return f"{scheme}://{parsed.netloc.rsplit('@', 1)[-1]}"
+    # The host may be an alias from ~/.ssh/config, let ssh resolve it.
+    result = subprocess.run(["ssh", "-G", host], capture_output=True, text=True)
+    for line in result.stdout.splitlines():
+        key, _, value = line.partition(" ")
+        if key == "hostname":
+            host = value
+    return f"https://{host}"
+
+
+def query_changes(gerrit, query, options=()):
+    """Returns all changes matching query, following pagination."""
+    changes = []
+    while True:
+        params = [("q", query), ("n", PAGE_SIZE), ("S", len(changes))] + [("o", option) for option in options]
+        params = urllib.parse.urlencode(params)
+        with urllib.request.urlopen(f"{gerrit}/changes/?{params}") as response:
+            body = response.read().decode("utf-8")
+        # Gerrit prefixes JSON responses with )]}' to prevent XSSI.
+        page = json.loads(body.split("\n", 1)[1])
+        changes.extend(page)
+        if not page or not page[-1].get("_more_changes"):
+            return changes
+
+
+def format_time(gerrit_time):
+    """Converts a Gerrit UTC timestamp to local time, e.g. 2026-10-16 20:23:55."""
+    utc = datetime.datetime.strptime(gerrit_time[:19], "%Y-%m-%d %H:%M:%S")
+    local = utc.replace(tzinfo=datetime.timezone.utc).astimezone()
+    return local.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def change_url(gerrit, change):
+    """Returns the web URL of a change."""
+    project = urllib.parse.quote(change["project"], safe="")
+    return f"{gerrit}/c/{project}/+/{change['_number']}"
+
+
+def week(weeks_ago):
+    """Returns the Monday of the calendar week weeks_ago weeks back and the Monday after it."""
+    today = datetime.date.today()
+    monday = today - datetime.timedelta(days=today.weekday() + 7 * weeks_ago)
+    return monday, monday + datetime.timedelta(days=7)
+
+
+PERIODS = {
+    "this-week": lambda: week(0),
+    "last-week": lambda: week(1),
+}
+
+
+def print_reviewed(gerrit, email, since, until):
+    """Prints the changes merged in [since, until) where email voted Code-Review, but is not the owner."""
+    entries = []
+    for project in PROJECTS:
+        query = f"project:{project} status:merged mergedafter:{since} mergedbefore:{until}"
+        for change in query_changes(gerrit, query, ("DETAILED_LABELS", "DETAILED_ACCOUNTS")):
+            if change["owner"].get("email", "").lower() == email.lower():
+                continue
+            votes = change.get("labels", {}).get("Code-Review", {}).get("all", [])
+            vote = next((v.get("value", 0) for v in votes if v.get("email", "").lower() == email.lower()), 0)
+            if not vote:
+                continue
+            line = f"{change_url(gerrit, change)} {change['subject']}"
+            if change["branch"] != "main":
+                line += f" \u00b7 {change['branch']}"
+            entries.append(f"{line} \u00b7 {change['owner'].get('name', '')}")
+    print(f"Patch reviews on Gerrit ({len(entries)}):")
+    print()
+    for entry in entries:
+        print(f"- {entry}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--attention", help="email to search for, instead of 'git config user.email'")
+    parser.add_argument("--reviewed", choices=PERIODS, nargs="?", const="this-week",
+                        help="list the merged changes reviewed in this period (default: this-week), "
+                        "instead of the attention set")
+    args = parser.parse_args()
+    email = args.attention or get_email()
+    gerrit = get_gerrit()
+    if args.reviewed:
+        print_reviewed(gerrit, email, *PERIODS[args.reviewed]())
+        return
+    # Oldest first, so changes waiting the longest are at the top.
+    changes = sorted(query_changes(gerrit, f"attention:{email}"), key=lambda change: change["updated"])
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{now}] {len(changes)} changes to review")
+    for change in changes:
+        print(f"[{format_time(change['updated'])}] {change['subject']} {change_url(gerrit, change)}")
+
+
+if __name__ == "__main__":
+    main()
