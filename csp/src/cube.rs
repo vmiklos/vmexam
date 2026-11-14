@@ -190,9 +190,9 @@ impl Model {
     }
 
     fn find_empty(&self) -> Option<Position> {
-        for row in 0..ROWS_COUNT {
-            for cell in 0..Slot::COUNT {
-                if self.solution[row][cell] == 0 {
+        for (row, solution_row) in self.solution.iter().enumerate() {
+            for (cell, &value) in solution_row.iter().enumerate() {
+                if value == 0 {
                     return Some(Position { row, cell });
                 }
             }
@@ -223,13 +223,7 @@ impl Model {
     }
 
     fn is_valid_slot(&self, num: usize) -> bool {
-        for i in 0..Slot::COUNT {
-            if self.solution[ROW_SLOTS][i] == num {
-                return false;
-            }
-        }
-
-        true
+        !self.solution[ROW_SLOTS].contains(&num)
     }
 
     fn is_valid(&self, num: usize, pos: &Position) -> anyhow::Result<bool> {
