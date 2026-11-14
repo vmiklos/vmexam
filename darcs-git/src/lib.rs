@@ -108,9 +108,7 @@ fn record(ctx: &dyn Context, args: &clap::ArgMatches) -> anyhow::Result<()> {
         ctx.print("Invalid response, try again!\n");
     }
     let mut commit = vec!["commit", "-m", &message];
-    if edit {
-        commit.push("-e");
-    }
+    commit.extend(edit.then_some("-e"));
     checked_run(ctx, "git", &commit)
 }
 
