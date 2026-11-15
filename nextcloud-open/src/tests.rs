@@ -2,7 +2,7 @@
  * Copyright 2023 Miklos Vajna
  *
  * SPDX-License-Identifier: MIT
-*/
+ */
 
 #![deny(warnings)]
 #![warn(clippy::all)]
@@ -84,16 +84,13 @@ impl Network for TestNetwork {
         let mut remove: Option<usize> = None;
         let mut locked_routes = self.routes.borrow_mut();
         for (index, route) in locked_routes.iter().enumerate() {
-            // In the future: if not, continue.
-            assert_eq!(url, route.url);
-
-            // In the future: only if it's not empty.
-            assert_eq!(user, route.user);
-
-            // In the future: only if it's not empty.
-            assert_eq!(password, route.password);
-
-            assert_eq!(method, route.method);
+            if url != route.url
+                || user != route.user
+                || password != route.password
+                || method != route.method
+            {
+                continue;
+            }
 
             // In the future: only if it's not empty.
             let expected = std::fs::read_to_string(&route.data_path)?;
@@ -105,7 +102,8 @@ impl Network for TestNetwork {
         }
 
         // Allow specifying multiple results for the same URL.
-        locked_routes.remove(remove.unwrap());
+        let index = remove.ok_or_else(|| anyhow::anyhow!("no matching route"))?;
+        locked_routes.remove(index);
         Ok(ret)
     }
 
@@ -232,7 +230,8 @@ fn test_input_is_dir() {
 0\\Folders\\1\\localPath={home_path}/Nextcloud-Example/\n\
 0\\url=https://nextcloud.example.com\n\
 version=4\n\
-0\\keyWithNoValue"
+0\\keyWithNoValue\n\
+0\\keyWithValue=value"
             )
             .as_bytes(),
         )
@@ -250,4 +249,57 @@ version=4\n\
     assert_eq!(open_browsers.len(), 1);
     let expected = "https://nextcloud.example.com/index.php/apps/files/?dir=/my%20dir/";
     assert_eq!(open_browsers[0].to_string(), expected);
+}
+
+/// Tests what happens when the nextcloud config file is missing.
+#[test]
+fn test_config_missing() {
+    let home_dir = home::home_dir().unwrap();
+    let home_path = home_dir.to_string_lossy();
+    let root: vfs::VfsPath = vfs::MemoryFS::new().into();
+    let network: Rc<dyn Network> = Rc::new(TestNetwork::new(&[]));
+    let input = root
+        .join(format!("{home_path}/Nextcloud-Example/my dir/my file.md"))
+        .unwrap();
+    let ctx = Context::new(root, network);
+
+    let ret = nextcloud_open(&ctx, &[input]);
+
+    assert!(ret.is_err());
+}
+
+/// Tests what happens when the nextcloud-openrc file is missing.
+#[test]
+fn test_credential_config_missing() {
+    let home_dir = home::home_dir().unwrap();
+    let home_path = home_dir.to_string_lossy();
+    let root: vfs::VfsPath = vfs::MemoryFS::new().into();
+    let home = root.join(&home_path).unwrap();
+    home.join(".config/Nextcloud")
+        .unwrap()
+        .create_dir_all()
+        .unwrap();
+    let config_file = home.join(".config/Nextcloud/nextcloud.cfg").unwrap();
+    config_file
+        .create_file()
+        .unwrap()
+        .write_all(
+            format!(
+                "[Accounts]\n\
+0\\Folders\\1\\localPath={home_path}/Nextcloud-Example/\n\
+0\\url=https://nextcloud.example.com\n\
+version=4"
+            )
+            .as_bytes(),
+        )
+        .unwrap();
+    let network: Rc<dyn Network> = Rc::new(TestNetwork::new(&[]));
+    let input = root
+        .join(format!("{home_path}/Nextcloud-Example/my dir/my file.md"))
+        .unwrap();
+    let ctx = Context::new(root, network);
+
+    let ret = nextcloud_open(&ctx, &[input]);
+
+    assert!(ret.is_err());
 }

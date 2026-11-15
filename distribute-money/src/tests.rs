@@ -2,7 +2,7 @@
  * Copyright 2025 Miklos Vajna
  *
  * SPDX-License-Identifier: MIT
-*/
+ */
 
 //! Tests the distribute_money library crate.
 
