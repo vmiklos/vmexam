@@ -80,30 +80,26 @@ impl Network for TestNetwork {
         url: &str,
         data: &str,
     ) -> anyhow::Result<String> {
-        let mut ret: String = "".into();
-        let mut remove: Option<usize> = None;
         let mut locked_routes = self.routes.borrow_mut();
-        for (index, route) in locked_routes.iter().enumerate() {
-            if url != route.url
-                || user != route.user
-                || password != route.password
-                || method != route.method
-            {
-                continue;
-            }
+        let route = locked_routes.first().expect("no route");
+        assert_eq!(url, route.url);
 
-            // In the future: only if it's not empty.
-            let expected = std::fs::read_to_string(&route.data_path)?;
-            assert_eq!(data, expected);
+        // In the future: only if it's not empty.
+        assert_eq!(user, route.user);
 
-            ret = std::fs::read_to_string(&route.result_path)?;
-            remove = Some(index);
-            break;
-        }
+        // In the future: only if it's not empty.
+        assert_eq!(password, route.password);
+
+        assert_eq!(method, route.method);
+
+        // In the future: only if it's not empty.
+        let expected = std::fs::read_to_string(&route.data_path)?;
+        assert_eq!(data, expected);
+
+        let ret = std::fs::read_to_string(&route.result_path)?;
 
         // Allow specifying multiple results for the same URL.
-        let index = remove.ok_or_else(|| anyhow::anyhow!("no matching route"))?;
-        locked_routes.remove(index);
+        locked_routes.remove(0);
         Ok(ret)
     }
 
