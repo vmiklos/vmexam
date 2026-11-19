@@ -2,7 +2,7 @@
  * Copyright 2019 Miklos Vajna
  *
  * SPDX-License-Identifier: MIT
-*/
+ */
 
 #![deny(warnings)]
 #![warn(clippy::all)]
