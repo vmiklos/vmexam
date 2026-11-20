@@ -907,6 +907,76 @@ fn test_mirror_activity_full_history_change() {
 }
 
 #[test]
+fn test_mirror_activity_full_history_unchanged() {
+    // Given an activity mirrored already with matching metadata:
+    let fs = vfs::VfsPath::new(vfs::MemoryFS::new());
+    let activities_dir = fs
+        .join(".local/share/strava-mirror/activities/2025")
+        .unwrap();
+    activities_dir.create_dir_all().unwrap();
+    let timestamp_str = "2025-04-09T07-44-48Z";
+    let base_name = format!("{}_1", timestamp_str);
+    let meta_path = activities_dir
+        .join(format!("{}.meta.json", base_name))
+        .unwrap();
+    let meta_content = r#"{"id": 1, "name": "myactivity", "start_time": "2025-04-09T07:44:48Z", "sport_type": "Ride", "moving_time_raw": 3600, "elapsed_time_raw": 4000, "distance_raw": 1000.0, "elevation_gain_raw": 100.0}"#;
+    meta_path
+        .create_file()
+        .unwrap()
+        .write_all(meta_content.as_bytes())
+        .unwrap();
+    activities_dir
+        .join(format!("{}.fit", base_name))
+        .unwrap()
+        .create_file()
+        .unwrap();
+
+    let mut responses = HashMap::new();
+    let activities_1_body = std::fs::read("src/fixtures/activities-1.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=1"
+            .to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: activities_1_body,
+        },
+    );
+    let activities_0_body = std::fs::read("src/fixtures/activities-0.json").unwrap();
+    responses.insert(
+        "https://www.strava.com/athlete/training_activities?new_activity_only=false&page=2"
+            .to_string(),
+        NetworkResponse {
+            headers: HashMap::new(),
+            body: activities_0_body,
+        },
+    );
+    // Notice that export_original is not in the responses.
+    let network = Rc::new(TestNetwork { responses });
+    let time = Rc::new(TestTime::default());
+    let ctx = Context {
+        fs: fs.clone(),
+        network,
+        process: Rc::new(TestProcess::new(&[])),
+        time,
+    };
+    setup_config(&fs);
+
+    // When mirroring activities with --full-history:
+    let mut buf: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::new());
+    let args = vec!["strava-mirror".to_string(), "--full-history".to_string()];
+    run(args, &mut buf, &ctx).unwrap();
+
+    // Then the metadata is left unchanged (verified by no unexpected network requests).
+    let mut updated_content = String::new();
+    meta_path
+        .open_file()
+        .unwrap()
+        .read_to_string(&mut updated_content)
+        .unwrap();
+    assert_eq!(updated_content, meta_content);
+}
+
+#[test]
 fn test_should_redownload_meta() {
     let now = time::macros::datetime!(2025-04-09 07:44:48 UTC);
     let metadata = ActivityMetadata {

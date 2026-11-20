@@ -18,6 +18,7 @@ use std::io::Read as _;
 use std::io::Write as _;
 use std::rc::Rc;
 
+mod serde;
 mod stats;
 
 #[cfg(not(test))]
@@ -73,7 +74,7 @@ pub struct Context {
 }
 
 /// Contents of the config file.
-#[derive(serde::Deserialize)]
+#[derive(::serde::Deserialize)]
 struct Config {
     jwt: String,
 }
@@ -89,13 +90,6 @@ fn read_config(ctx: &Context) -> anyhow::Result<Config> {
     Ok(config)
 }
 
-/// Contents of the JWT payload.
-#[derive(serde::Deserialize)]
-struct Jwt {
-    sub: String,
-    exp: i64,
-}
-
 /// Parses the JWT to get a Cookie header value.
 fn jwt_to_cookie(ctx: &Context, jwt: &str) -> anyhow::Result<String> {
     let parts: Vec<&str> = jwt.split('.').collect();
@@ -105,7 +99,7 @@ fn jwt_to_cookie(ctx: &Context, jwt: &str) -> anyhow::Result<String> {
     }
     let payload_encoded = parts[1];
     let payload_bytes = base64::prelude::BASE64_URL_SAFE_NO_PAD.decode(payload_encoded)?;
-    let jwt_payload: Jwt = serde_json::from_slice(&payload_bytes)?;
+    let jwt_payload: serde::Jwt = serde_json::from_slice(&payload_bytes)?;
     let strava_remember_id = jwt_payload.sub;
     let exp_datetime = ctx.time.to_local_offset(jwt_payload.exp)?;
     let format = time::format_description::parse_borrowed::<1>(DISPLAY_TIMESTAMP_FORMAT)?;
@@ -124,7 +118,7 @@ fn jwt_to_cookie(ctx: &Context, jwt: &str) -> anyhow::Result<String> {
 }
 
 /// One .meta.json file in the mirrored activity list.
-#[derive(serde::Deserialize, serde::Serialize, Clone)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone)]
 pub(crate) struct ActivityMetadata {
     id: u64,
     name: String,
@@ -138,7 +132,7 @@ pub(crate) struct ActivityMetadata {
 }
 
 /// Type of the /athlete/training_activities response.
-#[derive(serde::Deserialize)]
+#[derive(::serde::Deserialize)]
 struct ActivitiesResponse {
     /// ActivityMetadata and some more.
     models: Vec<serde_json::Value>,
@@ -304,12 +298,12 @@ fn mirror_activity(
     Ok(())
 }
 
-#[derive(serde::Deserialize)]
+#[derive(::serde::Deserialize)]
 struct NominatimResponse {
     address: NominatimAddress,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(::serde::Deserialize)]
 struct NominatimAddress {
     country: String,
 }

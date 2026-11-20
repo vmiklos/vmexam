@@ -7,6 +7,7 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
+use crate::ActivityMetadata;
 use crate::Context;
 use crate::NetworkResponse;
 use crate::run;
@@ -806,6 +807,41 @@ fn test_query_activity_count_by_year() {
     let document = parse_html(buf);
     let names = query_selectors(&document, "tbody tr", "td:first-child");
     assert_eq!(names, ["2025", "2024"]);
+}
+
+#[test]
+fn test_get_activity_type_breakdown_content_latest() {
+    // Given two rides, the newer one first:
+    let newer = ActivityMetadata {
+        id: 1,
+        name: "newer ride".to_string(),
+        start_time: time::macros::datetime!(2025-06-01 10:00:00 UTC),
+        sport_type: "Ride".to_string(),
+        moving_time_raw: 3000,
+        elapsed_time_raw: 3400,
+        distance_raw: 15000.0,
+        elevation_gain_raw: 200.0,
+    };
+    let older = ActivityMetadata {
+        id: 2,
+        name: "older ride".to_string(),
+        start_time: time::macros::datetime!(2025-01-01 10:00:00 UTC),
+        sport_type: "Ride".to_string(),
+        moving_time_raw: 5000,
+        elapsed_time_raw: 5400,
+        distance_raw: 25000.0,
+        elevation_gain_raw: 500.0,
+    };
+
+    // When producing the activity type breakdown:
+    let markup = super::get_activity_type_breakdown_content(vec![newer, older])
+        .unwrap()
+        .into_string();
+
+    // Then the newer ride is the latest one:
+    assert!(markup.contains("https://www.strava.com/activities/1"));
+    assert!(markup.contains("newer ride"));
+    assert!(!markup.contains("older ride"));
 }
 
 #[test]
