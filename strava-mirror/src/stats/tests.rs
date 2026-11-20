@@ -10,6 +10,7 @@ use std::rc::Rc;
 use crate::ActivityMetadata;
 use crate::Context;
 use crate::NetworkResponse;
+use crate::Time;
 use crate::run;
 use crate::tests::TestNetwork;
 use crate::tests::TestProcess;
@@ -41,6 +42,34 @@ fn query_selectors(
                 .to_string()
         })
         .collect()
+}
+
+struct BudapestTime;
+
+impl Time for BudapestTime {
+    fn now(&self) -> time::OffsetDateTime {
+        time::OffsetDateTime::now_utc()
+    }
+
+    fn to_local_offset(&self, timestamp: i64) -> anyhow::Result<time::OffsetDateTime> {
+        let utc = time::OffsetDateTime::from_unix_timestamp(timestamp)?;
+        let winter = matches!(
+            utc.month(),
+            time::Month::November
+                | time::Month::December
+                | time::Month::January
+                | time::Month::February
+                | time::Month::March
+        );
+        let offset = if winter {
+            time::UtcOffset::from_hms(1, 0, 0)?
+        } else {
+            time::UtcOffset::from_hms(2, 0, 0)?
+        };
+        Ok(utc.to_offset(offset))
+    }
+
+    fn sleep(&self, _duration: std::time::Duration) {}
 }
 
 #[test]
@@ -206,6 +235,46 @@ fn test_query_countries() {
         .map(|el| el.text().collect::<String>())
         .collect();
     assert_eq!(summaries, ["Hungary: 2", "Austria: 1", "Germany: 1"]);
+}
+
+#[test]
+fn test_render_activities_table_local_timezone() {
+    // Given a February and an August activity, both at 10:00 UTC:
+    let february = ActivityMetadata {
+        id: 1,
+        name: "february ride".to_string(),
+        start_time: time::macros::datetime!(2025-02-01 10:00:00 UTC),
+        sport_type: "Ride".to_string(),
+        moving_time_raw: 3600,
+        elapsed_time_raw: 4000,
+        distance_raw: 1000.0,
+        elevation_gain_raw: 100.0,
+    };
+    let august = ActivityMetadata {
+        id: 2,
+        name: "august ride".to_string(),
+        start_time: time::macros::datetime!(2025-08-01 10:00:00 UTC),
+        sport_type: "Ride".to_string(),
+        moving_time_raw: 3600,
+        elapsed_time_raw: 4000,
+        distance_raw: 1000.0,
+        elevation_gain_raw: 100.0,
+    };
+
+    // When rendering the table with Budapest time:
+    let markup = super::render_activities_table(
+        &[february, august],
+        "activities",
+        "Activities",
+        &BudapestTime,
+    )
+    .unwrap()
+    .into_string();
+
+    // Then each start time uses the offset valid on the activity's own date:
+    let document = scraper::Html::parse_document(&markup);
+    let dates = query_selectors(&document, "tbody tr", "td:nth-child(2)");
+    assert_eq!(dates, ["2025-02-01 11:00:00", "2025-08-01 12:00:00"]);
 }
 
 #[test]

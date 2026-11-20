@@ -72,7 +72,7 @@ impl strava_mirror::Time for RealTime {
 
     fn to_local_offset(&self, timestamp: i64) -> anyhow::Result<time::OffsetDateTime> {
         let exp_datetime = time::OffsetDateTime::from_unix_timestamp(timestamp)?;
-        let local_offset = time::UtcOffset::current_local_offset()?;
+        let local_offset = time::UtcOffset::local_offset_at(exp_datetime)?;
         Ok(exp_datetime.to_offset(local_offset))
     }
 
