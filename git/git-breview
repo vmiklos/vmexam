@@ -6,8 +6,6 @@
 #
 
 if [ -e .gitreview ]; then
-    # Gerrit
-    style-check-files
     if git-review -R; then
         rev=$(git rev-parse HEAD)
         host=$(git config -f .gitreview gerrit.host)
